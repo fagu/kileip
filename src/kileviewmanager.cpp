@@ -55,6 +55,7 @@
 #include "plaintolatexconverter.h"
 #include "widgets/previewwidget.h"
 #include "quickpreview.h"
+#include "previewindocument.h"
 #include "codecompletion.h"
 
 #ifdef HAVE_VIEWERINTERFACE_H
@@ -232,6 +233,10 @@ KTextEditor::View* Manager::createTextView(KileDocument::TextInfo *info, int ind
 	// in the case of simple text documents, we mimic the behaviour of LaTeX documents
 	if(info->getType() == KileDocument::Text) {
 // 		view->focusProxy()->installEventFilter(m_ki->eventFilter());
+	}
+
+	if(info->getType() == KileDocument::LaTeX) {
+		new PreviewWidgetHandler(view, qobject_cast<KileDocument::LaTeXInfo*>(info));
 	}
 
 	//insert the view in the tab widget
@@ -824,6 +829,17 @@ void Manager::currentViewChanged(int index)
 	KTextEditor::View *view = dynamic_cast<KTextEditor::View*>(activatedWidget);
 	if(view) {
 		emit textViewActivated(view);
+	}
+}
+
+void Manager::toggleInlinePreview(bool on)
+{
+	KTextEditor::View *aktview = dynamic_cast<KTextEditor::View*>(m_tabs->currentWidget());
+	if (aktview) {
+		KileDocument::LaTeXInfo *info = dynamic_cast<KileDocument::LaTeXInfo*>(m_ki->docManager()->textInfoFor(aktview->document()));
+		if (info) {
+			info->setInlinePreview(on);
+		}
 	}
 }
 

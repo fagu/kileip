@@ -783,6 +783,13 @@ void Kile::setupActions()
 	m_latexOutputErrorToolBar->addAction(act);
 
 	createAction(i18n("Return to Editor"), "return_to_editor", "document-edit", KShortcut("CTRL+E"), this, SLOT(showEditorWidget()));
+	
+	InlinePreviewAction = new KToggleAction(i18n("Inline Preview"), actionCollection());
+	InlinePreviewAction->setShortcut(KShortcut("CTRL+Alt+I"));
+	actionCollection()->addAction("toggle_inline_preview", InlinePreviewAction);
+	connect(InlinePreviewAction, SIGNAL(toggled(bool)), viewManager(), SLOT(toggleInlinePreview(bool)));
+	InlinePreviewAction->setChecked(true);
+	
 	createAction(i18n("Next Document"), "gotoNextDocument", "arrow-right", KShortcut(Qt::ALT + Qt::Key_Right), viewManager(), SLOT(gotoNextView()));
 	createAction(i18n("Previous Document"), "gotoPrevDocument", "arrow-left", KShortcut(Qt::ALT + Qt::Key_Left), viewManager(), SLOT(gotoPrevView()));
 	createAction(i18n("Focus Log/Messages View"), "focus_log", KShortcut("CTRL+Alt+M"), this, SLOT(focusLog()));
@@ -1917,6 +1924,7 @@ void Kile::initMenu()
 	   // edit
 	   << "RefreshStructure"
 	    // view
+	   << "toggle_inline_preview"
 	   << "gotoPrevDocument" << "gotoNextDocument"
 	   // build
 	   << "quickpreview_selection" << "quickpreview_environment"

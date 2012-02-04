@@ -871,6 +871,9 @@ LaTeXInfo::LaTeXInfo(KTextEditor::Document *doc,
   m_eventFilter(NULL),
   m_livePreviewManager(livePreviewManager)
 {
+	m_user = new User();
+	m_user->start();
+	m_inlinePreview = true;
 	documentTypePromotionAllowed = false;
 	updateStructLevelInfo();
 	m_latexCompletionModel = new KileCodeCompletion::LaTeXCompletionModel(this,
@@ -880,6 +883,7 @@ LaTeXInfo::LaTeXInfo(KTextEditor::Document *doc,
 
 LaTeXInfo::~LaTeXInfo()
 {
+	delete m_user;
 }
 
 Type LaTeXInfo::getType()
@@ -1120,6 +1124,34 @@ void LaTeXInfo::installParserOutput(KileParser::ParserOutput *parserOutput)
 	emit(isrootChanged(isLaTeXRoot()));
 	setDirty(false);
 	emit(parsingComplete());
+}
+
+User *LaTeXInfo::user() {
+	return m_user;
+}
+
+void LaTeXInfo::setDocument(KTextEditor::Document *doc) {
+	TextInfo::setDocument(doc);
+	if (doc) {
+		connect(doc, SIGNAL(textChanged(KTextEditor::Document*)), this, SLOT(textChanged()));
+		textChanged();
+	}
+}
+
+void LaTeXInfo::textChanged() {
+	if (m_inlinePreview)
+		m_user->textChanged(m_doc->text());
+}
+
+bool LaTeXInfo::isInlinePreview() {
+	return m_inlinePreview;
+}
+
+void LaTeXInfo::setInlinePreview(bool on) {
+	if (m_inlinePreview != on) {
+		m_inlinePreview = on;
+		emit inlinePreviewChanged(on);
+	}
 }
 
 BibInfo::BibInfo (KTextEditor::Document *doc,

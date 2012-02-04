@@ -158,6 +158,7 @@ public Q_SLOTS:
 	void pasteAsLaTeX(void);
 	void quickPreviewPopup();
 
+	void toggleInlinePreview(bool); // TODO This method should probably be somewhere else...
 	void moveTabLeft(QWidget *widget = NULL);
 	void moveTabRight(QWidget *widget = NULL);
 

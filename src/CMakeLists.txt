@@ -131,6 +131,10 @@ SET(kile_SRCS
 	parser/bibtexparser.cpp
 	parser/latexoutputparser.cpp
 	livepreview_utils.cpp
+	previewthread.cpp
+	previewindocument.cpp
+	myparser.cpp
+	user.cpp
 )
 
 IF( LIVEPREVIEW_POSSIBLE )

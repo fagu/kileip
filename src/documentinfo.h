@@ -28,6 +28,7 @@
 #include "kileconstants.h"
 #include "kileextensions.h"
 #include "livepreview_utils.h"
+#include "user.h"
 
 #define TEX_CAT0 '\\'
 #define TEX_CAT1 '{'
@@ -259,7 +260,7 @@ public:
 	const KTextEditor::Document* getDocument() const;
 	KTextEditor::Document* getDocument();
 	void setDoc(KTextEditor::Document *doc);
-	void setDocument(KTextEditor::Document *doc);
+	virtual void setDocument(KTextEditor::Document *doc);
 	void detach();
 
 	/**
@@ -436,9 +437,20 @@ public:
 	void startLaTeXCompletion(KTextEditor::View *view);
 
 	void installParserOutput(KileParser::ParserOutput *parserOutput);
+	
+	User *user();
+	
+	void setDocument(KTextEditor::Document *doc);
+	
+	bool isInlinePreview();
+	void setInlinePreview(bool on);
 
 public Q_SLOTS:
 	virtual void updateStruct();
+	void textChanged();
+
+Q_SIGNALS:
+	void inlinePreviewChanged(bool on);
 
 protected:
 	LatexCommands *m_commands;
@@ -447,6 +459,9 @@ protected:
 	QObject *m_eventFilter;
 	KileCodeCompletion::LaTeXCompletionModel *m_latexCompletionModel;
 	KileTool::LivePreviewManager *m_livePreviewManager;
+	
+	User *m_user;
+	bool m_inlinePreview;
 
 	virtual void updateStructLevelInfo();
 	virtual void checkChangedDeps();

@@ -149,6 +149,7 @@ private:
 	QList<QAction*> 			m_listUserTagsActions, m_listQuickActions, m_listCompilerActions, m_listConverterActions, m_listViewerActions, m_listOtherActions;
 	KActionMenu 				*m_bibTagActionMenu;
 	KAction 				*m_paStop, *m_paPrint;
+	KToggleAction				*InlinePreviewAction;
 	KToggleAction 				*ModeAction, *WatchFileAction;
 	KToggleAction 				*m_actionMessageView;
 	KRecentFilesAction			*m_actRecentFiles;

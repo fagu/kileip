@@ -124,6 +124,8 @@
 <Action name="return_to_editor"/>
 <DefineGroup name="view_operations" append="view_operations"/>
 <Separator/>
+<Action name="toggle_inline_preview"/>
+<Separator/>
 <Action name="gotoPrevDocument"/>
 <Action name="gotoNextDocument"/>
 <Separator/>

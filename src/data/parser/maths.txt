@@ -1,0 +1,20 @@
+# Environments
+equation
+equation*
+align
+align*
+alignat
+alignat*
+multiline
+multiline*
+eqnarray
+eqnarray*
+# start commands of math environments
+!begincommand
+$
+$$
+\[
+\(
+# commands
+!command
+\ensuremath
