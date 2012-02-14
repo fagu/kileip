@@ -1,6 +1,6 @@
 /**************************************************************************************
-    begin                : Tue Nov 25 2003
-    copyright            : (C) 2003 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)
+  Copyright (C) 2003 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)
+                2011-2012 by Michel Ludwig (michel.ludwig@kdemail.net)
  **************************************************************************************/
 
 /***************************************************************************
@@ -344,6 +344,8 @@ namespace KileTool
 		if(result != Success && result != Silent) { //abort execution, delete all remaining tools
 			if(tool->isPartOfLivePreview()) { // live preview was stopped / aborted
 				deleteLivePreviewToolsFromQueue();
+				// don't forget to run non-live preview tools that are pending
+				runNextInQueue();
 			}
 			else {
 				for(QQueue<QueueItem*>::iterator i = m_queue.begin(); i != m_queue.end(); ++i) {
@@ -523,7 +525,12 @@ namespace KileTool
 		return config->group("Tools").readEntry(tool, QString());
 	}
 
-	void setConfigName(const QString & tool, const QString & name, KConfig *config)
+	void Manager::setConfigName(const QString &tool, const QString &name)
+	{
+		KileTool::setConfigName(tool, name, m_config);
+	}
+
+	void setConfigName(const QString &tool, const QString &name, KConfig *config)
 	{
 		KILE_DEBUG() << "==KileTool::Manager::setConfigName(" << tool << "," << name << ")===============" << endl;
 		config->group("Tools").writeEntry(tool, name);
