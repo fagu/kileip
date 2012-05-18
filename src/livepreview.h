@@ -24,6 +24,7 @@
 #include <QHash>
 #include <QObject>
 #include <QPointer>
+#include <QSignalMapper>
 #include <QString>
 #include <QStringList>
 
@@ -45,11 +46,13 @@ public:
 	LivePreviewManager(KileInfo *ki, KActionCollection *ac);
 	~LivePreviewManager();
 
+	// live preview won't be run in 'boot up' mode, which is enabled by default
+	void disableBootUpMode();
+
 	void readConfig(KConfig *config);
 	void writeConfig();
-
-	bool run(const QString &text,const QString &textfilename,int startrow);
-	bool isRunning();
+	void readLivePreviewStatusSettings(KConfig *config);
+	void writeLivePreviewStatusSettings(KConfig *config);
 
 	void compilePreview(KileDocument::LaTeXInfo *info, KTextEditor::View *view);
 	void showPreviewCompileIfNecessary(KileDocument::LaTeXInfo *info, KTextEditor::View *view);
@@ -59,31 +62,19 @@ public:
 
 	bool isLivePreviewEnabledForCurrentDocument();
 	void setLivePreviewEnabledForCurrentDocument(bool b);
-  /**
-   * run (text, textfilename, startrow) works with the
-   * default configuration for QuickPreview. This method
-   * supports a forth parameter to choose the configuration as
-   * comma - separated string as you can see them in run (text, textfilename, startrow)
-   *
-   * It is also possible not to specify a viewer, so the viewer is not
-   * executed.
-   *
-   * @param text         Text to preview
-   * @param textfilename Filename of the document
-   * @param startrow     Position of preview text in the document
-   * @param spreviewlist user defined configuration, e.g. "PreviewLaTeX,DVItoPS,,,ps" (with no preview)
-   * @return             true if method succeeds, else false
-   */
-// 	bool run (const QString &text, const QString &textfilename, int startrow, const QString &spreviewlist);
 
 	QWidget* getControlToolBar();
+
+	void buildLivePreviewMenu(KConfig *config);
 
 public Q_SLOTS:
 	void handleCursorPositionChanged(KTextEditor::View *view, const KTextEditor::Cursor &pos);
 	void handleTextChanged(KTextEditor::Document *doc);
+	void handleDocumentSavedOrUploaded(KTextEditor::Document *doc, bool savedAs);
 
 	void handleMasterDocumentChanged();
 
+	void recompileLivePreview();
 	void refreshLivePreview();
 
 private Q_SLOTS:
@@ -97,7 +88,7 @@ private Q_SLOTS:
 	void toolDone(KileTool::Base *base, int i, bool childToolSpawned);
 	void childToolDone(KileTool::Base *base, int i, bool childToolSpawned);
 
-	void handleTextViewActivated(KTextEditor::View *view, bool clearPreview = true);
+	void handleTextViewActivated(KTextEditor::View *view, bool clearPreview = true, bool forceCompilation = false);
 	void handleTextViewClosed(KTextEditor::View *view, bool wasActiveView);
 
 	void handleProjectItemAdded(KileProject *project, KileProjectItem *item);
@@ -110,15 +101,19 @@ private Q_SLOTS:
 	void synchronizeViewWithCursorActionTriggered(bool b);
 	void previewForCurrentDocumentActionTriggered(bool b);
 
+	void livePreviewToolActionTriggered();
+
 	void handleCursorPositionChangedTimeout();
 
 private:
 	class PreviewInformation;
 
 	KileInfo *m_ki;
+	bool m_bootUpMode;
 	QPointer<KToolBar> m_controlToolBar;
 	QPointer<KLed> m_previewStatusLed;
 	KToggleAction *m_synchronizeViewWithCursorAction, *m_previewForCurrentDocumentAction;
+	KAction *m_recompileLivePreviewAction;
 	QTimer *m_ledBlinkingTimer, *m_documentChangedTimer, *m_cursorPositionChangedTimer;
 
 	QHash<QString, QString> m_runningPathToPreviewPathHash;
@@ -136,8 +131,15 @@ private:
 	QHash<KileProject*, PreviewInformation*> m_projectToPreviewInformationHash;
 	PreviewInformation *m_masterDocumentPreviewInformation;
 
+	// all the members required to handle tool actions for live preview
+	QHash<ToolConfigPair, KAction*> m_livePreviewToolToActionHash;
+	QHash<KAction*, ToolConfigPair> m_actionToLivePreviewToolHash;
+	QActionGroup *m_livePreviewToolActionGroup;
+	QLinkedList<KAction*> m_livePreviewToolActionList;
+
 	PreviewInformation* findPreviewInformation(KileDocument::TextInfo *textInfo, KileProject* *locatedProject = NULL,
 	                                                                               LivePreviewUserStatusHandler* *userStatusHandler = NULL);
+	bool isCurrentDocumentOrProject(KTextEditor::Document *doc);
 
 	void updatePreviewInformationAfterCompilationFinished();
 
@@ -165,6 +167,9 @@ private:
 	void fillTextHashForMasterDocument(QHash<KileDocument::TextInfo*, QByteArray> &textHash);
 
 	void disablePreview();
+
+	void updateLivePreviewToolActions(LivePreviewUserStatusHandler *statusHandler);
+	void setLivePreviewToolActionsEnabled(bool b);
 };
 
 }

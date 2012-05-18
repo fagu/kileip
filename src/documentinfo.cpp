@@ -21,7 +21,7 @@
 //  - add some new types of elements (and levels) for the structure view
 //  - new commands, which are passed to the structure listview:
 //       \includegraphics, \caption
-//  - all user defined commands for labels are recognized
+//  - all user-defined commands for labels are recognized
 //  - changed folder name of KileStruct::BibItem to "bibs", so that "refs"
 //    is still unused and can be used for references (if wanted)
 //  - \begin, \end to gather all environments. But only figure and table
@@ -971,7 +971,7 @@ void LaTeXInfo::updateStructLevelInfo() {
 	m_dictStructLevel["\\end{frame}"] = KileStructData(KileStruct::Hidden, KileStruct::BeamerEndFrame);
 	m_dictStructLevel["\\begin{block}"] = KileStructData(KileStruct::Object, KileStruct::BeamerBeginBlock, "beamerblock");
 
-	// add user defined commands
+	// add user-defined commands
 
 	QStringList list;
 	QStringList::ConstIterator it;
@@ -1015,6 +1015,8 @@ void LaTeXInfo::installSignalConnections(KTextEditor::View *view)
 	        m_livePreviewManager, SLOT(handleCursorPositionChanged(KTextEditor::View*, const KTextEditor::Cursor&)));
 	connect(view->document(), SIGNAL(textChanged(KTextEditor::Document*)),
 	        m_livePreviewManager, SLOT(handleTextChanged(KTextEditor::Document*)), Qt::UniqueConnection);
+	connect(view->document(), SIGNAL(documentSavedOrUploaded(KTextEditor::Document*,bool)),
+	        m_livePreviewManager, SLOT(handleDocumentSavedOrUploaded(KTextEditor::Document*,bool)), Qt::UniqueConnection);
 #endif
 }
 
@@ -1025,6 +1027,8 @@ void LaTeXInfo::removeSignalConnections(KTextEditor::View *view)
 	           m_livePreviewManager, SLOT(handleCursorPositionChanged(KTextEditor::View*, const KTextEditor::Cursor&)));
 	disconnect(view->document(), SIGNAL(textChanged(KTextEditor::Document*)),
 	           m_livePreviewManager, SLOT(handleTextChanged(KTextEditor::Document*)));
+	disconnect(view->document(), SIGNAL(documentSavedOrUploaded(KTextEditor::Document*,bool)),
+	           m_livePreviewManager, SLOT(handleDocumentSavedOrUploaded(KTextEditor::Document*,bool)));
 #endif
 }
 

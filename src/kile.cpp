@@ -126,9 +126,10 @@ Kile::Kile(bool allowRestore, QWidget *parent, const char *name)
 	dbus.registerObject("/main", this);
 	dbus.registerService("net.sourceforge.kile"); // register under a constant names
 
-	// BUG 220343: Under some circumstances (Qt 4.5.3 or KDE 4.3 issues (?)) Kile doesn't terminate when the
-	//             main window is closed. So, we force this here. Everything seems to work fine with Qt 4.6.
-// 	connect(this, SIGNAL(destroyed(QObject*)), kapp, SLOT(quit()));
+	// Under some circumstances (Qt or KDE issues like a KIO process still running (?)), Kile doesn't terminate
+	// when the main window is closed (bugs 220343 and 299569). So, we force this here.
+	// This still seems to happen with Qt 4.8.1 and KDE 4.8.2.
+	connect(m_mainWindow, SIGNAL(destroyed(QObject*)), kapp, SLOT(quit()));
 
 	QSplashScreen splashScreen(QPixmap(KGlobal::dirs()->findResource("appdata", "pics/kile_splash.png")), Qt::WindowStaysOnTopHint);
 	if(KileConfig::showSplashScreen()) {
@@ -136,8 +137,6 @@ Kile::Kile(bool allowRestore, QWidget *parent, const char *name)
 	}
 
 	m_config = KGlobal::config();
-
-	m_jScriptManager = new KileScript::Manager(this, m_config.data(), actionCollection(), parent, "KileScript::Manager");
 
 	m_codeCompletionManager = new KileCodeCompletion::Manager(this, parent);
 
@@ -157,6 +156,7 @@ Kile::Kile(bool allowRestore, QWidget *parent, const char *name)
 	m_errorHandler = new KileErrorHandler(this, this);
 	m_quickPreview = new KileTool::QuickPreview(this);
 	m_extensions = new KileDocument::Extensions();
+	m_jScriptManager = new KileScript::Manager(this, m_config.data(), actionCollection(), parent, "KileScript::Manager");
 	m_userMenu = NULL;
 
 	connect(m_partManager, SIGNAL(activePartChanged(KParts::Part*)), this, SLOT(activePartGUI(KParts::Part*)));
@@ -341,7 +341,7 @@ Kile::Kile(bool allowRestore, QWidget *parent, const char *name)
 
 	KTipDialog::showTip(this, "kile/tips");
 
-	// lazy creation: last possible place to insert this user defined menu
+	// lazy creation: last possible place to insert this user-defined menu
 	m_userMenu  = new KileMenu::UserMenu(this, this);
 	connect(m_userMenu, SIGNAL(sendText(const QString &)), this, SLOT(insertText(const QString &)));
 	connect(m_userMenu, SIGNAL(updateStatus()), this, SLOT(slotUpdateUserMenuStatus()));
@@ -361,6 +361,9 @@ Kile::Kile(bool allowRestore, QWidget *parent, const char *name)
 		m_config->deleteGroup("Shortcuts");
 	}
 
+	// finally init all actions for the ScriptManager
+	m_jScriptManager->initScriptActions();
+
 	setUpdatesEnabled(false);
 	setAutoSaveSettings(QLatin1String("KileMainWindow"),true);
 	guiFactory()->refreshActionProperties();
@@ -373,6 +376,13 @@ Kile::Kile(bool allowRestore, QWidget *parent, const char *name)
 	if(lastVersionRunFor.isEmpty() || compareVersionStrings(lastVersionRunFor, "2.9.60") < 0) {
 		slotPerformCheck();
 		KileConfig::setSystemCheckLastVersionRunForAtStartUp(kileFullVersion);
+	}
+
+	if(m_livePreviewManager) {
+		m_livePreviewManager->buildLivePreviewMenu(m_config.data());
+		// we can only read the live preview settings after all the documents have been re-opened
+		m_livePreviewManager->readLivePreviewStatusSettings(m_config.data());
+		m_livePreviewManager->disableBootUpMode();
 	}
 }
 
@@ -1501,6 +1511,11 @@ bool Kile::queryExit()
 //FIXME: documents probably shouldn't be closed in this method yet (also see API doc of 'queryClose')
 bool Kile::queryClose()
 {
+	// we have to save the live preview status settings before closing the documents!
+	if(m_livePreviewManager) {
+		m_livePreviewManager->writeLivePreviewStatusSettings(m_config.data());
+	}
+
 	KTextEditor::View *view = viewManager()->currentTextView();
 	if(view) {
 		KileConfig::setLastDocument(view->document()->url().toLocalFile());
