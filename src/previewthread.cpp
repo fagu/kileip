@@ -157,7 +157,7 @@ void PreviewThread::binaryCreatePreviews ( QString& text, QString& preamble, QLi
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 	env.insert("TEXINPUTS", ".:"+m_info->url().directory()+":");
 	proc.setProcessEnvironment(env);
-	proc.start("latex -interaction nonstopmode -halt-on-error inpreview.tex");
+	proc.start("pdflatex -interaction nonstopmode -halt-on-error inpreview.tex");
 	proc.waitForFinished();
 	if (proc.exitCode()) {
 		success = false;
@@ -166,7 +166,7 @@ void PreviewThread::binaryCreatePreviews ( QString& text, QString& preamble, QLi
 		// The outputfiles have the following names {Number of the LaTeX-Run}-{Number of the image in this LaTeX-Run}.png
 		QProcess dvipng;
 		dvipng.setWorkingDirectory(m_dir->name());
-		dvipng.start("dvipng inpreview.dvi -o " + QString::number(m_nextprevimg) + "-%d.png");
+		dvipng.start("convert -density 96x96 inpreview.pdf " + QString::number(m_nextprevimg) + ".png");
 		dvipng.waitForFinished();
 		if (dvipng.exitCode()) {
 			success = false;
@@ -187,7 +187,7 @@ void PreviewThread::binaryCreatePreviews ( QString& text, QString& preamble, QLi
 		for (int i = start; i <= end; i++) {
 			Part *env = tempenvs[i];
 			//qDebug() << "Succeeded:" << env->source(text);
-			QString filename = m_dir->name() + "/" + QString::number(m_nextprevimg) + "-" + QString::number(ipr) + ".png";
+			QString filename = m_dir->name() + "/" + QString::number(m_nextprevimg) + (end>start ? "-" + QString::number(ipr-1) : "") + ".png";
 			m_previmgs[env->source(text)] = QImage(filename);
 			ipr++;
 		}
