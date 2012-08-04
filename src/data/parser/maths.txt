@@ -12,7 +12,6 @@ eqnarray*
 # start commands of math environments
 !begincommand
 $
-$$
 \[
 \(
 # commands

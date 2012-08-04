@@ -16,7 +16,6 @@ Etable 1
 # Special environments
 # begin command          end command           if the end command is part of the environment
 $ $ 1
-$$ $$ 1
 \[ \] 1
 \( \) 1
 \chapter \chapter 1

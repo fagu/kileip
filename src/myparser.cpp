@@ -425,18 +425,8 @@ CommandWithArgsPart * Parser::parseCommand() {
 
 PrimitiveCommandPart* Parser::parsePrimitiveCommand() {
 	PrimitiveCommandPart * cp = new PrimitiveCommandPart(i);
-	if (textdata[i] == '$') {
-		i++;
-		if (i < text.length() && textdata[i] == '$') {
-			cp->end = i;
-			i++;
-		} else {
-			cp->end = i-1;
-		}
-	} else {
-		i++;
-		cp->end = i-1;
-	}
+	i++;
+	cp->end = i-1;
 	return cp;
 }
 
