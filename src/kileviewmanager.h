@@ -39,6 +39,8 @@ class KXMLGUIClient;
 
 class KileInfo;
 
+class PreviewWidgetHandler;
+
 namespace KParts {
 	class ReadOnlyPart;
 }
@@ -216,6 +218,7 @@ private:
 	KAction				*m_pasteAsLaTeXAction, *m_convertToLaTeXAction,
 					*m_quickPreviewAction;
 	QPointer<KParts::ReadOnlyPart> 	m_viewerPart;
+	QMap<KTextEditor::View*,PreviewWidgetHandler*> view2handler;
 };
 
 /**

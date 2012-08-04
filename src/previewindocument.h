@@ -68,6 +68,7 @@ class PreviewWidgetHandler : public QObject {
 	Q_OBJECT
 	public:
 		PreviewWidgetHandler(KTextEditor::View *view, KileDocument::LaTeXInfo *info);
+		~PreviewWidgetHandler();
 	private:
 		ViewHandler *vh;
 		KileDocument::LaTeXInfo *m_info;

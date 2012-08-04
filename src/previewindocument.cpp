@@ -342,6 +342,11 @@ PreviewWidgetHandler::PreviewWidgetHandler(KTextEditor::View* view, KileDocument
 	// qDebug() << "Keys:" << endl << conf->configKeys() << endl << endl;
 }
 
+PreviewWidgetHandler::~PreviewWidgetHandler() {
+	delete m_thread;
+	delete vh;
+}
+
 void PreviewWidgetHandler::picturesAvailable() {
 	if (m_thread->startquestions()) {
 		QList<Part*> parts = m_thread->mathpositions();
