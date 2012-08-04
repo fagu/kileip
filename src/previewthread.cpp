@@ -30,7 +30,7 @@ PreviewThread::PreviewThread(KileDocument::LaTeXInfo* info, QObject* parent)
 	connect(m_user, SIGNAL(documentChanged()), this, SLOT(textChanged()));
 	connect(info, SIGNAL(inlinePreviewChanged(bool)), this, SLOT(textChanged()));
 	m_nextprevimg = 1;
-	m_dir = new KTempDir(KStandardDirs::locateLocal("tmp", "kile-preview"));
+	m_dir = new KTempDir(KStandardDirs::locateLocal("tmp", "kile-inlinepreview"));
 	m_dir->setAutoRemove(true);
 	m_tempfilename = QFileInfo(m_dir->name() + "inpreview.tex").absoluteFilePath();
 }
