@@ -53,7 +53,6 @@ class PreviewWidget : public QWidget, KTextEditor::MovingRangeFeedback {
 		QImage *img() {return m_img;}
 	public slots:
 		void updateRect();
-		void slotUpdate(bool visible, QPoint moveto, int w, int h);
 	protected:
 		void paintEvent(QPaintEvent *event);
 	private:

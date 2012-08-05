@@ -299,12 +299,6 @@ void PreviewWidget::updateRect() {
 	}
 }
 
-void PreviewWidget::slotUpdate(bool visible, QPoint moveto, int w, int h) {
-	setVisible(visible);
-	move(moveto);
-	resize(w, h);
-}
-
 void PreviewWidget::paintEvent(QPaintEvent* ) {
 	QPainter painter(this);
 	painter.setPen(QColor(240,240,240));
