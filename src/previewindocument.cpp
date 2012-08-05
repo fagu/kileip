@@ -307,13 +307,13 @@ void PreviewWidget::slotUpdate(bool visible, QPoint moveto, int w, int h) {
 
 void PreviewWidget::paintEvent(QPaintEvent* ) {
 	QPainter painter(this);
+	painter.setPen(QColor(240,240,240));
+	foreach(QLine line, m_border)
+		painter.drawLine(line);
 	painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
 	if (!m_img->isNull()) {
 		painter.drawImage(m_imgrect, *m_img);
 	}
-	painter.setPen(QColor(240,240,240));
-	foreach(QLine line, m_border)
-		painter.drawLine(line);
 }
 
 void PreviewWidget::caretEnteredRange(KTextEditor::MovingRange*, KTextEditor::View* view) {
