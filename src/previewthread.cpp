@@ -94,7 +94,9 @@ void PreviewThread::createPreviews() {
 	m_parsedtext = text;
 	m_mathenvs = m_user->getMathgroups(m_user->document(m_parseddoc, text), text);
 	
-	QString preamble = m_user->preamble(m_parseddoc, text)->source(text);
+	CollectionPart *prp = m_user->preamble(m_parseddoc, text);
+	QString preamble = prp->source(text);
+	delete prp;
 	if (preamble != lastpremable) {
 		m_previmgs.clear();
 		//qDebug() << "Preamble changed -> clear";
@@ -216,7 +218,7 @@ void PreviewThread::textChanged() {
 
 bool PreviewThread::startquestions() {
 	m_dirtymutex.lock();
-	if (!m_dirty && m_user->data().second == m_doc->text()) {
+	if (!m_dirty && m_user->dataText() == m_doc->text()) {
 		return true;
 	} else {
 		m_dirtymutex.unlock();

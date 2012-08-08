@@ -195,6 +195,10 @@ QPair<TextPart*,QString> User::data() {
 	return qMakePair(m_main, text);
 }
 
+QString User::dataText() {
+	return text;
+}
+
 void User::finished(TextPart *main) {
 	QMutexLocker lock(&mutex);
 	for (int i = 0; i < mains.size(); i++) {

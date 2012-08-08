@@ -39,6 +39,7 @@ class User : public QThread {
 		~User();
 		/// Returs main
 		QPair< TextPart*, QString > data();
+		QString dataText();
 		void textChanged(QString ntext);
 		void finished(TextPart * main);
 	protected:
