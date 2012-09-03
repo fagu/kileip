@@ -160,7 +160,7 @@ void PreviewThread::binaryCreatePreviews ( QString& text, QString& preamble, QLi
 	env.insert("TEXINPUTS", ".:"+m_info->url().directory()+":");
 	proc.setProcessEnvironment(env);
 	proc.start("pdflatex -interaction nonstopmode -halt-on-error inpreview.tex");
-	proc.waitForFinished();
+	proc.waitForFinished(-1);
 	if (proc.exitCode()) {
 		success = false;
 	} else {
@@ -169,7 +169,7 @@ void PreviewThread::binaryCreatePreviews ( QString& text, QString& preamble, QLi
 		QProcess dvipng;
 		dvipng.setWorkingDirectory(m_dir->name());
 		dvipng.start("convert -density 96x96 inpreview.pdf " + QString::number(m_nextprevimg) + ".png");
-		dvipng.waitForFinished();
+		dvipng.waitForFinished(-1);
 		if (dvipng.exitCode()) {
 			success = false;
 		}
