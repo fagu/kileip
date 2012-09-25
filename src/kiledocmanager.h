@@ -172,6 +172,10 @@ Q_SIGNALS:
 	void addToProjectView(const KileProject*);
 
 	void documentSavedAs(KTextEditor::View*, KileDocument::TextInfo*);
+
+	void projectOpened(KileProject *project);
+	void documentOpened(KileDocument::TextInfo *textInfo);
+
 public:
 	/**
 	 * Autosave is not allowed whenever the documents are opened, closed, etc.
@@ -181,6 +185,8 @@ public:
 	 * a progress dialog).
 	 **/
 	bool isAutoSaveAllowed();
+
+	bool isOpeningFile();
 
 	KTextEditor::Editor* getEditor();
 
@@ -255,7 +261,7 @@ private:
 	QList<KileProject*>			m_projects;
 	QPointer<KileWidget::ProgressDialog>	m_progressDialog;
 	unsigned int				m_autoSaveLock;
-	bool					m_currentlySavingAll;
+	bool					m_currentlySavingAll, m_currentlyOpeningFile;
 
 	void dontOpenWarning(KileProjectItem *item, const QString &action, const QString &filetype);
 	void cleanupDocumentInfoForProjectItems(KileDocument::Info *info);
@@ -263,8 +269,8 @@ private:
 
 	QStringList autosaveWarnings;
 
-	void loadDocumentAndViewSettings(KTextEditor::Document *doc);
-	void saveDocumentAndViewSettings(KTextEditor::Document *doc);
+	void loadDocumentAndViewSettings(KileDocument::TextInfo *textInfo);
+	void saveDocumentAndViewSettings(KileDocument::TextInfo *textInfo);
 	KConfigGroup configGroupForDocumentSettings(KTextEditor::Document *doc) const;
 	QString configGroupNameForDocumentSettings(const KUrl& url) const;
 	KConfigGroup configGroupForViewSettings(KTextEditor::Document *doc, int viewIndex) const;

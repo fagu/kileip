@@ -195,8 +195,6 @@ protected Q_SLOTS:
 	void replaceLoadedURL(QWidget *w, QDropEvent *e);
 	void onTextEditorPopupMenuRequest(void);
 
-	void clearActionDataFromTabContextMenu();
-
 	/**
 	 * Updates the labels of every tab that contains a view for 'changedDoc' to reflect there
 	 * the name of 'changedDoc'.

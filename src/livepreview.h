@@ -51,8 +51,8 @@ public:
 
 	void readConfig(KConfig *config);
 	void writeConfig();
-	void readLivePreviewStatusSettings(KConfig *config);
-	void writeLivePreviewStatusSettings(KConfig *config);
+	static void readLivePreviewStatusSettings(KConfigGroup &configGroup, LivePreviewUserStatusHandler *handler);
+	static void writeLivePreviewStatusSettings(KConfigGroup &configGroup, LivePreviewUserStatusHandler *handler);
 
 	void compilePreview(KileDocument::LaTeXInfo *info, KTextEditor::View *view);
 	void showPreviewCompileIfNecessary(KileDocument::LaTeXInfo *info, KTextEditor::View *view);
@@ -91,6 +91,9 @@ private Q_SLOTS:
 	void handleTextViewActivated(KTextEditor::View *view, bool clearPreview = true, bool forceCompilation = false);
 	void handleTextViewClosed(KTextEditor::View *view, bool wasActiveView);
 
+	void handleDocumentOpened(KileDocument::TextInfo *info);
+
+	void handleProjectOpened(KileProject *project);
 	void handleProjectItemAdded(KileProject *project, KileProjectItem *item);
 	void handleProjectItemRemoved(KileProject *project, KileProjectItem *item);
 
@@ -138,7 +141,8 @@ private:
 	QLinkedList<KAction*> m_livePreviewToolActionList;
 
 	PreviewInformation* findPreviewInformation(KileDocument::TextInfo *textInfo, KileProject* *locatedProject = NULL,
-	                                                                               LivePreviewUserStatusHandler* *userStatusHandler = NULL);
+	                                                                             LivePreviewUserStatusHandler* *userStatusHandler = NULL,
+	                                                                             LaTeXOutputHandler* *latexOutputHandler = NULL);
 	bool isCurrentDocumentOrProject(KTextEditor::Document *doc);
 
 	void updatePreviewInformationAfterCompilationFinished();
@@ -147,7 +151,9 @@ private:
 
 	void createActions(KActionCollection *ac);
 	void createControlToolBar();
-	void synchronizeViewWithCursor(KileDocument::TextInfo *info, KTextEditor::View *view, const KTextEditor::Cursor& newPosition);
+	void synchronizeViewWithCursor(KileDocument::TextInfo *info, KTextEditor::View *view,
+	                                                             const KTextEditor::Cursor& newPosition,
+	                                                             bool calledFromCursorPositionChange = false);
 
 	void stopAndClearPreview();
 

@@ -15,13 +15,14 @@
 #ifndef KILETOOLMANAGER_H
 #define KILETOOLMANAGER_H
 
-#include <QLinkedList>
+#include <QList>
 #include <QObject>
 #include <QQueue>
 #include <QStackedWidget>
 #include <QStringList>
 
 #include "kiletool.h"
+#include "tool_utils.h"
 
 /***********************************************************************************************************
  * CAUTION!!
@@ -38,19 +39,18 @@
 
 class QTimer;
 
-class KConfig;
-class KTextEdit;
 class KAction;
+class KActionCollection;
+class KConfig;
+class KSelectAction;
+class KTextEdit;
+
 namespace KParts { class PartManager; }
 
 class KileInfo;
 namespace KileParser { class Manager; }
 namespace KileView { class Manager; }
-namespace KileWidget { class LogWidget; class OutputView; }
-
-typedef QPair<QString, QString> ToolConfigPair;
-
-#define DEFAULT_TOOL_CONFIGURATION "Default"
+namespace KileWidget { class OutputView; }
 
 namespace KileTool
 {
@@ -86,11 +86,14 @@ namespace KileTool
 		Q_OBJECT
 
 	public:
-		Manager(KileInfo *ki, KConfig *config, KileWidget::LogWidget *log, KileWidget::OutputView *output, KParts::PartManager *, QStackedWidget* stack, KAction *, uint to);
+		Manager(KileInfo *ki, KConfig *config, KileWidget::OutputView *output, KParts::PartManager *, QStackedWidget* stack, KAction *, uint to, KActionCollection *);
 		~Manager();
-
 	public:
 		Base* createTool(const QString& name, const QString &cfg = QString(), bool prepare = false);
+		inline Base* createTool(const ToolConfigPair& p, bool prepare = false)
+		{
+			return createTool(p.first, p.second, prepare);
+		}
 		bool configure(Base*, const QString &cfg = QString());
 		bool retrieveEntryMap(const QString & name, Config & map, bool usequeue = true, bool useproject = true, const QString & cfg = QString());
 		void saveEntryMap(const QString & name, Config & map, bool usequeue = true, bool useproject = true);
@@ -118,6 +121,9 @@ namespace KileTool
 		// convenience method; also see the static method of the same name below
 		void setConfigName(const QString &tool, const QString &name);
 
+		bool containsBibliographyTool(const ToolConfigPair& p) const;
+		ToolConfigPair findFirstBibliographyToolForCommand(const QString& command) const;
+
 	public Q_SLOTS:
 		void run(KileTool::Base *tool);
 
@@ -144,6 +150,11 @@ namespace KileTool
 		void toolScheduledAfterParsingDestroyed(KileTool::Base *tool);
 		void handleParsingComplete();
 
+		void currentLaTeXOutputHandlerChanged(LaTeXOutputHandler* handler);
+
+		void bibliographyBackendSelectedByUser();
+		void buildBibliographyBackendSelection();
+
 	Q_SIGNALS:
 		void requestGUIState(const QString &);
 		void jumpToFirstError();
@@ -155,7 +166,6 @@ namespace KileTool
 	private:
 		KileInfo			*m_ki;
 		KConfig				*m_config;
-		KileWidget::LogWidget		*m_log;
 		KileWidget::OutputView		*m_output;
 		KParts::PartManager		*m_pm;
 		QStackedWidget			*m_stack;
@@ -166,7 +176,13 @@ namespace KileTool
 		bool				m_bClear;
 		int				m_nLastResult;
 		uint				m_nTimeout;
-		QQueue<Base*>		m_toolsScheduledAfterParsingList;
+		QQueue<Base*>			m_toolsScheduledAfterParsingList;
+		KSelectAction			*m_bibliographyBackendSelectAction;
+		QAction				*m_bibliographyBackendAutodetectAction;
+		QMap<ToolConfigPair, KAction*>	m_bibliographyBackendActionMap;
+		QList<ToolConfigPair> 		m_bibliographyToolsList;
+
+		void createActions(KActionCollection *ac);
 
 		void deleteLivePreviewToolsFromQueue();
 		void deleteLivePreviewToolsFromRunningAfterParsingQueue();
@@ -187,8 +203,16 @@ namespace KileTool
 	void extract(const QString& str, QString &tool, QString &cfg);
 	QString format(const QString& tool, const QString &cfg);
 
+	QString commandFor(const QString& toolName, const QString& configName, KConfig *config);
+	inline QString commandFor(const ToolConfigPair& p, KConfig *config)
+	{
+		return commandFor(p.first, p.second, config);
+	}
+
+
 	QString menuFor(const QString &tool, KConfig *config);
 	QString iconFor(const QString &tool, KConfig *config);
+
 
 	QString categoryFor(const QString &clss);
 

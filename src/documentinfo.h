@@ -28,6 +28,7 @@
 #include "kileconstants.h"
 #include "kileextensions.h"
 #include "livepreview_utils.h"
+#include "outputinfo.h"
 #include "user.h"
 
 #define TEX_CAT0 '\\'
@@ -410,7 +411,7 @@ protected:
 
 
 
-class LaTeXInfo : public TextInfo, public KileTool::LivePreviewUserStatusHandler
+class LaTeXInfo : public TextInfo, public KileTool::LivePreviewUserStatusHandler, public LaTeXOutputHandler
 {
 	Q_OBJECT
 

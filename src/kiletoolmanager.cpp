@@ -18,12 +18,15 @@
 #include <QRegExp>
 #include <QTimer>
 
-#include <KAction>
+#include <KActionCollection>
 #include <KConfig>
 #include <KLocale>
 #include <KMessageBox>
 #include <KParts/PartManager>
+#include <KSelectAction>
 
+#include "configurationmanager.h"
+#include "errorhandler.h"
 #include "kileconfig.h"
 #include "kiledebug.h"
 #include "kiledocmanager.h"
@@ -87,24 +90,35 @@ namespace KileTool
 		}
 	}
 
-	Manager::Manager(KileInfo *ki, KConfig *config, KileWidget::LogWidget *log, KileWidget::OutputView *output, KParts::PartManager *manager, QStackedWidget *stack, KAction *stop, uint to) :
+	Manager::Manager(KileInfo *ki, KConfig *config, KileWidget::OutputView *output, KParts::PartManager *manager, QStackedWidget *stack, KAction *stop, uint to, KActionCollection *ac) :
 		m_ki(ki),
 		m_config(config),
-		m_log(log),
 		m_output(output),
 		m_pm(manager),
 		m_stack(stack),
 		m_stop(stop),
 		m_bClear(true),
 		m_nLastResult(Success),
-		m_nTimeout(to)
+		m_nTimeout(to),
+		m_bibliographyBackendSelectAction(NULL)
 	{
 		connect(m_ki->parserManager(), SIGNAL(parsingComplete()), this, SLOT(handleParsingComplete()));
+
+		connect(this, SIGNAL(childToolSpawned(KileTool::Base*,KileTool::Base*)),
+		        m_ki->errorHandler(), SLOT(handleSpawnedChildTool(KileTool::Base*, KileTool::Base*)));
 
 		m_timer = new QTimer(this);
 		connect(m_timer, SIGNAL(timeout()), this, SLOT(enableClear()));
 		connect(stop, SIGNAL(triggered()), this, SLOT(stop()));
 		connect(stop, SIGNAL(destroyed(QObject*)), this, SLOT(stopActionDestroyed()));
+
+		connect(m_ki->errorHandler(), SIGNAL(currentLaTeXOutputHandlerChanged(LaTeXOutputHandler*)), SLOT(currentLaTeXOutputHandlerChanged(LaTeXOutputHandler*)));
+
+		//create actions must be invoked before buildBibliographyBackendSelection()!
+		createActions(ac);
+		buildBibliographyBackendSelection();
+
+		connect(m_ki->configurationManager(), SIGNAL(configChanged()), SLOT(buildBibliographyBackendSelection()));
 	}
 
 	Manager::~Manager()
@@ -179,8 +193,13 @@ namespace KileTool
 	{
 		KILE_DEBUG() << "==KileTool::Manager::runImmediately(Base *)============" << endl;
 		if(m_bClear && (m_queue.count() == 0)) {
-			m_log->clear();
+			m_ki->errorHandler()->clearMessages();
 			m_output->clear();
+		}
+
+		if(dynamic_cast<KileTool::LaTeX*>(tool)) {
+			connect(tool, SIGNAL(done(KileTool::Base*, int, bool)),
+			        m_ki->errorHandler(), SLOT(handleLaTeXToolDone(KileTool::Base*, int, bool)));
 		}
 
 		if(tool->needsToBePrepared()) {
@@ -217,6 +236,8 @@ namespace KileTool
 
 	int Manager::runChildNext(Base *parent, Base *tool, bool block /*= false*/)
 	{
+		parent->setupAsChildTool(tool);
+
 		return runImmediately(tool, true, block, parent);
 	}
 
@@ -224,8 +245,8 @@ namespace KileTool
 	{
 		Base *head = m_queue.tool();
 		if(head) {
-			if (m_log->isShowingOutput()) {
-				m_log->addEmptyLine();
+			if (m_ki->errorHandler()->areMessagesShown()) {
+				m_ki->errorHandler()->addEmptyLineToMessages();
 			}
 
 			if(!head->isPrepared()) {
@@ -243,7 +264,7 @@ namespace KileTool
 				return status;
 			}
 
-			m_log->startToolLogOutput();
+			m_ki->errorHandler()->startToolLogOutput();
 			emit(toolStarted());
 
 			return Running;
@@ -254,14 +275,14 @@ namespace KileTool
 
 	Base* Manager::createTool(const QString& name, const QString &cfg, bool prepare)
 	{
-		if (!m_factory) {
-			m_log->printMessage(Error, i18n("No factory installed, contact the author of Kile."));
+		if(!m_factory) {
+			m_ki->errorHandler()->printMessage(Error, i18n("No factory installed, contact the author of Kile."));
 			return NULL;
 		}
 
 		Base* pTool = m_factory->create(name, cfg, prepare);
-		if (!pTool) {
-			m_log->printMessage(Error, i18n("Unknown tool %1.", name));
+		if(!pTool) {
+			m_ki->errorHandler()->printMessage(Error, i18n("Unknown tool %1.", name));
 			return NULL;
 		}
 		initTool(pTool);
@@ -273,7 +294,7 @@ namespace KileTool
 		tool->setInfo(m_ki);
 		tool->setConfig(m_config);
 
-		connect(tool, SIGNAL(message(int, const QString &, const QString &)), m_log, SLOT(printMessage(int, const QString &, const QString &)));
+		connect(tool, SIGNAL(message(int, const QString &, const QString &)), m_ki->errorHandler(), SLOT(printMessage(int, const QString &, const QString &)));
 		connect(tool, SIGNAL(output(const QString &)), m_output, SLOT(receive(const QString &)));
 		connect(tool, SIGNAL(done(KileTool::Base*,int,bool)), this, SLOT(done(KileTool::Base*, int)));
 		connect(tool, SIGNAL(start(KileTool::Base*)), this, SLOT(started(KileTool::Base*)));
@@ -326,7 +347,7 @@ namespace KileTool
 		setEnabledStopButton(false);
 		m_nLastResult = result;
 
-		m_log->endToolLogOutput();
+		m_ki->errorHandler()->endToolLogOutput();
 
 		if(tool != m_queue.tool()) { //oops, tool finished async, could happen with view tools
 			tool->deleteLater();
@@ -462,7 +483,7 @@ namespace KileTool
 
 		if(!retrieveEntryMap(tool->name(), map, true, true, cfg)) {
 		QString group = (cfg.isEmpty()) ? currentGroup(tool->name(), true, true) : groupFor(tool->name(), cfg);
-			m_log->printMessage(Error, i18n("Cannot find the tool \"%1\" in the configuration database.", group));
+			m_ki->errorHandler()->printMessage(Error, i18n("Cannot find the tool \"%1\" in the configuration database.", group));
 			return false;
 		}
 
@@ -541,8 +562,6 @@ namespace KileTool
 			}
 		}
 
-		qSort(toReturn);
-
 		return toReturn;
 	}
 
@@ -613,6 +632,11 @@ namespace KileTool
 		return configs;
 	}
 
+	QString commandFor(const QString& toolName, const QString& configName, KConfig *config)
+	{
+		return config->group(groupFor(toolName, configName)).readEntry("command", "");
+	}
+
 	QString menuFor(const QString &tool, KConfig *config)
 	{
 		return config->group("ToolsGUI").readEntry(tool, "Other,application-x-executable").section(',', 0, 0);
@@ -649,6 +673,105 @@ namespace KileTool
 		}
 
 		return "Base";
+	}
+}
+
+bool KileTool::Manager::containsBibliographyTool(const ToolConfigPair& p) const
+{
+	return m_bibliographyToolsList.contains(p);
+}
+
+KileTool::ToolConfigPair KileTool::Manager::findFirstBibliographyToolForCommand(const QString& command) const
+{
+	// for now we will just select the first suitable tool
+	Q_FOREACH(const KileTool::ToolConfigPair& tool, m_bibliographyToolsList) {
+		const QString toolCommand = commandFor(tool, m_config);
+		if (QString::compare(command, toolCommand, Qt::CaseInsensitive) == 0) {
+			return tool;
+		}
+	}
+
+	return KileTool::ToolConfigPair();
+}
+
+void KileTool::Manager::buildBibliographyBackendSelection()
+{
+	for(QMap<ToolConfigPair, KAction*>::iterator i = m_bibliographyBackendActionMap.begin(); i != m_bibliographyBackendActionMap.end(); ++i) {
+		delete m_bibliographyBackendSelectAction->removeAction(i.value());
+	}
+	m_bibliographyBackendActionMap.clear();
+	m_bibliographyToolsList.clear();
+
+	m_bibliographyToolsList = toolsWithConfigurationsBasedOnClass(m_config, BibliographyCompile::ToolClass);
+	qSort(m_bibliographyToolsList); // necessary for the user-visible actions in the menu bar
+
+	Q_FOREACH(const ToolConfigPair& tool, m_bibliographyToolsList) {
+		// create an action for backend selection
+		KAction* action = m_bibliographyBackendSelectAction->addAction(tool.userStringRepresentation());
+		action->setData(qVariantFromValue(tool));
+		m_bibliographyBackendActionMap[tool] = action;
+	}
+
+	currentLaTeXOutputHandlerChanged(m_ki->findCurrentLaTeXOutputHandler());
+}
+
+void KileTool::Manager::createActions(KActionCollection *ac)
+{
+	delete m_bibliographyBackendSelectAction;
+
+	m_bibliographyBackendSelectAction = new KSelectAction(i18n("Bibliography Back End"), this);
+	m_bibliographyBackendAutodetectAction = m_bibliographyBackendSelectAction->addAction(i18n("Auto-Detect"));
+	m_bibliographyBackendAutodetectAction->setStatusTip(i18n("Auto-detect the bibliography back end from LaTeX output"));
+
+	ac->addAction("bibbackend_select", m_bibliographyBackendSelectAction);
+
+	connect(m_bibliographyBackendSelectAction, SIGNAL(triggered(QAction*)), SLOT(bibliographyBackendSelectedByUser()));
+}
+
+
+void KileTool::Manager::bibliographyBackendSelectedByUser()
+{
+	LaTeXOutputHandler* h = m_ki->findCurrentLaTeXOutputHandler();
+	QAction* currentBackendAction = m_bibliographyBackendSelectAction->currentAction();
+
+	if (currentBackendAction == m_bibliographyBackendAutodetectAction) {
+		h->setBibliographyBackendToolUserOverride(ToolConfigPair());
+	}
+	else {
+		//here we do not need to check existence of tool
+		h->setBibliographyBackendToolUserOverride(currentBackendAction->data().value<KileTool::ToolConfigPair>());
+	}
+}
+
+void KileTool::Manager::currentLaTeXOutputHandlerChanged(LaTeXOutputHandler* handler)
+{
+	if(!handler) {
+		m_bibliographyBackendSelectAction->setEnabled(false);
+		return;
+	}
+
+	m_bibliographyBackendSelectAction->setEnabled(true);
+
+	if (!m_bibliographyBackendActionMap.empty()) {
+		ToolConfigPair userOverrideBibBackend = handler->bibliographyBackendToolUserOverride();
+		if(!userOverrideBibBackend.isValid()) {
+			m_bibliographyBackendAutodetectAction->setChecked(true);
+		}
+		else {
+			// here we have to check whether the action exists
+			QMap<ToolConfigPair, KAction*>::const_iterator i = m_bibliographyBackendActionMap.find(userOverrideBibBackend);
+			if (i != m_bibliographyBackendActionMap.end()) {
+				i.value()->setChecked(true);
+			}
+			else {
+				// the user previously selected a bibtool backend which is (no longer) present - let's use autodetection;
+				// this is done analogously in 'LaTeX::determineBibliographyBackend'
+				m_bibliographyBackendAutodetectAction->setChecked(true);
+			}
+		}
+	}
+	else {
+		m_bibliographyBackendAutodetectAction->setChecked(true);
 	}
 }
 

@@ -336,18 +336,6 @@ void Manager::installContextMenu(KTextEditor::View *view)
 	}
 }
 
-void Manager::clearActionDataFromTabContextMenu()
-{
-	QAction *action = m_ki->mainWindow()->action("move_view_tab_left");
-	action->setData(QVariant());
-	action = m_ki->mainWindow()->action("move_view_tab_right");
-	action->setData(QVariant());
-	action = m_ki->mainWindow()->action("file_close");
-	action->setData(QVariant());
-	action = m_ki->mainWindow()->action("file_close_all_others");
-	action->setData(QVariant());
-}
-
 void Manager::tabContext(QWidget* widget,const QPoint & pos)
 {
 	KILE_DEBUG() << "void Manager::tabContext(QWidget* widget,const QPoint & pos)";
@@ -361,26 +349,42 @@ void Manager::tabContext(QWidget* widget,const QPoint & pos)
 	KMenu tabMenu;
 
 	tabMenu.addTitle(m_ki->getShortName(view->document()));
+
+	// 'action1' can become NULL if it belongs to a view that has been closed, for example
+	QPointer<QAction> action1 = m_ki->mainWindow()->action("move_view_tab_left");
+	action1->setData(qVariantFromValue(widget));
+	tabMenu.addAction(action1);
+
+	QPointer<QAction> action2 = m_ki->mainWindow()->action("move_view_tab_right");
+	action2->setData(qVariantFromValue(widget));
+	tabMenu.addAction(action2);
+
+	tabMenu.addSeparator();
+
+	QPointer<QAction> action3;
 	if(view->document()->isModified()) {
-		tabMenu.addAction(view->actionCollection()->action(KStandardAction::name(KStandardAction::Save)));
-		tabMenu.addSeparator();
+		action3 = view->actionCollection()->action(KStandardAction::name(KStandardAction::Save));
+		action3->setData(qVariantFromValue(view));
+		tabMenu.addAction(action3);
 	}
 
-	QAction *action = m_ki->mainWindow()->action("move_view_tab_left");
-	action->setData(qVariantFromValue(widget));
-	tabMenu.addAction(action);
-	action = m_ki->mainWindow()->action("move_view_tab_right");
-	action->setData(qVariantFromValue(widget));
-	tabMenu.addAction(action);
-	tabMenu.addSeparator();
-	action = m_ki->mainWindow()->action("file_close");
-	action->setData(qVariantFromValue(view));
-	tabMenu.addAction(action);
-	action = m_ki->mainWindow()->action("file_close_all_others");
-	action->setData(qVariantFromValue(view));
-	tabMenu.addAction(action);
+	QPointer<QAction> action4 = view->actionCollection()->action(KStandardAction::name(KStandardAction::SaveAs));
+	action4->setData(qVariantFromValue(view));
+	tabMenu.addAction(action4);
 
-	connect(&tabMenu, SIGNAL(destroyed(QObject*)), this, SLOT(clearActionDataFromTabContextMenu()));
+	QPointer<QAction> action5 = m_ki->mainWindow()->action("file_save_copy_as");
+	action5->setData(qVariantFromValue(view));
+	tabMenu.addAction(action5);
+
+	tabMenu.addSeparator();
+
+	QPointer<QAction> action6 = m_ki->mainWindow()->action("file_close");
+	action6->setData(qVariantFromValue(view));
+	tabMenu.addAction(action6);
+
+	QPointer<QAction> action7 = m_ki->mainWindow()->action("file_close_all_others");
+	action7->setData(qVariantFromValue(view));
+	tabMenu.addAction(action7);
 /*
 	FIXME create proper actions which delete/add the current file without asking stupidly
 	QAction* removeAction = m_ki->mainWindow()->action("project_remove");
@@ -391,6 +395,28 @@ void Manager::tabContext(QWidget* widget,const QPoint & pos)
 	tabMenu.addAction(removeAction);*/
 
 	tabMenu.exec(pos);
+
+	if(action1) {
+		action1->setData(QVariant());
+	}
+	if(action2) {
+		action2->setData(QVariant());
+	}
+	if(action3) {
+		action3->setData(QVariant());
+	}
+	if(action4) {
+		action4->setData(QVariant());
+	}
+	if(action5) {
+		action5->setData(QVariant());
+	}
+	if(action6) {
+		action6->setData(QVariant());
+	}
+	if(action7) {
+		action7->setData(QVariant());
+	}
 }
 
 void Manager::removeView(KTextEditor::View *view)
@@ -554,13 +580,15 @@ void Manager::moveTabLeft(QWidget *widget)
 		return;
 	}
 
-	QAction *action = m_ki->mainWindow()->action("move_view_tab_left");
 	// the 'data' property can be set by 'tabContext'
-	QVariant var = action->data();
-	if(!widget && var.isValid()) {
-		// the action's 'data' property is cleared
-		// when the context menu is destroyed
-		widget = var.value<QWidget*>();
+	QAction *action = dynamic_cast<QAction*>(QObject::sender());
+	if(action) {
+		QVariant var = action->data();
+		if(!widget && var.isValid()) {
+			// the action's 'data' property is cleared
+			// when the context menu is destroyed
+			widget = var.value<QWidget*>();
+		}
 	}
 	if(!widget) {
 		widget = currentTextView();
@@ -579,13 +607,15 @@ void Manager::moveTabRight(QWidget *widget)
 		return;
 	}
 
-	QAction *action = m_ki->mainWindow()->action("move_view_tab_right");
 	// the 'data' property can be set by 'tabContext'
-	QVariant var = action->data();
-	if(!widget && var.isValid()) {
-		// the action's 'data' property is cleared
-		// when the context menu is destroyed
-		widget = var.value<QWidget*>();
+	QAction *action = dynamic_cast<QAction*>(QObject::sender());
+	if(action) {
+		QVariant var = action->data();
+		if(!widget && var.isValid()) {
+			// the action's 'data' property is cleared
+			// when the context menu is destroyed
+			widget = var.value<QWidget*>();
+		}
 	}
 	if(!widget) {
 		widget = currentTextView();

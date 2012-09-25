@@ -1,7 +1,6 @@
 /**************************************************************************************
-    begin                : Die Sep 16 2003
-    copyright            : (C) 2003 by Jeroen Wijnhout (wijnhout@science.uva.nl)
-                               2008-2011 by Michel Ludwig (michel.ludwig@kdemail.net)
+  Copyright (C) 2003 by Jeroen Wijnhout (wijnhout@science.uva.nl)
+                2008-2012 by Michel Ludwig (michel.ludwig@kdemail.net)
  **************************************************************************************/
 
 /***************************************************************************
@@ -19,6 +18,10 @@
 #include <QList>
 #include <QMetaType>
 #include <QString>
+
+#include <KConfigGroup>
+
+#include "tool_utils.h"
 
 /**
  * Class for output-information of third program (e.g. Latex-Output, C-Compiler output)
@@ -126,5 +129,40 @@ class LatexOutputInfo : public OutputInfo
  * @author Thorsten Lck
  **/
 typedef QList<LatexOutputInfo> LatexOutputInfoArray;
+
+
+class LaTeXOutputHandler
+{
+	public:
+		LaTeXOutputHandler();
+		virtual ~LaTeXOutputHandler();
+
+		void storeLaTeXOutputParserResult(int nErrors, int nWarnings, int nBadBoxes,
+		                                                              const LatexOutputInfoArray& outputList,
+		                                                              const QString& logFile);
+
+		int numberOfWarnings() const;
+		int numberOfErrors() const;
+		int numberOfBadBoxes() const;
+		LatexOutputInfoArray outputList() const;
+		QString logFile() const;
+		int currentError() const;
+		void setCurrentError(int i);
+
+		void setBibliographyBackendToolUserOverride(const KileTool::ToolConfigPair& p);
+		const KileTool::ToolConfigPair& bibliographyBackendToolUserOverride() const;
+
+		void setBibliographyBackendToolAutoDetected(const KileTool::ToolConfigPair& p);
+		const KileTool::ToolConfigPair& bibliographyBackendToolAutoDetected() const;
+
+		void readBibliographyBackendSettings(const KConfigGroup& group);
+		void writeBibliographyBackendSettings(KConfigGroup& group);
+
+	protected:
+		int				m_nErrors, m_nWarnings, m_nBadBoxes, m_currentError;
+		LatexOutputInfoArray		m_latexOutputInfoList;
+		QString				m_logFile;
+		KileTool::ToolConfigPair	m_userOverrideBibBackendToolConfigPair, m_autodetectBibBackendToolConfigPair;
+};
 
 #endif

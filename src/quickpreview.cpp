@@ -1,8 +1,6 @@
 /**************************************************************************************************
-    date                 : Feb 15 2007
-    version              : 0.34
-    copyright            : (C) 2005-2007 by Holger Danielsson (holger.danielsson@versanet.de)
-                               2007-2009 by Michel Ludwig (michel.ludwig@kdemail.net)
+   Copyright (C) 2005-2007 by Holger Danielsson (holger.danielsson@versanet.de)
+                 2007-2009 by Michel Ludwig (michel.ludwig@kdemail.net)
  **************************************************************************************************/
 
 /***************************************************************************
@@ -31,7 +29,9 @@
 #include <KTextEditor/Document>
 #include <KTextEditor/View>
 
+#include "errorhandler.h"
 #include "kiledebug.h"
+
 
 namespace KileTool
 {
@@ -46,6 +46,8 @@ QuickPreview::QuickPreview(KileInfo *ki) : m_ki(ki), m_running(0), m_tempDir(NUL
 	           << i18n("PDFLaTeX ---> PDF (Okular)")
 	           << i18n("XeLaTeX ---> PDF")
 	           << i18n("XeLaTeX ---> PDF (Okular)")
+	           << i18n("LuaLaTeX ---> PDF")
+	           << i18n("LuaLaTeX ---> PDF (Okular)")
 	           ;
 }
 
@@ -156,6 +158,8 @@ void QuickPreview::getTaskList(QStringList &tasklist)
 	         << "Tool/ViewPDF/Okular="      + m_taskList[5]
 	         << "Tool/ViewPDF/Embedded Viewer=" + m_taskList[6]
 	         << "Tool/ViewPDF/Okular="      + m_taskList[7]
+	         << "Tool/ViewPDF/Embedded Viewer=" + m_taskList[8]
+	         << "Tool/ViewPDF/Okular="      + m_taskList[9]
 	         ;
 }
 
@@ -176,6 +180,8 @@ bool QuickPreview::run(const QString &text,const QString &textfilename,int start
 	map[m_taskList[5]] = "PreviewPDFLaTeX,,,ViewPDF,Okular,pdf";
 	map[m_taskList[6]] = "PreviewXeLaTeX,,,ViewPDF,Embedded Viewer,pdf"; 
 	map[m_taskList[7]] = "PreviewXeLaTeX,,,ViewPDF,Okular,pdf";
+	map[m_taskList[8]] = "PreviewLuaLaTeX,,,ViewPDF,Embedded Viewer,pdf";
+	map[m_taskList[9]] = "PreviewLuaLaTeX,,,ViewPDF,Okular,pdf";
 
 	QString previewtask = KileConfig::previewTask();
 	if(!map.contains(previewtask)) {
@@ -189,7 +195,7 @@ bool QuickPreview::run(const QString &text,const QString &textfilename,int start
 bool QuickPreview::run(const QString &text,const QString &textfilename,int startrow,const QString &spreviewlist) 
 {
 	KILE_DEBUG() << "==QuickPreview::run()=========================="  << endl;
-	m_ki->logWidget()->clear();
+	m_ki->errorHandler()->clearMessages();
 	if(m_running > 0) {
 		showError( i18n("There is already a preview running that has to be finished to run this one.") );
 		return false;
@@ -376,7 +382,7 @@ int QuickPreview::createTempfile(const QString &text)
 
 void QuickPreview::showError(const QString &text)
 {
-	m_ki->logWidget()->printMessage(KileTool::Error, text, i18n("QuickPreview"));
+	m_ki->errorHandler()->printMessage(KileTool::Error, text, i18n("QuickPreview"));
 }
 
 }

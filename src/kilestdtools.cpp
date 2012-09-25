@@ -83,6 +83,9 @@ namespace KileTool
 			else if(toolClass == "Compile") {
 				tool = new Compile(toolName, m_manager, prepare);
 			}
+			else if (BibliographyCompile::ToolClass == toolClass) {
+				tool = new BibliographyCompile(toolName, m_manager, prepare);
+			}
 			else if(toolClass == "Convert") {
 				tool = new Convert(toolName, m_manager, prepare);
 			}
@@ -131,12 +134,51 @@ namespace KileTool
 
 	/////////////// LaTeX ////////////////
 
-	LaTeX::LaTeX(const QString& tool, Manager *mngr, bool prepare) : Compile(tool, mngr, prepare)
+	LaTeX::LaTeX(const QString& tool, Manager *mngr, bool prepare)
+	: Compile(tool, mngr, prepare), m_latexOutputHandler(NULL)
 	{
 	}
 
 	LaTeX::~LaTeX()
 	{
+	}
+
+	void LaTeX::setupAsChildTool(KileTool::Base *child)
+	{
+		KileTool::LaTeX *latexChild = dynamic_cast<KileTool::LaTeX*>(child);
+		if(latexChild) {
+			latexChild->setLaTeXOutputHandler(latexOutputHandler());
+		}
+	}
+
+	LaTeXOutputHandler* LaTeX::latexOutputHandler()
+	{
+		return m_latexOutputHandler;
+	}
+
+	void LaTeX::setLaTeXOutputHandler(LaTeXOutputHandler *h)
+	{
+		m_latexOutputHandler = h;
+	}
+
+	bool LaTeX::determineSource()
+	{
+		QString src = source();
+
+		// check whether the source has been set already
+		if(!src.isEmpty()) {
+			return true;
+		}
+
+		//the basedir is determined from the current compile target
+		//determined by getCompileName()
+		LaTeXOutputHandler *h = NULL;
+		src = m_ki->getCompileName(false, &h);
+
+		setSource(src);
+		setLaTeXOutputHandler(h);
+
+		return true;
 	}
 
 	int LaTeX::m_reRun = 0;
@@ -199,6 +241,11 @@ namespace KileTool
 	{
 		KILE_DEBUG();
 
+		if(m_latexOutputHandler) {
+			m_latexOutputHandler->storeLaTeXOutputParserResult(m_nErrors, m_nWarnings, m_nBadBoxes, m_latexOutputInfoList,
+			                                                                                        m_logFile);
+		}
+
 		checkErrors();
 
 		if(readEntry("autoRun") == "yes") {
@@ -218,7 +265,7 @@ namespace KileTool
 		sendMessage(Info, i18nc("String displayed in the log panel showing the number of errors/warnings/badboxes",
 		                        "%1, %2, %3", es, ws, bs));
 
-		//jump to first error
+		// jump to first error
 		if(!isPartOfLivePreview() && m_nErrors > 0 && (readEntry("jumpToFirstError") == "yes")) {
 			connect(this, SIGNAL(jumpToFirstError()), manager(), SIGNAL(jumpToFirstError()));
 			emit(jumpToFirstError());
@@ -245,6 +292,47 @@ namespace KileTool
 		tool->setSource(source, workingDir());
 	}
 
+	// if 'Biblatex' is not used in the document, 'hint' will be empty
+	ToolConfigPair LaTeX::determineBibliographyBackend(const QString& hint)
+	{
+		if(m_latexOutputHandler) {
+			ToolConfigPair userBibTool = m_latexOutputHandler->bibliographyBackendToolUserOverride();
+
+			if(userBibTool.isValid()) {
+				// now we still check whether such a tool really exists
+				if (manager()->containsBibliographyTool(userBibTool)) {
+					return userBibTool;
+				}
+				else {
+					KILE_DEBUG() << "Cannot find the following bibtool set by the user:" << userBibTool;
+					KILE_DEBUG() << "trying to auto-detect it now!";
+				}
+			}
+		}
+
+		// we will now try to detect the bib tool by using the given command hint
+		ToolConfigPair bibTool = manager()->findFirstBibliographyToolForCommand(hint);
+
+		// if we managed to detect a backend, store (or update) it for future runs
+		if(bibTool.isValid()) {
+			latexOutputHandler()->setBibliographyBackendToolAutoDetected(bibTool);
+		}
+		else {
+			// perhaps we have it stored from a previous run?
+			bibTool = latexOutputHandler()->bibliographyBackendToolAutoDetected();
+			// perhaps the bib tools have changed from the previous run?
+			if (!manager()->containsBibliographyTool(bibTool)) {
+				bibTool = ToolConfigPair();
+			}
+		}
+
+		// this tool must always be available
+		const ToolConfigPair defaultBibTool = ToolConfigPair(QString("BibTeX"), DEFAULT_TOOL_CONFIGURATION);
+
+		// if no tool has been detected, the default is BibTeX
+		return bibTool.isValid() ? bibTool : defaultBibTool;
+	}
+
 	void LaTeX::checkAutoRun()
 	{
 		KILE_DEBUG() << "check for autorun, m_reRun is " << m_reRun;
@@ -259,20 +347,35 @@ namespace KileTool
 			return;
 		}
 		bool reRunWarningFound = false;
-		//check for "rerun LaTeX" warnings
+		QString bibToolInLaTexOutput;
+		// check for "rerun" LaTeX and other tools warnings
 		if(m_nWarnings > 0) {
 			int sz = m_latexOutputInfoList.size();
-			for(int i = 0; i < sz; ++i) {
+			// the messages we are looking for are the last ones (most likely the very last one), so go from end to beginning
+			for(int i = sz-1; i >= 0; --i) {
 				if (m_latexOutputInfoList[i].type() == LatexOutputInfo::itmWarning
-				&&  m_latexOutputInfoList[i].message().contains("Rerun")) {
+				    && m_latexOutputInfoList[i].message().contains("Rerun", Qt::CaseInsensitive)) {
 					reRunWarningFound = true;
+					break;
+				}
+			}
+			// Now look for messages from Biblatex like the following:
+			// Please (re)run Biber on the file:
+			// or
+			// Please (re)run Bibtex on the file:
+			QRegExp biblatexBackendMessage = QRegExp(".*Please \\(re\\)run ([A-Za-z]+) on the file", Qt::CaseInsensitive);
+			for(int i = sz-1; i >= 0; --i) { // same here, start from the end
+				if (m_latexOutputInfoList[i].type() == LatexOutputInfo::itmWarning
+				    && biblatexBackendMessage.indexIn(m_latexOutputInfoList[i].message()) != -1) {
+					bibToolInLaTexOutput = biblatexBackendMessage.cap(1);
+					KILE_DEBUG() << "Captured Bib tool: " << bibToolInLaTexOutput;
 					break;
 				}
 			}
 		}
 
 		bool asy = (m_reRun == 0) && updateAsy();
-		bool bibs = updateBibs();
+		bool bibs = !bibToolInLaTexOutput.isEmpty() || updateBibs();
 		bool index = updateIndex();
 		KILE_DEBUG() << "asy:" << asy << "bibs:" << bibs << "index:" << index << "reRunWarningFound:" << reRunWarningFound;
 		// Currently, we don't properly detect yet whether asymptote has to be run.
@@ -283,48 +386,55 @@ namespace KileTool
 		if(reRun) {
 			KILE_DEBUG() << "rerunning LaTeX, m_reRun is now " << m_reRun;
 			Base *tool = manager()->createTool(name(), toolConfig());
-			configureLaTeX(tool, source());
-			// e.g. for LivePreview, it is necessary that the paths are copied to child processes
-			tool->copyPaths(this);
-			runChildNext(tool);
+			if(tool) {
+				configureLaTeX(tool, source());
+				// e.g. for LivePreview, it is necessary that the paths are copied to child processes
+				tool->copyPaths(this);
+				runChildNext(tool);
+				m_reRun++;
+			}
+		}
+		else {
+			m_reRun = 0;
 		}
 
 		if(bibs) {
-			KILE_DEBUG() << "need to run BibTeX";
-			Base *tool = manager()->createTool("BibTeX", QString());
-			configureBibTeX(tool, targetDir() + '/' + S() + '.' + tool->from());
-			// e.g. for LivePreview, it is necessary that the paths are copied to child processes
-			tool->copyPaths(this);
-			runChildNext(tool);
+			KILE_DEBUG() << "need to run the bibliography tool " << bibToolInLaTexOutput;
+			ToolConfigPair bibTool = determineBibliographyBackend(bibToolInLaTexOutput);
+			Base *tool = manager()->createTool(bibTool.first, bibTool.second);
+			if(tool) {
+				configureBibTeX(tool, targetDir() + '/' + S() + '.' + tool->from());
+				// e.g. for LivePreview, it is necessary that the paths are copied to child processes
+				tool->copyPaths(this);
+				runChildNext(tool);
+			}
 		}
 
 		if(index) {
 			KILE_DEBUG() << "need to run MakeIndex";
 			Base *tool = manager()->createTool("MakeIndex", QString());
 			KILE_DEBUG() << targetDir() << S() << tool->from();
-			configureMakeIndex(tool, targetDir() + '/' + S() + '.' + tool->from());
-			// e.g. for LivePreview, it is necessary that the paths are copied to child processes
-			tool->copyPaths(this);
-			runChildNext(tool);
+			if(tool) {
+				configureMakeIndex(tool, targetDir() + '/' + S() + '.' + tool->from());
+				// e.g. for LivePreview, it is necessary that the paths are copied to child processes
+				tool->copyPaths(this);
+				runChildNext(tool);
+			}
 		}
 
 		if(asy) {
 			KILE_DEBUG() << "need to run asymptote";
 			int sz = manager()->info()->allAsyFigures().size();
 			for(int i = sz -1; i >= 0; --i) {
-			  Base *tool = manager()->createTool("Asymptote", QString());
-			  configureAsymptote(tool, targetDir() + '/' + S() + "-" + QString::number(i + 1) + '.' + tool->from());
-			  // e.g. for LivePreview, it is necessary that the paths are copied to child processes
-			  tool->copyPaths(this);
-			  runChildNext(tool);
-			}
-		}
+				Base *tool = manager()->createTool("Asymptote", QString());
 
-		if(reRun) {
-			m_reRun++;
-		}
-		else {
-			m_reRun = 0;
+				if(tool) {
+					configureAsymptote(tool, targetDir() + '/' + S() + "-" + QString::number(i + 1) + '.' + tool->from());
+					// e.g. for LivePreview, it is necessary that the paths are copied to child processes
+					tool->copyPaths(this);
+					runChildNext(tool);
+				}
+			}
 		}
 	}
 
@@ -597,6 +707,19 @@ namespace KileTool
 		return View::determineTarget();
 	}
 }
+
+/*
+ * BibliographyCompile
+ */
+
+const QString KileTool::BibliographyCompile::ToolClass = "Bibliography";
+
+KileTool::BibliographyCompile::BibliographyCompile(const QString& name, KileTool::Manager* manager, bool prepare)
+: Compile(name, manager, prepare)
+{
+
+}
+
 
 #include "kilestdtools.moc"
 

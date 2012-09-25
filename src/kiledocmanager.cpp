@@ -1,6 +1,6 @@
 /*****************************************************************************
 *   Copyright (C) 2004 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)      *
-*             (C) 2006-2010 by Michel Ludwig (michel.ludwig@kdemail.net)     *
+*             (C) 2006-2012 by Michel Ludwig (michel.ludwig@kdemail.net)     *
 *             (C) 2007 by Holger Danielsson (holger.danielsson@versanet.de)  *
 ******************************************************************************/
 
@@ -47,6 +47,7 @@
 #include <kurl.h>
 #include <kfileitem.h>
 
+#include "errorhandler.h"
 #include "templates.h"
 #include "dialogs/newfilewizard.h"
 #include "dialogs/managetemplatesdialog.h"
@@ -66,9 +67,9 @@
 #include "kiletoolmanager.h"
 #include "widgets/konsolewidget.h"
 #include "kileconfig.h"
-#include "widgets/logwidget.h"
 #include "widgets/progressdialog.h"
 #include "dialogs/cleandialog.h"
+#include "livepreview.h"
 
 /*
  * Newly created text documents have an empty URL and a non-empty document name.
@@ -114,7 +115,8 @@ Manager::Manager(KileInfo *info, QObject *parent, const char *name) :
 	m_ki(info),
 	m_progressDialog(NULL),
 	m_autoSaveLock(0),
-	m_currentlySavingAll(false)
+	m_currentlySavingAll(false),
+	m_currentlyOpeningFile(false)
 {
 	setObjectName(name);
 	m_editor = KTextEditor::EditorChooser::editor();
@@ -197,6 +199,11 @@ void Manager::updateInfos()
 bool Manager::isAutoSaveAllowed()
 {
 	return (m_autoSaveLock == 0);
+}
+
+bool Manager::isOpeningFile()
+{
+	return m_currentlyOpeningFile;
 }
 
 KTextEditor::Editor* Manager::getEditor()
@@ -917,9 +924,9 @@ bool Manager::fileSaveAll(bool amAutoSaving, bool disUntitled)
 					}
 					else {
 						KILE_DEBUG() << "backing up failed (" << url.prettyUrl() << " -> " << backupUrl.prettyUrl() << ")";
-						m_ki->logWidget()->printMessage(KileTool::Error,
-						                                i18n("The file %1 could not be saved, check the permissions and free disk space.", backupUrl.prettyUrl()),
-						                                i18n("Autosave"));
+						m_ki->errorHandler()->printMessage(KileTool::Error,
+						                                   i18n("The file %1 could not be saved, check the permissions and free disk space.", backupUrl.prettyUrl()),
+						                                   i18n("Autosave"));
 					}
 				}
 
@@ -929,9 +936,9 @@ bool Manager::fileSaveAll(bool amAutoSaving, bool disUntitled)
 
 				if(!saveResult) {
 					oneSaveFailed = true;
-					m_ki->logWidget()->printMessage(KileTool::Error,
-					                                i18n("Kile encountered problems while saving the file %1. Do you have enough free disk space left?", url.prettyUrl()),
-					                                i18n("Saving"));
+					m_ki->errorHandler()->printMessage(KileTool::Error,
+					                                   i18n("Kile encountered problems while saving the file %1. Do you have enough free disk space left?", url.prettyUrl()),
+					                                   i18n("Saving"));
 				}
 			}
 		}
@@ -949,6 +956,7 @@ bool Manager::fileSaveAll(bool amAutoSaving, bool disUntitled)
 TextInfo* Manager::fileOpen(const KUrl& url, const QString& encoding, int index)
 {
 	Locker lock(&m_autoSaveLock);
+	m_currentlyOpeningFile = true;
 	KILE_DEBUG() << "==Kile::fileOpen==========================";
 
 	KILE_DEBUG() << "url is " << url.url();
@@ -957,6 +965,8 @@ TextInfo* Manager::fileOpen(const KUrl& url, const QString& encoding, int index)
 
 	bool isopen = m_ki->isOpen(realurl);
 	if(isopen) {
+		m_currentlyOpeningFile = false; // has to be before the 'switchToTextView' call as
+		                                // it emits signals that are handled by the live preview manager
 		m_ki->viewManager()->switchToTextView(realurl);
 		return textInfoForURL(realurl);
 	}
@@ -971,7 +981,7 @@ TextInfo* Manager::fileOpen(const KUrl& url, const QString& encoding, int index)
 
 	if(itemList.isEmpty()) {
 		emit addToProjectView(realurl);
-		loadDocumentAndViewSettings(view->document());
+		loadDocumentAndViewSettings(textInfo);
 	}
 	else if(view) {
 		KileProjectItem *item = itemList.first();
@@ -983,12 +993,24 @@ TextInfo* Manager::fileOpen(const KUrl& url, const QString& encoding, int index)
 	emit(updateModeStatus());
 	// update undefined references in this file
 	emit(updateReferences(textInfoFor(realurl.toLocalFile())));
+	m_currentlyOpeningFile = false;
+	emit documentOpened(textInfo);
 	return textInfo;
 }
 
 bool Manager::fileSave(KTextEditor::View *view)
 {
 	Locker lock(&m_autoSaveLock);
+	// the 'data' property can be set by the view manager
+	QAction *action = dynamic_cast<QAction*>(QObject::sender());
+	if(action) {
+		QVariant var = action->data();
+		if(!view && var.isValid()) {
+			view = var.value<KTextEditor::View*>();
+			// the 'data' property for the relevant actions is cleared
+			// inside the view manager
+		}
+	}
 	if(!view) {
 		view = m_ki->viewManager()->currentTextView();
 	}
@@ -1009,6 +1031,16 @@ bool Manager::fileSave(KTextEditor::View *view)
 bool Manager::fileSaveAs(KTextEditor::View* view)
 {
 	Locker lock(&m_autoSaveLock);
+	// the 'data' property can be set by the view manager
+	QAction *action = dynamic_cast<QAction*>(QObject::sender());
+	if(action) {
+		QVariant var = action->data();
+		if(!view && var.isValid()) {
+			view = var.value<KTextEditor::View*>();
+			// the 'data' property for the relevant actions is cleared
+			// inside the view manager
+		}
+	}
 	if(!view) {
 		view = m_ki->viewManager()->currentTextView();
 	}
@@ -1075,45 +1107,67 @@ bool Manager::fileSaveAs(KTextEditor::View* view)
 void Manager::fileSaveCopyAs()
 {
 	Locker lock(&m_autoSaveLock);
-	KTextEditor::Document *doc= m_ki->activeTextDocument();
 	KTextEditor::View *view = NULL;
-	if(doc) {
-		KileDocument::TextInfo *originalInfo = textInfoFor(doc);
-
-		if(!originalInfo) {
-			return;
+	// the 'data' property can be set by the view manager
+	QAction *action = dynamic_cast<QAction*>(QObject::sender());
+	if(action) {
+		QVariant var = action->data();
+		if(var.isValid()) {
+			view = var.value<KTextEditor::View*>();
+			// the 'data' property for the relevant actions is cleared
+			// inside the view manager
 		}
+	}
+	if(!view) {
+		view = m_ki->viewManager()->currentTextView();
+	}
+	if(!view) {
+		return;
+	}
 
-		view = createDocumentWithText(doc->text(),originalInfo->getType());
+	KTextEditor::Document *doc = view->document();
 
-		KileDocument::TextInfo *newInfo = textInfoFor(view->document());
+	if(!doc) {
+		return;
+	}
 
-		if(originalInfo->url().isEmpty()) { // untitled doc
-			newInfo->setBaseDirectory(m_ki->fileSelector()->currentUrl().toLocalFile());
-		}
-		else {
-			newInfo->setBaseDirectory(originalInfo->url().toLocalFile());
-		}
+	KileDocument::TextInfo *originalInfo = textInfoFor(doc);
 
-		fileSaveAs(view);
+	if(!originalInfo) {
+		return;
+	}
 
-		doc = view->document();
-		if(doc && !doc->isModified()) { // fileSaveAs was successful
-			fileClose(doc);
-		}
+	view = createDocumentWithText(doc->text(),originalInfo->getType());
+
+	KileDocument::TextInfo *newInfo = textInfoFor(view->document());
+
+	if(originalInfo->url().isEmpty()) { // untitled doc
+		newInfo->setBaseDirectory(m_ki->fileSelector()->currentUrl().toLocalFile());
+	}
+	else {
+		newInfo->setBaseDirectory(originalInfo->url().toLocalFile());
+	}
+
+	fileSaveAs(view);
+
+	doc = view->document();
+	if(doc && !doc->isModified()) { // fileSaveAs was successful
+		fileClose(doc);
 	}
 }
 
 bool Manager::fileCloseAllOthers(KTextEditor::View *currentView)
 {
 	Locker lock(&m_autoSaveLock);
-	QAction *action = m_ki->mainWindow()->action("file_close_all_others");
 	// the 'data' property can be set by the view manager
-	QVariant var = action->data();
-	if(!currentView && var.isValid()) {
-		// the 'data' property for the relevant actions is cleared
-		// inside the view manager
-		currentView = var.value<KTextEditor::View*>();
+	QAction *action = dynamic_cast<QAction*>(QObject::sender());
+	if(action) {
+		QVariant var = action->data();
+		if(!currentView && var.isValid()) {
+			// the 'data' property for the relevant actions is cleared
+			// inside the view manager
+			currentView = var.value<KTextEditor::View*>();
+		}
 	}
 	if(!currentView) {
 		currentView = m_ki->viewManager()->currentTextView();
@@ -1168,13 +1222,15 @@ bool Manager::fileClose(const KUrl & url)
 
 bool Manager::fileClose(KTextEditor::View *view)
 {
-	QAction *action = m_ki->mainWindow()->action("file_close");
 	// the 'data' property can be set by the view manager
-	QVariant var = action->data();
-	if(!view && var.isValid()) {
-		view = var.value<KTextEditor::View*>();
-		// the 'data' property for the relevant actions is cleared
-		// inside the view manager
+	QAction *action = dynamic_cast<QAction*>(QObject::sender());
+	if(action) {
+		QVariant var = action->data();
+		if(!view && var.isValid()) {
+			view = var.value<KTextEditor::View*>();
+			// the 'data' property for the relevant actions is cleared
+			// inside the view manager
+		}
 	}
 	if(!view) {
 		view = m_ki->viewManager()->currentTextView();
@@ -1223,7 +1279,7 @@ bool Manager::fileClose(KTextEditor::Document *doc /* = 0L*/, bool closingprojec
 
 	if(!inProject) {
 	KILE_DEBUG() << "not in project";
-		saveDocumentAndViewSettings(doc);
+		saveDocumentAndViewSettings(docinfo);
 	}
 
 	if(doc->closeUrl()) {
@@ -1392,16 +1448,16 @@ void Manager::addToProject(KileProject* project, const KUrl & url)
 	QFileInfo fi(realurl.toLocalFile());
 
 	if (project->contains(realurl)) {
-		m_ki->logWidget()->printMessage(KileTool::Info,
-		                                i18n("The file %1 is already member of the project %2", realurl.fileName(), project->name()),
-		                                i18n("Add to Project"));
+		m_ki->errorHandler()->printMessage(KileTool::Info,
+		                                   i18n("The file %1 is already member of the project %2", realurl.fileName(), project->name()),
+		                                   i18n("Add to Project"));
 		return;
 	}
 	else if(!fi.exists() || !fi.isReadable())
 	{
-		m_ki->logWidget()->printMessage(KileTool::Info,
-		                                i18n("The file %1 can not be added because it does not exist or is not readable", realurl.fileName()),
-		                                i18n("Add to Project"));
+		m_ki->errorHandler()->printMessage(KileTool::Info,
+		                                   i18n("The file %1 can not be added because it does not exist or is not readable", realurl.fileName()),
+		                                   i18n("Add to Project"));
 		return;
 	}
 
@@ -1569,6 +1625,7 @@ KileProject* Manager::projectOpen(const KUrl & url, int step, int max, bool open
 
 	m_ki->viewManager()->switchToTextView(kp->lastDocument());
 
+	emit(projectOpened(kp));
 	return kp;
 }
 
@@ -1898,8 +1955,8 @@ void Manager::cleanUpTempFiles(const KUrl &url, bool silent)
 	}
 
 	if(extlist.count() == 0) {
-		m_ki->logWidget()->printMessage(KileTool::Warning, i18n("Nothing to clean for %1", fileName),
-		                                i18n("Clean"));
+		m_ki->errorHandler()->printMessage(KileTool::Warning, i18n("Nothing to clean for %1", fileName),
+		                                                           i18n("Clean"));
 	}
 	else {
 		for(int i = 0; i < extlist.count(); ++i) {
@@ -1907,9 +1964,9 @@ void Manager::cleanUpTempFiles(const KUrl &url, bool silent)
 			KILE_DEBUG() << "About to remove file = " << file.fileName();
 			file.remove();
 		}
-		m_ki->logWidget()->printMessage(KileTool::Info,
-		                                i18n("Cleaning %1: %2", fileName, extlist.join(" ")),
-		                                i18n("Clean"));
+		m_ki->errorHandler()->printMessage(KileTool::Info,
+		                                   i18n("Cleaning %1: %2", fileName, extlist.join(" ")),
+		                                   i18n("Clean"));
 	}
 }
 
@@ -2137,9 +2194,9 @@ QStringList Manager::getProjectFiles()
 
 void Manager::dontOpenWarning(KileProjectItem *item, const QString &action, const QString &filetype)
 {
-	m_ki->logWidget()->printMessage(KileTool::Info,
-	                                i18n("not opened: %1 (%2)", item->url().toLocalFile(), filetype),
-	                                action);
+	m_ki->errorHandler()->printMessage(KileTool::Info,
+	                                   i18n("not opened: %1 (%2)", item->url().toLocalFile(), filetype),
+	                                   action);
 }
 
 KileProjectItem* Manager::selectProjectFileItem(const QString &label)
@@ -2302,8 +2359,13 @@ void Manager::createProgressDialog()
 	m_progressDialog->hide();
 }
 
-void Manager::loadDocumentAndViewSettings(KTextEditor::Document *document)
+void Manager::loadDocumentAndViewSettings(KileDocument::TextInfo *textInfo)
 {
+	KTextEditor::Document *document = textInfo->getDoc();
+	if(!document) {
+		return;
+	}
+
 	KConfigGroup configGroup = configGroupForDocumentSettings(document);
 	if(!configGroup.exists()) {
 		return;
@@ -2313,7 +2375,22 @@ void Manager::loadDocumentAndViewSettings(KTextEditor::Document *document)
 	if(!interface) {
 		return;
 	}
-	interface->readParameterizedSessionConfig(configGroup, KTextEditor::ParameterizedSessionConfigInterface::SkipUrl);
+	interface->readParameterizedSessionConfig(configGroup, KTextEditor::ParameterizedSessionConfigInterface::SkipEncoding
+	                                                       | KTextEditor::ParameterizedSessionConfigInterface::SkipUrl);
+#endif
+	{
+		LaTeXInfo *latexInfo = dynamic_cast<LaTeXInfo*>(textInfo);
+		if(latexInfo) {
+			KileTool::LivePreviewManager::readLivePreviewStatusSettings(configGroup, latexInfo);
+		}
+	}
+
+	{
+		LaTeXOutputHandler *h = dynamic_cast<LaTeXOutputHandler*>(textInfo);
+		if(h) {
+			h->readBibliographyBackendSettings(configGroup);
+		}
+	}
 
 	QList<KTextEditor::View*> viewList = document->views();
 	int i = 0;
@@ -2327,22 +2404,44 @@ void Manager::loadDocumentAndViewSettings(KTextEditor::Document *document)
 		viewConfigInterface->readSessionConfig(configGroup);
 		++i;
 	}
-#endif
+
 }
 
-void Manager::saveDocumentAndViewSettings(KTextEditor::Document *document)
+void Manager::saveDocumentAndViewSettings(KileDocument::TextInfo *textInfo)
 {
+	KTextEditor::Document *document = textInfo->getDoc();
+	if(!document) {
+		return;
+	}
+
 	KConfigGroup configGroup = configGroupForDocumentSettings(document);
-#if KDE_IS_VERSION(4,3,75)
+
 	KUrl url = document->url();
 	url.setPassword(""); // we don't want the password to appear in the configuration file
 	deleteDocumentAndViewSettingsGroups(url);
 
+#if KDE_IS_VERSION(4,3,75)
 	KTextEditor::ParameterizedSessionConfigInterface *interface = qobject_cast<KTextEditor::ParameterizedSessionConfigInterface*>(document);
 	if(!interface) {
 		return;
 	}
-	interface->writeParameterizedSessionConfig(configGroup, KTextEditor::ParameterizedSessionConfigInterface::SkipUrl);
+	interface->writeParameterizedSessionConfig(configGroup, KTextEditor::ParameterizedSessionConfigInterface::SkipEncoding
+	                                                        | KTextEditor::ParameterizedSessionConfigInterface::SkipUrl);
+#endif
+
+	{
+		LaTeXInfo *latexInfo = dynamic_cast<LaTeXInfo*>(textInfo);
+		if(latexInfo) {
+			KileTool::LivePreviewManager::writeLivePreviewStatusSettings(configGroup, latexInfo);
+		}
+	}
+
+	{
+		LaTeXOutputHandler *h = dynamic_cast<LaTeXOutputHandler*>(textInfo);
+		if(h) {
+			h->writeBibliographyBackendSettings(configGroup);
+		}
+	}
 
 	QList<KTextEditor::View*> viewList = document->views();
 	int i = 0;
@@ -2371,7 +2470,6 @@ void Manager::saveDocumentAndViewSettings(KTextEditor::Document *document)
 	}
 	configGroup.writeEntry("Documents", url);
 	configGroup.writeEntry("Saved Documents", urlList.toStringList());
-#endif
 }
 
 KConfigGroup Manager::configGroupForDocumentSettings(KTextEditor::Document *doc) const

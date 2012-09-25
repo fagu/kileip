@@ -1,7 +1,7 @@
 /***************************************************************************************
     begin                : sam jui 13 09:50:06 CEST 2002
     copyright            : (C) 2003 by Jeroen Wijnhout (wijnhout@science.uva.nl)
-                               2007-2011 by Michel Ludwig (michel.ludwig@kdemail.net)
+                               2007-2012 by Michel Ludwig (michel.ludwig@kdemail.net)
                            (C) 2009 Thomas Braun (thomas.braun@virtuell-zuhause.de)
 
  ***************************************************************************************/
@@ -97,7 +97,7 @@ class Kile : public KParts::MainWindow, public KileInfo
 	Q_OBJECT
 
 public:
-	explicit Kile(bool allowRestore = true, QWidget *parent = 0, const char *name = 0);
+	explicit Kile(bool allowRestore = true, QWidget *parent = NULL);
 	~Kile();
 
 	int lineNumber();
@@ -176,7 +176,7 @@ private:
 
 	/* config */
 	KSharedConfigPtr	m_config;
-	QStringList 		m_recentFilesList, m_listDocsOpenOnStart, m_listProjectsOpenOnStart;
+	QStringList 		m_recentFilesList, m_listDocsOpenOnStart, m_listEncodingsOfDocsOpenOnStart, m_listProjectsOpenOnStart;
 
 	KRecentFilesAction *m_actRecentProjects;
 

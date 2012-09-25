@@ -1,9 +1,8 @@
 /****************************************************************************************
-    begin                : sam jui 13 09:50:06 CEST 2002
-    copyright            : (C) 2003 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)
-                           (C) 2007-2012 by Michel Ludwig (michel.ludwig@kdemail.net)
-                           (C) 2007 Holger Danielsson (holger.danielsson@versanet.de)
-                           (C) 2009 Thomas Braun (thomas.braun@virtuell-zuhause.de)
+  Copyright (C) 2003 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)
+            (C) 2007-2012 by Michel Ludwig (michel.ludwig@kdemail.net)
+            (C) 2007 Holger Danielsson (holger.danielsson@versanet.de)
+            (C) 2009 Thomas Braun (thomas.braun@virtuell-zuhause.de)
  ****************************************************************************************/
 
 /***************************************************************************
@@ -25,7 +24,6 @@
 #include <QHideEvent>
 #include <QPointer>
 #include <QShowEvent>
-#include <QSplashScreen>
 #include <QXmlStreamWriter>
 
 #include <KAboutApplicationDialog>
@@ -41,6 +39,7 @@
 #include <KRecentFilesAction>
 #include <KRun>
 #include <KShortcutsDialog>
+#include <KSplashScreen>
 #include <KStandardDirs>
 #include <KStatusBar>
 #include <KTipDialog>
@@ -57,6 +56,7 @@
 #include "abbreviationmanager.h"
 #include "configurationmanager.h"
 #include "documentinfo.h"
+#include "errorhandler.h"
 #include "kileactions.h"
 #include "kiledebug.h"
 #include "kilestdactions.h"
@@ -71,7 +71,6 @@
 #include "kiletool.h"
 #include "kiletoolmanager.h"
 #include "kilestdtools.h"
-#include "widgets/logwidget.h"
 #include "widgets/outputview.h"
 #include "widgets/konsolewidget.h"
 #include "dialogs/quickdocumentdialog.h"
@@ -83,7 +82,6 @@
 #include "kileversion.h"
 #include "kileviewmanager.h"
 #include "kileconfig.h"
-#include "kileerrorhandler.h"
 #include "dialogs/configcheckerdialog.h"
 #include "widgets/sidebar.h"
 #include "dialogs/floatdialog.h"
@@ -114,26 +112,22 @@
  * Class Kile.
  */
 
-Kile::Kile(bool allowRestore, QWidget *parent, const char *name)
+Kile::Kile(bool allowRestore, QWidget *parent)
 :	KParts::MainWindow(),
 	KileInfo(this),
 	m_paPrint(NULL)
 {
-	setObjectName(name);
-	// publish the D-Bus interfaces
-	new MainAdaptor(this);
-	QDBusConnection dbus = QDBusConnection::sessionBus();
-	dbus.registerObject("/main", this);
-	dbus.registerService("net.sourceforge.kile"); // register under a constant names
+	setObjectName("Kile");
 
 	// Under some circumstances (Qt or KDE issues like a KIO process still running (?)), Kile doesn't terminate
 	// when the main window is closed (bugs 220343 and 299569). So, we force this here.
 	// This still seems to happen with Qt 4.8.1 and KDE 4.8.2.
 	connect(m_mainWindow, SIGNAL(destroyed(QObject*)), kapp, SLOT(quit()));
 
-	QSplashScreen splashScreen(QPixmap(KGlobal::dirs()->findResource("appdata", "pics/kile_splash.png")), Qt::WindowStaysOnTopHint);
+	KSplashScreen splashScreen(QPixmap(KGlobal::dirs()->findResource("appdata", "pics/kile_splash.png")), Qt::WindowStaysOnTopHint);
 	if(KileConfig::showSplashScreen()) {
 		splashScreen.show();
+		kapp->processEvents();
 	}
 
 	m_config = KGlobal::config();
@@ -148,12 +142,16 @@ Kile::Kile(bool allowRestore, QWidget *parent, const char *name)
 	connect(m_AutosaveTimer,SIGNAL(timeout()),this,SLOT(autoSaveAll()));
 
 	m_viewManager= new KileView::Manager(this, actionCollection(), parent, "KileView::Manager");
+	viewManager()->setClient(this);
+
+	// process events for correctly displaying the splash screen
+	kapp->processEvents();
 
 	m_latexCommands = new KileDocument::LatexCommands(m_config.data(), this);  // at first (dani)
 	m_edit = new KileDocument::EditorExtension(this);
 	m_help = new KileHelp::Help(m_edit, this);
 	m_partManager = new KParts::PartManager(this);
-	m_errorHandler = new KileErrorHandler(this, this);
+	m_errorHandler = new KileErrorHandler(this, this, actionCollection());
 	m_quickPreview = new KileTool::QuickPreview(this);
 	m_extensions = new KileDocument::Extensions();
 	m_jScriptManager = new KileScript::Manager(this, m_config.data(), actionCollection(), parent, "KileScript::Manager");
@@ -170,7 +168,9 @@ Kile::Kile(bool allowRestore, QWidget *parent, const char *name)
 	m_wantState = "Editor";
 	m_bWatchFile = false;
 
-	viewManager()->setClient(this);
+	// process events for correctly displaying the splash screen
+	kapp->processEvents();
+
 	connect(viewManager(), SIGNAL(currentViewChanged(QWidget*)), this, SLOT(newCaption()));
 	connect(viewManager(), SIGNAL(currentViewChanged(QWidget*)), this, SLOT(activateView(QWidget*)));
 	connect(viewManager(), SIGNAL(currentViewChanged(QWidget*)), this, SLOT(updateModeStatus()));
@@ -213,6 +213,9 @@ Kile::Kile(bool allowRestore, QWidget *parent, const char *name)
 	connect(m_signalMapper, SIGNAL(mapped(const QString &)),
              this, SLOT(runTool(const QString &)));
 
+	// process events for correctly displaying the splash screen
+	kapp->processEvents();
+
 	setupBottomBar();
 	m_verticalSplitter->addWidget(m_bottomBar);
 	m_topWidgetStack->addWidget(m_horizontalSplitter);
@@ -222,11 +225,10 @@ Kile::Kile(bool allowRestore, QWidget *parent, const char *name)
 	setupPreviewTools();
 	setupActions(); // sets up m_paStop
 
-	// Parser manager must be created before the tool manager!
-	m_manager = new KileTool::Manager(this, m_config.data(), m_logWidget, m_outputWidget, m_partManager, m_topWidgetStack, m_paStop, 10000); //FIXME make timeout configurable
+	// Parser manager and view manager must be created before the tool manager!
+	m_manager = new KileTool::Manager(this, m_config.data(), m_outputWidget, m_partManager, m_topWidgetStack, m_paStop, 10000, actionCollection()); //FIXME make timeout configurable
 	connect(m_manager, SIGNAL(requestGUIState(const QString &)), this, SLOT(prepareForPart(const QString &)));
 	connect(m_manager, SIGNAL(jumpToFirstError()), m_errorHandler, SLOT(jumpToFirstError()));
-	connect(m_manager, SIGNAL(toolStarted()), m_errorHandler, SLOT(reset()));
 	connect(m_manager, SIGNAL(previewDone()), this, SLOT(focusPreview()));
 
 #ifdef LIVEPREVIEW_POSSIBLE
@@ -251,10 +253,10 @@ Kile::Kile(bool allowRestore, QWidget *parent, const char *name)
 
 	newCaption();
 
-	m_lyxserver = new KileLyxServer(KileConfig::runLyxServer());
-	connect(m_lyxserver, SIGNAL(insert(const KileAction::TagData &)), this, SLOT(insertTag(const KileAction::TagData &)));
-
 	m_help->setUserhelp(m_manager, m_userHelpActionMenu);     // kile user help (dani)
+
+	// process events for correctly displaying the splash screen
+	kapp->processEvents();
 
 	connect(docManager(), SIGNAL(updateModeStatus()), this, SLOT(updateModeStatus()));
 	connect(docManager(), SIGNAL(updateStructure(bool, KileDocument::Info*)), viewManager(), SLOT(updateStructure(bool, KileDocument::Info*)));
@@ -326,6 +328,17 @@ Kile::Kile(bool allowRestore, QWidget *parent, const char *name)
 		splashScreen.finish(this);
 	}
 
+	// Due to 'processEvents' being called earlier we only create the DBUS adaptor and
+	// the LyX server when all of Kile's structures have been set up.
+	// publish the D-Bus interfaces
+	new MainAdaptor(this);
+	QDBusConnection dbus = QDBusConnection::sessionBus();
+	dbus.registerObject("/main", this);
+	dbus.registerService("net.sourceforge.kile"); // register under a constant name
+
+	m_lyxserver = new KileLyxServer(KileConfig::runLyxServer());
+	connect(m_lyxserver, SIGNAL(insert(const KileAction::TagData &)), this, SLOT(insertTag(const KileAction::TagData &)));
+
 	if(m_listUserTools.count() > 0) {
 		KMessageBox::information(0, i18n("You have defined some tools in the User menu. From now on these tools will be available from the Build->Other menu and can be configured in the configuration dialog (go to the Settings menu and choose Configure Kile). This has some advantages; your own tools can now be used in a QuickBuild command if you wish."), i18n("User Tools Detected"));
 		m_listUserTools.clear();
@@ -380,8 +393,6 @@ Kile::Kile(bool allowRestore, QWidget *parent, const char *name)
 
 	if(m_livePreviewManager) {
 		m_livePreviewManager->buildLivePreviewMenu(m_config.data());
-		// we can only read the live preview settings after all the documents have been re-opened
-		m_livePreviewManager->readLivePreviewStatusSettings(m_config.data());
 		m_livePreviewManager->disableBootUpMode();
 	}
 }
@@ -438,6 +449,7 @@ void Kile::setupStatusBar()
 
 	statusBar()->insertItem(i18n("Normal Mode"), ID_HINTTEXT, 10);
 	statusBar()->setItemAlignment(ID_HINTTEXT, Qt::AlignLeft | Qt::AlignVCenter);
+	statusBar()->addPermanentWidget(errorHandler()->compilationResultLabel());
 	statusBar()->insertPermanentItem(QString(), ID_PARSER_STATUS, 0);
 	statusBar()->setItemAlignment(ID_PARSER_STATUS, Qt::AlignLeft | Qt::AlignVCenter);
 	statusBar()->insertPermanentItem(QString(), ID_LINE_COLUMN, 0);
@@ -627,12 +639,7 @@ void Kile::setupBottomBar()
 	m_bottomBar = new KileWidget::BottomBar(this);
 	m_bottomBar->setFocusPolicy(Qt::ClickFocus);
 
-	m_logWidget = new KileWidget::LogWidget(this, this);
-	connect(m_logWidget, SIGNAL(showingErrorMessage(QWidget* )), this, SLOT(focusLog()));
-	connect(m_logWidget, SIGNAL(outputInfoSelected(const OutputInfo&)), m_errorHandler, SLOT(jumpToProblem(const OutputInfo&)));
-
-	m_logWidget->setFocusPolicy(Qt::ClickFocus);
-	m_logWidget->setMinimumHeight(40);
+	connect(errorHandler(), SIGNAL(showingErrorMessage(QWidget* )), this, SLOT(focusLog()));
 
 	QWidget *widget = new QWidget(this);
 	QHBoxLayout *layout = new QHBoxLayout(widget);
@@ -644,7 +651,7 @@ void Kile::setupBottomBar()
 	m_latexOutputErrorToolBar->setIconDimensions(KIconLoader::SizeSmall);
 	m_latexOutputErrorToolBar->setOrientation(Qt::Vertical);
 
-	layout->addWidget(m_logWidget);
+	layout->addWidget(errorHandler()->outputWidget());
 	layout->addWidget(m_latexOutputErrorToolBar);
 	m_bottomBar->addPage(widget, SmallIcon("utilities-log-viewer"), i18n("Log and Messages"));
 
@@ -797,20 +804,8 @@ void Kile::setupActions()
 	m_paStop = createAction(i18n("&Stop"),"Stop", "process-stop", KShortcut(Qt::Key_Escape));
 	m_paStop->setEnabled(false);
 	m_latexOutputErrorToolBar->addAction(m_paStop);
-	act = createAction(i18n("View Log File"), "ViewLog", "viewlog", KShortcut(Qt::ALT + Qt::Key_0), m_errorHandler, SLOT(ViewLog()));
-	m_latexOutputErrorToolBar->addAction(act);
-	act = createAction(i18n("Previous LaTeX Error"), "PreviousError", "errorprev", m_errorHandler, SLOT(PreviousError()));
-	m_latexOutputErrorToolBar->addAction(act);
-	act = createAction(i18n("Next LaTeX Error"), "NextError", "errornext", m_errorHandler, SLOT(NextError()));
-	m_latexOutputErrorToolBar->addAction(act);
-	act = createAction(i18n("Previous LaTeX Warning"), "PreviousWarning", "warnprev", m_errorHandler, SLOT(PreviousWarning()));
-	m_latexOutputErrorToolBar->addAction(act);
-	act = createAction(i18n("Next LaTeX Warning"), "NextWarning", "warnnext", m_errorHandler, SLOT(NextWarning()));
-	m_latexOutputErrorToolBar->addAction(act);
-	act = createAction(i18n("Previous LaTeX BadBox"), "PreviousBadBox", "bboxprev", m_errorHandler, SLOT(PreviousBadBox()));
-	m_latexOutputErrorToolBar->addAction(act);
-	act = createAction(i18n("Next LaTeX BadBox"), "NextBadBox", "bboxnext", m_errorHandler, SLOT(NextBadBox()));
-	m_latexOutputErrorToolBar->addAction(act);
+
+	errorHandler()->setErrorHandlerToolBar(m_latexOutputErrorToolBar);
 
 	createAction(i18n("Return to Editor"), "return_to_editor", "document-edit", KShortcut("CTRL+E"), this, SLOT(showEditorWidget()));
 	createAction(i18n("Next Document"), "gotoNextDocument", "go-next-view-page", KShortcut(Qt::ALT + Qt::Key_Right), viewManager(), SLOT(gotoNextView()));
@@ -1253,7 +1248,7 @@ void Kile::restoreFilesAndProjects(bool allowRestore)
 	}
 
 	for (int i = 0; i < m_listDocsOpenOnStart.count(); ++i) {
-		docManager()->fileOpen(KUrl::fromPathOrUrl(m_listDocsOpenOnStart[i]));
+		docManager()->fileOpen(KUrl::fromPathOrUrl(m_listDocsOpenOnStart[i]), m_listEncodingsOfDocsOpenOnStart[i]);
 	}
 
 	if (ModeAction) {
@@ -1263,6 +1258,7 @@ void Kile::restoreFilesAndProjects(bool allowRestore)
 
 	m_listProjectsOpenOnStart.clear();
 	m_listDocsOpenOnStart.clear();
+	m_listEncodingsOfDocsOpenOnStart.clear();
 
         KILE_DEBUG() << "lastDocument=" << KileConfig::lastDocument() << endl;
 	KTextEditor::Document *doc = docManager()->docFor(KUrl::fromPathOrUrl(KileConfig::lastDocument()));
@@ -1514,11 +1510,6 @@ bool Kile::queryExit()
 //FIXME: documents probably shouldn't be closed in this method yet (also see API doc of 'queryClose')
 bool Kile::queryClose()
 {
-	// we have to save the live preview status settings before closing the documents!
-	if(m_livePreviewManager) {
-		m_livePreviewManager->writeLivePreviewStatusSettings(m_config.data());
-	}
-
 	KTextEditor::View *view = viewManager()->currentTextView();
 	if(view) {
 		KileConfig::setLastDocument(view->document()->url().toLocalFile());
@@ -1536,9 +1527,12 @@ bool Kile::queryClose()
 
 	m_listProjectsOpenOnStart.clear();
 	m_listDocsOpenOnStart.clear();
+	m_listEncodingsOfDocsOpenOnStart.clear();
 
 	for(int i = 0; i < viewManager()->textViewCount(); ++i) {
-		m_listDocsOpenOnStart.append(viewManager()->textView(i)->document()->url().toLocalFile());
+		KTextEditor::Document *doc = viewManager()->textView(i)->document();
+		m_listDocsOpenOnStart.append(doc->url().toLocalFile());
+		m_listEncodingsOfDocsOpenOnStart.append(doc->encoding());
 	}
 
 	KILE_DEBUG() << "#projects = " << docManager()->projects().count() << endl;
@@ -1942,8 +1936,7 @@ void Kile::initMenu()
 	   // build
 	   << "quickpreview_selection" << "quickpreview_environment"
 	   << "quickpreview_subdocument" << "quickpreview_math"
-	   << "WatchFile" << "ViewLog" << "PreviousError" << "NextError" << "PreviousWarning"
-	   << "NextWarning" << "PreviousBadBox" << "NextBadBox" << "CleanAll"
+	   << "WatchFile" << "CleanAll"
 	   // latex
 	   << "tag_documentclass" << "tag_usepackage" << "tag_amspackages" << "tag_env_document"
 	   << "tag_author" << "tag_title" << "tag_maketitle" << "tag_titlepage" << "tag_env_abstract"
@@ -2157,7 +2150,7 @@ void Kile::cleanAll(KileDocument::TextInfo *docinfo)
 			docinfo = docManager()->textInfoFor(doc);
 		}
 		else {
-			m_logWidget->printMessage(KileTool::Error, noactivedoc, i18n("Clean"));
+			errorHandler()->printMessage(KileTool::Error, noactivedoc, i18n("Clean"));
 			return;
 		}
 	}
@@ -2174,11 +2167,11 @@ void Kile::refreshStructure()
 
 void Kile::insertTag(const KileAction::TagData& data)
 {
-	logWidget()->clear();
+	errorHandler()->clearMessages();
 
 	if(data.description.length() > 0) {
 		focusLog();
-		logWidget()->printMessage(data.description);
+		errorHandler()->printMessage(data.description);
 	}
 
 	KTextEditor::View *view = viewManager()->currentTextView();
@@ -2237,10 +2230,10 @@ void Kile::insertTag(const KileAction::TagData& data,const QStringList &pkgs)
 
 		if(warnPkgs.count() > 0) {
 			if(warnPkgs.count() == 1) {
-				 m_logWidget->printMessage(KileTool::Error, i18n("You have to include the package %1.", warnPkgs.join(",")), i18n("Insert text"));
+				 errorHandler()->printMessage(KileTool::Error, i18n("You have to include the package %1.", warnPkgs.join(",")), i18n("Insert text"));
 			}
 			else {
-				m_logWidget->printMessage(KileTool::Error, i18n("You have to include the packages %1.", warnPkgs.join(",")), i18n("Insert text"));
+				errorHandler()->printMessage(KileTool::Error, i18n("You have to include the packages %1.", warnPkgs.join(",")), i18n("Insert text"));
 			}
 		}
 	}
@@ -2362,7 +2355,7 @@ void Kile::quickPostscript()
 		texfilename = getCompileName();
 	}
 
-	KileDialog::PostscriptDialog *dlg = new KileDialog::PostscriptDialog(this, texfilename, startdir, m_extensions->latexDocuments(), m_logWidget, m_outputWidget);
+	KileDialog::PostscriptDialog *dlg = new KileDialog::PostscriptDialog(this, texfilename, startdir, m_extensions->latexDocuments(), errorHandler(), m_outputWidget);
 	dlg->exec();
 	delete dlg;
 }
@@ -2378,7 +2371,7 @@ void Kile::quickPdf()
 		texFileName = getCompileName();
 	}
 
-	KileDialog::PdfDialog *dlg = new KileDialog::PdfDialog(m_mainWindow, texFileName, startDir, m_extensions->latexDocuments(), m_manager, m_logWidget, m_outputWidget);
+	KileDialog::PdfDialog *dlg = new KileDialog::PdfDialog(m_mainWindow, texFileName, startDir, m_extensions->latexDocuments(), m_manager, errorHandler(), m_outputWidget);
 	dlg->exec();
 	delete dlg;
 }
@@ -2421,7 +2414,7 @@ void Kile::helpLaTex()
 	QString loc = KGlobal::dirs()->findResource("appdata","help/latexhelp.html");
 	KileTool::Base *tool = toolManager()->createTool("ViewHTML", QString(), false);
 	if(!tool) {
-		m_logWidget->printMessage(KileTool::Error, i18n("Could not create the \"ViewHTML\" tool. Please reset the tools."));
+		errorHandler()->printMessage(KileTool::Error, i18n("Could not create the \"ViewHTML\" tool. Please reset the tools."));
 		return;
 	}
 	tool->setFlags(KileTool::NeedSourceExists | KileTool::NeedSourceRead);
@@ -2547,6 +2540,7 @@ void Kile::readRecentFileSettings()
 	int n = group.readEntry("NoDOOS", 0);
 	for (int i = 0; i < n; ++i) {
 		m_listDocsOpenOnStart.append(group.readPathEntry("DocsOpenOnStart" + QString::number(i), ""));
+		m_listEncodingsOfDocsOpenOnStart.append(group.readPathEntry("EncodingsOfDocsOpenOnStart" + QString::number(i), ""));
 	}
 
 	n = group.readEntry("NoPOOS", 0);
@@ -2609,7 +2603,8 @@ void Kile::saveSettings()
 		KileConfig::setSingleFileMasterDocument(getMasterDocumentFileName());
 		configGroup.writeEntry("NoDOOS", m_listDocsOpenOnStart.count());
 		for (int i = 0; i < m_listDocsOpenOnStart.count(); ++i) {
-			configGroup.writePathEntry("DocsOpenOnStart"+QString::number(i), m_listDocsOpenOnStart[i]);
+			configGroup.writePathEntry("DocsOpenOnStart" + QString::number(i), m_listDocsOpenOnStart[i]);
+			configGroup.writePathEntry("EncodingsOfDocsOpenOnStart" + QString::number(i), m_listEncodingsOfDocsOpenOnStart[i]);
 		}
 
 		configGroup.writeEntry("NoPOOS", m_listProjectsOpenOnStart.count());
@@ -2798,10 +2793,20 @@ void Kile::aboutEditorComponent()
 /////////////// KEYS - TOOLBARS CONFIGURATION ////////////////
 void Kile::configureKeys()
 {
-	KShortcutsDialog dlg(KShortcutsEditor::AllActions, KShortcutsEditor::LetterShortcutsDisallowed, this);
-	QList<KXMLGUIClient*> clients = guiFactory()->clients();
-	for(QList<KXMLGUIClient*>::iterator it = clients.begin(); it != clients.end(); ++it) {
-		dlg.addCollection((*it)->actionCollection());
+	KShortcutsDialog dlg(KShortcutsEditor::AllActions, KShortcutsEditor::LetterShortcutsAllowed, this);
+// due to bug 280988, we can't add all the clients...
+// 	QList<KXMLGUIClient*> clients = guiFactory()->clients();
+// 	for(QList<KXMLGUIClient*>::iterator it = clients.begin(); it != clients.end(); ++it) {
+// 		dlg.addCollection((*it)->actionCollection());
+// 	}
+	dlg.addCollection(mainWindow()->actionCollection());
+	KTextEditor::View *view = m_viewManager->currentTextView();
+	if(view) {
+		dlg.addCollection(view->actionCollection());
+	}
+	KParts::ReadOnlyPart *part = viewManager()->viewerPart();
+	if(part) {
+		dlg.addCollection(part->actionCollection());
 	}
 	dlg.configure();
 
@@ -2945,12 +2950,12 @@ void Kile::citeViewBib()
 	remoteApps = client->registeredApplications();
 	if( !remoteApps.contains(viewBibApp) )
 	{
-		m_logWidget->printMessage(KileTool::Warning,
+		errorHandler()->printMessage(KileTool::Warning,
 		i18n("No ViewBib tool running, trying to start it now"),
 		i18n("ViewBib Citation"));
 		uint ret = runWith("ViewBib","KBib");
 		if( ret == 0 )
-			m_logWidget->printMessage(KileTool::Info,
+			errorHandler()->printMessage(KileTool::Info,
 				i18n("Please select the desired bibliographies and re-execute this command"),
 				i18n("ViewBib Citation"));
 		return;
@@ -2959,7 +2964,7 @@ void Kile::citeViewBib()
 	remoteObjs = client->remoteObjects(viewBibApp);
 	if( !remoteObjs.contains(viewBibObj) )
 	{
-		m_logWidget->printMessage(KileTool::Warning,
+		errorHandler()->printMessage(KileTool::Warning,
 				      i18n("The ViewBib tool does not have the correct interface"),
 				      i18n("ViewBib Citation"));
 		return;
@@ -2968,7 +2973,7 @@ void Kile::citeViewBib()
 	functions = client->remoteFunctions(viewBibApp,viewBibObj);
 	if( !functions.contains(viewBibFncDef) )
 	{
-		m_logWidget->printMessage(KileTool::Warning,
+		errorHandler()->printMessage(KileTool::Warning,
 					i18n("The ViewBib tool does not have the correct definition of the cite function"),
 					i18n("ViewBib Citation"));
 		return;
@@ -2989,7 +2994,7 @@ void Kile::citeViewBib()
 
 			if (result.isEmpty())
 			{
-				m_logWidget->printMessage(KileTool::Warning,
+				errorHandler()->printMessage(KileTool::Warning,
 						i18n("No reference selected.\nPlease select a reference first!"),
 						i18n("ViewBib Citation"));
 			}
