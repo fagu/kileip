@@ -117,6 +117,9 @@ public Q_SLOTS:
 
 	void rebuildBibliographyMenu();
 
+	void openDocument(const KUrl& url);
+	void openProject(const KUrl& url);
+
 	// D-Bus Interface
 	void openDocument(const QString & url);
 	void closeDocument();
@@ -337,8 +340,8 @@ private Q_SLOTS:
 	void updateStatusBarInformationMessage(KTextEditor::View *view, const QString &message);
 	void updateStatusBarSelection(KTextEditor::View *view);
 
-	void handleParsingStarted();
-	void handleParsingComplete();
+	void handleDocumentParsingStarted();
+	void handleDocumentParsingComplete();
 };
 
 #endif

@@ -44,6 +44,14 @@ namespace KileDocument
 class Info;
 class TextInfo;
 
+/**
+ * The design of the document manager is based on the following invariants:
+ * - Several projects can be open simultaneously
+ * - For every URL there can only be at most one associated KileDocument::Info* object, but
+ *   there can be several KileProject* items (each one belonging to a different project)
+ * - It is guaranteed that every project item that represents textual data contains a TextInfo* object
+ **/
+
 class Manager : public QObject
 {
 	Q_OBJECT
@@ -96,17 +104,12 @@ public Q_SLOTS:
 
 //projects
 	void projectNew();
-	KileProject* projectOpen();
+	void projectOpen();
 
 	/**
 	 * @param openProjectItemViews Opens project files in the editor iff openProjectItemViews is set to 'true'.
 	 **/
-	KileProject* projectOpen(const KUrl&, int = 0, int = 1, bool openProjectItemViews = true);
-
-	/**
-	 * @param openProjectItemViews Opens project files in the editor iff openProjectItemViews is set to 'true'.
-	 **/
-	void projectOpenItem(KileProjectItem *item, bool openProjectItemViews = true);
+	void projectOpen(const KUrl&, int step = 0, int max = 1, bool openProjectItemViews = true);
 
 	/**
 	 * Saves the state of the project, if @param project is zero, the active project is saved.
@@ -195,12 +198,13 @@ public:
 
 	KTextEditor::Document* docFor(const KUrl &url);
 
-	Info* getInfo() const;
-	// FIXME: "path" should be changed to a URL, i.e. only the next but one function
-	//        should be used
-	TextInfo* textInfoFor(const QString &path) const;
-	TextInfo* textInfoForURL(const KUrl& url);
+	TextInfo* getInfo() const;
+
+	TextInfo* textInfoFor(const KUrl& url);
 	TextInfo* textInfoFor(KTextEditor::Document* doc) const;
+
+	KUrl urlFor(TextInfo* textInfo);
+
 	void updateInfos();
 
 	KileProject* projectForMember(const KUrl &memberUrl);
@@ -217,17 +221,25 @@ public:
 	 * @returns a pointer to the project item, 0 if this file does not belong to a project
 	 **/
 	KileProjectItem* itemFor(const KUrl &url, KileProject *project = NULL) const;
-	KileProjectItem* itemFor(Info *docinfo, KileProject *project = NULL) const;
+	KileProjectItem* itemFor(TextInfo *docinfo, KileProject *project = NULL) const;
 	KileProjectItem* selectProjectFileItem(const QString &label);
 	QList<KileProjectItem*> selectProjectFileItems(const QString &label);
 
+	/**
+	 * The next method returns a list as several projects can be open simultaneously, i.e.
+	 * one URL can be associated with several project item belonging to different projects.
+	 **/
 	QList<KileProjectItem*> itemsFor(Info *docinfo) const;
 	QList<KileProjectItem*> itemsFor(const KUrl& url) const;
 
 	static const KUrl symlinkFreeURL(const KUrl& url);
 
 protected:
-	void mapItem(TextInfo *docinfo, KileProjectItem *item);
+	/**
+	 * @param openProjectItemViews Opens project files in the editor iff openProjectItemViews is set to 'true'.
+	 **/
+	void projectOpenItem(KileProjectItem *item, bool openProjectItemViews = true);
+	void createTextInfoForProjectItem(KileProjectItem *item);
 
 	void trashDoc(TextInfo *docinfo, KTextEditor::Document *doc = NULL);
 
@@ -254,6 +266,7 @@ protected:
 	KTextEditor::View* loadText(KileDocument::Type type, const KUrl& url, const QString& encoding = QString(), bool create = true, const QString& mode = QString(), const QString& highlight = QString(), const QString &text = QString(), int index = -1, const KUrl& baseDirectory = KUrl());
 	KTextEditor::View* loadItem(KileDocument::Type type, KileProjectItem *item, const QString& text = QString(), bool openProjectItemViews = true);
 
+	QStringList loadTextURLContents(const KUrl& url, const QString& encoding);
 private:
 	KTextEditor::Editor			*m_editor;
 	QList<TextInfo*>			m_textInfoList;
@@ -265,6 +278,7 @@ private:
 
 	void dontOpenWarning(KileProjectItem *item, const QString &action, const QString &filetype);
 	void cleanupDocumentInfoForProjectItems(KileDocument::Info *info);
+
 	void createProgressDialog();
 
 	QStringList autosaveWarnings;

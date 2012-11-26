@@ -1,8 +1,7 @@
 /*********************************************************************************************
-    begin                : Sun Jul 20 2003
-    copyright            : (C) 2003 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)
-                           (C) 2005-2007 by Holger Danielsson (holger.danielsson@versanet.de)
-                           (C) 2006-2012 by Michel Ludwig (michel.ludwig@kdemail.net)
+    Copyright (C) 2003 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)
+              (C) 2005-2007 by Holger Danielsson (holger.danielsson@versanet.de)
+              (C) 2006-2012 by Michel Ludwig (michel.ludwig@kdemail.net)
  *********************************************************************************************/
 
 /***************************************************************************
@@ -392,22 +391,12 @@ QString Info::lastModifiedFile(const QStringList& list)
 		}
 	}
 
-	KILE_DEBUG() << "\treturning " << fileinfo.absoluteFilePath();
+	KILE_DEBUG() << "\treturning " << last;
 	return last;
 }
 
 void Info::updateStruct()
 {
-	KILE_DEBUG() << "==Info::updateStruct()=======";
-	m_labels.clear();
-	m_bibItems.clear();
-	m_deps.clear();
-	m_bibliography.clear();
-	m_packages.clear();
-	m_newCommands.clear();
-	m_asyFigures.clear();
-	m_bIsRoot = false;
-	m_preamble.clear();
 }
 
 void Info::updateBibItems()
@@ -420,23 +409,16 @@ void Info::slotCompleted()
 	emit completed(this);
 }
 
-
-TextInfo::TextInfo(KTextEditor::Document *doc,
-                   Extensions *extensions,
-                   KileAbbreviation::Manager *abbreviationManager,
-                   KileParser::Manager *parserManager,
+TextInfo::TextInfo(Extensions* extensions,
+                   KileAbbreviation::Manager* abbreviationManager,
+                   KileParser::Manager* parserManager,
                    const QString& defaultMode)
 : m_doc(NULL),
   m_defaultMode(defaultMode),
   m_abbreviationManager(abbreviationManager),
   m_parserManager(parserManager)
 {
-	setDoc(doc);
-	if(m_doc) {
-		KILE_DEBUG() << "TextInfo created for " << m_doc->url();
-	}
-
- 	m_arStatistics = new long[SIZE_STAT_ARRAY];
+	m_arStatistics = new long[SIZE_STAT_ARRAY];
 
 	m_extensions = extensions;
 	m_abbreviationCodeCompletionModel = new KileCodeCompletion::AbbreviationCompletionModel(this, m_abbreviationManager);
@@ -486,6 +468,7 @@ void TextInfo::setDocument(KTextEditor::Document *doc)
 	detach();
 	if(doc) {
 		m_doc = doc;
+		m_documentContents.clear();
 		connect(m_doc, SIGNAL(documentNameChanged(KTextEditor::Document*)), this, SLOT(slotFileNameChanged()));
 		connect(m_doc, SIGNAL(documentUrlChanged(KTextEditor::Document*)), this, SLOT(slotFileNameChanged()));
 		connect(m_doc, SIGNAL(completed()), this, SLOT(slotCompleted()));
@@ -854,17 +837,30 @@ void TextInfo::activateDefaultMode()
 	}
 }
 
-LaTeXInfo::LaTeXInfo(KTextEditor::Document *doc,
-                     Extensions *extensions,
-                     KileAbbreviation::Manager *abbreviationManager,
-                     LatexCommands *commands,
-                     KileDocument::EditorExtension *editorExtension,
+const QStringList TextInfo::documentContents() const
+{
+	if (m_doc) {
+		return m_doc->textLines(m_doc->documentRange());
+	}
+	else {
+		return m_documentContents;
+	}
+}
+
+void TextInfo::setDocumentContents(const QStringList& contents)
+{
+	m_documentContents = contents;
+}
+
+LaTeXInfo::LaTeXInfo(Extensions* extensions,
+                     KileAbbreviation::Manager* abbreviationManager,
+                     LatexCommands* commands,
+                     EditorExtension* editorExtension,
                      KileConfiguration::Manager* manager,
-                     KileCodeCompletion::Manager *codeCompletionManager,
-                     KileTool::LivePreviewManager *livePreviewManager,
-                     KileParser::Manager *parserManager
-                    )
-: TextInfo(doc, extensions, abbreviationManager, parserManager, "LaTeX"),
+                     KileCodeCompletion::Manager* codeCompletionManager,
+                     KileTool::LivePreviewManager* livePreviewManager,
+                     KileParser::Manager* parserManager)
+: TextInfo(extensions, abbreviationManager, parserManager, "LaTeX"),
   m_commands(commands),
   m_editorExtension(editorExtension),
   m_configurationManager(manager),
@@ -1087,16 +1083,10 @@ BracketResult LaTeXInfo::matchBracket(int &l, int &pos)
 	return result;
 }
 
-//FIXME refactor, clean this mess up
 void LaTeXInfo::updateStruct()
 {
 	KILE_DEBUG() << "==void TeXInfo::updateStruct: (" << url() << ")=========";
 
-	if(!getDoc()) {
-		return;
-	}
-
-	Info::updateStruct();
 	m_parserManager->parseDocument(this);
 }
 
@@ -1163,12 +1153,11 @@ void LaTeXInfo::setInlinePreview(bool on) {
 	}
 }
 
-BibInfo::BibInfo (KTextEditor::Document *doc,
-                  Extensions *extensions,
-                  KileAbbreviation::Manager *abbreviationManager,
-                  KileParser::Manager *parserManager,
-                  LatexCommands* /* commands */)
-: TextInfo(doc, extensions, abbreviationManager, parserManager, "BibTeX")
+BibInfo::BibInfo(Extensions* extensions,
+                 KileAbbreviation::Manager* abbreviationManager,
+                 KileParser::Manager* parserManager,
+                 LatexCommands* /* commands */)
+: TextInfo(extensions, abbreviationManager, parserManager, "BibTeX")
 {
 	documentTypePromotionAllowed = false;
 }
@@ -1184,12 +1173,6 @@ bool BibInfo::isLaTeXRoot()
 
 void BibInfo::updateStruct()
 {
-	if(!getDoc()) {
-		return;
-	}
-
-	Info::updateStruct();
-
 	m_parserManager->parseDocument(this);
 }
 
@@ -1219,11 +1202,10 @@ QString BibInfo::getFileFilter() const
 	return m_extensions->bibtexFileFilter();
 }
 
-ScriptInfo::ScriptInfo(KTextEditor::Document *doc,
-                       Extensions *extensions,
-                       KileAbbreviation::Manager *abbreviationManager,
-                       KileParser::Manager *parserManager)
-: TextInfo(doc, extensions, abbreviationManager, parserManager, "JavaScript")
+ScriptInfo::ScriptInfo(Extensions* extensions,
+                       KileAbbreviation::Manager* abbreviationManager,
+                       KileParser::Manager* parserManager)
+: TextInfo(extensions, abbreviationManager, parserManager, "JavaScript")
 {
 	documentTypePromotionAllowed = false;
 }

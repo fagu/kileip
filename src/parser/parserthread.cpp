@@ -14,6 +14,7 @@
 #include "parserthread.h"
 
 #include "documentinfo.h"
+#include "kiledocmanager.h"
 #include "kileinfo.h"
 #include "bibtexparser.h"
 #include "latexparser.h"
@@ -228,28 +229,25 @@ Parser* DocumentParserThread::createParser(ParserInput *input)
 void DocumentParserThread::addDocument(KileDocument::TextInfo *textInfo)
 {
 	KILE_DEBUG() << textInfo;
-	KTextEditor::Document *document = textInfo->getDoc();
-	const KUrl& url = document->url();
-	if(!document) {
-		KILE_DEBUG() << "KileDocument::TextInfo without document given!";
-		return;
-	}
+	const KUrl url = m_ki->docManager()->urlFor(textInfo);
+	Q_ASSERT(!url.isEmpty());
 	ParserInput* newItem = NULL;
 	if(dynamic_cast<KileDocument::BibInfo*>(textInfo)) {
-		newItem = new BibTeXParserInput(url, document->textLines(document->documentRange()));
+		newItem = new BibTeXParserInput(url, textInfo->documentContents());
 	}
 	else {
-		newItem = new LaTeXParserInput(url, document->textLines(document->documentRange()),
+		newItem = new LaTeXParserInput(url, textInfo->documentContents(),
 		                                    m_ki->extensions(),
-	                                            (textInfo->dictStructLevel()),
+	                                            textInfo->dictStructLevel(),
 	                                            KileConfig::svShowSectioningLabels(),
 	                                            KileConfig::svShowTodo());
 	}
 	addParserInput(newItem);
 
-	connect(document, SIGNAL(aboutToClose(KTextEditor::Document*)),
-	        this, SLOT(handleDocumentClosed(KTextEditor::Document*)),
-	        Qt::UniqueConnection);
+	// It is not very useful to watch for the destruction of 'textInfo' here and stop the parsing
+	// for 'textInfo' whenever that happens as at that moment it probably won't have a document
+	// anymore nor would it still be associated with a project item.
+	// It is better to call 'removeDocument' from the point when 'textInfo' is going to be deleted!
 }
 
 void DocumentParserThread::removeDocument(KileDocument::TextInfo *textInfo)
@@ -262,11 +260,9 @@ void DocumentParserThread::removeDocument(KileDocument::TextInfo *textInfo)
 	removeParserInput(document->url());
 }
 
-void DocumentParserThread::handleDocumentClosed(KTextEditor::Document *document)
+void DocumentParserThread::removeDocument(const KUrl& url)
 {
-	KILE_DEBUG();
-	disconnect(document, SIGNAL(aboutToClose(KTextEditor::Document*)), this, SLOT(handleDocumentClosed(KTextEditor::Document*)));
-	removeParserInput(document->url());
+	removeParserInput(url);
 }
 
 OutputParserThread::OutputParserThread(KileInfo *info, QObject *parent)

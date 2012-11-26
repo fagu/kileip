@@ -206,8 +206,8 @@ Kile::Kile(bool allowRestore, QWidget *parent)
 	connect(viewManager(), SIGNAL(prepareForPart(const QString& )), this, SLOT(prepareForPart(const QString& )));
 	connect(viewManager(), SIGNAL(startQuickPreview(int)), this, SLOT(slotQuickPreview(int)) );
 
-	connect(parserManager(), SIGNAL(parsingStarted()), this, SLOT(handleParsingStarted()));
-	connect(parserManager(), SIGNAL(parsingComplete()), this, SLOT(handleParsingComplete()));
+	connect(parserManager(), SIGNAL(documentParsingStarted()), this, SLOT(handleDocumentParsingStarted()));
+	connect(parserManager(), SIGNAL(documentParsingComplete()), this, SLOT(handleDocumentParsingComplete()));
 
 	m_signalMapper = new QSignalMapper(this);
 	connect(m_signalMapper, SIGNAL(mapped(const QString &)),
@@ -1426,10 +1426,14 @@ void Kile::updateModeStatus()
 	updateStatusBarSelection(view);
 }
 
-void Kile::openDocument(const QString & url)
+void Kile::openDocument(const KUrl& url)
 {
-	KILE_DEBUG() << "==Kile::openDocument(" << url << ")==========" << endl;
-	docManager()->fileSelected(KUrl::fromPathOrUrl(url));
+	docManager()->fileSelected(url);
+}
+
+void Kile::openDocument(const QString& s)
+{
+	openDocument(KUrl::fromPathOrUrl(s));
 }
 
 void Kile::closeDocument()
@@ -1461,9 +1465,14 @@ void Kile::enableAutosave(bool as)
 	}
 }
 
+void Kile::openProject(const KUrl& url)
+{
+	docManager()->projectOpen(url);
+}
+
 void Kile::openProject(const QString& proj)
 {
-	docManager()->projectOpen(KUrl::fromPathOrUrl(proj));
+	openProject(KUrl::fromPathOrUrl(proj));
 }
 
 void Kile::focusPreview()
@@ -2216,7 +2225,7 @@ void Kile::insertTag(const KileAction::TagData& data,const QStringList &pkgs)
 	KILE_DEBUG() << "void Kile::insertTag(const KileAction::TagData& data,const QStringList " << pkgs.join(",") << ")" << endl;
 	insertTag(data);
 
-	KileDocument::Info *docinfo = docManager()->textInfoFor(getCompileName());
+	KileDocument::TextInfo *docinfo = docManager()->textInfoFor(getCompileName());
 	if(docinfo) {
 		QStringList packagelist = allPackages(docinfo);
 		QStringList::const_iterator it;
@@ -2457,8 +2466,10 @@ void Kile::transformOldUserTags()
 		xml.writeStartElement("UserMenu");
 
 		for (int i = 0; i < len; ++i) {
-			QString tagname = userGroup.readEntry("userTagName" + QString::number(i), i18n("no name"));
-			QString tag = userGroup.readEntry("userTag" + QString::number(i), "");
+			const QString tagNameConfigKey = "userTagName" + QString::number(i);
+			const QString tagname = userGroup.readEntry(tagNameConfigKey, i18n("No Name"));
+			const QString tagConfigKey = "userTag" + QString::number(i);
+			QString tag = userGroup.readEntry(tagConfigKey, "");
 			tag = tag.replace('\n',"\\n");
 
 			xml.writeStartElement("menu");
@@ -2468,6 +2479,8 @@ void Kile::transformOldUserTags()
 			xml.writeTextElement(KileMenu::UserMenuData::xmlMenuTagName(KileMenu::UserMenuData::XML_SHORTCUT), QString("Ctrl+Shift+%1").arg(i+1));
 			xml.writeEndElement();
 
+			userGroup.deleteEntry(tagNameConfigKey);
+			userGroup.deleteEntry(tagConfigKey);
 		}
 		xml.writeEndDocument();
 		file.close();
@@ -2475,9 +2488,7 @@ void Kile::transformOldUserTags()
 		// save current xml file
 		KileConfig::setMenuFile(usertagfile);
 	}
-
-	// delete old config group
-	m_config->deleteGroup("User");
+	userGroup.deleteEntry("nUserTags");
 }
 
 void Kile::transformOldUserSettings()
@@ -3069,14 +3080,13 @@ void Kile::updateStatusBarSelection(KTextEditor::View *view)
 	}
 }
 
-void Kile::handleParsingStarted()
+void Kile::handleDocumentParsingStarted()
 {
 	statusBar()->changeItem(i18n("Refreshing structure..."), ID_PARSER_STATUS);
 }
 
-void Kile::handleParsingComplete()
+void Kile::handleDocumentParsingComplete()
 {
-kDebug();
 	statusBar()->changeItem(QString(), ID_PARSER_STATUS);
 }
 
