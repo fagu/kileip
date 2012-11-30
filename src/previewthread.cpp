@@ -145,7 +145,7 @@ void PreviewThread::binaryCreatePreviews ( QString& text, QString& preamble, QLi
 	for (int i = start; i <= end; i++) {
 		Part *env = tempenvs[i];
 		// FIXME Double dollar signs do not work! Without the preview environment they do!
-		fout << "\\begin{preview}" << env->source(text) << "\\end{preview}" << endl << endl;
+		fout << "\n\\begin{preview}\n" << env->source(text) << "\n\\end{preview}\n" << endl << endl;
 	}
 	
 	fout << "\\end{document}" << endl;
