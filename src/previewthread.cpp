@@ -159,7 +159,7 @@ void PreviewThread::binaryCreatePreviews ( QString& text, QString& preamble, QLi
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 	env.insert("TEXINPUTS", ".:"+m_info->url().directory()+":");
 	proc.setProcessEnvironment(env);
-	proc.start("pdflatex -interaction nonstopmode -halt-on-error inpreview.tex");
+	proc.start("latexmk -pdf -silent inpreview.tex");
 	proc.waitForFinished(-1);
 	if (proc.exitCode()) {
 		success = false;
