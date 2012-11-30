@@ -9,6 +9,7 @@ multiline
 multiline*
 eqnarray
 eqnarray*
+asy
 # start commands of math environments
 !begincommand
 $
