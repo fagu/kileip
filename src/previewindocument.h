@@ -45,7 +45,7 @@ class PreviewWidget : public QWidget, KTextEditor::MovingRangeFeedback {
 	friend class PreviewWidgetUpdateRect;
 	Q_OBJECT
 	public:
-		PreviewWidget(ViewHandler* viewHandler, QImage* img, const KTextEditor::Range &range);
+		PreviewWidget(ViewHandler* viewHandler, QImage* img, const KTextEditor::Range &range, QString text);
 		~PreviewWidget();
 		void setRange(const KTextEditor::Range &range);
 		void caretEnteredRange (KTextEditor::MovingRange* range, KTextEditor::View* view);
@@ -59,6 +59,8 @@ class PreviewWidget : public QWidget, KTextEditor::MovingRangeFeedback {
 		ViewHandler *vh;
 		QImage *m_img;
 		KTextEditor::MovingRange *m_range;
+		QString m_text;
+		bool m_dirty;
 		QList<QLine> m_border;
 		QRect m_imgrect;
 };

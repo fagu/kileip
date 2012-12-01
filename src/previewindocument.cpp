@@ -128,13 +128,9 @@ QPoint ViewHandler::pos(const KTextEditor::Cursor& c) {
 
 
 
-PreviewWidget::PreviewWidget(ViewHandler* viewHandler, QImage* img, const KTextEditor::Range& range): QWidget(viewHandler->view), vh(viewHandler), m_img(img), m_range(0) {
+PreviewWidget::PreviewWidget(ViewHandler* viewHandler, QImage* img, const KTextEditor::Range& range, QString text): QWidget(viewHandler->view), vh(viewHandler), m_img(img), m_range(0), m_text(text) {
 	setAttribute(Qt::WA_TransparentForMouseEvents);
 	setAttribute(Qt::WA_ShowWithoutActivating);
-	if (!m_img->isNull())
-		setPalette(QPalette(Qt::white));
-	else
-		setPalette(QPalette(QColor(255,0,0,50)));
 	setAutoFillBackground(true);
 	connect(vh->doc, SIGNAL(textChanged(KTextEditor::Document*)), this, SLOT(updateRect()));
 	connect(vh->view, SIGNAL(cursorPositionChanged(KTextEditor::View*,KTextEditor::Cursor)), this, SLOT(updateRect()));
@@ -168,6 +164,8 @@ void PreviewWidget::updateRect() {
 		setVisible(false);
 		return;
 	}
+	bool olddirty = m_dirty;
+	m_dirty = vh->doc->text(*m_range) != m_text;
 	KTextEditor::Cursor c1 = qMax(vh->visStart, (KTextEditor::Cursor)m_range->start());
 	KTextEditor::Cursor c2 = qMin(vh->visEnd, (KTextEditor::Cursor)m_range->end());
 	QList<QLine> oldborder = m_border;
@@ -294,12 +292,18 @@ void PreviewWidget::updateRect() {
 		avail.translate(-shift);
 		setMask(avail);
 		resize(avail.boundingRect().size());
-		if (oldimgrect != m_imgrect || oldborder != m_border)
+		if (oldimgrect != m_imgrect || oldborder != m_border || olddirty != m_dirty)
 			update();
 	}
 }
 
 void PreviewWidget::paintEvent(QPaintEvent* ) {
+	if (m_dirty)
+		setPalette(QPalette(QColor(220,220,255,255)));
+	else if (m_img->isNull())
+		setPalette(QPalette(QColor(255,0,0,50)));
+	else
+		setPalette(QPalette(Qt::white));
 	QPainter painter(this);
 	painter.setPen(QColor(240,240,240));
 	foreach(QLine line, m_border)
@@ -385,7 +389,7 @@ void PreviewWidgetHandler::picturesAvailable() {
 				//	qDebug() << "Formula (invalid):" << text;
 				if (aktinds[text] >= m_widgets.count(text)) {
 					QImage img = previmgs[text];
-					m_widgets.insert(text, new PreviewWidget(vh, new QImage(img), ran));
+					m_widgets.insert(text, new PreviewWidget(vh, new QImage(img), ran, text));
 				} else {
 					m_widgets.values(text)[aktinds[text]]->setRange(ran);
 				}
