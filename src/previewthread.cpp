@@ -121,12 +121,12 @@ void PreviewThread::createPreviews() {
 
 
 void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > tempenvs, int start, int end ) {
-	qDebug() << "Binary:" << start << "-" << end;
 	// Check if the document changed again in the meantime
 	if (m_res.text() != m_doc->text())
 		return;
 	if (end < start)
 		return;
+	qDebug() << "Binary:" << start << "-" << end;
 	QTime tim;
 	tim.start();
 	// Create LaTeX preview file
