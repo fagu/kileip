@@ -136,7 +136,7 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > temp
 	fout << preamble;
 	
 	// Create preview preamble
-	fout << "\\usepackage[active,delayed,displaymath,floats,textmath,graphics,tightpage,showlabels]{preview}" << endl;
+	fout << "\\usepackage[active,delayed,tightpage,showlabels,pdftex]{preview}" << endl;
 	fout << "\\begin{document}" << endl;
 	
 	for (int i = start; i <= end; i++) {
