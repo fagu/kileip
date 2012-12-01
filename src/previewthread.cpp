@@ -119,12 +119,14 @@ void PreviewThread::createPreviews() {
 
 
 void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > tempenvs, int start, int end ) {
-	qDebug() << "Binary:" << start << " - " << end;
+	qDebug() << "Binary:" << start << "-" << end;
 	// Check if the document changed again in the meantime
 	if (m_res.text() != m_doc->text())
 		return;
 	if (end < start)
 		return;
+	QTime tim;
+	tim.start();
 	// Create LaTeX preview file
 	QFile tempfile(m_tempfilename);
 	tempfile.open(QIODevice::WriteOnly);
@@ -169,7 +171,7 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > temp
 	}
 	
 	if (!success) {
-		qDebug() << "Failed:" << start << " - " << end;
+		qDebug() << "Failed:" << start << "-" << end << "(in" << tim.elapsed()*0.001 << "s)";
 		if (start != end) {
 			binaryCreatePreviews(preamble, tempenvs, start, (start+end)/2);
 			binaryCreatePreviews(preamble, tempenvs, (start+end)/2+1, end);
@@ -178,6 +180,7 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > temp
 			m_previmgs[tempenvs[start]->source(m_res.text())] = QImage();
 		}
 	} else {
+		qDebug() << "Succeeded:" << start << "-" << end << "(in" << tim.elapsed()*0.001 << "s)";
 		// Load images from disk
 		int ipr = 1;
 		for (int i = start; i <= end; i++) {
