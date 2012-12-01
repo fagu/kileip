@@ -279,7 +279,10 @@ QString ParserResult::text() {
 
 QList< Part* > ParserResult::mathgroups() {
 	if (!m_initmathgroups) {
-		m_mathgroups = m_user->getMathgroups(m_doc, m_text);
+		Part *pa = m_user->document(m_doc, m_text);
+		if (!pa)
+			pa = m_doc;
+		m_mathgroups = m_user->getMathgroups(pa, m_text);
 		m_initmathgroups = true;
 	}
 	return m_mathgroups;
