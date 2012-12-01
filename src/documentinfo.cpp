@@ -88,6 +88,7 @@
 #include "parser/latexparser.h"
 #include "parser/parsermanager.h"
 #include "livepreview.h"
+#include "user.h"
 
 namespace KileDocument
 {

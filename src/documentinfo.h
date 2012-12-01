@@ -28,7 +28,7 @@
 #include "kileextensions.h"
 #include "livepreview_utils.h"
 #include "outputinfo.h"
-#include "user.h"
+class User;
 
 #define TEX_CAT0 '\\'
 #define TEX_CAT1 '{'
