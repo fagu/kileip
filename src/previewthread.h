@@ -58,9 +58,7 @@ class PreviewThread : public QThread {
 		bool m_newdirty;
 		QWaitCondition m_dirtycond;
 		
-		TextPart *m_parseddoc;
-		QString m_parsedtext;
-		QList<Part*> m_mathenvs;
+		ParserResult m_res;
 		
 		KTempDir *m_dir;
 		QString m_tempfilename;
@@ -70,7 +68,7 @@ class PreviewThread : public QThread {
 		int m_nextprevimg;
 		
 		void createPreviews();
-		void binaryCreatePreviews(QString &text, QString &preamble, QList<Part*> tempenvs, int start, int end);
+		void binaryCreatePreviews(QString &preamble, QList<Part*> tempenvs, int start, int end);
 		
 		User *m_user;
 		

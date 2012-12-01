@@ -23,7 +23,7 @@
 #include <QSet>
 
 PreviewThread::PreviewThread(KileDocument::LaTeXInfo* info, QObject* parent)
-: QThread(parent), m_doc(info->getDoc()), m_info(info), m_parseddoc(0) {
+: QThread(parent), m_doc(info->getDoc()), m_info(info) {
 	m_user = m_info->user();
 	m_abort = false;
 	m_dirty = false;
@@ -44,8 +44,6 @@ PreviewThread::~PreviewThread() {
 	wait();
 	delete m_dir;
 	m_dir = 0;
-	m_user->finished(m_parseddoc);
-	m_parseddoc = 0;
 }
 
 void PreviewThread::setDoc(KTextEditor::Document *doc) {
@@ -64,8 +62,6 @@ void PreviewThread::run() {
 			}
 			m_newdirty = false;
 		}
-		
-		m_user->finished(m_parseddoc);
 		
 		// Run LaTeX to create Previews
 		createPreviews();
@@ -88,14 +84,10 @@ void PreviewThread::createPreviews() {
 		return;
 	QList<Part*> tempenvs;
 	
-	QPair<TextPart*,QString> pair = m_user->data();
-	m_parseddoc = pair.first;
-	QString text = pair.second;
-	m_parsedtext = text;
-	m_mathenvs = m_user->getMathgroups(m_user->document(m_parseddoc, text), text);
+	m_res = m_user->data();
 	
-	CollectionPart *prp = m_user->preamble(m_parseddoc, text);
-	QString preamble = prp->source(text);
+	CollectionPart *prp = m_user->preamble(m_res.doc(), m_res.text());
+	QString preamble = prp->source(m_res.text());
 	delete prp;
 	if (preamble != lastpremable) {
 		m_previmgs.clear();
@@ -106,10 +98,10 @@ void PreviewThread::createPreviews() {
 	QSet<QString> allmaths;
 	
 	// Insert new math
-	foreach(Part *env, m_mathenvs) {
+	foreach(Part *env, m_res.mathgroups()) {
 		//qDebug() << "math" << env->source(text);
-		allmaths.insert(env->source(text));
-		if (!m_previmgs.contains(env->source(text))) {
+		allmaths.insert(env->source(m_res.text()));
+		if (!m_previmgs.contains(env->source(m_res.text()))) {
 			tempenvs << env;
 		}
 	}
@@ -122,13 +114,13 @@ void PreviewThread::createPreviews() {
 			it++;
 	}
 	
-	binaryCreatePreviews(text, preamble, tempenvs, 0, tempenvs.size()-1);
+	binaryCreatePreviews(preamble, tempenvs, 0, tempenvs.size()-1);
 }
 
 
-void PreviewThread::binaryCreatePreviews ( QString& text, QString& preamble, QList< Part* > tempenvs, int start, int end ) {
+void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > tempenvs, int start, int end ) {
 	// Check if the document changed again in the meantime
-	if (text != m_doc->text())
+	if (m_res.text() != m_doc->text())
 		return;
 	if (end < start)
 		return;
@@ -145,7 +137,7 @@ void PreviewThread::binaryCreatePreviews ( QString& text, QString& preamble, QLi
 	for (int i = start; i <= end; i++) {
 		Part *env = tempenvs[i];
 		// FIXME Double dollar signs do not work! Without the preview environment they do!
-		fout << "\n\\begin{preview}\n" << env->source(text) << "\n\\end{preview}\n" << endl << endl;
+		fout << "\n\\begin{preview}\n" << env->source(m_res.text()) << "\n\\end{preview}\n" << endl << endl;
 	}
 	
 	fout << "\\end{document}" << endl;
@@ -177,11 +169,11 @@ void PreviewThread::binaryCreatePreviews ( QString& text, QString& preamble, QLi
 	
 	if (!success) {
 		if (start != end) {
-			binaryCreatePreviews(text, preamble, tempenvs, start, (start+end)/2);
-			binaryCreatePreviews(text, preamble, tempenvs, (start+end)/2+1, end);
+			binaryCreatePreviews(preamble, tempenvs, start, (start+end)/2);
+			binaryCreatePreviews(preamble, tempenvs, (start+end)/2+1, end);
 		} else {
-			//qDebug() << "Failed:" << tempenvs[start]->source(text);
-			m_previmgs[tempenvs[start]->source(text)] = QImage();
+			//qDebug() << "Failed:" << tempenvs[start]->source(m_res.text());
+			m_previmgs[tempenvs[start]->source(m_res.text())] = QImage();
 		}
 	} else {
 		// Load images from disk
@@ -190,7 +182,7 @@ void PreviewThread::binaryCreatePreviews ( QString& text, QString& preamble, QLi
 			Part *env = tempenvs[i];
 			//qDebug() << "Succeeded:" << env->source(text);
 			QString filename = m_dir->name() + "/" + QString::number(m_nextprevimg) + (end>start ? "-" + QString::number(ipr-1) : "") + ".png";
-			m_previmgs[env->source(text)] = QImage(filename);
+			m_previmgs[env->source(m_res.text())] = QImage(filename);
 			ipr++;
 		}
 		m_nextprevimg++;
@@ -218,7 +210,7 @@ void PreviewThread::textChanged() {
 
 bool PreviewThread::startquestions() {
 	m_dirtymutex.lock();
-	if (!m_dirty && m_user->dataText() == m_doc->text()) {
+	if (!m_dirty && m_res.text() == m_doc->text()) {
 		return true;
 	} else {
 		m_dirtymutex.unlock();
@@ -231,11 +223,11 @@ void PreviewThread::endquestions() {
 }
 
 QList<Part*> PreviewThread::mathpositions() {
-	return m_mathenvs;
+	return m_user->getMathgroups(m_res.doc(),m_res.text());
 }
 
 QImage PreviewThread::image(Part* part) {
-	return m_previmgs[part->source(m_parsedtext)];
+	return m_previmgs[part->source(m_res.text())];
 }
 
 QMap<QString,QImage> PreviewThread::images() {
@@ -243,7 +235,7 @@ QMap<QString,QImage> PreviewThread::images() {
 }
 
 QString PreviewThread::parsedText() {
-	return m_parsedtext;
+	return m_res.text();
 }
 
 #include "previewthread.moc"

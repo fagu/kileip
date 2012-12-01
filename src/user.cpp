@@ -142,10 +142,9 @@ QList< Part* > User::getMathgroups ( Part* part, QString text ) {
 
 User::User() {
 	abort = false;
-	text = "";
 	Parser p("", 0);
-	m_main = p.parseText();
-	mains.append(QPair<TextPart*,int>(m_main, 1));
+	ParserResult r(ParserResult(this, p.parseText(), ""));
+	m_res = r;
 }
 
 User::~User() {
@@ -155,7 +154,7 @@ User::~User() {
 		waitcond.wakeOne();
 	}
 	wait();
-	finished(m_main);
+	m_res = ParserResult();
 }
 
 void User::run() {
@@ -163,7 +162,7 @@ void User::run() {
 		QString parsetext;
 		{
 			QMutexLocker lock(&mutex);
-			while(text == newtext) {
+			while(m_res.text() == newtext) {
 				waitcond.wait(&mutex);
 				if (abort)
 					return;
@@ -176,42 +175,15 @@ void User::run() {
 		//QTime tim; tim.start();
 		TextPart *newmain = p.parseText();
 		//qDebug() << "Parsing time:" << tim.elapsed()*0.001;
-		TextPart *oldmain;
-		{
-			QMutexLocker lock(&mutex);
-			oldmain = m_main;
-			m_main = newmain;
-			text = parsetext;
-			mains.append(QPair<TextPart*,int>(m_main, 1));
-		}
-		finished(oldmain);
+		m_res = ParserResult(this, newmain, parsetext);
 		emit documentChanged();
 	}
 }
 
-QPair<TextPart*,QString> User::data() {
-	QMutexLocker lock(&mutex);
-	mains.last().second++;
-	return qMakePair(m_main, text);
+ParserResult User::data() {
+	return m_res;
 }
 
-QString User::dataText() {
-	return text;
-}
-
-void User::finished(TextPart *main) {
-	QMutexLocker lock(&mutex);
-	for (int i = 0; i < mains.size(); i++) {
-		if (mains[i].first == main) {
-			mains[i].second--;
-			if (mains[i].second == 0) {
-				mains.removeAt(i);
-				delete main;
-			}
-			break;
-		}
-	}
-}
 
 
 void User::textChanged(QString ntext) {
@@ -247,5 +219,70 @@ QString CollectionPart::toTeX ( const QString& text ) const {
 }
 
 
+ParserResult::ParserResult() {
+	m_user = 0;
+	m_initmathgroups = false;
+}
+
+ParserResult::ParserResult(User* user, TextPart* doc, QString text) {
+	m_user = user;
+	m_initmathgroups = false;
+	if (!m_user)
+		return;
+	QMutexLocker lock(&m_user->mutex);
+	m_doc = doc;
+	m_text = text;
+	m_user->mains[m_doc]++;
+}
+
+ParserResult::ParserResult(const ParserResult& r) {
+	m_user = r.m_user;
+	m_initmathgroups = false;
+	if (!m_user)
+		return;
+	QMutexLocker lock(&m_user->mutex);
+	m_doc = r.m_doc;
+	m_text = r.m_text;
+	m_user->mains[m_doc]++;
+}
+
+ParserResult& ParserResult::operator=(const ParserResult& r) {
+	m_user = r.m_user;
+	m_initmathgroups = false;
+	if (!m_user)
+		return *this;
+	QMutexLocker lock(&m_user->mutex);
+	m_doc = r.m_doc;
+	m_text = r.m_text;
+	m_user->mains[m_doc]++;
+	return *this;
+}
+
+ParserResult::~ParserResult() {
+	if (!m_user)
+		return;
+	QMutexLocker lock(&m_user->mutex);
+	m_user->mains[m_doc]--;
+	if (!m_user->mains[m_doc]) {
+		m_user->mains.erase(m_user->mains.find(m_doc));
+		delete m_doc;
+	}
+}
+
+TextPart* ParserResult::doc() {
+	return m_doc;
+}
+
+QString ParserResult::text() {
+	return m_text;
+}
+
+QList< Part* > ParserResult::mathgroups() {
+	if (!m_initmathgroups) {
+		m_mathgroups = m_user->getMathgroups(m_doc, m_text);
+		m_initmathgroups = true;
+	}
+	return m_mathgroups;
+}
 
 #include "user.moc"

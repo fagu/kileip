@@ -32,23 +32,40 @@ class CollectionPart : public Part {
 		QString toTeX(const QString &text) const;
 };
 
+class User;
+class ParserResult {
+public:
+	ParserResult();
+	ParserResult(User *user, TextPart *doc, QString text);
+	ParserResult(const ParserResult &r);
+	ParserResult& operator=(const ParserResult &r);
+	~ParserResult();
+	TextPart *doc();
+	QString text();
+	QList<Part*> mathgroups();
+private:
+	User *m_user;
+	TextPart *m_doc;
+	QString m_text;
+	bool m_initmathgroups;
+	QList<Part*> m_mathgroups;
+};
+
 class User : public QThread {
+	friend ParserResult;
 	Q_OBJECT
 	public:
 		User();
 		~User();
 		/// Returs main
-		QPair< TextPart*, QString > data();
-		QString dataText();
+		ParserResult data();
 		void textChanged(QString ntext);
-		void finished(TextPart * main);
 	protected:
 		void run();
 	signals:
 		void documentChanged();
 	private:
-		QString text;
-		TextPart * m_main;
+		ParserResult m_res;
 		
 		QString newtext;
 		
@@ -56,7 +73,7 @@ class User : public QThread {
 		QWaitCondition waitcond;
 		bool abort;
 		
-		QList<QPair<TextPart*,int> > mains;
+		QMap<TextPart*,int> mains;
 	public:
 		static QStringList mathcommands;
 		static QStringList mathbegincommands;
