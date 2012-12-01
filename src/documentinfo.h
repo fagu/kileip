@@ -43,7 +43,7 @@ class User;
 
 #define SIZE_STAT_ARRAY 6
 
-namespace KileDocument { class EditorExtension; }
+namespace KileDocument { class EditorExtension; class Manager; }
 namespace KileConfiguration { class Manager; }
 namespace KileCodeCompletion { class LaTeXCompletionModel; class AbbreviationCompletionModel; class Manager; }
 namespace KileAbbreviation { class Manager; }
@@ -434,7 +434,8 @@ public:
 	          KileConfiguration::Manager *manager,
 	          KileCodeCompletion::Manager *codeCompletionManager,
 	          KileTool::LivePreviewManager *livePreviewManager,
-	          KileParser::Manager *parserManager);
+	          KileParser::Manager *parserManager,
+	          KileDocument::Manager *documentManager);
 
 	virtual ~LaTeXInfo();
 
@@ -447,6 +448,7 @@ public:
 	void installParserOutput(KileParser::ParserOutput *parserOutput);
 	
 	User *user();
+	User *masteruser();
 	
 	void setDocument(KTextEditor::Document *doc);
 	
@@ -467,8 +469,10 @@ protected:
 	QObject *m_eventFilter;
 	KileCodeCompletion::LaTeXCompletionModel *m_latexCompletionModel;
 	KileTool::LivePreviewManager *m_livePreviewManager;
+	KileDocument::Manager *m_documentManager;
 	
 	User *m_user;
+	User *m_masteruser;
 	bool m_inlinePreview;
 
 	virtual void updateStructLevelInfo();

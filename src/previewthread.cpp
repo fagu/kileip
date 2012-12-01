@@ -25,9 +25,11 @@
 PreviewThread::PreviewThread(KileDocument::LaTeXInfo* info, QObject* parent)
 : QThread(parent), m_doc(info->getDoc()), m_info(info) {
 	m_user = m_info->user();
+	m_masteruser = m_info->masteruser();
 	m_abort = false;
 	m_dirty = false;
 	connect(m_user, SIGNAL(documentChanged()), this, SLOT(textChanged()));
+	connect(m_masteruser, SIGNAL(documentChanged()), this, SLOT(textChanged()));
 	connect(info, SIGNAL(inlinePreviewChanged(bool)), this, SLOT(textChanged()));
 	m_nextprevimg = 1;
 	m_dir = new KTempDir(KStandardDirs::locateLocal("tmp", "kile-inlinepreview"));
@@ -85,9 +87,10 @@ void PreviewThread::createPreviews() {
 	QList<Part*> tempenvs;
 	
 	m_res = m_user->data();
+	m_masterres = m_masteruser->data();
 	
-	CollectionPart *prp = m_user->preamble(m_res.doc(), m_res.text());
-	QString preamble = prp->source(m_res.text());
+	CollectionPart *prp = m_masteruser->preamble(m_masterres.doc(), m_masterres.text());
+	QString preamble = prp->source(m_masterres.text());
 	delete prp;
 	if (preamble != lastpremable) {
 		m_previmgs.clear();

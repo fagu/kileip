@@ -59,6 +59,7 @@ class PreviewThread : public QThread {
 		QWaitCondition m_dirtycond;
 		
 		ParserResult m_res;
+		ParserResult m_masterres;
 		
 		KTempDir *m_dir;
 		QString m_tempfilename;
@@ -71,6 +72,7 @@ class PreviewThread : public QThread {
 		void binaryCreatePreviews(QString &preamble, QList<Part*> tempenvs, int start, int end);
 		
 		User *m_user;
+		User *m_masteruser;
 		
 		QString lastpremable;
 	signals:

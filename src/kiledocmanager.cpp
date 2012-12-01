@@ -479,7 +479,8 @@ TextInfo* Manager::createTextDocumentInfo(KileDocument::Type type, const KUrl& u
 				                        m_ki->configurationManager(),
 				                        m_ki->codeCompletionManager(),
 				                        m_ki->livePreviewManager(),
-				                        m_ki->parserManager());
+				                        m_ki->parserManager(),
+				                        m_ki->docManager());
 				break;
 			case BibTeX:
 				KILE_DEBUG() << "CREATING BibInfo for " << url.url();

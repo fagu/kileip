@@ -89,6 +89,7 @@
 #include "parser/parsermanager.h"
 #include "livepreview.h"
 #include "user.h"
+#include "kiledocmanager.h"
 
 namespace KileDocument
 {
@@ -860,16 +861,20 @@ LaTeXInfo::LaTeXInfo(Extensions* extensions,
                      KileConfiguration::Manager* manager,
                      KileCodeCompletion::Manager* codeCompletionManager,
                      KileTool::LivePreviewManager* livePreviewManager,
-                     KileParser::Manager* parserManager)
+                     KileParser::Manager* parserManager,
+                     KileDocument::Manager* documentManager)
 : TextInfo(extensions, abbreviationManager, parserManager, "LaTeX"),
   m_commands(commands),
   m_editorExtension(editorExtension),
   m_configurationManager(manager),
   m_eventFilter(NULL),
-  m_livePreviewManager(livePreviewManager)
+  m_livePreviewManager(livePreviewManager),
+  m_documentManager(documentManager)
 {
 	m_user = new User();
 	m_user->start();
+	m_masteruser = new User();
+	m_masteruser->start();
 	m_inlinePreview = true;
 	documentTypePromotionAllowed = false;
 	updateStructLevelInfo();
@@ -881,6 +886,7 @@ LaTeXInfo::LaTeXInfo(Extensions* extensions,
 LaTeXInfo::~LaTeXInfo()
 {
 	delete m_user;
+	delete m_masteruser;
 }
 
 Type LaTeXInfo::getType()
@@ -1130,6 +1136,10 @@ User *LaTeXInfo::user() {
 	return m_user;
 }
 
+User* LaTeXInfo::masteruser() {
+	return m_masteruser;
+}
+
 void LaTeXInfo::setDocument(KTextEditor::Document *doc) {
 	TextInfo::setDocument(doc);
 	if (doc) {
@@ -1139,8 +1149,20 @@ void LaTeXInfo::setDocument(KTextEditor::Document *doc) {
 }
 
 void LaTeXInfo::textChanged() {
-	if (m_inlinePreview)
+	if (m_inlinePreview) {
 		m_user->textChanged(m_doc->text());
+		QString mastertext;
+		KileProject *pr = m_documentManager->projectForMember(m_doc->url());
+		if (pr) {
+			QFile f(pr->masterDocument());
+			if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
+				qDebug() << "Could not read master file" << pr->masterDocument();
+			else
+				mastertext = QTextStream(&f).readAll();
+		} else
+			mastertext = m_doc->text();
+		m_masteruser->textChanged(mastertext);
+	}
 }
 
 bool LaTeXInfo::isInlinePreview() {
