@@ -119,6 +119,7 @@ void PreviewThread::createPreviews() {
 
 
 void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > tempenvs, int start, int end ) {
+	qDebug() << "Binary:" << start << " - " << end;
 	// Check if the document changed again in the meantime
 	if (m_res.text() != m_doc->text())
 		return;
@@ -168,11 +169,12 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > temp
 	}
 	
 	if (!success) {
+		qDebug() << "Failed:" << start << " - " << end;
 		if (start != end) {
 			binaryCreatePreviews(preamble, tempenvs, start, (start+end)/2);
 			binaryCreatePreviews(preamble, tempenvs, (start+end)/2+1, end);
 		} else {
-			//qDebug() << "Failed:" << tempenvs[start]->source(m_res.text());
+			qDebug() << "Failed code:" << tempenvs[start]->source(m_res.text());
 			m_previmgs[tempenvs[start]->source(m_res.text())] = QImage();
 		}
 	} else {
