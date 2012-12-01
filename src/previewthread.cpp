@@ -230,7 +230,7 @@ void PreviewThread::endquestions() {
 }
 
 QList<Part*> PreviewThread::mathpositions() {
-	return m_user->getMathgroups(m_res.doc(),m_res.text());
+	return m_res.mathgroups();
 }
 
 QImage PreviewThread::image(Part* part) {
