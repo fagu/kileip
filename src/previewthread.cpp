@@ -100,9 +100,11 @@ void PreviewThread::createPreviews() {
 	// Insert new math
 	foreach(Part *env, m_res.mathgroups()) {
 		//qDebug() << "math" << env->source(text);
-		allmaths.insert(env->source(m_res.text()));
-		if (!m_previmgs.contains(env->source(m_res.text()))) {
-			tempenvs << env;
+		QString tt = env->source(m_res.text());
+		if (!allmaths.contains(tt)) {
+			allmaths.insert(tt);
+			if (!m_previmgs.contains(env->source(m_res.text())))
+				tempenvs << env;
 		}
 	}
 	
