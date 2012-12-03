@@ -49,6 +49,8 @@ private:
 	QString m_text;
 	bool m_initmathgroups;
 	QList<Part*> m_mathgroups;
+	void link();
+	void unlink();
 };
 
 class User : public QThread {

@@ -227,38 +227,41 @@ ParserResult::ParserResult() {
 ParserResult::ParserResult(User* user, TextPart* doc, QString text) {
 	m_user = user;
 	m_initmathgroups = false;
-	if (!m_user)
-		return;
-	QMutexLocker lock(&m_user->mutex);
 	m_doc = doc;
 	m_text = text;
-	m_user->mains[m_doc]++;
+	link();
 }
 
 ParserResult::ParserResult(const ParserResult& r) {
 	m_user = r.m_user;
 	m_initmathgroups = false;
-	if (!m_user)
-		return;
-	QMutexLocker lock(&m_user->mutex);
 	m_doc = r.m_doc;
 	m_text = r.m_text;
-	m_user->mains[m_doc]++;
+	link();
 }
 
 ParserResult& ParserResult::operator=(const ParserResult& r) {
+	unlink();
 	m_user = r.m_user;
 	m_initmathgroups = false;
-	if (!m_user)
-		return *this;
-	QMutexLocker lock(&m_user->mutex);
 	m_doc = r.m_doc;
 	m_text = r.m_text;
-	m_user->mains[m_doc]++;
+	link();
 	return *this;
 }
 
 ParserResult::~ParserResult() {
+	unlink();
+}
+
+void ParserResult::link() {
+	if (!m_user)
+		return;
+	QMutexLocker lock(&m_user->mutex);
+	m_user->mains[m_doc]++;
+}
+
+void ParserResult::unlink() {
 	if (!m_user)
 		return;
 	QMutexLocker lock(&m_user->mutex);
