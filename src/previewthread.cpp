@@ -160,7 +160,7 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > temp
 	env.insert("TEXINPUTS", ".:"+m_info->url().directory()+":");
 	proc.setProcessEnvironment(env);
 	proc.start("latexmk -pdf -silent inpreview.tex");
-	proc.waitForFinished(-1);
+	proc.waitForFinished(15000);
 	if (proc.exitCode()) {
 		success = false;
 	} else {
