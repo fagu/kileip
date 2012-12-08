@@ -351,7 +351,6 @@ void PreviewWidgetHandler::picturesAvailable() {
 		QString gestext = m_thread->parsedText();
 		QMap<QString,QImage> previmgs = m_thread->images();
 		QMap<QString,int> aktinds;
-		m_thread->endquestions();
 		
 		foreach(QString text, m_widgets.uniqueKeys()) {
 			if (*m_widgets.values(text)[0]->img() != previmgs[text]) { // TODO This is probably inefficient
@@ -407,6 +406,7 @@ void PreviewWidgetHandler::picturesAvailable() {
 				delete wid;
 			}
 		}
+		m_thread->endquestions();
 	}
 }
 

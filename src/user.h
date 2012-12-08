@@ -72,6 +72,7 @@ class User : public QThread {
 		QString newtext;
 		
 		QMutex mutex;
+		QMutex mainsmutex;
 		QWaitCondition waitcond;
 		bool abort;
 		

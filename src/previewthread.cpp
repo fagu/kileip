@@ -55,26 +55,21 @@ void PreviewThread::setDoc(KTextEditor::Document *doc) {
 void PreviewThread::run() {
 	forever {
 		// Wait for dirty or abort
-		{
-			QMutexLocker lock(&m_dirtymutex);
-			while(!m_dirty && !m_abort)
-				m_dirtycond.wait(&m_dirtymutex);
-			if (m_abort) {
-				break;
-			}
-			m_newdirty = false;
+		QMutexLocker lock(&m_dirtymutex);
+		while(!m_dirty && !m_abort)
+			m_dirtycond.wait(&m_dirtymutex);
+		if (m_abort) {
+			break;
 		}
+		m_newdirty = false;
 		
 		// Run LaTeX to create Previews
 		createPreviews();
 		
-		{
-			QMutexLocker lock(&m_dirtymutex);
-			if (m_newdirty) {
-				continue;
-			}
-			m_dirty = false;
+		if (m_newdirty) {
+			continue;
 		}
+		m_dirty = false;
 		
 		// Emit dirtychange
 		emit dirtychanged();

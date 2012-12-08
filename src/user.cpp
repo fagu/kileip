@@ -71,6 +71,7 @@ TextPart * User::document(TextPart *ma, QString text) {
 }
 
 CollectionPart * User::preamble(TextPart *ma, QString text) {
+	qDebug() << ma;
 	int preend = text.length()-1;
 	for (unsigned int i = 0; i < ma->children.size(); i++) {
 		EnvironmentPart *ep = dynamic_cast<EnvironmentPart*>(ma->children[i]);
@@ -154,6 +155,7 @@ User::~User() {
 		waitcond.wakeOne();
 	}
 	wait();
+	QMutexLocker lock(&mutex);
 	m_res = ParserResult();
 }
 
@@ -175,13 +177,17 @@ void User::run() {
 		//QTime tim; tim.start();
 		TextPart *newmain = p.parseText();
 		//qDebug() << "Parsing time:" << tim.elapsed()*0.001;
-		m_res = ParserResult(this, newmain, parsetext);
+		{
+			QMutexLocker lock(&mutex);
+			m_res = ParserResult(this, newmain, parsetext);
+		}
 		emit documentChanged();
 	}
 }
 
 ParserResult User::data() {
-	return m_res;
+	QMutexLocker lock(&mutex);
+	return ParserResult(m_res);
 }
 
 
@@ -257,14 +263,14 @@ ParserResult::~ParserResult() {
 void ParserResult::link() {
 	if (!m_user)
 		return;
-	QMutexLocker lock(&m_user->mutex);
+	QMutexLocker lock(&m_user->mainsmutex);
 	m_user->mains[m_doc]++;
 }
 
 void ParserResult::unlink() {
 	if (!m_user)
 		return;
-	QMutexLocker lock(&m_user->mutex);
+	QMutexLocker lock(&m_user->mainsmutex);
 	m_user->mains[m_doc]--;
 	if (!m_user->mains[m_doc]) {
 		m_user->mains.erase(m_user->mains.find(m_doc));
