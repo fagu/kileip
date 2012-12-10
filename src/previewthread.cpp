@@ -55,21 +55,28 @@ void PreviewThread::setDoc(KTextEditor::Document *doc) {
 void PreviewThread::run() {
 	forever {
 		// Wait for dirty or abort
-		QMutexLocker lock(&m_dirtymutex);
-		while(!m_dirty && !m_abort)
-			m_dirtycond.wait(&m_dirtymutex);
-		if (m_abort) {
-			break;
+		{
+			QMutexLocker lock(&m_dirtymutex);
+			while(!m_dirty && !m_abort)
+				m_dirtycond.wait(&m_dirtymutex);
+			if (m_abort) {
+				break;
+			}
+			m_newdirty = false;
+			m_res = m_user->data();
+			m_masterres = m_masteruser->data();
 		}
-		m_newdirty = false;
 		
 		// Run LaTeX to create Previews
 		createPreviews();
 		
-		if (m_newdirty) {
-			continue;
+		{
+			QMutexLocker lock(&m_dirtymutex);
+			if (m_newdirty) {
+				continue;
+			}
+			m_dirty = false;
 		}
-		m_dirty = false;
 		
 		// Emit dirtychange
 		emit dirtychanged();
@@ -80,9 +87,6 @@ void PreviewThread::createPreviews() {
 	if (!m_info->isInlinePreview())
 		return;
 	QList<Part*> tempenvs;
-	
-	m_res = m_user->data();
-	m_masterres = m_masteruser->data();
 	
 	CollectionPart *prp = m_masteruser->preamble(m_masterres.doc(), m_masterres.text());
 	QString preamble = prp->source(m_masterres.text());
