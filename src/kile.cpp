@@ -1,6 +1,6 @@
 /****************************************************************************************
   Copyright (C) 2003 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)
-            (C) 2007-2012 by Michel Ludwig (michel.ludwig@kdemail.net)
+            (C) 2007-2013 by Michel Ludwig (michel.ludwig@kdemail.net)
             (C) 2007 Holger Danielsson (holger.danielsson@versanet.de)
             (C) 2009 Thomas Braun (thomas.braun@virtuell-zuhause.de)
  ****************************************************************************************/
@@ -187,6 +187,7 @@ Kile::Kile(bool allowRestore, QWidget *parent)
 
 	connect(docManager(), SIGNAL(documentNameChanged(KTextEditor::Document*)), this, SLOT(newCaption()));
 	connect(docManager(), SIGNAL(documentUrlChanged(KTextEditor::Document*)), this, SLOT(newCaption()));
+	connect(docManager(), SIGNAL(documentReadWriteStateChanged(KTextEditor::Document*)), this, SLOT(newCaption()));
 
 	setupStatusBar();
 
@@ -1540,14 +1541,22 @@ bool Kile::queryClose()
 
 	for(int i = 0; i < viewManager()->textViewCount(); ++i) {
 		KTextEditor::Document *doc = viewManager()->textView(i)->document();
-		m_listDocsOpenOnStart.append(doc->url().toLocalFile());
+		const KUrl url = doc->url();
+		if(url.isEmpty()) {
+			continue;
+		}
+		m_listDocsOpenOnStart.append(url.toLocalFile());
 		m_listEncodingsOfDocsOpenOnStart.append(doc->encoding());
 	}
 
 	KILE_DEBUG() << "#projects = " << docManager()->projects().count() << endl;
 	QList<KileProject*> projectList = docManager()->projects();
 	for(QList<KileProject*>::iterator i = projectList.begin(); i != projectList.end(); ++i) {
-		m_listProjectsOpenOnStart.append((*i)->url().toLocalFile());
+		const KUrl url = (*i)->url();
+		if(url.isEmpty()) { // shouldn't happen, but just in case...
+			continue;
+		}
+		m_listProjectsOpenOnStart.append(url.toLocalFile());
 	}
 
 	bool stage1 = docManager()->projectCloseAll();
@@ -1649,7 +1658,11 @@ void Kile::newCaption()
 {
 	KTextEditor::View *view = viewManager()->currentTextView();
 	if(view) {
-		setCaption(getShortName( view->document()));
+		KTextEditor::Document *doc = view->document();
+		const QString caption = (doc->isReadWrite() ? getShortName(doc)
+		                                            : i18nc("Window caption in read-only mode: <file name> [Read-Only]",
+		                                                    "%1 [Read-Only]", getShortName(doc)));
+		setCaption(caption);
 		if (m_bottomBar->currentPage() && m_bottomBar->currentPage()->inherits("KileWidget::Konsole")) {
 			m_texKonsole->sync();
 		}
@@ -2550,13 +2563,21 @@ void Kile::readRecentFileSettings()
 	KConfigGroup group = m_config->group("FilesOpenOnStart");
 	int n = group.readEntry("NoDOOS", 0);
 	for (int i = 0; i < n; ++i) {
-		m_listDocsOpenOnStart.append(group.readPathEntry("DocsOpenOnStart" + QString::number(i), ""));
+		const QString urlString = group.readPathEntry("DocsOpenOnStart" + QString::number(i), "");
+		if(urlString.isEmpty()) {
+			continue;
+		}
+		m_listDocsOpenOnStart.append(urlString);
 		m_listEncodingsOfDocsOpenOnStart.append(group.readPathEntry("EncodingsOfDocsOpenOnStart" + QString::number(i), ""));
 	}
 
 	n = group.readEntry("NoPOOS", 0);
 	for(int i = 0; i < n; ++i) {
-		m_listProjectsOpenOnStart.append(group.readPathEntry("ProjectsOpenOnStart" + QString::number(i), ""));
+		const QString urlString = group.readPathEntry("ProjectsOpenOnStart" + QString::number(i), "");
+		if(urlString.isEmpty()) {
+			continue;
+		}
+		m_listProjectsOpenOnStart.append(urlString);
 	}
 }
 
