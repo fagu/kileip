@@ -38,6 +38,14 @@ KTextEditor::View *KileScriptView::view() const
 
 ////////////////////////////////// cursor //////////////////////////////////////
 
+void KileScriptView::backspace()
+{
+	QAction *action = m_view->action("backspace");
+	if(action) {
+		action->trigger();
+	}
+}
+
 KTextEditor::Cursor KileScriptView::cursorPosition()
 {
 	return m_view->cursorPosition();
@@ -193,11 +201,10 @@ void KileScriptView::selectMathgroup()
 
 ////////////////////////////////// Paragraph //////////////////////////////////////
 
-void KileScriptView::selectParagraph()
+void KileScriptView::selectParagraph(bool wholeLines)
 {
-	m_editor->selectParagraph(m_view);
+	m_editor->selectParagraph(m_view, wholeLines);
 }
-
 
 }
 
