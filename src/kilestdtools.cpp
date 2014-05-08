@@ -1,7 +1,7 @@
 /**************************************************************************************
     begin                : Thu Nov 27 2003
     copyright            : (C) 2003 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)
-                           (C) 2011-2012 by Michel Ludwig (michel.ludwig@kdemail.net)
+                           (C) 2011-2014 by Michel Ludwig (michel.ludwig@kdemail.net)
  **************************************************************************************/
 
 /***************************************************************************
@@ -35,6 +35,7 @@
 #include "documentinfo.h"
 #include "outputinfo.h"
 #include "parser/parsermanager.h"
+#include "utilities.h"
 
 namespace KileTool
 {
@@ -188,10 +189,19 @@ namespace KileTool
 	{
 		KileDocument::TextInfo *docinfo = manager()->info()->docManager()->textInfoFor(source());
 		if(docinfo) {
-			const QStringList dependencies = checkOnlyBibDependencies ? manager()->info()->allBibliographies(docinfo)
-			                                                          : manager()->info()->allDependencies(docinfo);
+			QFileInfo fileinfo(docinfo->url().toLocalFile());
+			QStringList dependencies;
+
+			if (checkOnlyBibDependencies) {
+				dependencies = manager()->info()->allBibliographies(docinfo);
+			}
+			else {
+				dependencies = manager()->info()->allDependencies(docinfo);
+				dependencies.append(fileinfo.fileName());
+			}
 			if (!dependencies.empty()) {
-				return needsUpdate(targetDir() + '/' + S() + ".bbl", docinfo->lastModifiedFile(dependencies));
+				return needsUpdate(targetDir() + '/' + S() + ".bbl",
+				                   KileUtilities::lastModifiedFile(dependencies, fileinfo.absolutePath()));
 			}
 		}
 
@@ -231,7 +241,11 @@ namespace KileTool
 
 		m_toolResult = r;
 
-		// we always try to parse the log file in order to detect
+		if(m_toolResult == AbnormalExit || m_toolResult == Aborted) {
+			return false;
+		}
+
+		// in case the compilation failed, we try to parse the log file in order to detect
 		// errors reported by LaTeX
 		QString log = targetDir() + '/' + S() + ".log";
 		manager()->parserManager()->parseOutput(this, log, source());

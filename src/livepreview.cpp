@@ -1,5 +1,5 @@
 /********************************************************************************
-  Copyright (C) 2011-2013 by Michel Ludwig (michel.ludwig@kdemail.net)
+  Copyright (C) 2011-2014 by Michel Ludwig (michel.ludwig@kdemail.net)
  ********************************************************************************/
 
 /***************************************************************************
@@ -393,6 +393,11 @@ void LivePreviewManager::stopLivePreview()
 	m_documentChangedTimer->stop();
 	m_ki->toolManager()->stopLivePreview();
 
+	clearRunningLivePreviewInformation();
+}
+
+void LivePreviewManager::clearRunningLivePreviewInformation()
+{
 	m_runningPathToPreviewPathHash.clear();
 	m_runningPreviewPathToPathHash.clear();
 	m_runningPreviewFile.clear();
@@ -728,13 +733,14 @@ void LivePreviewManager::handleCursorPositionChangedTimeout()
 	synchronizeViewWithCursor(latexInfo, view, view->cursorPosition(), true); // called from a cursor position change
 }
 
-// Note: this method won't open a document again if it's opened already
+// Note: this method won't open a document again if it's open already
 bool LivePreviewManager::ensureDocumentIsOpenInViewer(PreviewInformation *previewInformation, bool *hadToOpen)
 {
 	if(hadToOpen) {
 		*hadToOpen = false;
 	}
-	if(!m_ki->viewManager()->viewerPart() || !QFile::exists(previewInformation->previewFile)) {
+	const QFile previewFileInfo(previewInformation->previewFile);
+	if(!m_ki->viewManager()->viewerPart() || !previewFileInfo.exists() || previewFileInfo.size() == 0) {
 		return false;
 	}
 	const KUrl previewUrl(KUrl::fromPath(previewInformation->previewFile));
@@ -1013,12 +1019,12 @@ void LivePreviewManager::compilePreview(KileDocument::LaTeXInfo *latexInfo, KTex
 		fileInfo = QFileInfo(m_ki->getCompileName());
 	}
 
-	const QString inputDir = previewInformation->getTempDir() + ':' + fileInfo.absolutePath();
+	const QString inputDir = previewInformation->getTempDir() + PATH_SEPARATOR + fileInfo.absolutePath();
 
 	// set value of texinput path (only for LivePreviewManager tools)
 	QString texInputPath = KileConfig::teXPaths();
 	if(!texInputPath.isEmpty()) {
-		texInputPath = inputDir + ':' + texInputPath;
+		texInputPath = inputDir + PATH_SEPARATOR + texInputPath;
 	}
 	else {
 		texInputPath = inputDir;
@@ -1027,7 +1033,7 @@ void LivePreviewManager::compilePreview(KileDocument::LaTeXInfo *latexInfo, KTex
 
 	QString bibInputPath = KileConfig::bibInputPaths();
 	if(!bibInputPath.isEmpty()) {
-		bibInputPath = inputDir + ':' + bibInputPath;
+		bibInputPath = inputDir + PATH_SEPARATOR + bibInputPath;
 	}
 	else {
 		bibInputPath = inputDir;
@@ -1036,7 +1042,7 @@ void LivePreviewManager::compilePreview(KileDocument::LaTeXInfo *latexInfo, KTex
 
 	QString bstInputPath = KileConfig::bstInputPaths();
 	if(!bstInputPath.isEmpty()) {
-		bstInputPath = inputDir + ':' + bstInputPath;
+		bstInputPath = inputDir + PATH_SEPARATOR + bstInputPath;
 	}
 	else {
 		bstInputPath = inputDir;
@@ -1340,10 +1346,12 @@ void LivePreviewManager::toolDone(KileTool::Base *base, int i, bool childToolSpa
 	if(i != Success) {
 		KILE_DEBUG() << "tool didn't return successfully, doing nothing";
 		showPreviewFailed();
+		clearRunningLivePreviewInformation();
 	}
 	// a LaTeX variant must have finished for the preview to be complete
 	else if(!childToolSpawned && dynamic_cast<KileTool::LaTeX*>(base)) {
 		updatePreviewInformationAfterCompilationFinished();
+		clearRunningLivePreviewInformation();
 	}
 }
 
@@ -1358,15 +1366,21 @@ void LivePreviewManager::childToolDone(KileTool::Base *base, int i, bool childTo
 	if(i != Success) {
 		KILE_DEBUG() << "tool didn't return successfully, doing nothing";
 		showPreviewFailed();
+		clearRunningLivePreviewInformation();
 	}
 	// a LaTeX variant must have finished for the preview to be complete
 	else if(!childToolSpawned && dynamic_cast<KileTool::LaTeX*>(base)) {
 		updatePreviewInformationAfterCompilationFinished();
+		clearRunningLivePreviewInformation();
 	}
 }
 
 void LivePreviewManager::updatePreviewInformationAfterCompilationFinished()
 {
+	if(!m_runningPreviewInformation) { // LivePreview has been stopped in the meantime
+		return;
+	}
+
 	m_shownPreviewInformation = m_runningPreviewInformation;
 	m_shownPreviewInformation->pathToPreviewPathHash = m_runningPathToPreviewPathHash;
 	m_shownPreviewInformation->previewPathToPathHash = m_runningPreviewPathToPathHash;
@@ -1378,16 +1392,19 @@ void LivePreviewManager::updatePreviewInformationAfterCompilationFinished()
 		clearLivePreview();
 		// must happen after the call to 'clearLivePreview' only
 		showPreviewFailed();
+		return;
 	}
 
-	if(!m_synchronizeViewWithCursorAction->isChecked()) {
-		if(!hadToOpen) {
-			reloadDocumentInViewer();
-		}
+	// as 'ensureDocumentIsOpenInViewer' won't reload when the document is open
+	// already, we have to do it here
+	if(!hadToOpen) {
+		reloadDocumentInViewer();
 	}
-	else {
+
+	if(m_synchronizeViewWithCursorAction->isChecked()) {
 		synchronizeViewWithCursor(m_runningLaTeXInfo, m_runningTextView, m_runningTextView->cursorPosition());
 	}
+
 	showPreviewSuccessful();
 }
 

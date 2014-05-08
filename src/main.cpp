@@ -2,7 +2,7 @@
     begin                : sam jui 13 09:50:06 CEST 2002
     copyright            : (C) 2002 - 2003 by Pascal Brachet
                                2003 - 2005 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)
-                               2011 - 2013 by Michel Ludwig (michel.ludwig@kdemail.net)
+                               2011 - 2014 by Michel Ludwig (michel.ludwig@kdemail.net)
  ********************************************************************************************/
 
 /***************************************************************************
@@ -85,7 +85,7 @@ int main( int argc, char ** argv )
 	KAboutData aboutData( "kile", QByteArray(), ki18n("Kile"), kileFullVersion.toAscii(),
 				ki18n("KDE Integrated LaTeX Environment"),
 				KAboutData::License_GPL,
-				ki18n("by the Kile Team (2003 - 2013)"),
+				ki18n("by the Kile Team (2003 - 2014)"),
 				KLocalizedString(),
 				"http://kile.sourceforge.net");
 	aboutData.addAuthor(ki18n("Michel Ludwig"), ki18n("Project Management/Developer"), "michel.ludwig@kdemail.net");
@@ -94,7 +94,7 @@ int main( int argc, char ** argv )
 	aboutData.addAuthor(ki18n("Jeroen Wijnhout"), ki18n("Former Maintainer/Developer"),"Jeroen.Wijnhout@kdemail.net");
 	aboutData.addAuthor(ki18n("Brachet Pascal"));
 
-	aboutData.addCredit(ki18n("Andrius Štikonas"), ki18n("Migration from Subversion to Git"), "stikonas@gmail.com");
+	aboutData.addCredit(ki18n("Andrius Štikonas"), ki18n("Migration from Subversion to Git"), "andrius@stikonas.eu");
 	aboutData.addCredit(ki18n("Simon Martin"), ki18n("KConfig XT, Various Improvements and Bug-Fixing"));
 	aboutData.addCredit(ki18n("Roland Schulz"), ki18n("KatePart Integration"));
 	aboutData.addCredit(ki18n("Thorsten Lück"), ki18n("Log Parsing"));

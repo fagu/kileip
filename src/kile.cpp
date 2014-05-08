@@ -547,7 +547,7 @@ void Kile::disableSymbolViewMFUS()
 {
 	m_toolBox->setItemEnabled(m_toolBox->indexOf(m_symbolViewMFUS),false);
 	m_toolBox->setItemToolTip(m_toolBox->indexOf(m_symbolViewMFUS),QString());
-	disconnect(m_symbolViewMFUS,SIGNAL(addtoList(const Q3IconViewItem *)));
+	disconnect(m_symbolViewMFUS,SIGNAL(addToList(const QListWidgetItem *)));
 }
 
 void Kile::setupSymbolViews()
@@ -1510,11 +1510,6 @@ void Kile::sideOrBottomBarChanged(bool visible)
     {
         focusEditor();
     }
-}
-
-bool Kile::queryExit()
-{
-	return true;
 }
 
 //FIXME: documents probably shouldn't be closed in this method yet (also see API doc of 'queryClose')
@@ -2602,6 +2597,8 @@ void Kile::readConfig()
 	m_sideBar->setPageVisible(m_commandViewToolBox, KileConfig::showCwlCommands());
 	m_sideBar->setPageVisible(m_kileAbbrevView, KileConfig::completeShowAbbrev());
 
+	m_scriptsManagementWidget->setScriptNameColumnWidth(KileConfig::scriptNameColumnWidth());
+
 	if(KileConfig::displayMFUS()) {
 		enableSymbolViewMFUS();
 	}
@@ -2651,6 +2648,7 @@ void Kile::saveSettings()
 	viewManager()->writeConfig();
 
 	scriptManager()->writeConfig();
+	KileConfig::setScriptNameColumnWidth(m_scriptsManagementWidget->scriptNameColumnWidth());
 
 	KileConfig::setRCVersion(KILERC_VERSION);
 	KileConfig::setMainwindowWidth(width());
