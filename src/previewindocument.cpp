@@ -203,11 +203,11 @@ void PreviewWidget::updateRect() {
 	}
 	QRectF imgrectf;
 	if(p1.y() == p2.y()) {
-		QRect rect(p1.x()+3, p1.y()+2, p2.x()-p1.x()+1, vh->dy+1);
-		m_border.push_back(QLine(p1.x()+3,p1.y()+2, p1.x()+3,p1.y()+2+vh->dy));
-		m_border.push_back(QLine(p2.x()+3,p1.y()+2, p2.x()+3,p1.y()+2+vh->dy));
-		m_border.push_back(QLine(p1.x()+3,p1.y()+2, p2.x()+3,p1.y()+2));
-		m_border.push_back(QLine(p1.x()+3,p1.y()+2+vh->dy, p2.x()+3,p1.y()+2+vh->dy));
+		QRect rect(p1.x(), p1.y(), p2.x()-p1.x()+1, vh->dy+1);
+		m_border.push_back(QLine(p1.x(),p1.y(), p1.x(),p1.y()+vh->dy));
+		m_border.push_back(QLine(p2.x(),p1.y(), p2.x(),p1.y()+vh->dy));
+		m_border.push_back(QLine(p1.x(),p1.y(), p2.x(),p1.y()));
+		m_border.push_back(QLine(p1.x(),p1.y()+vh->dy, p2.x(),p1.y()+vh->dy));
 		QRectF rec(rect);
 		avail += rect;
 		if ((float)rec.width()/rec.height() > (float)m_img->width()/m_img->height()) {
@@ -222,25 +222,25 @@ void PreviewWidget::updateRect() {
 		imgrectf = rec;
 	} else {
 		if (p1.x() != vh->maxx+vh->dx) {
-			avail += QRect(p1.x()+3, p1.y()+2, vh->maxx-p1.x()+vh->dx+1, vh->dy+1);
-			m_border.push_back(QLine(p1.x()+3,p1.y()+2, p1.x()+3,p1.y()+2+vh->dy));
+			avail += QRect(p1.x(), p1.y(), vh->maxx-p1.x()+vh->dx+1, vh->dy+1);
+			m_border.push_back(QLine(p1.x(),p1.y(), p1.x(),p1.y()+vh->dy));
 			if (p2.y() != p1.y() + vh->dy || p1.x() < p2.x())
-				m_border.push_back(QLine(vh->maxx+vh->dx+3,p1.y()+2, vh->maxx+vh->dx+3,p1.y()+2+vh->dy));
-			m_border.push_back(QLine(p1.x()+3,p1.y()+2, vh->maxx+vh->dx+3,p1.y()+2));
+				m_border.push_back(QLine(vh->maxx+vh->dx,p1.y(), vh->maxx+vh->dx,p1.y()+vh->dy));
+			m_border.push_back(QLine(p1.x(),p1.y(), vh->maxx+vh->dx,p1.y()));
 		}
 		if (p2.y() != p1.y()+vh->dy) {
-			avail += QRect(vh->minx+3, p1.y()+vh->dy+2, vh->maxx-vh->minx+vh->dx+1, p2.y()-p1.y()-vh->dy+1);
-			m_border.push_back(QLine(vh->minx+3,p1.y()+2+vh->dy, vh->minx+3,p2.y()+2));
-			m_border.push_back(QLine(vh->maxx+vh->dx+3,p1.y()+2+vh->dy, vh->maxx+vh->dx+3,p2.y()+2));
+			avail += QRect(vh->minx, p1.y()+vh->dy, vh->maxx-vh->minx+vh->dx+1, p2.y()-p1.y()-vh->dy+1);
+			m_border.push_back(QLine(vh->minx,p1.y()+vh->dy, vh->minx,p2.y()));
+			m_border.push_back(QLine(vh->maxx+vh->dx,p1.y()+vh->dy, vh->maxx+vh->dx,p2.y()));
 		}
-		m_border.push_back(QLine(vh->minx+3,p1.y()+2+vh->dy, p1.x()+3,p1.y()+2+vh->dy));
-		m_border.push_back(QLine(p2.x()+3,p2.y()+2, vh->maxx+vh->dx+3,p2.y()+2));
+		m_border.push_back(QLine(vh->minx,p1.y()+vh->dy, p1.x(),p1.y()+vh->dy));
+		m_border.push_back(QLine(p2.x(),p2.y(), vh->maxx+vh->dx,p2.y()));
 		if (p2.x() != vh->minx) {
-			avail += QRect(vh->minx+3, p2.y()+2, p2.x()-vh->minx+1, vh->dy+1);
-			m_border.push_back(QLine(p2.x()+3,p2.y()+2, p2.x()+3,p2.y()+2+vh->dy));
+			avail += QRect(vh->minx, p2.y(), p2.x()-vh->minx+1, vh->dy+1);
+			m_border.push_back(QLine(p2.x(),p2.y(), p2.x(),p2.y()+vh->dy));
 			if (p2.y() != p1.y() + vh->dy || p1.x() < p2.x())
-				m_border.push_back(QLine(vh->minx+3,p2.y()+2, vh->minx+3,p2.y()+2+vh->dy));
-			m_border.push_back(QLine(vh->minx+3,p2.y()+2+vh->dy, vh->maxx+vh->dx+3,p2.y()+2+vh->dy));
+				m_border.push_back(QLine(vh->minx,p2.y(), vh->minx,p2.y()+vh->dy));
+			m_border.push_back(QLine(vh->minx,p2.y()+vh->dy, vh->maxx+vh->dx,p2.y()+vh->dy));
 		}
 		for (int d1 = 0; d1 < 2; d1++) {
 			for (int d2 = 0; d2 < 2; d2++) {
@@ -253,7 +253,7 @@ void PreviewWidget::updateRect() {
 					xx2 = p2.x();
 					yy2 += vh->dy;
 				}
-				QRectF rec(xx1+3, yy1+2, xx2-xx1+1, yy2-yy1+1);
+				QRectF rec(xx1, yy1, xx2-xx1+1, yy2-yy1+1);
 				if ((float)rec.width()/rec.height() > (float)m_img->width()/m_img->height()) {
 					float delta = rec.width()-rec.height()*(float)m_img->width()/m_img->height();
 					rec.setWidth(rec.width()-delta);
