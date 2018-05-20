@@ -10,6 +10,7 @@ multiline*
 eqnarray
 eqnarray*
 asy
+tikzpicture
 # start commands of math environments
 !begincommand
 $
