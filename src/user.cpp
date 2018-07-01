@@ -171,11 +171,11 @@ void User::run() {
             }
             parsetext = newtext;
         }
-        qDebug() << "parsen...";
+//         qDebug() << "parsen...";
         Parser p(parsetext, 0);
         //QTime tim; tim.start();
         TextPart *newmain = p.parse();
-        qDebug() << newmain->toString(parsetext);
+//         qDebug() << newmain->toString(parsetext);
         //qDebug() << "Parsing time:" << tim.elapsed()*0.001;
         {
             QMutexLocker lock(&mutex);

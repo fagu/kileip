@@ -103,7 +103,7 @@ void PreviewThread::createPreviews() {
     
     // Insert new math
     foreach(Part *env, m_res.mathgroups()) {
-        qDebug() << "math" << env->source(m_res.text());
+//         qDebug() << "math" << env->source(m_res.text());
         QString tt = env->source(m_res.text());
         if (!allmaths.contains(tt)) {
             allmaths.insert(tt);
@@ -125,11 +125,9 @@ void PreviewThread::createPreviews() {
 
 
 void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > tempenvs, int start, int end ) {
-    qDebug() << "hi1";
     // Check if the document changed again in the meantime
     if (m_res.text() != m_doc->text())
         return;
-    qDebug() << "hi2";
     if (end < start)
         return;
     qDebug() << "Binary:" << start << "-" << end;
@@ -207,7 +205,6 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > temp
 
 
 void PreviewThread::textChanged() {
-    qDebug() << "textChanged";
     if (m_info->isInlinePreview()) {
         bool dirbef;
         {
