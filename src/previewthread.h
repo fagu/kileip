@@ -3,13 +3,13 @@
 *********************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #ifndef PREVIEW_THREAD_H
 #define PREVIEW_THREAD_H
@@ -30,55 +30,62 @@ typedef std::pair<int,int> PII;
 typedef std::pair<PII,int> PIII;
 
 class PreviewThread : public QThread {
-	Q_OBJECT
-	
-	public:
-		PreviewThread(KileDocument::LaTeXInfo *info, QObject *parent = 0);
-		~PreviewThread();
-		
-		void run();
-		
-		void setDoc(KTextEditor::Document *doc);
-		// Returns false if the contents are dirty, if they are not dirty the text does not get reparsed as long as endquestions() is not called
-		// This function has to be called before mathpositions() and getImage()
-		bool startquestions();
-		void endquestions();
-		QList<Part*> mathpositions();
-		QImage image(Part *part);
-		QMap<QString,QImage> images();
-		QString parsedText();
-	private:
-		bool m_abort;
-		
-		KTextEditor::Document *m_doc;
-		KileDocument::LaTeXInfo* m_info;
-		
-		QMutex m_dirtymutex;
-		bool m_dirty;
-		bool m_newdirty;
-		QWaitCondition m_dirtycond;
-		
-		ParserResult m_res;
-		ParserResult m_masterres;
-		
-		QTemporaryDir *m_dir;
-		QString m_tempfilename;
-		
-		QMap<QString,QImage> m_previmgs;
-		
-		int m_nextprevimg;
-		
-		void createPreviews();
-		void binaryCreatePreviews(QString &preamble, QList<Part*> tempenvs, int start, int end);
-		
-		User *m_user;
-		User *m_masteruser;
-		
-		QString lastpremable;
-	Q_SIGNALS:
-		void dirtychanged();
-	public Q_SLOTS:
-		void textChanged();
+    Q_OBJECT
+    
+    public:
+        PreviewThread(KileDocument::LaTeXInfo *info, QObject *parent = 0);
+        ~PreviewThread();
+        
+        void run();
+        
+        void setDoc(KTextEditor::Document *doc);
+        // Returns false if the contents are dirty. If they are not dirty, the text does not get reparsed as long as endquestions() is not called.
+        // This function has to be called before mathpositions() and getImage().
+        bool startquestions();
+        void endquestions();
+        QList<Part*> mathpositions();
+        QImage image(Part *part);
+        QMap<QString,QImage> images();
+        QString parsedText();
+    private:
+        bool m_abort; // whether to abort the thread
+        
+        KTextEditor::Document *m_doc;
+        KileDocument::LaTeXInfo* m_info;
+        
+        QMutex m_dirtymutex;
+        bool m_dirty;
+        bool m_newdirty;
+        QWaitCondition m_dirtycond;
+        
+        // The parser threads
+        User *m_user;
+        User *m_masteruser;
+        
+        // The result of parsing the current tex file
+        ParserResult m_res;
+        // The result of parsing the master tex file
+        ParserResult m_masterres;
+        
+        // The temporary directory in which to run latex
+        QTemporaryDir *m_dir;
+        // The temporary tex file
+        QString m_tempfilename;
+        
+        QMap<QString,QImage> m_previmgs;
+        
+        int m_nextprevimg;
+        
+        void createPreviews();
+        void binaryCreatePreviews(QString &preamble, QList<Part*> tempenvs, int start, int end);
+        
+        // The preamble used to generate the current images.
+        // Whenever the preamble changes, we regenerate all images.
+        QString lastpreamble;
+    Q_SIGNALS:
+        void dirtychanged();
+    public Q_SLOTS:
+        void textChanged();
 };
 
 #endif

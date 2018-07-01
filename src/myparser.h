@@ -3,13 +3,13 @@
 *********************************************************************************/
 
 /***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+*                                                                         *
+*   This program is free software; you can redistribute it and/or modify  *
+*   it under the terms of the GNU General Public License as published by  *
+*   the Free Software Foundation; either version 2 of the License, or     *
+*   (at your option) any later version.                                   *
+*                                                                         *
+***************************************************************************/
 
 #ifndef MYPARSER_H
 #define MYPARSER_H
@@ -27,13 +27,13 @@ class TextPart;
 bool midEqual(const QString &text, int start, int len, const QString &ref);
 
 class Part : public QSharedData {
-	public:
-		int start, end;
-		virtual ~Part() {};
-		virtual QString toString(const QString &text) const=0;
-		virtual QString toTeX(const QString &text) const=0;
-		QString source(const QString &text) const;
-		//virtual int visit();
+    public:
+        int start, end;
+        virtual ~Part() {};
+        virtual QString toString(const QString &text) const=0;
+        virtual QString toTeX(const QString &text) const=0;
+        QString source(const QString &text) const;
+        //virtual int visit();
 };
 
 //typedef QExplicitlySharedDataPointer<Part> PPart;
@@ -41,117 +41,121 @@ class TextPart;
 //typedef QExplicitlySharedDataPointer<TextPart> PTextPart;
 
 class CPart {
-	public:
-		vector<Part *> children;
-		virtual ~CPart();
-		void addChild(Part * p);
-		//int visit();
+    public:
+        vector<Part *> children;
+        virtual ~CPart();
+        void addChild(Part * p);
+        //int visit();
 };
 
 class CommentPart : public Part {
-	public:
-		CommentPart(int start);
-		~CommentPart() {};
-		QString toString(const QString &text) const;
-		QString toTeX(const QString &text) const;
+    public:
+        CommentPart(int start);
+        ~CommentPart() {};
+        QString toString(const QString &text) const;
+        QString toTeX(const QString &text) const;
 };
 
 class CommandPart : public Part {
-	public:
-		virtual QString name(const QString &text) const = 0;
-		virtual bool nameEq(const QString &text, const QString &ref) const = 0;
+    public:
+        virtual QString name(const QString &text) const = 0;
+        virtual bool nameEq(const QString &text, const QString &ref) const = 0;
 };
 
 class CommandWithArgsPart : public CommandPart, public CPart {
-	public:
-		int nameend;
-		Part * optional;
-		CommandWithArgsPart(int start);
-		~CommandWithArgsPart();
-		QString name(const QString &text) const;
-		bool nameEq(const QString &text, const QString &ref) const;
-		int numArgs(const QString &text) const;
-		int remainingArgs(const QString &text) const;
-		QString toString(const QString &text) const;
-		QString toTeX(const QString &text) const;
+    public:
+        int nameend;
+        Part * optional;
+        CommandWithArgsPart(int start);
+        ~CommandWithArgsPart();
+        QString name(const QString &text) const;
+        bool nameEq(const QString &text, const QString &ref) const;
+        int numArgs(const QString &text) const;
+        int remainingArgs(const QString &text) const;
+        QString toString(const QString &text) const;
+        QString toTeX(const QString &text) const;
 };
 
 class PrimitiveCommandPart : public CommandPart {
-	public:
-		PrimitiveCommandPart(int st) { start = st; };
-		~PrimitiveCommandPart() {};
-		QString name(const QString &text) const;
-		bool nameEq(const QString &text, const QString &ref) const;
-		QString toString(const QString &text) const;
-		QString toTeX(const QString &text) const;
+    public:
+        PrimitiveCommandPart(int st) { start = st; };
+        ~PrimitiveCommandPart() {};
+        QString name(const QString &text) const;
+        bool nameEq(const QString &text, const QString &ref) const;
+        QString toString(const QString &text) const;
+        QString toTeX(const QString &text) const;
 };
 
 class TextPart : public CPart, public Part {
-	public:
-		TextPart(int start);
-		virtual ~TextPart() {};
-		QString toString(const QString &text) const;
-		QString toTeX(const QString &text) const;
-		QString sourceWithoutVoid(const QString &text) const;
+    public:
+        TextPart(int start);
+//         virtual ~TextPart() {};
+        QString toString(const QString &text) const;
+        QString toTeX(const QString &text) const;
+        QString sourceWithoutVoid(const QString &text) const;
 };
 
 //typedef QExplicitlySharedDataPointer<CommandPart> PCommandPart;
 //typedef QExplicitlySharedDataPointer<CommentPart> PCommentPart;
 
 class EnvironmentPart : public Part {
-	public:
-		CommandPart * begin;
-		CommandPart * ending;
-		TextPart * body;
-		EnvironmentPart(CommandPart * cp);
-		~EnvironmentPart();
-		QString toString(const QString &text) const;
-		QString toTeX(const QString &text) const;
-		//int visit();
+    public:
+        CommandPart * begin;
+        CommandPart * ending;
+        TextPart * body;
+        EnvironmentPart(CommandPart * cp);
+        ~EnvironmentPart();
+        QString toString(const QString &text) const;
+        QString toTeX(const QString &text) const;
+        //int visit();
 };
 
 //typedef QExplicitlySharedDataPointer<EnvironmentPart> PEnvironmentPart;
 
 
 class Ending {
-	public:
-		QString wanted;
-		//int found;
-		CommandPart * cp;
-		Ending(QString w);
+    public:
+        QString wanted;
+        //int found;
+        CommandPart * cp;
+        Ending(QString w);
+        // The behavior appears to be undefined unless we explicitly request these default constructors.
+        Ending(const Ending&) = default;
+        Ending& operator=(const Ending&) = default;
 };
 
 class Parser {
-	private:
-		QString text;
-		const QChar *textdata;
-		int i;
-		vector<Ending> endings;
-		int code(QChar c);
-	
-	public:
-		Parser(QString ptext, int pstart);
-		TextPart * parseText();
-		TextPart * parseText(int parsefrom);
-		CommentPart * parseComment();
-		CommandWithArgsPart * parseCommand();
-		PrimitiveCommandPart * parsePrimitiveCommand();
-		EnvironmentPart * parseEnvironment(CommandPart * begincommand);
-		bool endingFound(CommandPart * cp);
-		bool expectedEndingFound(CommandPart *cp);
-		bool matches(QString wanted, CommandPart * cp);
+    private:
+        QString text;
+        const QChar *textdata;
+        int i;
+        vector<Ending> endings;
+        int code(QChar c);
+    
+    public:
+        Parser(QString ptext, int pstart);
+        TextPart * parse();
+    private:
+        TextPart * parseText();
+        CommentPart * parseComment();
+        CommandWithArgsPart * parseCommand();
+        PrimitiveCommandPart * parsePrimitiveCommand();
+        EnvironmentPart * parseEnvironment(CommandPart * begincommand);
+        bool endingFound(CommandPart * cp);
+        bool expectedEndingFound(CommandPart *cp);
+        bool matches(QString wanted, CommandPart * cp);
 };
 
 struct SpecialEnvironment {
-	QString endcommand;
-	bool partofenvironment;
+    QString endcommand;
+    bool partofenvironment;
 };
 
 class Global {
-	public:
-		static QMap<QString,int> commands;
-		static QMap<QString,SpecialEnvironment> specialenvs;
-		static void init();
+    public:
+        static QMap<QString,int> commands;
+        static QMap<QString,SpecialEnvironment> specialenvs;
+        static void init();
 };
 
 #endif

@@ -865,8 +865,8 @@ void Kile::setupActions()
     createAction(i18n("Focus Editor View"), "focus_editor", QKeySequence("CTRL+Alt+F"), this, &Kile::focusEditor);
 
     InlinePreviewAction = new KToggleAction(i18n("Inline Preview"), actionCollection());
-    InlinePreviewAction->setShortcut(QKeySequence("CTRL+Alt+I"));
     actionCollection()->addAction("toggle_inline_preview", InlinePreviewAction);
+    actionCollection()->setDefaultShortcut(InlinePreviewAction, QKeySequence("CTRL+Alt+I"));
     connect(InlinePreviewAction, SIGNAL(toggled(bool)), viewManager(), SLOT(toggleInlinePreview(bool)));
     InlinePreviewAction->setChecked(true);
 
