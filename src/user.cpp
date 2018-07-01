@@ -14,8 +14,7 @@
 #include "user.h"
 #include <QDebug>
 #include <QFile>
-#include <KGlobal>
-#include <KStandardDirs>
+#include <QStandardPaths>
 #include <QTime>
 
 QStringList User::mathbegincommands;
@@ -25,10 +24,10 @@ QStringList User::mathenvs;
 void User::initMath() {
 	if (mathenvs.size())
 		return;
-	QString commandsfilename = KGlobal::dirs()->findResource("appdata", "parser/maths.txt");
+	QString commandsfilename = QStandardPaths::locate(QStandardPaths::AppDataLocation, "parser/maths.txt");
 	QFile comfile(commandsfilename);
 	if (!comfile.exists())
-		qDebug() << "maths.txt missing";
+		qDebug() << "maths.txt missing at " << commandsfilename;
 	comfile.open(QIODevice::ReadOnly | QIODevice::Text);
 
 	QTextStream in(&comfile);
@@ -296,5 +295,3 @@ QList< Part* > ParserResult::mathgroups() {
 	}
 	return m_mathgroups;
 }
-
-#include "user.moc"

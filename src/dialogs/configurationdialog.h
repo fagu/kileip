@@ -1,7 +1,7 @@
 /*************************************************************************************
     begin                : Wed Jun 6 2001
     copyright            : (C) 2003 by Jeroen Wijnout (Jeroen.Wijnhout@kdemail.net)
-                               2007-2011 by Michel Ludwig (michel.ludwig@kdemail.net)
+                               2007-2016 by Michel Ludwig (michel.ludwig@kdemail.net)
  *************************************************************************************/
 
 /***************************************************************************
@@ -29,7 +29,9 @@
 
 class KConfig;
 
-namespace KileWidget { class ToolConfig; }
+namespace KileWidget {
+class ToolConfig;
+}
 class KileWidgetAppearanceConfig;
 class KileWidgetHelpConfig;
 class KileWidgetLatexConfig;
@@ -41,90 +43,94 @@ class KileWidgetStructureViewConfig;
 class KileWidgetScriptingConfig;
 class KileWidgetUsermenuConfig;
 
-namespace KileTool { class Manager; }
+namespace KileTool {
+class Manager;
+}
 
-namespace KTextEditor { class ConfigPage; }
+namespace KTextEditor {
+class ConfigPage;
+}
 
 namespace KileDialog
 {
-	class Config : public KPageDialog
-	{
-		Q_OBJECT
+class Config : public KPageDialog
+{
+    Q_OBJECT
 
-	public:
-		Config( KConfig *config, KileInfo *ki, QWidget* parent = 0);
-		~Config();
+public:
+    Config( KConfig *config, KileInfo *ki, QWidget* parent = 0);
+    ~Config();
 
-		virtual void show();
+    virtual void show();
 
-	//Q_SIGNALS:
-	//	void widgetModified();
+    //Q_SIGNALS:
+    //	void widgetModified();
 
-	private Q_SLOTS:
-		void slotOk();
-		void slotCancel();
-		void slotChanged();
+private Q_SLOTS:
+    void slotAcceptChanges();
 
-	private:
-		// dialog manager
-		KConfigDialogManager *m_manager;
+private:
+    // dialog manager
+    KConfigDialogManager *m_manager;
 
-		KConfig *m_config;
-		KConfigGroup m_configDialogSize;
-		KileInfo *m_ki;
+    KConfig *m_config;
+    KConfigGroup m_configDialogSize;
+    KileInfo *m_ki;
 
-		bool m_editorSettingsChanged;
+    QList<KPageWidgetItem*> m_pageWidgetItemList;
 
-		KileWidget::ToolConfig	*toolPage;
+    bool m_editorSettingsChanged;
 
-		// CodeCompletion (dani)
-		CodeCompletionConfigWidget *completePage;
-		KileWidgetPreviewConfig *previewPage;
+    KileWidget::ToolConfig	*toolPage;
 
-		KileWidgetHelpConfig *helpPage;
-		KileWidgetLatexConfig *latexPage;
-		KileWidgetGeneralConfig *generalPage;
-		KileWidgetEnvironmentConfig *envPage;
-		KileWidgetGraphicsConfig *graphicsPage;
-		KileWidgetStructureViewConfig *structurePage;
-		KileWidgetSymbolViewConfig *symbolViewPage;
-		KileWidgetScriptingConfig *scriptingPage;
-		KileWidgetUsermenuConfig *usermenuPage;
-		KileWidgetLivePreviewConfig *livePreviewPage;
-		KileWidgetAppearanceConfig *appearancePage;
+    // CodeCompletion (dani)
+    CodeCompletionConfigWidget *completePage;
+    KileWidgetPreviewConfig *previewPage;
 
-		// setup configuration
-		KPageWidgetItem* addConfigFolder(const QString &section,const QString &icon);
+    KileWidgetHelpConfig *helpPage;
+    KileWidgetLatexConfig *latexPage;
+    KileWidgetGeneralConfig *generalPage;
+    KileWidgetEnvironmentConfig *envPage;
+    KileWidgetGraphicsConfig *graphicsPage;
+    KileWidgetStructureViewConfig *structurePage;
+    KileWidgetSymbolViewConfig *symbolViewPage;
+    KileWidgetScriptingConfig *scriptingPage;
+    KileWidgetUsermenuConfig *usermenuPage;
+    KileWidgetLivePreviewConfig *livePreviewPage;
+    KileWidgetAppearanceConfig *appearancePage;
 
-		KPageWidgetItem* addConfigPage(KPageWidgetItem* parent, QWidget *page,
-		                    const QString &itemName, const QString &pixmapName,
-		                    const QString &header = QString());
+    // setup configuration
+    KPageWidgetItem* addConfigFolder(const QString &section,const QString &icon);
 
-		KPageWidgetItem* addConfigPage(KPageWidgetItem* parent, QWidget *page,
-		                    const QString &itemName, const KIcon& icon,
-		                    const QString &header = QString());
+    KPageWidgetItem* addConfigPage(KPageWidgetItem* parent, QWidget *page,
+                                   const QString &itemName, const QString &pixmapName,
+                                   const QString &header = QString());
 
-		void setupGeneralOptions(KPageWidgetItem* parent);
-		void setupTools(KPageWidgetItem* parent);
-		void setupLatex(KPageWidgetItem* parent);
-		void setupCodeCompletion(KPageWidgetItem* parent);
-		void setupQuickPreview(KPageWidgetItem* parent);
-		void setupHelp(KPageWidgetItem* parent);
-		void setupEditor(KPageWidgetItem* parent);
-		void setupEnvironment(KPageWidgetItem* parent);
-		void setupGraphics(KPageWidgetItem* parent);
-		void setupStructure(KPageWidgetItem* parent);
-		void setupSymbolView(KPageWidgetItem* parent);
-		void setupScripting(KPageWidgetItem* parent);
-		void setupUsermenu(KPageWidgetItem* parent);
-		void setupLivePreview(KPageWidgetItem* parent);
-		void setupAppearance(KPageWidgetItem* parent);
+    KPageWidgetItem* addConfigPage(KPageWidgetItem* parent, QWidget *page,
+                                   const QString &itemName, const QIcon& icon,
+                                   const QString &header = QString());
 
-		// write configuration
-		void writeGeneralOptionsConfig();
+    void setupGeneralOptions(KPageWidgetItem* parent);
+    void setupTools(KPageWidgetItem* parent);
+    void setupLatex(KPageWidgetItem* parent);
+    void setupCodeCompletion(KPageWidgetItem* parent);
+    void setupQuickPreview(KPageWidgetItem* parent);
+    void setupHelp(KPageWidgetItem* parent);
+    void setupEditor(KPageWidgetItem* parent);
+    void setupEnvironment(KPageWidgetItem* parent);
+    void setupGraphics(KPageWidgetItem* parent);
+    void setupStructure(KPageWidgetItem* parent);
+    void setupSymbolView(KPageWidgetItem* parent);
+    void setupScripting(KPageWidgetItem* parent);
+    void setupUsermenu(KPageWidgetItem* parent);
+    void setupLivePreview(KPageWidgetItem* parent);
+    void setupAppearance(KPageWidgetItem* parent);
 
-		// editor pages
-		QMap<KPageWidgetItem*, KTextEditor::ConfigPage*> m_editorPages;
-	};
+    // write configuration
+    void writeGeneralOptionsConfig();
+
+    // editor pages
+    QMap<KPageWidgetItem*, KTextEditor::ConfigPage*> m_editorPages;
+};
 }
 #endif

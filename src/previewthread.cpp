@@ -13,9 +13,10 @@
 
 #include "previewthread.h"
 #include <stdio.h>
-#include <kstandarddirs.h>
+#include <QDir>
 #include <QFileInfo>
 #include <QFile>
+#include <QTemporaryDir>
 #include <QTextStream>
 #include <QProcess>
 #include <QMutexLocker>
@@ -32,9 +33,9 @@ PreviewThread::PreviewThread(KileDocument::LaTeXInfo* info, QObject* parent)
 	connect(m_masteruser, SIGNAL(documentChanged()), this, SLOT(textChanged()));
 	connect(info, SIGNAL(inlinePreviewChanged(bool)), this, SLOT(textChanged()));
 	m_nextprevimg = 1;
-	m_dir = new KTempDir(KStandardDirs::locateLocal("tmp", "kile-inlinepreview"));
+	m_dir = new QTemporaryDir(QDir::tempPath() + QLatin1Char('/') + "kile-inlinepreview");
 	m_dir->setAutoRemove(true);
-	m_tempfilename = QFileInfo(m_dir->name() + "inpreview.tex").absoluteFilePath();
+	m_tempfilename = QFileInfo(m_dir->path() + QLatin1Char('/') + "inpreview.tex").absoluteFilePath();
 }
 
 PreviewThread::~PreviewThread() {
@@ -154,9 +155,12 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > temp
 	
 	// Run LaTeX
 	QProcess proc;
-	proc.setWorkingDirectory(m_dir->name());
+	proc.setWorkingDirectory(m_dir->path());
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-	env.insert("TEXINPUTS", ".:"+m_info->url().directory()+":");
+	QDir filedir(m_info->url().toLocalFile());
+	assert(filedir.cdUp());
+	qDebug() << "Directory: " << filedir.absolutePath() << endl;
+	env.insert("TEXINPUTS", ".:"+filedir.absolutePath()+":");
 	proc.setProcessEnvironment(env);
 	proc.start("latexmk -pdf -silent inpreview.tex");
 	proc.waitForFinished(15000);
@@ -166,7 +170,7 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > temp
 		// Run dvipng
 		// The outputfiles have the following names {Number of the LaTeX-Run}-{Number of the image in this LaTeX-Run}.png
 		QProcess dvipng;
-		dvipng.setWorkingDirectory(m_dir->name());
+		dvipng.setWorkingDirectory(m_dir->path());
 		dvipng.start("convert -density 96x96 inpreview.pdf " + QString::number(m_nextprevimg) + ".png");
 		dvipng.waitForFinished(-1);
 		if (dvipng.exitCode()) {
@@ -190,7 +194,7 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > temp
 		for (int i = start; i <= end; i++) {
 			Part *env = tempenvs[i];
 			//qDebug() << "Succeeded:" << env->source(text);
-			QString filename = m_dir->name() + "/" + QString::number(m_nextprevimg) + (end>start ? "-" + QString::number(ipr-1) : "") + ".png";
+			QString filename = m_dir->path() + "/" + QString::number(m_nextprevimg) + (end>start ? "-" + QString::number(ipr-1) : "") + ".png";
 			m_previmgs[env->source(m_res.text())] = QImage(filename);
 			ipr++;
 		}
@@ -246,5 +250,3 @@ QMap<QString,QImage> PreviewThread::images() {
 QString PreviewThread::parsedText() {
 	return m_res.text();
 }
-
-#include "previewthread.moc"

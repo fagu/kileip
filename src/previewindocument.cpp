@@ -77,7 +77,7 @@ void ViewHandler::updateFound(int x, int y) {
 		minx = min(minx, p.x());
 		miny = min(miny, p.y());
 		// TODO find a better way to determine maxx
-		if (!doc->character(KTextEditor::Cursor(y,x)).isSpace())
+		if (!doc->characterAt(KTextEditor::Cursor(y,x)).isSpace())
 			maxx = max(maxx, p.x());
 		maxy = max(maxy, p.y());
 		if (p.x()-lx > 0 && lx != -1)
@@ -177,7 +177,7 @@ void PreviewWidget::updateRect() {
 		int l = c1.line(), c = c1.column()-1;
 		bool ok = true;
 		while (c >= 0 && vh->pos(c,l).y() == p1.y()) {
-			if (!vh->doc->character(KTextEditor::Cursor(l,c)).isSpace() || vh->view->cursorPosition() == KTextEditor::Cursor(l,c)) {
+			if (!vh->doc->characterAt(KTextEditor::Cursor(l,c)).isSpace() || vh->view->cursorPosition() == KTextEditor::Cursor(l,c)) {
 				ok = false;
 				break;
 			}
@@ -190,7 +190,7 @@ void PreviewWidget::updateRect() {
 		int l = c2.line(), c = c2.column();
 		bool ok = true;
 		while (c < vh->doc->lineLength(l) && vh->pos(c,l).y() == p2.y()) {
-			if (!vh->doc->character(KTextEditor::Cursor(l,c)).isSpace() || vh->view->cursorPosition() == KTextEditor::Cursor(l,c)) {
+			if (!vh->doc->characterAt(KTextEditor::Cursor(l,c)).isSpace() || vh->view->cursorPosition() == KTextEditor::Cursor(l,c)) {
 				ok = false;
 				break;
 			}
@@ -409,6 +409,3 @@ void PreviewWidgetHandler::picturesAvailable() {
 		m_thread->endquestions();
 	}
 }
-
-
-#include "previewindocument.moc"

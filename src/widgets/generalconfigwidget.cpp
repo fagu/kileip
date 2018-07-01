@@ -14,27 +14,23 @@
 
 #include "widgets/generalconfigwidget.h"
 
-#include "config.h"
+#include <config.h>
 
-#include <KFileDialog>
 #include <KUrlCompletion>
+#include <QFileDialog>
 
 KileWidgetGeneralConfig::KileWidgetGeneralConfig(QWidget *parent) : QWidget(parent)
 {
-	setupUi(this);
-	m_defaultProjectLocationButton->setIcon(KIcon("folder-open"));
+    setupUi(this);
+    m_defaultProjectLocationButton->setIcon(QIcon::fromTheme("folder-open"));
 
-	connect(m_defaultProjectLocationButton, SIGNAL(clicked()),
-	        this, SLOT(selectDefaultProjectLocation()));
+    connect(m_defaultProjectLocationButton, SIGNAL(clicked()),
+            this, SLOT(selectDefaultProjectLocation()));
 
-	KUrlCompletion *dirCompletion = new KUrlCompletion();
-	dirCompletion->setMode(KUrlCompletion::DirCompletion);
-	kcfg_DefaultProjectLocation->setCompletionObject(dirCompletion);
-	kcfg_DefaultProjectLocation->setAutoDeleteCompletionObject(true);
-
-#ifndef HAVE_VIEWERINTERFACE_H
-	documentViewerGroupBox->setEnabled(false);
-#endif
+    KUrlCompletion *dirCompletion = new KUrlCompletion();
+    dirCompletion->setMode(KUrlCompletion::DirCompletion);
+    kcfg_DefaultProjectLocation->setCompletionObject(dirCompletion);
+    kcfg_DefaultProjectLocation->setAutoDeleteCompletionObject(true);
 }
 
 KileWidgetGeneralConfig::~KileWidgetGeneralConfig()
@@ -43,10 +39,9 @@ KileWidgetGeneralConfig::~KileWidgetGeneralConfig()
 
 void KileWidgetGeneralConfig::selectDefaultProjectLocation()
 {
-	QString newDefaultLocation = KFileDialog::getExistingDirectory(kcfg_DefaultProjectLocation->text(), this);
-	if (!newDefaultLocation.isEmpty()) {
-		kcfg_DefaultProjectLocation->setText(newDefaultLocation);
-	}
+    QString newDefaultLocation = QFileDialog::getExistingDirectory(this, QString(), kcfg_DefaultProjectLocation->text());
+    if (!newDefaultLocation.isEmpty()) {
+        kcfg_DefaultProjectLocation->setText(newDefaultLocation);
+    }
 }
 
-#include "generalconfigwidget.moc"

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>404</width>
+    <width>504</width>
     <height>227</height>
    </rect>
   </property>
@@ -28,7 +28,7 @@
         <string>Most Frequently Used Symbols</string>
        </property>
        <property name="flat">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
@@ -51,7 +51,7 @@
            </widget>
           </item>
           <item>
-           <widget class="KIntNumInput" name="kcfg_numSymbolsMFUS">
+           <widget class="QSpinBox" name="kcfg_numSymbolsMFUS">
             <property name="value">
              <number>30</number>
             </property>
@@ -94,7 +94,7 @@
         <string>Unicode</string>
        </property>
        <property name="flat">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
@@ -125,22 +125,11 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>KIntNumInput</class>
-   <extends>QWidget</extends>
-   <header>knuminput.h</header>
-  </customwidget>
- </customwidgets>
  <tabstops>
   <tabstop>kcfg_numSymbolsMFUS</tabstop>
   <tabstop>kcfg_displayMFUS</tabstop>
   <tabstop>kcfg_clearMFUS</tabstop>
  </tabstops>
- <includes>
-  <include location="local">knuminput.h</include>
-  <include location="local">knuminput.h</include>
- </includes>
  <resources/>
  <connections/>
 </ui>

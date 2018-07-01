@@ -1,5 +1,5 @@
 /**************************************************************************
-*   Copyright (C) 2011-2012 by Michel Ludwig (michel.ludwig@kdemail.net)  *
+*   Copyright (C) 2011-2014 by Michel Ludwig (michel.ludwig@kdemail.net)  *
 ***************************************************************************/
 
 /***************************************************************************
@@ -19,17 +19,17 @@
 #include <QObject>
 #include <QQueue>
 
-#include <KUrl>
+#include <QUrl>
 
 class KileInfo;
 
 namespace KileDocument {
-	class Info;
-	class TextInfo;
+class Info;
+class TextInfo;
 }
 
 namespace KileTool {
-	class Base;
+class Base;
 }
 
 namespace KileParser {
@@ -40,36 +40,36 @@ class OutputParserThread;
 
 class Manager : public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	explicit Manager(KileInfo *ki, QObject *parent = 0);
-	~Manager();
+    explicit Manager(KileInfo *ki, QObject *parent = 0);
+    ~Manager();
 
-	void parseDocument(KileDocument::TextInfo* textInfo);
+    void parseDocument(KileDocument::TextInfo* textInfo);
 
-	void parseOutput(KileTool::Base *tool, const QString& fileName, const QString& sourceFile,
-                                               // for QuickPreview
-	                                       const QString& texFileName = "", int selrow = -1, int docrow = -1);
+    void parseOutput(KileTool::Base *tool, const QString& fileName, const QString& sourceFile,
+                     // for QuickPreview
+                     const QString& texFileName = "", int selrow = -1, int docrow = -1);
 
-	bool isDocumentParsingComplete();
+    bool isDocumentParsingComplete();
 
-	void stopDocumentParsing(const KUrl& url);
+    void stopDocumentParsing(const QUrl &url);
 
 Q_SIGNALS:
-	void documentParsingComplete();
-	void documentParsingStarted();
+    void documentParsingComplete();
+    void documentParsingStarted();
 
 protected Q_SLOTS:
-	void handleOutputParsingComplete(const KUrl& url, KileParser::ParserOutput *output);
+    void handleOutputParsingComplete(const QUrl &url, KileParser::ParserOutput *output);
 
-	void removeToolFromUrlHash(KileTool::Base *tool);
+    void removeToolFromUrlHash(KileTool::Base *tool);
 
 private:
-	KileInfo *m_ki;
-	DocumentParserThread *m_documentParserThread;
-	OutputParserThread *m_outputParserThread;
-	QMultiHash<QString, KileTool::Base*> m_urlToToolHash;
+    KileInfo *m_ki;
+    DocumentParserThread *m_documentParserThread;
+    OutputParserThread *m_outputParserThread;
+    QMultiHash<QUrl, KileTool::Base*> m_urlToToolHash;
 };
 
 }

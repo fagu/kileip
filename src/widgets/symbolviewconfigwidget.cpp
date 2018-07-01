@@ -15,11 +15,10 @@
 
 KileWidgetSymbolViewConfig::KileWidgetSymbolViewConfig(QWidget *parent) : QWidget(parent)
 {
-	setupUi(this);
+    setupUi(this);
 }
 
 KileWidgetSymbolViewConfig::~KileWidgetSymbolViewConfig()
 {
 }
 
-#include "symbolviewconfigwidget.moc"

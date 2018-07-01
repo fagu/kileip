@@ -15,11 +15,10 @@
 
 ProcessToolConfigWidget::ProcessToolConfigWidget(QWidget *parent) : QWidget(parent)
 {
-	setupUi(this);
+    setupUi(this);
 }
 
 ProcessToolConfigWidget::~ProcessToolConfigWidget()
 {
 }
 
-#include "processtoolconfigwidget.moc"

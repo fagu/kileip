@@ -19,44 +19,43 @@
 #include <QString>
 #include <QCheckBox>
 
-#include <KStandardDirs>
-#include <KDialog>
-#include <KLocale>
+
+#include <QDialog>
+#include <KLocalizedString>
 
 #include "kileconstants.h"
 #include "templates.h"
 
 class NewDocumentWidget;
 
-class NewFileWizard : public KDialog
+class NewFileWizard : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	explicit NewFileWizard(KileTemplate::Manager *manager, KileDocument::Type startType = KileDocument::LaTeX,
-	              QWidget *parent = NULL, const char *name = NULL);
-	~NewFileWizard();
+    explicit NewFileWizard(KileTemplate::Manager *manager, KileDocument::Type startType = KileDocument::LaTeX,
+                           QWidget *parent = Q_NULLPTR, const char *name = Q_NULLPTR);
+    ~NewFileWizard();
 
 public:
-	TemplateItem* getSelection() const;
-	bool useWizard();
+    TemplateItem* getSelection() const;
+    bool useWizard();
 
 protected Q_SLOTS:
-	virtual void slotButtonClicked(int button);
-	void slotClickOKButton();
+    void okButtonClicked();
 
-	void slotActivated(int index);
+    void slotActivated(int index);
 
-	void restoreSelectedIcon();
+    void restoreSelectedIcon();
 
 protected:
-	KileTemplate::Manager *m_templateManager;
-	NewDocumentWidget* m_newDocumentWidget;
-	int m_currentlyDisplayedType; // not a document type, only a local type!
+    KileTemplate::Manager *m_templateManager;
+    NewDocumentWidget* m_newDocumentWidget;
+    int m_currentlyDisplayedType; // not a document type, only a local type!
 
-	QString getConfigKey(int index);
+    QString getConfigKey(int index);
 
-	void storeSelectedIcon();
-	void displayType(int index);
+    void storeSelectedIcon();
+    void displayType(int index);
 };
 
 #endif

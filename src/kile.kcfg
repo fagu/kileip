@@ -133,7 +133,7 @@
 		</entry>
 		<entry name="PreviewBibInputPaths" type="String">
 			<label>Holds the BIBINPUTS environment variable for QuickPreview tools.</label>
-			<whatsthis>Set the BIBINPUTS environment variable for QuickPreview tools here. BIBINPUTS should be a colon-separated list of all paths TeX should look for additional packages and/or files. You do not have to add :$BIBINPUTS at the end.</whatsthis>
+			<whatsthis>Set the BIBINPUTS environment variable for QuickPreview tools here. BIBINPUTS should be a colon-separated list of all the paths where the bibliography tool (e.g. BibTeX or Biber) should look for additional packages and/or files. You do not have to add :$BIBINPUTS at the end.</whatsthis>
 			<default></default>
 		</entry>
 		<entry name="BstInputPaths" type="String">
@@ -181,7 +181,7 @@
 		</entry>
 		<entry name="SelectedLeftView" type="Int">
 			<label>The identifier of the selected view in the left pane.</label>
-			<default>1</default>
+			<default>-1</default>
 		</entry>
 		<entry name="ShowSplashScreen" type="Bool">
 			<label>Whether to show the splash screen on startup.</label>
@@ -317,10 +317,6 @@
 			<label>Use the system's TeX reference for the contextual help (older version).</label>
 			<default>false</default>
 		</entry>
-		<entry name="embedded" type="Bool">
-			<label>Use embedded viewer for user help.</label>
-			<default>false</default>
-		</entry>
 		<entry name="external" type="Bool">
 			<label>Use an external viewer for user help.</label>
 			<default>true</default>
@@ -331,17 +327,9 @@
 			<label>Reopen files and projects on startup.</label>
 			<default>true</default>
 		</entry>
-		<entry name="Autosave" type="Bool">
-			<label>Automatic save.</label>
-			<default>true</default>
-		</entry>
 		<entry name="CleanUpAfterClose" type="Bool">
 			<label>Automatically clean-up files after close.</label>
 			<default>false</default>
-		</entry>
-		<entry name="AutosaveInterval" type="Int">
-			<label>The autosave interval in minutes.</label>
-			<default>10</default>
 		</entry>
 		<entry name="CleanUpFileExtensions" type="String">
 			<label>The file extensions to clean on exit.</label>
@@ -354,6 +342,10 @@
 		<entry name="lastDir" type="Path">
 			<label></label>
 			<default></default>
+		</entry>
+		<entry name="showLaTeXFilesOnly" type="Bool">
+			<label>Only show LaTeX files in the file browser widget</label>
+			<default>true</default>
 		</entry>
 		<entry name="SingleFileMasterDocument" type="Path">
 			<label></label>
@@ -387,6 +379,10 @@
 			<label>Whether the watch-file mode is enabled for the document viewer</label>
 			<default>true</default>
 		</entry>
+		<entry name="ShowFullPathInWindowTitle" type="Bool">
+			<label>Whether to show the full path of file names in the window title.</label>
+			<default>false</default>
+		</entry>
 	</group>
 	<group name="Complete">
 		<entry name="CompleteCursor" type="Bool">
@@ -416,10 +412,6 @@
 		<entry name="showCwlCommands" type="Bool">
 			<label></label>
 			<default>true</default>
-		</entry>
-		<entry name="maxCwlFiles" type="Int">
-			<label></label>
-			<default>10</default>
 		</entry>
 		<entry name="CompleteAutoThreshold" type="Int">
 			<label></label>
@@ -613,11 +605,11 @@
 		</entry>
 	</group>
 	<group name="UserMenu">
-		<entry name="menuFile" type="String">
+		<entry name="userMenuFile" type="String">
 			<label>XML file for the user menu</label>
 			<default></default>
 		</entry>
-		<entry name="menuLocation" type="Int">
+		<entry name="userMenuLocation" type="Int">
 			<label>Use the main menubar (value 0) or the LaTeX menu (value 1) for the location of the user menu</label>
 			<default>1</default>
 		</entry>
@@ -641,7 +633,7 @@
 		</entry>
 		<entry name="livePreviewCompileOnlyAfterSaving" type="Bool">
 			<label>Only compile documents after saving.</label>
-			<default>false</default>
+			<default>true</default>
 		</entry>
 	</group>
 </kcfg>

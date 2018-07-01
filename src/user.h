@@ -64,7 +64,7 @@ class User : public QThread {
 		void textChanged(QString ntext);
 	protected:
 		void run();
-	signals:
+	Q_SIGNALS:
 		void documentChanged();
 	private:
 		ParserResult m_res;

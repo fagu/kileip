@@ -33,7 +33,7 @@ public:
 	KTextEditor::Document *doc;
 	KTextEditor::Cursor visStart, visEnd;
 	int minx, maxx, miny, maxy, dx, dy;
-public slots:
+public Q_SLOTS:
 	void update();
 private:
 	void updateFound(int x, int y);
@@ -51,7 +51,7 @@ class PreviewWidget : public QWidget, KTextEditor::MovingRangeFeedback {
 		void caretEnteredRange (KTextEditor::MovingRange* range, KTextEditor::View* view);
 		void caretExitedRange (KTextEditor::MovingRange* range, KTextEditor::View* view);
 		QImage *img() {return m_img;}
-	public slots:
+	public Q_SLOTS:
 		void updateRect();
 	protected:
 		void paintEvent(QPaintEvent *event);
@@ -75,7 +75,7 @@ class PreviewWidgetHandler : public QObject {
 		KileDocument::LaTeXInfo *m_info;
 		PreviewThread *m_thread;
 		QMultiMap<QString,PreviewWidget*> m_widgets;
-	public slots:
+	public Q_SLOTS:
 		void picturesAvailable();
 };
 

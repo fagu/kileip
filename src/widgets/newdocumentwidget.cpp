@@ -15,11 +15,10 @@
 
 NewDocumentWidget::NewDocumentWidget(QWidget *parent) : QWidget(parent)
 {
-	setupUi(this);
+    setupUi(this);
 }
 
 NewDocumentWidget::~NewDocumentWidget()
 {
 }
 
-#include "newdocumentwidget.moc"

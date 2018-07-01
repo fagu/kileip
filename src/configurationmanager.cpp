@@ -19,20 +19,19 @@
 
 namespace KileConfiguration {
 
-	Manager::Manager(KileInfo *kileInfo, QObject *parent, const char *name)  : QObject(parent), m_kileInfo(kileInfo)
-	{
-		setObjectName(name);
-	}
-
-	Manager::~Manager() {
-
-	}
-
-	void Manager::emitConfigChanged()
-	{
-		emit configChanged();
-	}
+Manager::Manager(KileInfo *kileInfo, QObject *parent, const char *name)  : QObject(parent), m_kileInfo(kileInfo)
+{
+    setObjectName(name);
 }
 
-#include "configurationmanager.moc"
+Manager::~Manager() {
+
+}
+
+void Manager::emitConfigChanged()
+{
+    emit configChanged();
+}
+}
+
 

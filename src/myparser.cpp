@@ -15,9 +15,8 @@
 
 #include <QDebug>
 #include <QFile>
+#include <QStandardPaths>
 #include <QStringList>
-#include <KGlobal>
-#include <KStandardDirs>
 #include "myparser.h"
 
 bool midEqual(const QString &text, int start, int len, const QString &ref) {
@@ -519,7 +518,7 @@ QMap<QString,SpecialEnvironment> Global::specialenvs;
 void Global::init() {
 	if (!commands.empty())
 		return;
-	QString commandsfilename = KGlobal::dirs()->findResource("appdata", "parser/commands.txt");
+	QString commandsfilename = QStandardPaths::locate(QStandardPaths::AppDataLocation, "parser/commands.txt");
 	//QString commandsfilename = "commands.txt";
 	QFile comfile(commandsfilename);
 	if (!comfile.exists())

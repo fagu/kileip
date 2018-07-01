@@ -13,17 +13,13 @@
 
 #include "appearanceconfigwidget.h"
 
-#include "config.h"
+#include <config.h>
 
 KileWidgetAppearanceConfig::KileWidgetAppearanceConfig(KConfig *config, QWidget *parent)
- : QWidget(parent),
-   m_config(config)
+    : QWidget(parent),
+      m_config(config)
 {
-	setupUi(this);
-
-#ifndef HAVE_VIEWERINTERFACE_H
-	documentViewerGroupBox->setEnabled(false);
-#endif
+    setupUi(this);
 }
 
 KileWidgetAppearanceConfig::~KileWidgetAppearanceConfig()
@@ -39,4 +35,3 @@ void KileWidgetAppearanceConfig::writeConfig()
 }
 
 
-#include "appearanceconfigwidget.moc"

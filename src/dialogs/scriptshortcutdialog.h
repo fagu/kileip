@@ -6,7 +6,7 @@
 #ifndef SCRIPTSHORTCUTDIALOG_H
 #define SCRIPTSHORTCUTDIALOG_H
 
-#include <KDialog>
+#include <QDialog>
 
 #include "kileinfo.h"
 #include "scripting/script.h"
@@ -17,22 +17,22 @@ namespace KileDialog
 {
 
 
-class ScriptShortcutDialog : public KDialog
+class ScriptShortcutDialog : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	public:
-		ScriptShortcutDialog(QWidget *parent, KileInfo *ki, int type, const QString &sequence);
-		~ScriptShortcutDialog() {}
+public:
+    ScriptShortcutDialog(QWidget *parent, KileInfo *ki, int type, const QString &sequence);
+    ~ScriptShortcutDialog() {}
 
-		int sequenceType();
-		QString sequenceValue();
+    int sequenceType();
+    QString sequenceValue();
 
-	private Q_SLOTS:
-		void slotUpdate();
+private Q_SLOTS:
+    void slotUpdate();
 
-	private:
-		Ui::ScriptShortcutDialog m_scriptShortcutDialog;
+private:
+    Ui::ScriptShortcutDialog m_scriptShortcutDialog;
 
 };
 

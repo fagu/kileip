@@ -1,8 +1,7 @@
-/***************************************************************************
-* begin                : 26.09.2007
-* copyright            : (C) Thomas Braun
-* email                : braun _aeht_ physik.fu-berlin.de
-****************************************************************************/
+/*****************************************************************************
+*   Copyright (C) 2007 by Thomas Braun (braun@physik.fu-berlin.de)           *
+*             (C) 2014-2017 by Michel Ludwig (michel.ludwig@kdemail.net)     *
+******************************************************************************/
 
 /***************************************************************************
 *                                                                         *
@@ -15,12 +14,14 @@
 #ifndef KILEDEBUG_H
 #define KILEDEBUG_H
 
-#include <kdebug.h>
+#include <QLoggingCategory>
 
-#ifdef NDEBUG
-	#define KILE_DEBUG if (true); else kDebug
-#else
-	#define KILE_DEBUG kDebug
-#endif
+Q_DECLARE_LOGGING_CATEGORY(LOG_KILE_MAIN)
+Q_DECLARE_LOGGING_CATEGORY(LOG_KILE_PARSER)
+Q_DECLARE_LOGGING_CATEGORY(LOG_KILE_CODECOMPLETION)
+
+#define KILE_DEBUG_MAIN qCDebug(LOG_KILE_MAIN)
+#define KILE_WARNING_MAIN qCWarning(LOG_KILE_MAIN)
+#define KILE_DEBUG_CODECOMPLETION qCDebug(LOG_KILE_CODECOMPLETION)
 
 #endif

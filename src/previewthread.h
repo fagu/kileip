@@ -18,11 +18,11 @@
 #include <QMutex>
 #include <QWaitCondition>
 #include <QImage>
+#include <QTemporaryDir>
 #include <QTimer>
 #include <ktexteditor/document.h>
 #include <queue>
 #include <algorithm>
-#include <ktempdir.h>
 #include "documentinfo.h"
 #include "user.h"
 
@@ -61,7 +61,7 @@ class PreviewThread : public QThread {
 		ParserResult m_res;
 		ParserResult m_masterres;
 		
-		KTempDir *m_dir;
+		QTemporaryDir *m_dir;
 		QString m_tempfilename;
 		
 		QMap<QString,QImage> m_previmgs;
@@ -75,9 +75,9 @@ class PreviewThread : public QThread {
 		User *m_masteruser;
 		
 		QString lastpremable;
-	signals:
+	Q_SIGNALS:
 		void dirtychanged();
-	public slots:
+	public Q_SLOTS:
 		void textChanged();
 };
 

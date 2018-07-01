@@ -21,14 +21,14 @@
 
 class KileWidgetGeneralConfig : public QWidget, public Ui::KileWidgetGeneralConfig
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	public:
-		KileWidgetGeneralConfig(QWidget *parent = NULL);
-		~KileWidgetGeneralConfig();
+public:
+    KileWidgetGeneralConfig(QWidget *parent = Q_NULLPTR);
+    ~KileWidgetGeneralConfig();
 
-	private slots:
-		void selectDefaultProjectLocation();
+private Q_SLOTS:
+    void selectDefaultProjectLocation();
 };
 
 #endif

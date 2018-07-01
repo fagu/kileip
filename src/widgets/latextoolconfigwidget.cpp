@@ -15,11 +15,10 @@
 
 LaTeXToolConfigWidget::LaTeXToolConfigWidget(QWidget *parent) : QWidget(parent)
 {
-	setupUi(this);
+    setupUi(this);
 }
 
 LaTeXToolConfigWidget::~LaTeXToolConfigWidget()
 {
 }
 
-#include "latextoolconfigwidget.moc"

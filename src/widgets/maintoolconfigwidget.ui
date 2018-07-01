@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>910</width>
-    <height>593</height>
+    <width>900</width>
+    <height>665</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -25,7 +25,7 @@
   <property name="windowTitle">
    <string>Configure</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_4">
+  <layout class="QVBoxLayout" name="vboxLayout">
    <item>
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
@@ -36,7 +36,7 @@
      </property>
      <widget class="QGroupBox" name="groupBox_2">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -89,14 +89,14 @@
           </spacer>
          </item>
          <item>
-          <widget class="KPushButton" name="m_pshbNewTool">
+          <widget class="QPushButton" name="m_pshbNewTool">
            <property name="text">
             <string>New...</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="KPushButton" name="m_pshbRemoveTool">
+          <widget class="QPushButton" name="m_pshbRemoveTool">
            <property name="text">
             <string>Remove</string>
            </property>
@@ -156,7 +156,7 @@
                </sizepolicy>
               </property>
               <property name="text">
-               <string>Select:</string>
+               <string>Se&amp;lect:</string>
               </property>
               <property name="wordWrap">
                <bool>false</bool>
@@ -192,7 +192,7 @@
                </spacer>
               </item>
               <item>
-               <widget class="KPushButton" name="m_pshbNewConfig">
+               <widget class="QPushButton" name="m_pshbNewConfig">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -205,7 +205,7 @@
                </widget>
               </item>
               <item>
-               <widget class="KPushButton" name="m_pshbRemoveConfig">
+               <widget class="QPushButton" name="m_pshbRemoveConfig">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -244,7 +244,7 @@
         </widget>
        </item>
        <item>
-        <widget class="KTabWidget" name="m_tab">
+        <widget class="QTabWidget" name="m_tab">
          <property name="sizePolicy">
           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
            <horstretch>0</horstretch>
@@ -308,6 +308,9 @@
                <property name="orientation">
                 <enum>Qt::Vertical</enum>
                </property>
+               <property name="sizeType">
+                <enum>QSizePolicy::Minimum</enum>
+               </property>
                <property name="sizeHint" stdset="0">
                 <size>
                  <width>20</width>
@@ -327,7 +330,16 @@
           <layout class="QVBoxLayout" name="verticalLayout_8">
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_2">
-             <property name="margin">
+             <property name="leftMargin">
+              <number>12</number>
+             </property>
+             <property name="topMargin">
+              <number>12</number>
+             </property>
+             <property name="rightMargin">
+              <number>12</number>
+             </property>
+             <property name="bottomMargin">
               <number>12</number>
              </property>
              <item>
@@ -393,7 +405,7 @@
                <item row="3" column="0">
                 <widget class="QLabel" name="m_lbSource">
                  <property name="text">
-                  <string>&amp;Source extension:</string>
+                  <string>Source e&amp;xtension:</string>
                  </property>
                  <property name="wordWrap">
                   <bool>false</bool>
@@ -488,40 +500,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="7" column="0">
-                <widget class="QLabel" name="m_lbState">
-                 <property name="text">
-                  <string>St&amp;ate:</string>
-                 </property>
-                 <property name="wordWrap">
-                  <bool>false</bool>
-                 </property>
-                 <property name="buddy">
-                  <cstring>m_cbState</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="1">
-                <widget class="KComboBox" name="m_cbState">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                </widget>
-               </item>
               </layout>
-             </item>
-             <item>
-              <widget class="QCheckBox" name="m_useDocumentViewer">
-               <property name="enabled">
-                <bool>false</bool>
-               </property>
-               <property name="text">
-                <string>Use document viewer</string>
-               </property>
-              </widget>
              </item>
              <item>
               <widget class="QCheckBox" name="m_ckClose">
@@ -557,13 +536,22 @@
              <property name="labelAlignment">
               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
              </property>
-             <property name="margin">
+             <property name="leftMargin">
+              <number>12</number>
+             </property>
+             <property name="topMargin">
+              <number>12</number>
+             </property>
+             <property name="rightMargin">
+              <number>12</number>
+             </property>
+             <property name="bottomMargin">
               <number>12</number>
              </property>
              <item row="0" column="0">
               <widget class="QLabel" name="m_lbMenu">
                <property name="text">
-                <string>Add tool to Build &amp;menu:</string>
+                <string>Add &amp;tool to Build menu:</string>
                </property>
                <property name="wordWrap">
                 <bool>false</bool>
@@ -597,7 +585,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="KPushButton" name="m_pshbIcon">
+              <widget class="QPushButton" name="m_pshbIcon">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -631,7 +619,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="KPushButton" name="m_pshbDefault">
+          <widget class="QPushButton" name="m_pshbDefault">
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -670,7 +658,7 @@
           <enum>Qt::Vertical</enum>
          </property>
          <property name="sizeType">
-          <enum>QSizePolicy::Expanding</enum>
+          <enum>QSizePolicy::Minimum</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -684,9 +672,18 @@
      </widget>
     </widget>
    </item>
+   <item>
+    <spacer name="verticalSpacer_3">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::MinimumExpanding</enum>
+     </property>
+    </spacer>
+   </item>
   </layout>
  </widget>
- <layoutfunction spacing="KDialog::spacingHint" margin="KDialog::marginHint"/>
  <customwidgets>
   <customwidget>
    <class>KComboBox</class>
@@ -697,17 +694,6 @@
    <class>KLineEdit</class>
    <extends>QLineEdit</extends>
    <header>klineedit.h</header>
-  </customwidget>
-  <customwidget>
-   <class>KPushButton</class>
-   <extends>QPushButton</extends>
-   <header>kpushbutton.h</header>
-  </customwidget>
-  <customwidget>
-   <class>KTabWidget</class>
-   <extends>QTabWidget</extends>
-   <header>ktabwidget.h</header>
-   <container>1</container>
   </customwidget>
  </customwidgets>
  <tabstops>

@@ -25,9 +25,8 @@
 
 #include <KActionMenu>
 #include <KConfig>
-#include <KMenuBar>
-#include <KLocale>
-#include <KUrl>
+#include <QMenuBar>
+#include <QUrl>
 
 #include "kiletoolmanager.h"
 
@@ -36,30 +35,30 @@ namespace KileHelp
 
 class UserHelp: public QObject
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	UserHelp(KileTool::Manager *manager, KActionMenu *userHelpActionMenu, QWidget *mainWindow);
-	~UserHelp();
-	void userHelpDialog();
-	void enableUserHelpEntries(bool state);
+    UserHelp(KileTool::Manager *manager, KActionMenu *userHelpActionMenu, QWidget *mainWindow);
+    ~UserHelp();
+    void userHelpDialog();
+    void enableUserHelpEntries(bool state);
 
 private Q_SLOTS:
-	void slotUserHelpActivated(const KUrl& url);
-	//void slotUserHelpDialog();
+    void slotUserHelpActivated(const QUrl &url);
+    //void slotUserHelpDialog();
 
 private:
-	void clearActionList();
-	void readConfig(QStringList& menuList, QList<KUrl>& fileList);
-	void writeConfig(const QStringList& menuList, const QList<KUrl>& fileList);
+    void clearActionList();
+    void readConfig(QStringList& menuList, QList<QUrl>& fileList);
+    void writeConfig(const QStringList& menuList, const QList<QUrl>& fileList);
 
-	void setupUserHelpMenu();
+    void setupUserHelpMenu();
 
-	KileTool::Manager *m_manager;
-	KActionMenu *m_userHelpActionMenu;
-	QWidget *m_mainWindow;
+    KileTool::Manager *m_manager;
+    KActionMenu *m_userHelpActionMenu;
+    QWidget *m_mainWindow;
 
-	QList<QAction*> m_actionList;
+    QList<QAction*> m_actionList;
 };
 
 }

@@ -15,11 +15,10 @@
 
 KileWidgetGraphicsConfig::KileWidgetGraphicsConfig(QWidget *parent) : QWidget(parent)
 {
-	setupUi(this);
+    setupUi(this);
 }
 
 KileWidgetGraphicsConfig::~KileWidgetGraphicsConfig()
 {
 }
 
-#include "graphicsconfigwidget.moc"

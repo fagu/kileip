@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.1//EN" "dtd/kdex.dtd" [
+<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.5-Based Variant V1.1//EN" "dtd/kdedbx45.dtd" [
   <!ENTITY kile "<application>Kile</application>">
   <!ENTITY latex "L<superscript>A</superscript>T<subscript>E</subscript>X">
   <!ENTITY pdflatex "PDFL<superscript>A</superscript>T<subscript>E</subscript>X">
@@ -16,13 +16,9 @@
   <!ENTITY makeidx "<application>makeidx</application>">
   <!ENTITY cjk "<abbrev>CJK</abbrev>">
   <!ENTITY ucs "<abbrev>ucs</abbrev>">
-  <!ENTITY kappname "&kile;">
-  <!ENTITY package "extragear">
   <!ENTITY % addindex "IGNORE">
   <!ENTITY % English "INCLUDE">
-  <!ENTITY kate "<application>Kate</application>">
   <!ENTITY javascript "<application>JavaScript</application>">
-
   <!ENTITY include-section-scripting SYSTEM "scripting.docbook">
   <!ENTITY include-section-usermenu SYSTEM "usermenu.docbook">
 ]>
@@ -897,7 +893,7 @@
 	and highlight many different types of text files, among which are &latex; and &bibtex;; you can access
 	many options for &kate; directly from &kile;'s <guimenu>Tools</guimenu> menu.</para>
 
-	 <para>To learn more about &kate; and its capabilities, see the <ulink url="help:kate">&kate; Handbook</ulink>.
+	 <para>To learn more about &kate; and its capabilities, see the <ulink url="help:/kate">&kate; Handbook</ulink>.
 	&kile; users can start reading from the chapter <quote>Working with the &kate; Editor</quote>.</para>
 
 	 <sect1 id="editing_sect">
@@ -1695,7 +1691,7 @@
 		<title>Writing Own Completion Files</title>
 
     <para>The latest specification of the completion file format can found in the
-		<ulink url="http://projects.kde.org/projects/extragear/office/kile/repository/revisions/master/raw/README.cwl">
+		<ulink url="https://commits.kde.org/kile?path=README.cwl">
 		CWL file format specification</ulink>.
 		</para>
 
@@ -2194,7 +2190,7 @@
 
 		<varlistentry>
 		<term>select odd pages (reverse order)</term>
-		<listitem><para>Select all even pages of a document and reverse the order.</para></listitem>
+		<listitem><para>Select all odd pages of a document and reverse the order.</para></listitem>
 		</varlistentry>
 
 		<varlistentry>
