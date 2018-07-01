@@ -158,7 +158,7 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > temp
 	proc.setWorkingDirectory(m_dir->path());
 	QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 	QDir filedir(m_info->url().toLocalFile());
-	assert(filedir.cdUp());
+	filedir.cdUp();
 	qDebug() << "Directory: " << filedir.absolutePath() << endl;
 	env.insert("TEXINPUTS", ".:"+filedir.absolutePath()+":");
 	proc.setProcessEnvironment(env);
