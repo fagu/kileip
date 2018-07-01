@@ -518,7 +518,7 @@ QMap<QString,SpecialEnvironment> Global::specialenvs;
 void Global::init() {
 	if (!commands.empty())
 		return;
-	QString commandsfilename = QStandardPaths::locate(QStandardPaths::AppDataLocation, "parser/commands.txt");
+	QString commandsfilename = QStandardPaths::locate(QStandardPaths::DataLocation, "parser/commands.txt");
 	//QString commandsfilename = "commands.txt";
 	QFile comfile(commandsfilename);
 	if (!comfile.exists())

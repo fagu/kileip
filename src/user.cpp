@@ -24,10 +24,11 @@ QStringList User::mathenvs;
 void User::initMath() {
 	if (mathenvs.size())
 		return;
-	QString commandsfilename = QStandardPaths::locate(QStandardPaths::AppDataLocation, "parser/maths.txt");
+	QString commandsfilename = QStandardPaths::locate(QStandardPaths::DataLocation, "parser/maths.txt");
+    qDebug() << "maths.txt at " << commandsfilename;
 	QFile comfile(commandsfilename);
 	if (!comfile.exists())
-		qDebug() << "maths.txt missing at " << commandsfilename;
+		qDebug() << "maths.txt missing";
 	comfile.open(QIODevice::ReadOnly | QIODevice::Text);
 
 	QTextStream in(&comfile);
