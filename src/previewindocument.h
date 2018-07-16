@@ -32,7 +32,7 @@ public:
     KTextEditor::View *view;
     KTextEditor::Document *doc;
     KTextEditor::Cursor visStart, visEnd;
-    int minx, maxx, miny, maxy, dx, dy;
+    int dy;
 public Q_SLOTS:
     void update();
 private:

@@ -26,14 +26,13 @@ ViewHandler::ViewHandler(KTextEditor::View* _view) : view(_view) {
     connect(view, SIGNAL(cursorPositionChanged(KTextEditor::View*,KTextEditor::Cursor)), this, SLOT(update()));
     connect(view, SIGNAL(verticalScrollPositionChanged(KTextEditor::View*,KTextEditor::Cursor)), this, SLOT(update()));
     connect(view, SIGNAL(horizontalScrollPositionChanged(KTextEditor::View*)), this, SLOT(update()));
-    maxx = -1E9;
     update();
 }
 
 void ViewHandler::update() {
     visStart.setLine(-1);
     visEnd.setLine(-1);
-    minx = 1E9; dx = 1E9; miny = 1E9; maxy = -1E9; dy = 1E9;
+    dy = 1E9;
     int x = 0, y = 0;
     while(true) {
         if (pos(x,y).x() != -1) {
@@ -69,22 +68,13 @@ void ViewHandler::updateFound(int x, int y) {
     }
     inc(x,y);
     visStart = KTextEditor::Cursor(y, x);
-    int lx = -1, ly = -1;
+    int ly = -1;
     while(true) {
         QPoint p = pos(x,y);
         if (p.x() == -1)
             break;
-        minx = min(minx, p.x());
-        miny = min(miny, p.y());
-        // TODO find a better way to determine maxx
-        if (!doc->characterAt(KTextEditor::Cursor(y,x)).isSpace())
-            maxx = max(maxx, p.x());
-        maxy = max(maxy, p.y());
-        if (p.x()-lx > 0 && lx != -1)
-            dx = min(dx, p.x()-lx);
         if (p.y()-ly > 0 && ly != -1)
             dy = min(dy, p.y()-ly);
-        lx = p.x();
         ly = p.y();
         if (!inc(x,y))
             break;
@@ -164,6 +154,9 @@ void PreviewWidget::updateRect() {
         setVisible(false);
         return;
     }
+    QRect textAreaRect = vh->view->textAreaRect();
+    int minx = textAreaRect.left();
+    int maxx = textAreaRect.right();
     bool olddirty = m_dirty;
     m_dirty = vh->doc->text(*m_range) != m_text;
     KTextEditor::Cursor c1 = qMax(vh->visStart, (KTextEditor::Cursor)m_range->start());
@@ -184,7 +177,7 @@ void PreviewWidget::updateRect() {
             c--;
         }
         if (ok)
-            p1.setX(vh->minx);
+            p1.setX(minx);
     }
     {
         int l = c2.line(), c = c2.column();
@@ -199,7 +192,7 @@ void PreviewWidget::updateRect() {
         if (vh->pos(c,l).y() == p2.y() && vh->view->cursorPosition() == KTextEditor::Cursor(l,c))
             ok = false;
         if (ok)
-            p2.setX(vh->maxx+vh->dx);
+            p2.setX(maxx);
     }
     QRectF imgrectf;
     if(p1.y() == p2.y()) {
@@ -221,30 +214,30 @@ void PreviewWidget::updateRect() {
         }
         imgrectf = rec;
     } else {
-        if (p1.x() != vh->maxx+vh->dx) {
-            avail += QRect(p1.x(), p1.y(), vh->maxx-p1.x()+vh->dx+1, vh->dy+1);
+        if (p1.x() != maxx) {
+            avail += QRect(p1.x(), p1.y(), maxx-p1.x()+1, vh->dy+1);
             m_border.push_back(QLine(p1.x(),p1.y(), p1.x(),p1.y()+vh->dy));
             if (p2.y() != p1.y() + vh->dy || p1.x() < p2.x())
-                m_border.push_back(QLine(vh->maxx+vh->dx,p1.y(), vh->maxx+vh->dx,p1.y()+vh->dy));
-            m_border.push_back(QLine(p1.x(),p1.y(), vh->maxx+vh->dx,p1.y()));
+                m_border.push_back(QLine(maxx,p1.y(), maxx,p1.y()+vh->dy));
+            m_border.push_back(QLine(p1.x(),p1.y(), maxx,p1.y()));
         }
         if (p2.y() != p1.y()+vh->dy) {
-            avail += QRect(vh->minx, p1.y()+vh->dy, vh->maxx-vh->minx+vh->dx+1, p2.y()-p1.y()-vh->dy+1);
-            m_border.push_back(QLine(vh->minx,p1.y()+vh->dy, vh->minx,p2.y()));
-            m_border.push_back(QLine(vh->maxx+vh->dx,p1.y()+vh->dy, vh->maxx+vh->dx,p2.y()));
+            avail += QRect(minx, p1.y()+vh->dy, maxx-minx+1, p2.y()-p1.y()-vh->dy+1);
+            m_border.push_back(QLine(minx,p1.y()+vh->dy, minx,p2.y()));
+            m_border.push_back(QLine(maxx,p1.y()+vh->dy, maxx,p2.y()));
         }
-        m_border.push_back(QLine(vh->minx,p1.y()+vh->dy, p1.x(),p1.y()+vh->dy));
-        m_border.push_back(QLine(p2.x(),p2.y(), vh->maxx+vh->dx,p2.y()));
-        if (p2.x() != vh->minx) {
-            avail += QRect(vh->minx, p2.y(), p2.x()-vh->minx+1, vh->dy+1);
+        m_border.push_back(QLine(minx,p1.y()+vh->dy, p1.x(),p1.y()+vh->dy));
+        m_border.push_back(QLine(p2.x(),p2.y(), maxx,p2.y()));
+        if (p2.x() != minx) {
+            avail += QRect(minx, p2.y(), p2.x()-minx+1, vh->dy+1);
             m_border.push_back(QLine(p2.x(),p2.y(), p2.x(),p2.y()+vh->dy));
             if (p2.y() != p1.y() + vh->dy || p1.x() < p2.x())
-                m_border.push_back(QLine(vh->minx,p2.y(), vh->minx,p2.y()+vh->dy));
-            m_border.push_back(QLine(vh->minx,p2.y()+vh->dy, vh->maxx+vh->dx,p2.y()+vh->dy));
+                m_border.push_back(QLine(minx,p2.y(), minx,p2.y()+vh->dy));
+            m_border.push_back(QLine(minx,p2.y()+vh->dy, maxx,p2.y()+vh->dy));
         }
         for (int d1 = 0; d1 < 2; d1++) {
             for (int d2 = 0; d2 < 2; d2++) {
-                int xx1 = vh->minx, xx2 = vh->maxx+vh->dx, yy1 = p1.y()+vh->dy, yy2 = p2.y();
+                int xx1 = minx, xx2 = maxx, yy1 = p1.y()+vh->dy, yy2 = p2.y();
                 if (d1) {
                     xx1 = p1.x();
                     yy1 -= vh->dy;
@@ -395,8 +388,6 @@ void PreviewWidgetHandler::picturesAvailable() {
                 
                 aktinds[text]++;
             }
-        } else {
-            vh->maxx = -1E9; // FIXME This should actually happen, whenever the width of the view changes
         }
         
         foreach(QString text, m_widgets.keys()) {
