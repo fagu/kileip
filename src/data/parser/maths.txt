@@ -9,6 +9,8 @@ multiline
 multiline*
 eqnarray
 eqnarray*
+gather
+gather*
 asy
 tikzpicture
 # start commands of math environments
