@@ -172,6 +172,8 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > temp
     // Check if the document changed again in the meantime
     if (m_res.text() != m_doc->text())
         return;
+    if (m_masterres.text().isEmpty()) // Master document hasn't been parsed. (?)
+        return;
     if (end < start)
         return;
     m_currentrun++;
