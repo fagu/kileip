@@ -22,6 +22,9 @@
 #include <QMutexLocker>
 #include <QTime>
 #include <QSet>
+#include <poppler-qt5.h>
+
+const bool keep_failed_folders = true;
 
 PreviewThread::PreviewThread(KileDocument::LaTeXInfo* info, QObject* parent)
 : QThread(parent), m_doc(info->getDoc()), m_info(info) {
@@ -32,10 +35,9 @@ PreviewThread::PreviewThread(KileDocument::LaTeXInfo* info, QObject* parent)
     connect(m_user, SIGNAL(documentChanged()), this, SLOT(textChanged()));
     connect(m_masteruser, SIGNAL(documentChanged()), this, SLOT(textChanged()));
     connect(info, SIGNAL(inlinePreviewChanged(bool)), this, SLOT(textChanged()));
-    m_nextprevimg = 1;
-    m_dir = new QTemporaryDir(QDir::tempPath() + QLatin1Char('/') + "kile-inlinepreview");
+    m_currentrun = 0;
+    m_dir = new QTemporaryDir(QDir(QDir::tempPath()).filePath("kile-inlinepreview"));
     m_dir->setAutoRemove(true);
-    m_tempfilename = QFileInfo(m_dir->path() + QLatin1Char('/') + "inpreview.tex").absoluteFilePath();
 }
 
 PreviewThread::~PreviewThread() {
@@ -54,6 +56,10 @@ void PreviewThread::setDoc(KTextEditor::Document *doc) {
 }
 
 void PreviewThread::run() {
+    if (!m_dir->isValid()) {
+        qDebug() << "Could not create temporary directory! Not creating previews.";
+        return;
+    }
     forever {
         // Wait for dirty or abort
         {
@@ -85,7 +91,6 @@ void PreviewThread::run() {
 }
 
 void PreviewThread::createPreviews() {
-    qDebug() << "createPreviews";
     if (!m_info->isInlinePreview())
         return;
     QList<Part*> tempenvs;
@@ -124,63 +129,102 @@ void PreviewThread::createPreviews() {
 }
 
 
+bool load_pages_from_pdf(QString filename, int expected_number_of_pages, QVector<QImage>& res) {
+    Poppler::Document* document = Poppler::Document::load(filename);
+    if (!document || document->isLocked()) {
+        qDebug() << "Couldn't open PDF file " << filename << ".";
+        delete document;
+        return false;
+    }
+    if (document->numPages() != expected_number_of_pages) {
+        qDebug() << "Found " << document->numPages() << " pages, expected " << expected_number_of_pages << ".";
+        delete document;
+        return false;
+    }
+    document->setRenderHint(Poppler::Document::RenderHint::Antialiasing);
+    document->setRenderHint(Poppler::Document::RenderHint::TextAntialiasing);
+    document->setRenderHint(Poppler::Document::RenderHint::IgnorePaperColor);
+    res.clear();
+    res.reserve(expected_number_of_pages);
+    for (int pageNumber = 0; pageNumber < expected_number_of_pages; pageNumber++) {
+        Poppler::Page* pdfPage = document->page(pageNumber);
+        if (!pdfPage) {
+            qDebug() << "Couldn't open page " << pageNumber << ".";
+            delete pdfPage;
+            delete document;
+            return false;
+        }
+        QImage img = pdfPage->renderToImage(96, 96);
+        if (img.isNull()) {
+            qDebug() << "Couldn't render page " << pageNumber << ".";
+            delete pdfPage;
+            delete document;
+            return false;
+        }
+        res.push_back(img);
+        delete pdfPage;
+    }
+    delete document;
+    return true;
+}
+
 void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > tempenvs, int start, int end ) {
     // Check if the document changed again in the meantime
     if (m_res.text() != m_doc->text())
         return;
     if (end < start)
         return;
-    qDebug() << "Binary:" << start << "-" << end;
+    m_currentrun++;
+    QDir top_folder(m_dir->path());
+    top_folder.mkdir(QString::number(m_currentrun));
+    QDir folder(top_folder.filePath(QString::number(m_currentrun)));
+    QDir filedir(m_info->url().toLocalFile());
+    filedir.cdUp();
+    qDebug() << "Generating preview images for" << start << "--" << end << "; temporary directory" << folder.absolutePath() << "; working directory" << filedir.absolutePath();
     QTime tim;
     tim.start();
     // Create LaTeX preview file
-    QFile tempfile(m_tempfilename);
-    tempfile.open(QIODevice::WriteOnly);
-    QTextStream fout(&tempfile);
-    fout << preamble;
-    
-    // Create preview preamble
-    fout << "\\usepackage[active,delayed,tightpage,showlabels,pdftex]{preview}" << endl;
-    fout << "\\begin{document}" << endl;
-    
-    for (int i = start; i <= end; i++) {
-        Part *env = tempenvs[i];
-        // FIXME Double dollar signs do not work! Without the preview environment they do!
-        fout << "\n\\begin{preview}\n" << env->source(m_res.text()) << "\n\\end{preview}\n" << endl << endl;
+    QString latex_filename = folder.filePath("inpreview.tex");
+    QFile latex_file(latex_filename);
+    latex_file.open(QIODevice::WriteOnly);
+    {
+        QTextStream fout(&latex_file);
+        fout << preamble;
+        
+        // Create preview preamble
+        fout << "\\usepackage[active,delayed,tightpage,showlabels,pdftex]{preview}" << endl;
+        fout << "\\begin{document}" << endl;
+        
+        for (int i = start; i <= end; i++) {
+            Part *env = tempenvs[i];
+            // FIXME Double dollar signs do not work! Without the preview environment they do!
+            fout << "\n\\begin{preview}\n" << env->source(m_res.text()) << "\n\\end{preview}\n" << endl << endl;
+        }
+        
+        fout << "\\end{document}" << endl;
     }
-    
-    fout << "\\end{document}" << endl;
-    tempfile.close();
+    latex_file.close();
     
     bool success = true;
     
     // Run LaTeX
     QProcess proc;
-    proc.setWorkingDirectory(m_dir->path());
+    proc.setWorkingDirectory(folder.path());
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    QDir filedir(m_info->url().toLocalFile());
-    filedir.cdUp();
-    qDebug() << "Directory: " << filedir.absolutePath() << endl;
     env.insert("TEXINPUTS", ".:"+filedir.absolutePath()+":");
     proc.setProcessEnvironment(env);
     proc.start("latexmk -pdf -silent inpreview.tex");
     proc.waitForFinished(15000);
+    QVector<QImage> imgs;
     if (proc.exitCode()) {
         success = false;
     } else {
-        // Run dvipng
-        // The outputfiles have the following names {Number of the LaTeX-Run}-{Number of the image in this LaTeX-Run}.png
-        QProcess dvipng;
-        dvipng.setWorkingDirectory(m_dir->path());
-        dvipng.start("convert -density 96x96 inpreview.pdf " + QString::number(m_nextprevimg) + ".png");
-        dvipng.waitForFinished(-1);
-        if (dvipng.exitCode()) {
+        if (!load_pages_from_pdf(folder.filePath("inpreview.pdf"), end-start+1, imgs))
             success = false;
-        }
     }
     
     if (!success) {
-        qDebug() << "Failed:" << start << "-" << end << "(in" << tim.elapsed()*0.001 << "s)";
+        qDebug() << "Failed:" << start << "--" << end << "(in" << tim.elapsed()*0.001 << "s)";
         if (start != end) {
             binaryCreatePreviews(preamble, tempenvs, start, (start+end)/2);
             binaryCreatePreviews(preamble, tempenvs, (start+end)/2+1, end);
@@ -189,18 +233,22 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > temp
             m_previmgs[tempenvs[start]->source(m_res.text())] = QImage();
         }
     } else {
-        qDebug() << "Succeeded:" << start << "-" << end << "(in" << tim.elapsed()*0.001 << "s)";
+        qDebug() << "Succeeded:" << start << "--" << end << "(in" << tim.elapsed()*0.001 << "s)";
+        
         // Load images from disk
-        int ipr = 1;
+        int ipr = 0;
         for (int i = start; i <= end; i++) {
             Part *env = tempenvs[i];
-            //qDebug() << "Succeeded:" << env->source(text);
-            QString filename = m_dir->path() + "/" + QString::number(m_nextprevimg) + (end>start ? "-" + QString::number(ipr-1) : "") + ".png";
-            m_previmgs[env->source(m_res.text())] = QImage(filename);
+            m_previmgs[env->source(m_res.text())] = imgs[ipr];
             ipr++;
         }
-        m_nextprevimg++;
     }
+    
+    if (success || !keep_failed_folders) {
+        qDebug() << "Removing temporary folder" << folder.absolutePath() << ".";
+        folder.removeRecursively();
+    }
+    qDebug();
 }
 
 

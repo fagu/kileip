@@ -67,14 +67,12 @@ class PreviewThread : public QThread {
         // The result of parsing the master tex file
         ParserResult m_masterres;
         
-        // The temporary directory in which to run latex
+        // The temporary directory containing directories numbered 1, 2, 3, ... (one for each run of latex).
         QTemporaryDir *m_dir;
-        // The temporary tex file
-        QString m_tempfilename;
         
         QMap<QString,QImage> m_previmgs;
         
-        int m_nextprevimg;
+        int m_currentrun;
         
         void createPreviews();
         void binaryCreatePreviews(QString &preamble, QList<Part*> tempenvs, int start, int end);

@@ -59,15 +59,8 @@ set_package_properties(Okular5 PROPERTIES
 	DESCRIPTION "Okular core library"
 	URL "http://okular.kde.org")
 
-find_package(Poppler COMPONENTS Qt5)
-set_package_properties("Poppler" PROPERTIES
-	TYPE RECOMMENDED
-	PURPOSE "Support for PDF file operations.")
-
-if(Poppler_Qt5_FOUND)
-	set(HAVE_POPPLER TRUE)
-	include_directories(${Poppler_INCLUDE_DIRS})
-endif()
+find_package(Poppler REQUIRED Qt5)
+include_directories(${Poppler_INCLUDE_DIRS})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/src/config.h)
 
