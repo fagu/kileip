@@ -25,6 +25,7 @@
 #include <QUrl>
 
 #include <KAboutData>
+#include <KCrash>
 #include <KDBusService>
 #include <KEncodingProber>
 #include <KLocalizedString>
@@ -42,7 +43,7 @@ Q_LOGGING_CATEGORY(LOG_KILE_CODECOMPLETION, "org.kde.kile.codecompletion", QtWar
 
 bool isProject(const QUrl url)
 {
-    return url.fileName().endsWith(".kilepr");
+    return url.fileName().endsWith(QLatin1String(".kilepr"));
 }
 
 QString readDataFromStdin()
@@ -127,6 +128,8 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
     aboutData.setProductName(QByteArray("kile"));
 
     KAboutData::setApplicationData(aboutData);
+
+    KCrash::initialize();
 
     app.setApplicationDisplayName(aboutData.displayName());
     app.setOrganizationDomain(aboutData.organizationDomain());

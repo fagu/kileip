@@ -1,5 +1,5 @@
 /**************************************************************************
-*   Copyright (C) 2011-2012 by Michel Ludwig (michel.ludwig@kdemail.net)  *
+*   Copyright (C) 2011-2019 by Michel Ludwig (michel.ludwig@kdemail.net)  *
 ***************************************************************************/
 
 /***************************************************************************
@@ -65,7 +65,7 @@ class ParserThread : public QThread
     Q_OBJECT
 
 public:
-    ParserThread(KileInfo *info, QObject *parent = 0);
+    explicit ParserThread(KileInfo *info, QObject *parent = 0);
     virtual ~ParserThread();
 
     void stopParsing();
@@ -90,7 +90,7 @@ protected:
     void addParserInput(ParserInput *input);
     void removeParserInput(const QUrl &url);
 
-    void run();
+    void run() override;
 
     virtual Parser* createParser(ParserInput *input) = 0;
 
@@ -109,7 +109,7 @@ class DocumentParserThread : public ParserThread
     Q_OBJECT
 
 public:
-    DocumentParserThread(KileInfo *info, QObject *parent = Q_NULLPTR);
+    explicit DocumentParserThread(KileInfo *info, QObject *parent = Q_NULLPTR);
     virtual ~DocumentParserThread();
 
 public Q_SLOTS:
@@ -118,7 +118,7 @@ public Q_SLOTS:
     void removeDocument(const QUrl &url);
 
 protected:
-    virtual Parser* createParser(ParserInput *input);
+    virtual Parser* createParser(ParserInput *input) override;
 
 };
 
@@ -128,7 +128,7 @@ class OutputParserThread: public ParserThread
     Q_OBJECT
 
 public:
-    OutputParserThread(KileInfo *info, QObject *parent = Q_NULLPTR);
+    explicit OutputParserThread(KileInfo *info, QObject *parent = Q_NULLPTR);
     virtual ~OutputParserThread();
 
 public Q_SLOTS:
@@ -138,7 +138,7 @@ public Q_SLOTS:
     void removeFile(const QString& fileName);
 
 protected:
-    virtual Parser* createParser(ParserInput *input);
+    virtual Parser* createParser(ParserInput *input) override;
 };
 
 }

@@ -62,7 +62,7 @@ ProcessLauncher::ProcessLauncher() :
     m_proc->setReadChannel(QProcess::StandardOutput);
 
     connect(m_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(slotProcessOutput()));
-    connect(m_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(slotProcessExited(int, QProcess::ExitStatus)));
+    connect(m_proc, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(slotProcessExited(int,QProcess::ExitStatus)));
     connect(m_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProcessError(QProcess::ProcessError)));
 }
 
@@ -314,7 +314,7 @@ void ProcessLauncher::slotProcessError(QProcess::ProcessError error)
         errorString = i18n("crashed");
         break;
     default:
-        errorString = i18n("failed (error code %i)", error);
+        errorString = i18n("failed (error code %1)", error);
         break;
     }
     emit(message(Error, errorString));

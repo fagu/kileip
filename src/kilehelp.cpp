@@ -11,14 +11,13 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "kilehelp.h"
 #include <QDir>
 #include <QFileInfo>
 #include <QTextStream>
-#include <QStandardPaths>
 
 #include "editorextension.h"
 #include "errorhandler.h"
-#include "kilehelp.h"
 #include "kiledebug.h"
 #include "kiletool_enums.h"
 #include "kiletoolmanager.h"
@@ -26,6 +25,7 @@
 #include "kileinfo.h"
 #include "dialogs/texdocumentationdialog.h"
 #include "kileconfig.h"
+#include "utilities.h"
 
 // tbraun 27.06.2007
 // it _looks_ like texlive 2007 has the same layout than texlive 2005 so don't get confused about the variable names :)
@@ -35,7 +35,7 @@ namespace KileHelp
 
 Help::Help(KileDocument::EditorExtension *edit, QWidget *mainWindow) : m_mainWindow(mainWindow), m_edit(edit), m_userhelp(Q_NULLPTR)
 {
-    m_helpDir = QStandardPaths::locate(QStandardPaths::DataLocation, "help/", QStandardPaths::LocateDirectory); // this must end in '/'
+    m_helpDir = KileUtilities::locate(QStandardPaths::AppDataLocation, "help/", QStandardPaths::LocateDirectory); // this must end in '/'
     KILE_DEBUG_MAIN << "help dir: " << m_helpDir;
 
     m_kileReference = m_helpDir + "latexhelp.html";
@@ -124,9 +124,9 @@ QString Help::locateTexLivePath(const QStringList &paths)
     for (QStringList::ConstIterator it = paths.begin(); it != paths.end(); ++it) {
         // Remove any leading or trailing ", this is commonly used in the environment variables
         QString path = (*it);
-        if (path.startsWith("\""))
+        if (path.startsWith('\"'))
             path = path.right(path.length() - 1);
-        if (path.endsWith("\""))
+        if (path.endsWith('\"'))
             path = path.left(path.length() - 1);
 
         if ( re.indexIn(path) > 0 ) {
@@ -284,7 +284,7 @@ void Help::helpLatex(HelpType type)
         default:
             return;
         }
-        filename = m_latex2eReference + "#" + link;
+        filename = m_latex2eReference + '#' + link;
     }
 
     // show help file
@@ -304,7 +304,7 @@ void Help::helpKeyword(KTextEditor::View *view)
         KILE_DEBUG_MAIN << "about to show help for '" << word << "' (section " << m_dictHelpTex[word] << " )";
 
         if ( m_contextHelpType == HelpLatex2eRefs ) {
-            showHelpFile( m_latex2eReference + "#" + m_dictHelpTex[word] );
+            showHelpFile( m_latex2eReference + '#' + m_dictHelpTex[word] );
         }
         else if ( m_contextHelpType == HelpTexRefs ) {
             showHelpFile( m_texdocPath + m_texrefsReference + m_dictHelpTex[word] );

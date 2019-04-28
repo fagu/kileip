@@ -562,15 +562,11 @@ KTextEditor::Document* Manager::createDocument(const QUrl &url, TextInfo *docinf
     }
 
     //handle changes of the document
-    connect(doc, SIGNAL(documentNameChanged(KTextEditor::Document*)), this, SIGNAL(documentNameChanged(KTextEditor::Document*)));
-    connect(doc, SIGNAL(documentUrlChanged(KTextEditor::Document*)), this, SIGNAL(documentUrlChanged(KTextEditor::Document*)));
-    if(doc->metaObject()->indexOfSignal(QMetaObject::normalizedSignature("readWriteChanged(KTextEditor::Document*)")) >= 0) {
-        // signal available in KDE 4.10
-        connect(doc, SIGNAL(readWriteChanged(KTextEditor::Document*)),
-                this, SIGNAL(documentReadWriteStateChanged(KTextEditor::Document*)));
-    }
+    connect(doc, &KTextEditor::Document::documentNameChanged, this, &KileDocument::Manager::documentNameChanged);
+    connect(doc, &KTextEditor::Document::documentUrlChanged, this, &KileDocument::Manager::documentUrlChanged);
+    connect(doc, &KTextEditor::Document::readWriteChanged, this, &KileDocument::Manager::documentReadWriteStateChanged);
 
-    connect(doc, SIGNAL(modifiedChanged(KTextEditor::Document*)), this, SLOT(newDocumentStatus(KTextEditor::Document*)));
+    connect(doc, &KTextEditor::Document::modifiedChanged, this, &KileDocument::Manager::newDocumentStatus);
     KTextEditor::ModificationInterface *modificationInterface = qobject_cast<KTextEditor::ModificationInterface*>(doc);
     if(modificationInterface) {
         modificationInterface->setModifiedOnDiskWarning(true);
@@ -584,9 +580,15 @@ KTextEditor::Document* Manager::createDocument(const QUrl &url, TextInfo *docinf
     if(!highlight.isEmpty()) {
         docinfo->setHighlightingMode(highlight);
     }
-    // FIXME: the whole structure updating stuff needs to be rewritten; updates should originate from
-    //        the docinfo only, i.e. the structure view should just react to changes!
-    connect(docinfo, SIGNAL(completed(KileDocument::Info*)), m_ki->structureWidget(), SLOT(update(KileDocument::Info*)));
+
+    {
+        // FIXME: the whole structure updating stuff needs to be rewritten; updates should originate from
+        //        the docinfo only, i.e. the structure view should just react to changes!
+
+        // small 'trick' to select the right overloaded slot:
+        void (KileWidget::StructureWidget::*slot)(KileDocument::Info *) = &KileWidget::StructureWidget::update;
+        connect(docinfo, &KileDocument::Info::completed, m_ki->structureWidget(), slot);
+    }
 
     KILE_DEBUG_MAIN << "createDocument: url " << doc->url();
     KILE_DEBUG_MAIN << "createDocument: SANITY check: " << (docinfo->getDoc() == docFor(docinfo->url()));
@@ -952,7 +954,7 @@ void Manager::fileSaveCompiledDocument()
                       }
                       // the QFileDialog will take care of asking for overwrite permission (if the chosen file exists already)
                       KIO::CopyJob *copyJob = KIO::copy(QUrl::fromLocalFile(compiledDocumentFileName), url, KIO::Overwrite);
-                      connect(copyJob, &KIO::CopyJob::finished, copyJob, &QObject::deleteLater);
+                      QObject::connect(copyJob, &KIO::CopyJob::finished, copyJob, &QObject::deleteLater);
                   });
     dlg->exec();
 }
@@ -1377,7 +1379,7 @@ void Manager::addProject(KileProject *project)
     m_projects.append(project);
     KILE_DEBUG_MAIN << "\tnow " << m_projects.count() << " projects";
     emit addToProjectView(project);
-    connect(project, SIGNAL(projectTreeChanged(const KileProject *)), this, SIGNAL(projectTreeChanged(const KileProject *)));
+    connect(project, SIGNAL(projectTreeChanged(const KileProject*)), this, SIGNAL(projectTreeChanged(const KileProject*)));
 }
 
 KileProject* Manager::selectProject(const QString& caption)
@@ -2494,8 +2496,8 @@ void Manager::deleteDocumentAndViewSettingsGroups(const QUrl &url)
         if(!KSharedConfig::openConfig()->hasGroup(groupName)) { // 'groupName' might have been deleted
             continue;                                       // work around bug 384039
         }
-        if(groupName.startsWith("Document-Settings")
-                || groupName.startsWith("View-Settings")) {
+        if(groupName.startsWith(QLatin1String("Document-Settings"))
+                || groupName.startsWith(QLatin1String("View-Settings"))) {
             int urlIndex = groupName.indexOf("URL=");
             if(urlIndex >= 0 && groupName.mid(urlIndex + 4) == urlString) {
                 KSharedConfig::openConfig()->deleteGroup(groupName);

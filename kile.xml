@@ -3,7 +3,6 @@
   <mime-type type="text/x-kilepr">
     <comment>Kile project</comment>
     <comment xml:lang="ar">مشروع كايل</comment>
-    <comment xml:lang="ast">Proyeutu Kile</comment>
     <comment xml:lang="bs">Kile projekt</comment>
     <comment xml:lang="ca">projecte del Kile</comment>
     <comment xml:lang="ca@valencia">projecte del Kile</comment>
@@ -17,6 +16,7 @@
     <comment xml:lang="fr">Projet Kile</comment>
     <comment xml:lang="gl">Proxecto Kile</comment>
     <comment xml:lang="it">Progetto di Kile</comment>
+    <comment xml:lang="ko">Kile 프로젝트</comment>
     <comment xml:lang="nl">Kile-project</comment>
     <comment xml:lang="pl">Projekt Kile</comment>
     <comment xml:lang="pt">Projecto do Kile</comment>
@@ -26,6 +26,7 @@
     <comment xml:lang="tr">Kile projesi</comment>
     <comment xml:lang="uk">проект Kile</comment>
     <comment xml:lang="zh_CN">Kile 工程</comment>
+    <comment xml:lang="zh_TW">Kile 專案</comment>
     <glob pattern="*.kilepr"/>
   </mime-type>
 </mime-info>

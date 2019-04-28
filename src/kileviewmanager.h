@@ -1,6 +1,6 @@
 /**************************************************************************
 *   Copyright (C) 2004 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)   *
-*             (C) 2006-2018 by Michel Ludwig (michel.ludwig@kdemail.net)  *
+*             (C) 2006-2019 by Michel Ludwig (michel.ludwig@kdemail.net)  *
 ***************************************************************************/
 
 /***************************************************************************
@@ -71,15 +71,15 @@ class DocumentViewerWindow : public KMainWindow
     Q_OBJECT
 
 public:
-    DocumentViewerWindow(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = KDE_DEFAULT_WINDOWFLAGS);
+    explicit DocumentViewerWindow(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = KDE_DEFAULT_WINDOWFLAGS);
     virtual ~DocumentViewerWindow();
 
 Q_SIGNALS:
     void visibilityChanged(bool shown);
 
 protected:
-    virtual void showEvent(QShowEvent *event);
-    virtual void closeEvent(QCloseEvent *event);
+    virtual void showEvent(QShowEvent *event) override;
+    virtual void closeEvent(QCloseEvent *event) override;
 };
 
 //TODO inherit from KParts::Manager
@@ -170,8 +170,8 @@ public Q_SLOTS:
                                            bool,
                                            KTextEditor::ModificationInterface::ModifiedOnDiskReason reason);
 
-    void convertSelectionToLaTeX(void);
-    void pasteAsLaTeX(void);
+    void convertSelectionToLaTeX();
+    void pasteAsLaTeX();
     void quickPreviewPopup();
 
     void toggleInlinePreview(bool); // TODO This method should probably be somewhere else...
@@ -206,7 +206,7 @@ protected Q_SLOTS:
     void testCanDecodeURLs(const QDragEnterEvent *e, bool &accept);
     void testCanDecodeURLs(const QDragMoveEvent *e, bool &accept);
     void replaceLoadedURL(QWidget *w, QDropEvent *e);
-    void onTextEditorPopupMenuRequest(void);
+    void onTextEditorPopupMenuRequest();
 
     /**
      * Updates the labels of every tab that contains a view for 'changedDoc' to reflect there
@@ -250,10 +250,10 @@ public:
     explicit DropWidget(QWidget * parent = 0, const char * name = 0, Qt::WindowFlags f = 0);
     virtual ~DropWidget();
 
-    virtual void dragEnterEvent(QDragEnterEvent *e);
-    virtual void dropEvent(QDropEvent *e);
+    virtual void dragEnterEvent(QDragEnterEvent *e) override;
+    virtual void dropEvent(QDropEvent *e) override;
 
-    virtual void mouseDoubleClickEvent(QMouseEvent *e);
+    virtual void mouseDoubleClickEvent(QMouseEvent *e) override;
 
 Q_SIGNALS:
     void testCanDecode(const QDragEnterEvent *, bool &);

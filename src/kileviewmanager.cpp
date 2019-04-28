@@ -398,8 +398,8 @@ KTextEditor::View * Manager::createTextView(KileDocument::TextInfo *info, int in
     connect(view, &KTextEditor::View::viewModeChanged, this, &Manager::updateCaption);
     connect(view, &KTextEditor::View::viewInputModeChanged, this, &Manager::updateModeStatus);
 //TODO KF5: signals not available anymore
-//     connect(view, SIGNAL(informationMessage(KTextEditor::View*,const QString&)), this, SIGNAL(informationMessage(KTextEditor::View*,const QString&)));
-//     connect(view, SIGNAL(dropEventPass(QDropEvent *)), m_ki->docManager(), SLOT(openDroppedURLs(QDropEvent *)));
+// 	connect(view, SIGNAL(informationMessage(KTextEditor::View*,QString)), this, SIGNAL(informationMessage(KTextEditor::View*,QString)));
+// 	connect(view, SIGNAL(dropEventPass(QDropEvent*)), m_ki->docManager(), SLOT(openDroppedURLs(QDropEvent*)));
     connect(view, &KTextEditor::View::textInserted, m_ki->codeCompletionManager(), &KileCodeCompletion::Manager::textInserted);
     connect(doc, &KTextEditor::Document::documentNameChanged, this, &Manager::updateTabTexts);
     connect(doc, &KTextEditor::Document::documentUrlChanged, this, &Manager::updateTabTexts);
@@ -513,39 +513,52 @@ void Manager::tabContext(const QPoint &pos)
 
     // 'action1' can become null if it belongs to a view that has been closed, for example
     QPointer<QAction> action1 = m_ki->mainWindow()->action("move_view_tab_left");
-    action1->setData(qVariantFromValue(view));
-    tabMenu.addAction(action1);
+    if(action1) {
+        action1->setData(qVariantFromValue(view));
+        tabMenu.addAction(action1);
+    }
 
     QPointer<QAction> action2 = m_ki->mainWindow()->action("move_view_tab_right");
-    action2->setData(qVariantFromValue(view));
-    tabMenu.addAction(action2);
+    if(action2) {
+        action2->setData(qVariantFromValue(view));
+        tabMenu.addAction(action2);
+    }
 
     tabMenu.addSeparator();
 
     QPointer<QAction> action3;
     if(view->document()->isModified()) {
         action3 = view->actionCollection()->action(KStandardAction::name(KStandardAction::Save));
-        action3->setData(qVariantFromValue(view));
-        tabMenu.addAction(action3);
+        if(action3) {
+            action3->setData(qVariantFromValue(view));
+            tabMenu.addAction(action3);
+        }
     }
 
     QPointer<QAction> action4 = view->actionCollection()->action(KStandardAction::name(KStandardAction::SaveAs));
-    action4->setData(qVariantFromValue(view));
-    tabMenu.addAction(action4);
+    if(action4) {
+        action4->setData(qVariantFromValue(view));
+        tabMenu.addAction(action4);
+    }
 
-    QPointer<QAction> action5 = m_ki->mainWindow()->action("file_save_copy_as");
-    action5->setData(qVariantFromValue(view));
-    tabMenu.addAction(action5);
+    QPointer<QAction> action5 = view->action("file_save_copy_as");
+    if(action5) {
+        tabMenu.addAction(action5);
+    }
 
     tabMenu.addSeparator();
 
     QPointer<QAction> action6 = m_ki->mainWindow()->action("file_close");
-    action6->setData(qVariantFromValue(view));
-    tabMenu.addAction(action6);
+    if(action6) {
+        action6->setData(qVariantFromValue(view));
+        tabMenu.addAction(action6);
+    }
 
     QPointer<QAction> action7 = m_ki->mainWindow()->action("file_close_all_others");
-    action7->setData(qVariantFromValue(view));
-    tabMenu.addAction(action7);
+    if(action7) {
+        action7->setData(qVariantFromValue(view));
+        tabMenu.addAction(action7);
+    }
     /*
         FIXME create proper actions which delete/add the current file without asking stupidly
         QAction* removeAction = m_ki->mainWindow()->action("project_remove");
@@ -569,9 +582,7 @@ void Manager::tabContext(const QPoint &pos)
     if(action4) {
         action4->setData(QVariant());
     }
-    if(action5) {
-        action5->setData(QVariant());
-    }
+    // action5 doesn't need to be given extra data
     if(action6) {
         action6->setData(QVariant());
     }
@@ -803,11 +814,11 @@ void Manager::reflectDocumentModificationStatus(KTextEditor::Document *doc,
     }
     else if(reason == KTextEditor::ModificationInterface::OnDiskModified
             || reason == KTextEditor::ModificationInterface::OnDiskCreated) { //dirty file
-        icon = QIcon::fromTheme("modonhd"); // This icon is taken from Kate. Therefore
+        icon = QIcon::fromTheme("emblem-warning"); // This icon is taken from Kate. Therefore
         // our thanks go to the authors of Kate.
     }
     else if(reason == KTextEditor::ModificationInterface::OnDiskDeleted) { //file deleted
-        icon = QIcon::fromTheme("process-stop");
+        icon = QIcon::fromTheme("emblem-warning");
     }
     else if(m_ki->extensions()->isScriptFile(doc->url())) {
         icon = QIcon::fromTheme("js");
@@ -866,7 +877,7 @@ void Manager::onTextEditorPopupMenuRequest()
     }
 }
 
-void Manager::convertSelectionToLaTeX(void)
+void Manager::convertSelectionToLaTeX()
 {
     KTextEditor::View *view = currentTextView();
 
@@ -933,7 +944,7 @@ void Manager::convertSelectionToLaTeX(void)
 /**
  * Pastes the clipboard's contents as LaTeX (ie. % -> \%, etc.).
  */
-void Manager::pasteAsLaTeX(void)
+void Manager::pasteAsLaTeX()
 {
     KTextEditor::View *view = currentTextView();
 
@@ -1131,7 +1142,7 @@ void Manager::createViewerPart(KActionCollection *actionCollection)
         }
         viewerInterface->setWatchFileModeEnabled(false);
         viewerInterface->setShowSourceLocationsGraphically(true);
-        connect(m_viewerPart, SIGNAL(openSourceReference(const QString&, int, int)), this, SLOT(handleActivatedSourceReference(const QString&, int, int)));
+        connect(m_viewerPart, SIGNAL(openSourceReference(QString,int,int)), this, SLOT(handleActivatedSourceReference(QString,int,int)));
 
         QAction *paPrintCompiledDocument = actionCollection->addAction(KStandardAction::Print, "print_compiled_document", m_viewerPart, SLOT(slotPrint()));
         paPrintCompiledDocument->setText(i18n("Print Compiled Document..."));

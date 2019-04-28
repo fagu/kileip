@@ -163,7 +163,7 @@ QPair<int, QString> Manager::checkSequence(const QString& seq, const QString& sk
 Recorder::Recorder(KTextEditor::View *view, Manager *manager) : QObject(view), m_manager(manager), m_view(view)
 {
     connect(m_manager, SIGNAL(watchedKeySequencesChanged()), this, SLOT(reloadWatchedKeySequences()));
-    connect(this, SIGNAL(detectedTypedKeySequence(const QString&)), m_manager, SLOT(keySequenceTyped(const QString&)));
+    connect(this, SIGNAL(detectedTypedKeySequence(QString)), m_manager, SLOT(keySequenceTyped(QString)));
     KTextEditor::Cursor cursor = m_view->cursorPosition();
     m_oldLine = cursor.line();
     m_oldCol = cursor.column();
@@ -204,7 +204,7 @@ bool Recorder::seekForKeySequence(const QString& s)
 {
     for(int i = 0; i < s.length(); ++i) {
         QString toCheck = s.right(s.length() - i);
-        if(m_watchedKeySequencesList.contains(toCheck) > 0) {
+        if(m_watchedKeySequencesList.contains(toCheck)) {
             m_view->document()->removeText(KTextEditor::Range(m_oldLine, m_oldCol - (s.length() - i - 1), m_oldLine, m_oldCol));
             m_typedSequence.clear(); // clean m_typedSequence to avoid wrong action triggering if one presses keys without printable character
             emit detectedTypedKeySequence(toCheck);

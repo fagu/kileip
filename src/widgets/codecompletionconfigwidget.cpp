@@ -34,7 +34,6 @@
 #include <KLocalizedString>
 #include <KMessageBox>
 #include <QPushButton>
-#include <QTabWidget>
 #include <KConfigGroup>
 
 #include "dialogs/listselector.h"
@@ -79,8 +78,8 @@ CodeCompletionConfigWidget::CodeCompletionConfigWidget(KConfig *config, KileErro
     if (m_dirWatcher) {
         m_dirWatcher->addDir(m_localCwlDir, KDirWatch::WatchSubDirs | KDirWatch::WatchFiles);
         m_dirWatcher->addDir(m_globalCwlDir, KDirWatch::WatchSubDirs | KDirWatch::WatchFiles);
-        connect(m_dirWatcher, SIGNAL(created(const QString&)), this, SLOT(updateCompletionFilesTab(const QString&)));
-        connect(m_dirWatcher, SIGNAL(deleted(const QString&)), this, SLOT(updateCompletionFilesTab(const QString&)));
+        connect(m_dirWatcher, SIGNAL(created(QString)), this, SLOT(updateCompletionFilesTab(QString)));
+        connect(m_dirWatcher, SIGNAL(deleted(QString)), this, SLOT(updateCompletionFilesTab(QString)));
     }
 }
 
@@ -117,7 +116,7 @@ void CodeCompletionConfigWidget::addPage(QTabWidget *tab, CompletionPage page, c
 
 //////////////////// read/write configuration ////////////////////
 
-void CodeCompletionConfigWidget::readConfig(void)
+void CodeCompletionConfigWidget::readConfig()
 {
     // read selected and deselected filenames with wordlists
     m_wordlist[TexPage] = KileConfig::completeTex();
@@ -142,7 +141,7 @@ void CodeCompletionConfigWidget::readConfig(void)
     }
 }
 
-void CodeCompletionConfigWidget::writeConfig(void)
+void CodeCompletionConfigWidget::writeConfig()
 {
     // get listview entries
     for (uint i = TexPage; i < NumPages; ++i) {

@@ -24,7 +24,6 @@
 #include <KLocalizedString>
 
 #include <KProcess>
-#include <QStandardPaths>
 
 #include "dialogs/listselector.h"
 #include "kileconfig.h"
@@ -45,7 +44,7 @@ namespace KileTool
 Factory::Factory(Manager *mngr, KConfig *config, KActionCollection *actionCollection)
     : m_manager(mngr), m_config(config), m_actionCollection(actionCollection)
 {
-    m_standardToolConfigurationFileName = QStandardPaths::locate(QStandardPaths::DataLocation, "kilestdtools.rc");
+    m_standardToolConfigurationFileName = KileUtilities::locate(QStandardPaths::AppDataLocation, "kilestdtools.rc");
 }
 
 Factory::~Factory()
@@ -534,7 +533,7 @@ void LaTeX::checkAutoRun()
             Base *tool = manager()->createTool("Asymptote", QString());
 
             if(tool) {
-                configureAsymptote(tool, targetDir() + '/' + S() + "-" + QString::number(i + 1) + '.' + tool->from());
+                configureAsymptote(tool, targetDir() + '/' + S() + '-' + QString::number(i + 1) + '.' + tool->from());
                 // e.g. for LivePreview, it is necessary that the paths are copied to child processes
                 tool->copyPaths(this);
                 runChildNext(tool);

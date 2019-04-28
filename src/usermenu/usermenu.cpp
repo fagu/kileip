@@ -1,6 +1,6 @@
 /***********************************************************************************
   Copyright (C) 2011-2012 by Holger Danielsson (holger.danielsson@versanet.de)
-            (C) 2017-2018 by Michel Ludwig (michel.ludwig@kdemail.net)
+            (C) 2017-2019 by Michel Ludwig (michel.ludwig@kdemail.net)
  ***********************************************************************************/
 
 /***************************************************************************
@@ -12,6 +12,7 @@
  *                                                                         *
  ***************************************************************************/
 
+#include "usermenu/usermenu.h"
 
 #include <QFile>
 #include <QRegExp>
@@ -22,15 +23,14 @@
 #include <QAction>
 #include <KMessageBox>
 #include <QFileDialog>
-#include <QStandardPaths>
 
 #include "kileactions.h"
 #include "editorextension.h"
 #include "kileviewmanager.h"
-#include "usermenu/usermenu.h"
 
 #include "kileconfig.h"
 #include "kiledebug.h"
+#include "utilities.h"
 
 
 namespace KileMenu {
@@ -49,7 +49,7 @@ namespace KileMenu {
 //
 //  - m_actionlistContextMenu: a list with all actions of the context menu for selected text (QList<QAction *>)
 //
-//  - a menu is defined in an xml file, which is placed in QStandardPaths::locate(QStandardPaths::DataLocation, "usermenu", QStandardPaths::LocateDirectory)
+//  - a menu is defined in an xml file, which is placed in KileUtilities::locate(QStandardPaths::AppDataLocation, "usermenu", QStandardPaths::LocateDirectory)
 
 UserMenu::UserMenu(KileInfo *ki, QObject *receiver)
     : m_ki(ki), m_receiver(receiver), m_proc(Q_NULLPTR)
@@ -76,7 +76,7 @@ UserMenu::UserMenu(KileInfo *ki, QObject *receiver)
     m_currentXmlFile = KileConfig::userMenuFile();
     if ( !m_currentXmlFile.isEmpty() ) {
         if ( !m_currentXmlFile.contains("/") ) {
-            m_currentXmlFile = QStandardPaths::locate(QStandardPaths::DataLocation, "usermenu", QStandardPaths::LocateDirectory) + m_currentXmlFile;
+            m_currentXmlFile = KileUtilities::locate(QStandardPaths::AppDataLocation, "usermenu", QStandardPaths::LocateDirectory) + m_currentXmlFile;
         }
 
         if ( QFile(m_currentXmlFile).exists() ) {
@@ -190,7 +190,7 @@ void UserMenu::updateGUI()
     clear();
 
     // then install
-    if(installXml(m_currentXmlFile)) {
+    if(!m_currentXmlFile.isEmpty() && installXml(m_currentXmlFile)) {
         // add changed context menu to all existing views
         KileView::Manager* viewManager = m_ki->viewManager();
         int views = viewManager->textViewCount();
@@ -358,7 +358,7 @@ void UserMenu::installXmlFile(const QString &filename)
 
         // save xml file in config (with or without path)
         QString xmlfile = filename;
-        QString dir = QStandardPaths::locate(QStandardPaths::DataLocation, "usermenu", QStandardPaths::LocateDirectory);
+        QString dir = KileUtilities::locate(QStandardPaths::AppDataLocation, "usermenu", QStandardPaths::LocateDirectory);
         if ( filename.startsWith(dir) ) {
             QString basename = filename.right( filename.length()-dir.length() );
             if ( !basename.isEmpty() && !basename.contains("/") )  {
@@ -690,7 +690,7 @@ bool UserMenu::updateXmlMenuentry(QDomDocument &doc, QDomElement &element, int &
 
 QString UserMenu::selectUserMenuDir()
 {
-    QStringList dirs = QStandardPaths::locateAll(QStandardPaths::DataLocation, "usermenu", QStandardPaths::LocateDirectory);
+    QStringList dirs = KileUtilities::locateAll(QStandardPaths::AppDataLocation, "usermenu", QStandardPaths::LocateDirectory);
     if ( dirs.size() < 2 ) {
         return dirs.at(0);
     }
@@ -811,7 +811,7 @@ void UserMenu::execActionProgramOutput(KTextEditor::View *view, const UserMenuDa
     }
 
     // build commandline
-    QString cmdline = menudata.filename + " " + menudata.parameter;
+    QString cmdline = menudata.filename + ' ' + menudata.parameter;
     bool useTemporaryFile = cmdline.contains("%M");
 
     bool needsSelection = menudata.needsSelection;
@@ -866,7 +866,7 @@ void UserMenu::execActionProgramOutput(KTextEditor::View *view, const UserMenuDa
 
     connect(m_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(slotProcessOutput()));
     connect(m_proc, SIGNAL(readyReadStandardError()),  this, SLOT(slotProcessOutput()));
-    connect(m_proc, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(slotProcessExited(int, QProcess::ExitStatus)));
+    connect(m_proc, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(slotProcessExited(int,QProcess::ExitStatus)));
 
     KILE_DEBUG_MAIN << "... start proc: " << cmdline;
     // init and/or save important data
@@ -916,7 +916,7 @@ void UserMenu::insertText(KTextEditor::View *view, const QString &text, bool rep
     if(!metachar.isEmpty()) {
         QStringList list = text.split(metachar);
 
-        KileAction::InputTag tag(m_ki, i18n("Input Dialog"), QString(), QKeySequence(), m_receiver, SLOT(insertTag(const KileAction::TagData&)), m_actioncollection,"tag_temporary_action", m_ki->mainWindow(), actiontype, list.at(0)+metachar, list.at(1), list.at(0).length(), 0, QString(), label);
+        KileAction::InputTag tag(m_ki, i18n("Input Dialog"), QString(), QKeySequence(), m_receiver, SLOT(insertTag(KileAction::TagData)), m_actioncollection,"tag_temporary_action", m_ki->mainWindow(), actiontype, list.at(0)+metachar, list.at(1), list.at(0).length(), 0, QString(), label);
 
         tag.activate(QAction::Trigger);
         return;

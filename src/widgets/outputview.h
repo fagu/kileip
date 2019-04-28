@@ -1,7 +1,7 @@
 /**************************************************************************************
     begin                : Sun Dec 21 2003
     copyright            : (C) 2003 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)
-                           (C) 2009 by Michel Ludwig (michel.ludwig@kdemail.net)
+                           (C) 2009-2019 by Michel Ludwig (michel.ludwig@kdemail.net)
  **************************************************************************************/
 
 /***************************************************************************
@@ -24,14 +24,14 @@ class OutputView : public KTextEdit
     Q_OBJECT
 
 public:
-    OutputView(QWidget *parent);
+    explicit OutputView(QWidget *parent);
     ~OutputView();
 
 public Q_SLOTS:
     void receive(const QString &);
 
 protected:
-    virtual void paintEvent(QPaintEvent *ev);
+    virtual void paintEvent(QPaintEvent *ev) override;
 };
 
 }

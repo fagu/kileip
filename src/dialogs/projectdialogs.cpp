@@ -89,7 +89,7 @@ KileProjectDialogBase::KileProjectDialogBase(const QString &caption, KileDocumen
     // combo box for default graphics extension
     m_defaultGraphicsExtensionCombo = new QComboBox(this);
     KileDocument::Extensions extManager;
-    QStringList imageExtensions = extManager.images().split(" ");
+    QStringList imageExtensions = extManager.images().split(' ');
     foreach (const QString &extension, imageExtensions) {
         const QString extName = extension.mid(1); // all characters right of "."
         m_defaultGraphicsExtensionCombo->addItem(extension, extName);
@@ -154,7 +154,7 @@ bool KileProjectDialogBase::acceptUserExtensions()
             QStringList list = m_val_extensions[i-1].split(' ');
             for (it = list.constBegin(); it != list.constEnd(); ++it) {
                 if (! reg.exactMatch(*it)) {
-                    KMessageBox::error(this, i18n("Error in extension") + " '" + (*it) + "':\n" + i18n("All user-defined extensions should look like '.xyz'"), i18n("Invalid extension"));
+                    KMessageBox::error(this, i18n("Error in extension '%1':\nAll user-defined extensions should look like '.xyz'", *it), i18n("Invalid extension"));
                     return false;
                 }
             }
@@ -595,14 +595,14 @@ bool KileNewProjectDialog::testDirectoryIsUsable(const QDir& dir)
 
     if (!dir.exists()) {
         KMessageBox::error(this, i18n("<p>Could not create the project folder \"\n%1\"</p>."
-                                      "<p>Please check whether you have write permissions.</p>").arg(dir.path()));
+                                      "<p>Please check whether you have write permissions.</p>", dir.path()));
         return false;
     }
 
     QFileInfo fi(dir.absolutePath());
     if (!fi.isDir() || !fi.isWritable()) {
         KMessageBox::error(this, i18n("<p>The project folder \"(%1)\" is not writable.</p>"
-                                      "<p>Please check the permissions of the project folder.</p>").arg(dir.path()));
+                                      "<p>Please check the permissions of the project folder.</p>", dir.path()));
         return false;
     }
     return true;

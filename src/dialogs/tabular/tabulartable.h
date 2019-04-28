@@ -28,16 +28,16 @@ class TabularTable : public QTableWidget {
     Q_OBJECT
 
 public:
-    TabularTable(QWidget *parent = 0);
+    explicit TabularTable(QWidget *parent = 0);
 
 public Q_SLOTS:
     void paste();
 
 protected:
-    bool eventFilter(QObject *obj, QEvent *event);
-    void mousePressEvent(QMouseEvent *event);
-    void mouseReleaseEvent(QMouseEvent *event);
-    void paintEvent(QPaintEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void paintEvent(QPaintEvent *event) override;
 
 Q_SIGNALS:
     void rowAppended();

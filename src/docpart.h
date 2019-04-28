@@ -24,7 +24,7 @@ class DocumentationViewer : public KHTMLPart
     Q_OBJECT
 
 public:
-    DocumentationViewer(QWidget *parent = Q_NULLPTR);
+    explicit DocumentationViewer(QWidget *parent = Q_NULLPTR);
     ~DocumentationViewer();
 
     bool backEnable();
@@ -45,7 +45,7 @@ protected:
                              int state,
                              const QString &_target,
                              const KParts::OpenUrlArguments &args = KParts::OpenUrlArguments(),
-                             const KParts::BrowserArguments &browserArgs = KParts::BrowserArguments());
+                             const KParts::BrowserArguments &browserArgs = KParts::BrowserArguments()) override;
 
 private:
     QStringList	m_history;

@@ -11,8 +11,8 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef LATEXMENUTREE_H
-#define LATEXMENUTREE_H
+#ifndef USERMENUTREE_H
+#define USERMENUTREE_H
 
 #include <QStyledItemDelegate>
 #include <QContextMenuEvent>
@@ -27,7 +27,7 @@ class MenuentryDelegate : public QStyledItemDelegate {
 public:
     MenuentryDelegate(QObject *parent=0) : QStyledItemDelegate(parent) {}
 
-    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex& index) const;
+    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex& index) const override;
 };
 
 
@@ -36,7 +36,7 @@ class UserMenuTree : public QTreeWidget
     Q_OBJECT
 
 public:
-    UserMenuTree(QWidget *parent);
+    explicit UserMenuTree(QWidget *parent);
     ~UserMenuTree() {}
 
     bool insertMenuItem(QTreeWidgetItem *current, bool below=true);

@@ -12,6 +12,8 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "scripting/script.h"
+
 #include <QFile>
 #include <QTextStream>
 #include <QScriptValue>
@@ -27,7 +29,6 @@
 
 #include "kileinfo.h"
 #include "kiledebug.h"
-#include "scripting/script.h"
 #include "scripting/kilescriptobject.h"
 #include "scripting/kilescriptview.h"
 #include "scripting/kilescriptdocument.h"
@@ -131,7 +132,7 @@ Script::Script(unsigned int id, const QString& file)
 {
     m_name = QFileInfo(file).fileName();
 
-    if(m_name.endsWith(".js")) { // remove the extension
+    if(m_name.endsWith(QLatin1String(".js"))) { // remove the extension
         m_name = m_name.left(m_name.length() - 3);
     }
 }

@@ -93,17 +93,17 @@ PostscriptDialog::PostscriptDialog(QWidget *parent,
     bool pstops = !QStandardPaths::findExecutable("pstops").isEmpty();
     bool psselect = !QStandardPaths::findExecutable("psselect").isEmpty();
 
-    if (!pstops || !psselect) {
-        QString msg;
-        if (!pstops) {
-            msg = "'pstops'";
-            if (!psselect)
-                msg += " and ";
-        }
-        if (!psselect) {
-            msg += "'psselect'";
-        }
-        m_PostscriptDialog.m_lbInfo->setText(m_PostscriptDialog.m_lbInfo->text() + "\n(Error: " + msg + " not found.)");
+    if (!pstops && !psselect) {
+        m_PostscriptDialog.m_mwErrors->setMessageType(KMessageWidget::Error);
+        m_PostscriptDialog.m_mwErrors->setText(i18n("Neither 'pstops' nor 'psselect' found."));
+    } else if (!pstops) {
+        m_PostscriptDialog.m_mwErrors->setMessageType(KMessageWidget::Warning);
+        m_PostscriptDialog.m_mwErrors->setText(i18n("'pstops' not found."));
+    } else if (!psselect) {
+        m_PostscriptDialog.m_mwErrors->setMessageType(KMessageWidget::Warning);
+        m_PostscriptDialog.m_mwErrors->setText(i18n("'psselect' not found."));
+    } else {
+        m_PostscriptDialog.m_mwErrors->hide();
     }
 
     m_PostscriptDialog.m_edInfile->lineEdit()->setText(psfilename);
@@ -203,7 +203,7 @@ void PostscriptDialog::execute()
         QFileInfo to(m_PostscriptDialog.m_edOutfile->lineEdit()->text());
 
         // output for log window
-        QString msg = i18n("rearrange ps file: ") + from.fileName();
+        QString msg = i18n("rearrange ps file: %1", from.fileName());
         if (!to.fileName().isEmpty())
             msg += " ---> " + to.fileName();
         m_errorHandler->printMessage(KileTool::Info, msg, m_program);
@@ -231,8 +231,8 @@ void PostscriptDialog::execute()
                 this, SLOT(slotProcessOutput()));
         connect(m_proc, SIGNAL(readyReadStandardError()),
                 this, SLOT(slotProcessOutput()));
-        connect(m_proc, SIGNAL(finished(int, QProcess::ExitStatus)),
-                this, SLOT(slotProcessExited(int, QProcess::ExitStatus)));
+        connect(m_proc, SIGNAL(finished(int,QProcess::ExitStatus)),
+                this, SLOT(slotProcessExited(int,QProcess::ExitStatus)));
 
         KILE_DEBUG_MAIN << "=== PostscriptDialog::runPsutils() ====================";
         KILE_DEBUG_MAIN << "   execute '" << m_tempfile << "'";

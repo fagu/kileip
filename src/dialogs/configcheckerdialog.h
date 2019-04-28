@@ -1,6 +1,6 @@
 /*************************************************************************************
   Copyright (C) 2004 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)
-                2012 by Michel Ludwig (michel.ludwig@kdemail.net)
+                2012-2019 by Michel Ludwig (michel.ludwig@kdemail.net)
  *************************************************************************************/
 
 /***************************************************************************
@@ -40,7 +40,7 @@ class ConfigChecker : public KAssistantDialog
     Q_OBJECT
 
 public:
-    ConfigChecker(KileInfo *kileInfo, QWidget* parent = Q_NULLPTR);
+    explicit ConfigChecker(KileInfo *kileInfo, QWidget* parent = Q_NULLPTR);
     ~ConfigChecker();
 
 public Q_SLOTS:
@@ -50,7 +50,7 @@ public Q_SLOTS:
     void setPercentageDone(int);
     void slotCancel();
 
-    void next();
+    void next() override;
 
 protected Q_SLOTS:
     void assistantFinished();

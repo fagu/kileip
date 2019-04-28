@@ -1,5 +1,6 @@
 /******************************************************************************
   Copyright (C) 2009-2011 by Holger Danielsson (holger.danielsson@versanet.de)
+            (C) 2019 by Michel Ludwig (michel.ludwig@kdemail.net)
  ******************************************************************************/
 
 /***************************************************************************
@@ -61,6 +62,7 @@ PdfDialog::PdfDialog(QWidget *parent,
     , m_manager(manager)
     , m_errorHandler(errorHandler)
     , m_output(output)
+    , m_tempdir(Q_NULLPTR)
     , m_proc(Q_NULLPTR)
     , m_rearrangeButton(new QPushButton)
     , m_buttonBox(new QDialogButtonBox(QDialogButtonBox::Help|QDialogButtonBox::Close))
@@ -181,12 +183,8 @@ PdfDialog::PdfDialog(QWidget *parent,
 
     // init Dialog
     m_PdfDialog.m_lbParameterInfo->setTextFormat(Qt::RichText);
-    m_PdfDialog.m_cbOverwrite->setChecked(true);
+    m_PdfDialog.m_cbOverwrite->setChecked(false);
     updateDialog();
-
-    // create tempdir
-    m_tempdir = new QTemporaryDir(QDir::tempPath() + QLatin1Char('/') + "pdfwizard/pdf-");
-    KILE_DEBUG_MAIN << "tempdir: " << m_tempdir->path() ;
 
     connect(this, &PdfDialog::output, m_output, &KileWidget::OutputView::receive);
     connect(m_PdfDialog.m_edInfile->lineEdit(), &QLineEdit::textChanged, this, &PdfDialog::slotInputfileChanged);
@@ -259,7 +257,7 @@ void PdfDialog::initUtilities()
 
     // if we found at least one utility, we can enable some connections
     if ( m_pdftk || m_pdfpages) {
-        connect(m_PdfDialog.m_edOutfile->lineEdit(), SIGNAL(textChanged(const QString &)), this, SLOT(slotOutputfileChanged(const QString &)));
+        connect(m_PdfDialog.m_edOutfile->lineEdit(), SIGNAL(textChanged(QString)), this, SLOT(slotOutputfileChanged(QString)));
         connect(m_PdfDialog.m_cbOverwrite, SIGNAL(stateChanged(int)), this, SLOT(slotOverwriteChanged(int)));
         connect(m_cbTask, SIGNAL(activated(int)), this, SLOT(slotTaskChanged(int)));
     }
@@ -404,7 +402,7 @@ void PdfDialog::setNumberOfPages(int numpages)
 
         QString pages;
         if ( m_encrypted )
-            m_PdfDialog.m_lbPages->setText(pages.setNum(m_numpages)+"   "+i18n("(encrypted)"));
+            m_PdfDialog.m_lbPages->setText(i18nc("%1 is the number of pages", "%1 (encrypted)", QString::number(m_numpages)));
         else
             m_PdfDialog.m_lbPages->setText(pages.setNum(m_numpages));
     }
@@ -473,7 +471,7 @@ void PdfDialog::readNumberOfPages(int scriptmode, const QString &output)
     }
     else {
         QString s = output;
-        numpages = s.remove("\n").toInt(&ok);
+        numpages = s.remove('\n').toInt(&ok);
     }
 
     setNumberOfPages(numpages);
@@ -717,7 +715,7 @@ QString PdfDialog::readPermissions()
     QString permissions;
     for (int i = 0; i < m_pdfPermissionKeys.size(); ++i) {
         if ( m_pdfPermissionWidgets.at(i)->isChecked() ) {
-            permissions += m_pdfPermissionPdftk.at(i) + " ";
+            permissions += m_pdfPermissionPdftk.at(i) + ' ';
         }
     }
     return permissions;
@@ -805,7 +803,7 @@ void PdfDialog::slotTaskChanged(int)
             s = i18n("All options for 'pdfpages'");
             m_PdfDialog.m_edParameter->setValidator(0);
         }
-        m_PdfDialog.m_lbParamInfo->setText(" (" + s + ")");
+        m_PdfDialog.m_lbParamInfo->setText(" (" + s + ')');
 
         m_PdfDialog.m_lbParameter->setText(labeltext);
         m_PdfDialog.m_lbParameter->show();
@@ -859,6 +857,19 @@ void PdfDialog::slotTaskChanged(int)
 // execute commands
 void PdfDialog::slotExecute()
 {
+    if(!m_tempdir) {
+        // create tempdir
+        m_tempdir = new QTemporaryDir(QDir::tempPath() + QLatin1String("/kile-pdfwizard"));
+        m_tempdir->setAutoRemove(true);
+        KILE_DEBUG_MAIN << "tempdir: " << m_tempdir->path();
+    }
+
+    if(!m_tempdir->isValid()) {
+        KMessageBox::error(this, i18n("Failed to create a temporary directory.\n\nThis wizard cannot be used."));
+        reject();
+        return;
+    }
+
     int tabindex = m_PdfDialog.tabWidget->currentIndex();
 
     switch (tabindex) {
@@ -919,7 +930,7 @@ void PdfDialog::executeAction()
 
     // output for log window
     QString program = (m_execLatex) ? i18n("LaTeX with 'pdfpages' package") : i18n("pdftk");
-    QString msg = i18n("Rearranging PDF file: ") + from.fileName();
+    QString msg = i18n("Rearranging PDF file: %1", from.fileName());
     if (!to.fileName().isEmpty())
         msg += " ---> " + to.fileName();
     m_errorHandler->printMessage(KileTool::Info, msg, program);
@@ -943,9 +954,7 @@ void PdfDialog::executeAction()
 void PdfDialog::executeProperties()
 {
     // create temporary file
-    QTemporaryFile infotemp;
-//code was 	infotemp.setSuffix(".txt");
-//Add to constructor and adapt if necessay: QDir::tempPath() + QLatin1String("/myapp_XXXXXX") + QLatin1String(".txt")
+    QTemporaryFile infotemp(m_tempdir->path() + QLatin1String("/kile-pdfdialog-XXXXXX.txt"));
     infotemp.setAutoRemove(false);
 
     if(!infotemp.open()) {
@@ -1051,7 +1060,7 @@ void PdfDialog::showLogs(const QString &title, const QString &inputfile, const Q
 void PdfDialog::executeScript(const QString &command, const QString &dir, int scriptmode)
 {
     // delete old KProcess
-    if (m_proc) {
+    if(m_proc) {
         delete m_proc;
     }
 
@@ -1066,12 +1075,17 @@ void PdfDialog::executeScript(const QString &command, const QString &dir, int sc
     m_proc->setOutputChannelMode(KProcess::MergedChannels);
     m_proc->setReadChannel(QProcess::StandardOutput);
 
-    connect(m_proc, SIGNAL(readyReadStandardOutput()),
-            this, SLOT(slotProcessOutput()));
-    connect(m_proc, SIGNAL(readyReadStandardError()),
-            this, SLOT(slotProcessOutput()));
-    connect(m_proc, SIGNAL(finished(int, QProcess::ExitStatus)),
-            this, SLOT(slotProcessExited(int, QProcess::ExitStatus)));
+    connect(m_proc, &QProcess::readyReadStandardOutput,
+            this, &PdfDialog::slotProcessOutput);
+
+    connect(m_proc, &QProcess::readyReadStandardError,
+            this, &PdfDialog::slotProcessOutput);
+
+    connect(m_proc, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished),
+            this, &PdfDialog::slotProcessExited);
+
+    connect(m_proc, &QProcess::errorOccurred,
+            this, [this]() { slotProcessExited(-1, QProcess::CrashExit); });
 
     KILE_DEBUG_MAIN << "=== PdfDialog::runPdfutils() ====================";
     KILE_DEBUG_MAIN << "execute '" << command << "'";
@@ -1089,7 +1103,7 @@ void PdfDialog::slotProcessOutput()
 
 void PdfDialog::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
 {
-    if ( exitStatus != QProcess::NormalExit) {
+    if(exitCode != 0 || exitStatus != QProcess::NormalExit) {
         if (m_scriptmode != PDF_SCRIPTMODE_TOOLS)
             showError(i18n("An error occurred while executing the task."));
     }
@@ -1306,7 +1320,7 @@ QString PdfDialog::buildActionCommand()
     if ( m_execLatex ) {
         latexfile = buildLatexFile(m_param);
         pdffile = latexfile + ".pdf";
-        command = "pdflatex " + latexfile + ".tex";
+        command = "pdflatex -interaction=nonstopmode " + latexfile + ".tex";
     }
     else {
         pdffile = m_tempdir->path() + QFileInfo(m_inputfile).baseName() + "-temp.pdf";
@@ -1346,11 +1360,7 @@ QString PdfDialog::buildActionCommand()
 // create a temporary file to run latex with package pdfpages.sty
 QString PdfDialog::buildLatexFile(const QString &param)
 {
-    QTemporaryFile temp;
-//code was 	temp.setPrefix(m_tempdir->path());
-//Add to constructor and adapt if necessay: m_tempdir->path()QLatin1String("/myapp_XXXXXX.txt")
-//code was 	temp.setSuffix(".tex");
-//Add to constructor and adapt if necessay: QDir::tempPath() + QLatin1String("/myapp_XXXXXX") + QLatin1String(".tex")
+    QTemporaryFile temp(m_tempdir->path() + QLatin1String("/kile-pdfdialog-XXXXXX.tex"));
     temp.setAutoRemove(false);
 
     if(!temp.open()) {
@@ -1360,11 +1370,11 @@ QString PdfDialog::buildLatexFile(const QString &param)
     QString tempname = temp.fileName();
 
     QTextStream stream(&temp);
-    stream << "\\documentclass[a4paper,12pt]{article}";
-    stream << "\\usepackage[final]{pdfpages}";
-    stream << "\\begin{document}";
-    stream << "\\includepdf[" << param << "]{" << m_inputfile << "}";
-    stream << "\\end{document}";
+    stream << "\\documentclass[a4paper,12pt]{article}\n";
+    stream << "\\usepackage[final]{pdfpages}\n";
+    stream << "\\begin{document}\n";
+    stream << "\\includepdf[" << param << "]{" << m_inputfile << "}\n";
+    stream << "\\end{document}\n";
 
     // everything is prepared to do the job
     temp.close();
@@ -1374,11 +1384,7 @@ QString PdfDialog::buildLatexFile(const QString &param)
 // create a temporary pdf file to set a background color
 QString PdfDialog::buildPdfBackgroundFile(QColor *color)
 {
-    QTemporaryFile temp;
-//code was 	temp.setPrefix(m_tempdir->path());
-//Add to constructor and adapt if necessay: m_tempdir->path()QLatin1String("/myapp_XXXXXX.txt")
-//code was 	temp.setSuffix(".pdf");
-//Add to constructor and adapt if necessay: QDir::tempPath() + QLatin1String("/myapp_XXXXXX") + QLatin1String(".pdf")
+    QTemporaryFile temp(m_tempdir->path() + QLatin1String("/kile-pdfdialog-XXXXXX.pdf"));
     temp.setAutoRemove(false);
 
     if(!temp.open()) {
@@ -1499,7 +1505,7 @@ QString PdfDialog::buildPageList(bool even)
 
     int start = ( even ) ? 2 : 1;
     for (int i=start; i<=m_numpages; i+=2 ) {
-        s += number.setNum(i) + ",";
+        s += number.setNum(i) + ',';
     }
 
     if ( !s.isEmpty() ) {
@@ -1572,10 +1578,10 @@ QString PdfDialog::buildDeletePageList()
         }
         int to = searchPages(&arr,from+1,m_numpages,false) - 1;
         if ( !result.isEmpty() ) {
-            result += ",";
+            result += ',';
         }
         if ( from < to ) {
-            result += QString::number(from) + "-" + QString::number(to);
+            result += QString::number(from) + '-' + QString::number(to);
         }
         else {
             result += QString::number(from);

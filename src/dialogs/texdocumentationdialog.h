@@ -41,7 +41,7 @@ class TexDocDialog : public QDialog
     Q_OBJECT
 
 public:
-    TexDocDialog(QWidget *parent = 0);
+    explicit TexDocDialog(QWidget *parent = 0);
     ~TexDocDialog();
 
 private:
@@ -78,7 +78,7 @@ private:
     QString getIconName(const QString &filename);
 
 protected:
-    bool eventFilter(QObject *o, QEvent *e);
+    virtual bool eventFilter(QObject *o, QEvent *e) override;
 
 Q_SIGNALS:
     void processFinished();

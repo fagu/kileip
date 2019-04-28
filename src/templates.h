@@ -121,7 +121,7 @@ public:
     TemplateItem( QListWidget * parent, const KileTemplate::Info & info);
     ~TemplateItem() {}
 
-    bool operator<(const QListWidgetItem &other) const;
+    bool operator<(const QListWidgetItem &other) const override;
 
     QString name() {
         return m_info.name;
@@ -144,7 +144,7 @@ class TemplateIconView : public QListWidget {
     Q_OBJECT
 
 public:
-    TemplateIconView(QWidget *parent = Q_NULLPTR);
+    explicit TemplateIconView(QWidget *parent = Q_NULLPTR);
     virtual ~TemplateIconView();
 
     void setTemplateManager(KileTemplate::Manager *templateManager);

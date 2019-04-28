@@ -170,7 +170,7 @@ Kile::Kile(bool allowRestore, QWidget *parent)
         return;
     }
 
-    QSplashScreen splashScreen(QPixmap(QStandardPaths::locate(QStandardPaths::DataLocation, "pics/kile_splash.png")), Qt::WindowStaysOnTopHint);
+    QSplashScreen splashScreen(QPixmap(KileUtilities::locate(QStandardPaths::AppDataLocation, "pics/kile_splash.png")), Qt::WindowStaysOnTopHint);
     if(KileConfig::showSplashScreen()) {
         splashScreen.show();
         qApp->processEvents();
@@ -2291,8 +2291,9 @@ void Kile::quickPdf()
     }
 
     KileDialog::PdfDialog *dlg = new KileDialog::PdfDialog(m_mainWindow, texFileName, startDir, m_extensions->latexDocuments(), m_manager, errorHandler(), m_outputWidget);
-    dlg->exec();
-    delete dlg;
+    connect(dlg, &QDialog::finished, dlg, &QObject::deleteLater);
+
+    dlg->open();
 }
 
 void Kile::quickUserMenuDialog()
@@ -2335,7 +2336,7 @@ void Kile::updateUserMenuStatus(bool state)
 
 void Kile::helpLaTex()
 {
-    QString loc = QStandardPaths::locate(QStandardPaths::DataLocation, "help/latexhelp.html");
+    QString loc = KileUtilities::locate(QStandardPaths::AppDataLocation, "help/latexhelp.html");
     KileTool::Base *tool = toolManager()->createTool("ViewHTML", QString(), false);
     if(!tool) {
         errorHandler()->printMessage(KileTool::Error, i18n("Could not create the \"ViewHTML\" tool. Please reset the tools."));
@@ -2356,7 +2357,7 @@ void Kile::readGUISettings()
 void Kile::transformOldUserTags()
 {
     KILE_DEBUG_MAIN << "Convert old user tags";
-    QString xmldir = QStandardPaths::writableLocation(QStandardPaths::DataLocation) + "/usermenu/";
+    QString xmldir = KileUtilities::writableLocation(QStandardPaths::AppDataLocation) + "/usermenu/";
     // create dir if not existing
     QDir testDir(xmldir);
     if (!testDir.exists()) {
@@ -2566,17 +2567,7 @@ void Kile::saveSettings()
     KileConfig::setVerticalSplitterTop(*it);
     ++it;
     KileConfig::setVerticalSplitterBottom(*it);
-#ifdef __GNUC__
-#warning Restoring the side bar sizes from minimized after start up does not work perfectly yet!
-#endif
-// 	// sync vertical splitter and size of bottom bar
-// 	int sizeBottomBar = m_bottomBar->directionalSize();
-// 	if(m_bottomBar->isVisible()) {
-// 		sizeBottomBar = m_verSplitBottom;
-// 	}
-// 	else {
-// 		m_verSplitBottom = sizeBottomBar;
-// 	}
+
     KileConfig::setSideBar(!m_sideBar->isHidden()); // do not use 'isVisible()'!
     KileConfig::setSideBarSize(m_sideBar->directionalSize());
     KileConfig::setBottomBar(!m_bottomBar->isHidden()); // do not use 'isVisible()'!
