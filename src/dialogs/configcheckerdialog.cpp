@@ -45,7 +45,7 @@ public:
 
         QTextDocument document;
         document.setHtml(index.data(Qt::UserRole).toString());
-        painter->resetMatrix();
+        painter->resetTransform();
         painter->translate(option.rect.topLeft());
         document.drawContents(painter);
         painter->restore();
@@ -105,6 +105,9 @@ ConfigChecker::ConfigChecker(KileInfo *kileInfo, QWidget* parent)
     setWindowTitle(i18n("System Check"));
     setModal(true);
     setSizePolicy(QSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred));
+    #ifdef Q_OS_WIN
+    setContentsMargins(6, 6, 6, 6);
+    #endif
 
     QWidget *introWidget = new QWidget(this);
     QLabel *label = new QLabel(i18n("<p>This configuration assistant will check whether your system is set up "
@@ -113,7 +116,7 @@ ConfigChecker::ConfigChecker(KileInfo *kileInfo, QWidget* parent)
                                     "<p>It is recommended to run this assistant before using Kile for the first time.</p>"
                                     "<p>Please press 'Next' now to start the test procedure.</p>"));
     label->setWordWrap(true);
-    QVBoxLayout *vboxLayout = new QVBoxLayout(this);
+    QVBoxLayout *vboxLayout = new QVBoxLayout();
     vboxLayout->setSizeConstraint(QLayout::SetMinimumSize);
     introWidget->setLayout(vboxLayout);
     vboxLayout->addWidget(label);
@@ -122,7 +125,7 @@ ConfigChecker::ConfigChecker(KileInfo *kileInfo, QWidget* parent)
 
     QWidget *runningTestsWidget = new QWidget(this);
     label = new QLabel(i18n("Checking whether the system is set up correctly..."));
-    vboxLayout = new QVBoxLayout(this);
+    vboxLayout = new QVBoxLayout();
     vboxLayout->setSizeConstraint(QLayout::SetMinimumSize);
     runningTestsWidget->setLayout(vboxLayout);
     vboxLayout->addStretch();
@@ -133,7 +136,7 @@ ConfigChecker::ConfigChecker(KileInfo *kileInfo, QWidget* parent)
     m_runningTestsPageWidgetItem = addPage(runningTestsWidget, "");
 
     QWidget *testResultsWidget = new QWidget(this);
-    vboxLayout = new QVBoxLayout(this);
+    vboxLayout = new QVBoxLayout();
     vboxLayout->setSizeConstraint(QLayout::SetMinimumSize);
     testResultsWidget->setLayout(vboxLayout);
     m_listWidget = new QListWidget(this);

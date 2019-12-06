@@ -28,7 +28,7 @@ include(KDECMakeSettings)
 kde_enable_exceptions()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/modules)
 
-find_package(Qt5 5.3 CONFIG REQUIRED
+find_package(Qt5 5.6 CONFIG REQUIRED
 	Core
 	DBus
 	Widgets
@@ -46,7 +46,6 @@ find_package(KF5 5.31 REQUIRED COMPONENTS
 	I18n
 	IconThemes
 	Init
-	KHtml
 	KIO
 	Parts
 	TextEditor
@@ -57,7 +56,7 @@ find_package(KF5 5.31 REQUIRED COMPONENTS
 find_package(Okular5 REQUIRED)
 set_package_properties(Okular5 PROPERTIES
 	DESCRIPTION "Okular core library"
-	URL "http://okular.kde.org")
+	URL "https://okular.kde.org")
 
 find_package(Poppler REQUIRED Qt5)
 include_directories(${Poppler_INCLUDE_DIRS})

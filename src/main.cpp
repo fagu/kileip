@@ -92,6 +92,10 @@ inline void initQtResources() {
 
 extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 {
+    // enable high dpi support
+    QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, true);
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
+
     QApplication app(argc, argv);
 
     initQtResources();
@@ -99,15 +103,12 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
     app.setApplicationName(QStringLiteral("kile"));
     KLocalizedString::setApplicationDomain("kile");
 
-    // enable high dpi support
-    app.setAttribute(Qt::AA_UseHighDpiPixmaps, true);
-
     KAboutData aboutData("kile", i18n("Kile"), kileFullVersion.toLatin1(),
                          i18n("KDE Integrated LaTeX Environment"),
                          KAboutLicense::GPL,
                          i18nc("the parameter is the last copyright year", "by the Kile Team (2003 - %1)", KILE_LAST_COPYRIGHT_YEAR),
                          QString(),
-                         QStringLiteral("http://kile.sourceforge.net"));
+                         QStringLiteral("https://kile.sourceforge.io"));
     aboutData.addAuthor(i18n("Michel Ludwig"), i18n("Project Management/Developer"), "michel.ludwig@kdemail.net");
     aboutData.addAuthor(i18n("Holger Danielsson"), i18n("Developer"), "holger.danielsson@versanet.de");
     aboutData.addAuthor(i18n("Thomas Braun"), i18n("Former Developer"), "thomas.braun@virtuell-zuhause.de");

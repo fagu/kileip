@@ -48,7 +48,7 @@ KileLyxServer::KileLyxServer(bool startMe) :
 
     m_tempDir = new QTemporaryDir();
     if(!m_tempDir->isValid()) {
-        KILE_DEBUG_MAIN << "an error ocurred while creating a tempfile" ;
+        KILE_DEBUG_MAIN << "an error occurred while creating a tempfile" ;
         return;
     }
 
@@ -56,7 +56,7 @@ KileLyxServer::KileLyxServer(bool startMe) :
     m_links << ".lyxpipe.out" << ".lyx/lyxpipe.out";
 
     for(int i = 0; i < m_links.count() ; ++i) {
-        m_pipes.append( m_tempDir->path() + m_links[i] );
+        m_pipes.append( m_tempDir->path() + QDir::separator() + m_links[i] );
         m_links[i].prepend(QDir::homePath() + QDir::separator() );
         KILE_DEBUG_MAIN << "m_pipes[" << i << "]=" << m_pipes[i];
         KILE_DEBUG_MAIN << "m_links[" << i << "]=" << m_links[i];
@@ -116,7 +116,7 @@ bool KileLyxServer::openPipes()
 
 #ifdef Q_OS_WIN
     qCritical() << "kile's lyx server can not work on windows since we don't have pipes";
-    qCritical() << "And also lyx itself does not support it, see  http://wiki.lyx.org/LyX/LyXServer";
+    qCritical() << "And also lyx itself does not support it, see  https://wiki.lyx.org/LyX/LyXServer";
     return false;
 #else
     bool opened = false;
