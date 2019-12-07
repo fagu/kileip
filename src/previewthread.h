@@ -36,7 +36,7 @@ class PreviewThread : public QThread {
         PreviewThread(KileDocument::LaTeXInfo *info, QObject *parent = 0);
         ~PreviewThread();
         
-        void run();
+        void run() override;
         
         void setDoc(KTextEditor::Document *doc);
         // Returns false if the contents are dirty. If they are not dirty, the text does not get reparsed as long as endquestions() is not called.

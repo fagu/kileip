@@ -30,8 +30,8 @@ class CollectionPart : public Part {
         ~CollectionPart() {};
         vector<Part *> children;
         void addChild(Part * p);
-        QString toString(const QString &text) const;
-        QString toTeX(const QString &text) const;
+        QString toString(const QString &text) const override;
+        QString toTeX(const QString &text) const override;
 };
 
 class User;
@@ -63,7 +63,7 @@ class User : public QThread {
         // Notifies the user of a new text
         void textChanged(QString ntext);
     protected:
-        void run();
+        void run() override;
     Q_SIGNALS:
         // parsing complete
         void documentChanged();

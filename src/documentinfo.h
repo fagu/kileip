@@ -498,7 +498,7 @@ public:
     User *user();
     User *masteruser();
     
-    void setDocument(KTextEditor::Document *doc);
+    void setDocument(KTextEditor::Document *doc) override;
     
     bool isInlinePreview();
     void setInlinePreview(bool on);

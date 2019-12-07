@@ -48,13 +48,13 @@ class PreviewWidget : public QWidget, KTextEditor::MovingRangeFeedback {
         PreviewWidget(ViewHandler* viewHandler, QImage* img, const KTextEditor::Range &range, QString text);
         ~PreviewWidget();
         void setRange(const KTextEditor::Range &range);
-        void caretEnteredRange (KTextEditor::MovingRange* range, KTextEditor::View* view);
-        void caretExitedRange (KTextEditor::MovingRange* range, KTextEditor::View* view);
+        void caretEnteredRange (KTextEditor::MovingRange* range, KTextEditor::View* view) override;
+        void caretExitedRange (KTextEditor::MovingRange* range, KTextEditor::View* view) override;
         QImage *img() {return m_img;}
     public Q_SLOTS:
         void updateRect();
     protected:
-        void paintEvent(QPaintEvent *event);
+        void paintEvent(QPaintEvent *event) override;
     private:
         ViewHandler *vh;
         QImage *m_img;

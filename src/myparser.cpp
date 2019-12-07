@@ -58,7 +58,8 @@ QString CommentPart::toString(const QString &text) const {
     return st;
 }
 
-QString CommentPart::toTeX(const QString &text) const {
+QString CommentPart::toTeX(const QString& text) const
+{
     return text.mid(start, end-start+1);
 }
 

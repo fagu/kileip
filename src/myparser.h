@@ -52,8 +52,8 @@ class CommentPart : public Part {
     public:
         CommentPart(int start);
         ~CommentPart() {};
-        QString toString(const QString &text) const;
-        QString toTeX(const QString &text) const;
+        QString toString(const QString &text) const override;
+        QString toTeX(const QString &text) const override;
 };
 
 class CommandPart : public Part {
@@ -68,30 +68,30 @@ class CommandWithArgsPart : public CommandPart, public CPart {
         Part * optional;
         CommandWithArgsPart(int start);
         ~CommandWithArgsPart();
-        QString name(const QString &text) const;
-        bool nameEq(const QString &text, const QString &ref) const;
+        QString name(const QString &text) const override;
+        bool nameEq(const QString &text, const QString &ref) const override;
         int numArgs(const QString &text) const;
         int remainingArgs(const QString &text) const;
-        QString toString(const QString &text) const;
-        QString toTeX(const QString &text) const;
+        QString toString(const QString &text) const override;
+        QString toTeX(const QString &text) const override;
 };
 
 class PrimitiveCommandPart : public CommandPart {
     public:
         PrimitiveCommandPart(int st) { start = st; };
         ~PrimitiveCommandPart() {};
-        QString name(const QString &text) const;
-        bool nameEq(const QString &text, const QString &ref) const;
-        QString toString(const QString &text) const;
-        QString toTeX(const QString &text) const;
+        QString name(const QString &text) const override;
+        bool nameEq(const QString &text, const QString &ref) const override;
+        QString toString(const QString &text) const override;
+        QString toTeX(const QString &text) const override;
 };
 
 class TextPart : public CPart, public Part {
     public:
         TextPart(int start);
 //         virtual ~TextPart() {};
-        QString toString(const QString &text) const;
-        QString toTeX(const QString &text) const;
+        QString toString(const QString &text) const override;
+        QString toTeX(const QString &text) const override;
         QString sourceWithoutVoid(const QString &text) const;
 };
 
@@ -105,8 +105,8 @@ class EnvironmentPart : public Part {
         TextPart * body;
         EnvironmentPart(CommandPart * cp);
         ~EnvironmentPart();
-        QString toString(const QString &text) const;
-        QString toTeX(const QString &text) const;
+        QString toString(const QString &text) const override;
+        QString toTeX(const QString &text) const override;
         //int visit();
 };
 
