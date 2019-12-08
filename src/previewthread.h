@@ -43,9 +43,9 @@ class PreviewThread : public QThread {
         // This function has to be called before mathpositions() and getImage().
         bool startquestions();
         void endquestions();
-        QList<Part*> mathpositions();
-        QImage image(Part *part);
-        QMap<QString,QImage> images();
+        QList<PPart> mathpositions();
+        QImage image(PPart part);
+        QHash<QString,QImage> images();
         QString parsedText();
     private:
         bool m_abort; // whether to abort the thread
@@ -63,19 +63,19 @@ class PreviewThread : public QThread {
         User *m_masteruser;
         
         // The result of parsing the current tex file
-        ParserResult m_res;
+        std::shared_ptr<ParserResult> m_res;
         // The result of parsing the master tex file
-        ParserResult m_masterres;
+        std::shared_ptr<ParserResult> m_masterres;
         
         // The temporary directory containing directories numbered 1, 2, 3, ... (one for each run of latex).
-        QTemporaryDir *m_dir;
+        std::unique_ptr<QTemporaryDir> m_dir;
         
-        QMap<QString,QImage> m_previmgs;
+        QHash<QString,QImage> m_previmgs;
         
         int m_currentrun;
         
         void createPreviews();
-        void binaryCreatePreviews(QString &preamble, QList<Part*> tempenvs, int start, int end);
+        void binaryCreatePreviews(QString &preamble, QList<PPart> tempenvs, int start, int end);
         
         // The preamble used to generate the current images.
         // Whenever the preamble changes, we regenerate all images.

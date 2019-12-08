@@ -74,7 +74,7 @@ void ViewHandler::updateFound(int x, int y) {
         if (p.x() == -1)
             break;
         if (p.y()-ly > 0 && ly != -1)
-            dy = min(dy, p.y()-ly);
+            dy = std::min(dy, p.y()-ly);
         ly = p.y();
         if (!inc(x,y))
             break;
@@ -118,7 +118,7 @@ QPoint ViewHandler::pos(const KTextEditor::Cursor& c) {
 
 
 
-PreviewWidget::PreviewWidget(ViewHandler* viewHandler, QImage* img, const KTextEditor::Range& range, QString text): QWidget(viewHandler->view), vh(viewHandler), m_img(img), m_range(0), m_text(text) {
+PreviewWidget::PreviewWidget(ViewHandler* viewHandler, std::unique_ptr<QImage>&& img, const KTextEditor::Range& range, QString text): QWidget(viewHandler->view), vh(viewHandler), m_img(std::move(img)), m_range(nullptr), m_text(text) {
     setAttribute(Qt::WA_TransparentForMouseEvents);
     setAttribute(Qt::WA_ShowWithoutActivating);
     setAutoFillBackground(true);
@@ -129,15 +129,9 @@ PreviewWidget::PreviewWidget(ViewHandler* viewHandler, QImage* img, const KTextE
     setRange(range);
 }
 
-PreviewWidget::~PreviewWidget() {
-    delete m_img;
-    delete m_range;
-}
-
 void PreviewWidget::setRange(const KTextEditor::Range& range) {
-    delete m_range;
     KTextEditor::MovingInterface* moving = qobject_cast<KTextEditor::MovingInterface*>(vh->doc);
-    m_range = moving->newMovingRange(range);
+    m_range.reset(moving->newMovingRange(range));
     m_range->setFeedback(this);
     updateRect();
 }
@@ -322,28 +316,21 @@ void PreviewWidget::caretExitedRange(KTextEditor::MovingRange*, KTextEditor::Vie
 
 
 
-PreviewWidgetHandler::PreviewWidgetHandler(KTextEditor::View* view, KileDocument::LaTeXInfo *info) : QObject(view), m_info(info) {
-    vh = new ViewHandler(view);
-    m_thread = new PreviewThread(m_info);
+PreviewWidgetHandler::PreviewWidgetHandler(KTextEditor::View* view, KileDocument::LaTeXInfo *info) : QObject(view), m_info(info), vh(new ViewHandler(view)), m_thread(new PreviewThread(m_info)) {
     m_thread->start();
     m_thread->textChanged();
-    connect(m_thread,SIGNAL(dirtychanged()), this, SLOT(picturesAvailable()));
+    connect(m_thread.get(), SIGNAL(dirtychanged()), this, SLOT(picturesAvailable()));
     // TODO: Automatically switch to dynamic word wrapping
     // KTextEditor::ConfigInterface *conf = qobject_cast< KTextEditor::ConfigInterface* >(view);
     // qDebug() << "Keys:" << endl << conf->configKeys() << endl << endl;
 }
 
-PreviewWidgetHandler::~PreviewWidgetHandler() {
-    delete m_thread;
-    delete vh;
-}
-
 void PreviewWidgetHandler::picturesAvailable() {
     if (m_thread->startquestions()) {
-        QList<Part*> parts = m_thread->mathpositions();
+        QList<PPart> parts = m_thread->mathpositions();
         QString gestext = m_thread->parsedText();
-        QMap<QString,QImage> previmgs = m_thread->images();
-        QMap<QString,int> aktinds;
+        QHash<QString,QImage> previmgs = m_thread->images();
+        QHash<QString,int> aktinds;
         
         foreach(QString text, m_widgets.uniqueKeys()) {
             if (*m_widgets.values(text)[0]->img() != previmgs[text]) { // TODO This is probably inefficient
@@ -362,26 +349,26 @@ void PreviewWidgetHandler::picturesAvailable() {
             }
             
             for (int i = 0; i < parts.size(); i++) {
-                Part *part = parts[i];
+                PPart part = parts[i];
                 
-                int spos = part->start;
-                int sline = qLowerBound(newlines.begin(),newlines.end(),spos)-newlines.begin();
+                int spos = range(part).m_start;
+                int sline = std::lower_bound(newlines.begin(),newlines.end(),spos)-newlines.begin();
                 int scol = spos-newlines[sline-1]-1;
                 
-                int epos = part->end+1;
-                int eline = qLowerBound(newlines.begin(),newlines.end(),epos)-newlines.begin();
+                int epos = range(part).m_end+1;
+                int eline = std::lower_bound(newlines.begin(),newlines.end(),epos)-newlines.begin();
                 int ecol = epos-newlines[eline-1]-1;
                 
                 KTextEditor::Range ran(KTextEditor::Cursor(sline,scol), KTextEditor::Cursor(eline,ecol));
                 
-                QString text = part->source(gestext);
+                QString text = range(part).source(gestext);
                 //if (!previmgs[text].isNull())
                 //	qDebug() << "Formula:" << text;
                 //else
                 //	qDebug() << "Formula (invalid):" << text;
                 if (aktinds[text] >= m_widgets.count(text)) {
                     QImage img = previmgs[text];
-                    m_widgets.insert(text, new PreviewWidget(vh, new QImage(img), ran, text));
+                    m_widgets.insert(text, new PreviewWidget(vh.get(), std::make_unique<QImage>(img), ran, text));
                 } else {
                     m_widgets.values(text)[aktinds[text]]->setRange(ran);
                 }

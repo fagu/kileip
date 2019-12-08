@@ -4,6 +4,8 @@ cmake_minimum_required(VERSION 3.0.0)
 
 set(KILE_VERSION CACHE STRING "Kile's version; can be used to set the internal version of Kile on MacOSX")
 
+set (CMAKE_CXX_STANDARD 17)
+
 find_package(ECM 5.19.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 

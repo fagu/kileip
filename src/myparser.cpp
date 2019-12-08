@@ -18,115 +18,226 @@
 #include <QStandardPaths>
 #include <QStringList>
 #include "myparser.h"
+#include <QMutex>
+#include <QMutexLocker>
 
-bool midEqual(const QString &text, int start, int len, const QString &ref) {
-    if (len != ref.length())
+Range::Range(int start, int end) : m_start(start), m_end(end) {
+    assert(start <= end+1);
+}
+
+QString Range::source(const QString& text) const {
+    return text.mid(m_start, m_end-m_start+1);
+}
+
+bool Range::equal(const QString &text, const QString &ref) const {
+    if (m_end-m_start+1 != ref.length())
         return false;
-    for (int a = 0; a < ref.length(); a++)
-        if (text.at(start+a) != ref.at(a))
+    for (int a = 0; a < m_end-m_start+1; a++)
+        if (text.at(m_start+a) != ref.at(a))
             return false;
     return true;
 }
 
-QString Part::source(const QString &text) const{
-    return text.mid(start, end-start+1);
+PPart to_ptr(const UPart& p) {
+    return std::visit([](auto&& arg) -> PPart {return arg.get();}, p);
 }
 
-CPart::~CPart() {
-    for (unsigned int i = 0; i < children.size(); i++)
-        delete children[i];
+PCommandPart to_ptr(const UCommandPart& p) {
+    return std::visit([](auto&& arg) -> PCommandPart {return arg.get();}, p);
 }
 
-void CPart::addChild(Part * p) {
-    children.push_back(p);
+std::vector<PPart> to_ptr(const std::vector<UPart>& v) {
+    std::vector<PPart> res;
+    for (const UPart& p : v)
+        res.push_back(to_ptr(p));
+    return res;
 }
 
-EnvironmentPart::~EnvironmentPart() {
-    delete begin;
-    delete ending;
-    delete body;
+std::optional<PPart> to_ptr(const std::optional<UPart>& v){
+    if (v.has_value())
+        return to_ptr(v.value());
+    else
+        return std::nullopt;
 }
 
-CommentPart::CommentPart(int s) {
-    start = s;
+UPart generalize(UCommandPart&& p) {
+    return std::visit([](auto&& arg) -> UPart {return std::move(arg);}, p);
 }
 
-QString CommentPart::toString(const QString &text) const {
-    QString st = "(comment: ";
-    st += text.mid(start, end-start+1);
-    st += ")";
-    return st;
+PPart generalize(const PCommandPart& p) {
+    return std::visit([](auto&& arg) -> PPart {return arg;}, p);
 }
 
-QString CommentPart::toTeX(const QString& text) const
-{
-    return text.mid(start, end-start+1);
+Range range(PPart part) {
+    return std::visit([](auto&& arg) {return arg->range();}, part);
 }
 
-TextPart::TextPart(int s) {
-    start = s;
+Range command_name_range(const PCommandPart& part) {
+    return std::visit(overloaded{
+        [](const PPrimitiveCommandPart& bc) {
+            return bc->range();
+        },
+        [](const PArgsCommandPart& bc) {
+            return bc->name_range();
+        },
+    }, part);
 }
 
-QString TextPart::toString(const QString &text) const {
-    QString st = "<";
-    int s = start;
-    for (unsigned int i = 0; i < children.size(); i++) {
-        st += text.mid(s, children[i]->start-s);
-        st += children[i]->toString(text);
-        s = children[i]->end+1;
-    }
-    st += text.mid(s, end-s+1);
-    st += ">";
-    return st;
+CommentPart::CommentPart(const Range& range) : m_range(range) {
 }
 
-QString TextPart::toTeX(const QString &text) const {
-    QString st;
-    int s = start;
-    for (unsigned int i = 0; i < children.size(); i++) {
-        st += text.mid(s, children[i]->start-s);
-        st += children[i]->toTeX(text);
-        s = children[i]->end+1;
-    }
-    st += text.mid(s, end-s+1);
-    return st;
+PrimitiveCommandPart::PrimitiveCommandPart(const Range& range) : m_range(range) {
+}
+
+ArgsCommandPart::ArgsCommandPart(const Range& range, const Range& name_range, std::vector<UPart > && args, std::optional<UPart> && optional) : m_range(range), m_name_range(name_range), m_args(std::move(args)), m_optional(std::move(optional)) {
+}
+
+TextPart::TextPart(const Range& range, std::vector<UPart > && parts) : m_range(range), m_parts(std::move(parts)) {
 }
 
 QString TextPart::sourceWithoutVoid(const QString &text) const {
-    if (children.size() == 1) {
-        EnvironmentPart *ep = dynamic_cast<EnvironmentPart*>(children[0]);
-        if (ep)
-            if (ep->begin->name(text) == "{")
-                return ep->body->source(text);
+    if (m_parts.size() == 1) {
+        if (std::holds_alternative<UEnvironmentPart >(m_parts[0])) {
+            const UEnvironmentPart& ep = std::get<UEnvironmentPart >(m_parts[0]);
+            if (command_name_range(ep->begin()).source(text) == "{")
+                return ep->body()->range().source(text);
+        }
     }
-    return source(text);
+    return m_range.source(text);
 }
 
-CommandWithArgsPart::CommandWithArgsPart(int s) {
-    start = s;
-    nameend = -1;
-    optional = 0;
+EnvironmentPart::EnvironmentPart(const Range& range, UCommandPart && begin, std::optional<UCommandPart> && end, UTextPart && body) : m_range(range), m_begin(std::move(begin)), m_end(std::move(end)), m_body(std::move(body)) {
 }
 
-CommandWithArgsPart::~CommandWithArgsPart() {
-    delete optional;
+
+Ending::Ending(QString w) : wanted(w) {
 }
 
-QString CommandWithArgsPart::name(const QString &text) const {
-    return text.mid(start, nameend-start+1);
+Parser::Parser(const QString& text, int start) : m_text(text), i(start) {
+    Global::init();
 }
 
-bool CommandWithArgsPart::nameEq(const QString &text, const QString &ref) const {
-    return midEqual(text, start, nameend-start+1, ref);
+UTextPart Parser::parse() {
+    m_textdata = m_text.constData();
+    endings.emplace_back(QString(""));
+    return parseText();
 }
 
-int CommandWithArgsPart::numArgs(const QString &text) const {
-    QString na = name(text);
-    if (Global::commands.contains(na))
-        return Global::commands[na];
-    else if (na == "\\begin") {
-        if (children.size()) {
-            QString envname = "E" + dynamic_cast<TextPart*>(children[0])->sourceWithoutVoid(text);
+UTextPart Parser::parseText() {
+    int start = i;
+    int end;
+    std::vector<UPart > parts;
+    bool lastnewline = false;
+    while(true) {
+        if (i >= m_text.length()) {
+            end = i-1;
+            break;
+        } else {
+            if (m_textdata[i] == '\n') {
+                if (lastnewline) {
+                    while(i > 0 && m_textdata[i-1].isSpace())
+                        i--;
+                    while(m_textdata[i] != '\n')
+                        i++;
+                    int cp_start = i;
+                    while(i < m_text.length()-1 && m_textdata[i+1].isSpace())
+                        i++;
+                    while(m_textdata[i] != '\n')
+                        i--;
+                    int cp_end = i;
+                    UPrimitiveCommandPart cp = std::make_unique<PrimitiveCommandPart>(Range(cp_start, cp_end));
+                    auto cp2 = endingFound(std::move(cp));
+                    if (!cp2) {
+                        i++;
+                        end = cp_start-1;
+                        break;
+                    } else {
+                        parts.emplace_back(generalize(std::move(cp2.value())));
+                    }
+                } else {
+                    lastnewline = true;
+                }
+            } else if (!m_textdata[i].isSpace()) {
+                lastnewline = false;
+            }
+            if (m_textdata[i] == '%') {
+                UCommentPart cp = parseComment();
+                parts.emplace_back(std::move(cp));
+            } else if (m_textdata[i] == '\\') {
+                UArgsCommandPart cp = parseCommand();
+                int cp_start = cp->range().m_start;
+                QString commandname = cp->name_range().source(m_text);
+                bool anyargs = !cp->args().empty();
+                auto cp2 = endingFound(std::move(cp));
+                if (!cp2) {
+                    end = cp_start-1;
+                    break;
+                } else if ((commandname == "\\begin" && anyargs) || Global::specialenvs.contains(commandname)) {
+                    UEnvironmentPart ep = parseEnvironment(std::move(cp2.value()));
+                    parts.emplace_back(std::move(ep));
+                } else {
+                    parts.emplace_back(generalize(std::move(cp2.value())));
+                }
+            } else if (m_textdata[i] == '{') {
+                UPrimitiveCommandPart cp = parsePrimitiveCommand();
+                UEnvironmentPart ep = parseEnvironment(std::move(cp));
+                parts.emplace_back(std::move(ep));
+            } else if (m_textdata[i] == '}' || m_textdata[i] == ']') {
+                UPrimitiveCommandPart cp = parsePrimitiveCommand();
+                int cp_start = cp->range().m_start;
+                auto cp2 = endingFound(std::move(cp));
+                if (!cp2) {
+                    end = cp_start-1;
+                    break;
+                } else {
+                }
+            } else if (m_textdata[i] == '$') {
+                UPrimitiveCommandPart cp = parsePrimitiveCommand();
+                int cp_start = cp->range().m_start;
+                auto cp2 = expectedEndingFound(std::move(cp));
+                if (!cp2) {
+                    end = cp_start-1;
+                    break;
+                } else {
+                    UEnvironmentPart ep = parseEnvironment(std::move(cp2.value()));
+                    parts.emplace_back(std::move(ep));
+                }
+            } else {
+                i++;
+            }
+        }
+        if (endings.size() && endings.back().wanted == "1") {
+            end = i-1;
+            break;
+        }
+    }
+    return std::make_unique<TextPart>(Range(start, end), std::move(parts));
+}
+
+UCommentPart Parser::parseComment() {
+    int start = i;
+    int end;
+    while(true) {
+        if (i >= m_text.length()) {
+            end = i-1;
+            break;
+        } else if (m_textdata[i] == '\n') {
+            end = i;
+            i++;
+            break;
+        }
+        i++;
+    }
+    return std::make_unique<CommentPart>(Range(start, end));
+}
+
+int numArgs(const Range &name_range, std::optional<PPart> arg0, const QString& text) {
+    QString name = name_range.source(text);
+    if (Global::commands.contains(name))
+        return Global::commands[name];
+    else if (name == "\\begin") {
+        if (arg0.has_value()) {
+            QString envname = "E" + std::get<PTextPart>(arg0.value())->sourceWithoutVoid(text);
             if (Global::commands.contains(envname))
                 return Global::commands[envname]+1;
             else
@@ -138,278 +249,68 @@ int CommandWithArgsPart::numArgs(const QString &text) const {
         return -1;
 }
 
-int CommandWithArgsPart::remainingArgs(const QString &text) const {
-    return numArgs(text) - children.size();
-}
-
-QString CommandWithArgsPart::toString(const QString &text) const {
-    QString st = "(command: ";
-    st += text.mid(start, nameend-start+1);
-    if (optional || children.size())
-        st += ":";
-    if (optional)
-        st += optional->toString(text);
-    for (unsigned int i = 0; i < children.size(); i++) {
-        if (i > 0 || optional)
-            st += ";";
-        st += children[i]->toString(text);
-    }
-    st += ")";
-    return st;
-}
-
-QString CommandWithArgsPart::toTeX(const QString &text) const {
-    QString st = text.mid(start, nameend-start+1);
-    st += " ";
-    if (optional)
-        st += optional->toTeX(text);
-    for (unsigned int i = 0; i < children.size(); i++) {
-        st += children[i]->toTeX(text);
-    }
-    return st + " ";
-}
-
-
-QString PrimitiveCommandPart::name ( const QString& text ) const {
-    return text.mid(start, end-start+1);
-}
-
-bool PrimitiveCommandPart::nameEq(const QString &text, const QString &ref) const {
-    return midEqual(text, start, end-start+1, ref);
-}
-
-QString PrimitiveCommandPart::toString ( const QString& text ) const {
-    return text.mid(start, end-start+1);
-}
-
-QString PrimitiveCommandPart::toTeX ( const QString& text ) const {
-    return text.mid(start, end-start+1);
-}
-
-
-
-
-
-EnvironmentPart::EnvironmentPart(CommandPart * cp) {
-    begin = cp;
-    start = cp->start;
-    body = 0;
-    ending = 0;
-}
-
-QString EnvironmentPart::toString(const QString &text) const {
-    QString st = "[env: ";
-    st += begin->toString(text);
-    st += ";";
-    st += body->toString(text);
-    st += ";";
-    if (ending)
-        st += ending->toString(text);
-    else
-        st += "MISSING";
-    st += "]";
-    return st;
-}
-
-QString EnvironmentPart::toTeX(const QString &text) const {
-    QString st = begin->toTeX(text);
-    st += " ";
-    st += body->toTeX(text);
-    if (ending)
-        st += " " + ending->toString(text);
-    return st + " ";
-}
-
-
-
-Ending::Ending(QString w) {
-    wanted = w;
-    cp = 0;
-    //found = -1;
-}
-
-
-Parser::Parser(QString ptext, int pstart) : text(ptext),i(pstart) {
-    Global::init();
-}
-
-TextPart * Parser::parse() {
-    textdata = text.constData();
-    endings.push_back(Ending(QString("")));
-    return parseText();
-}
-
-
-TextPart * Parser::parseText() {
-    TextPart * tp = new TextPart(i);
-    bool lastnewline = false;
-    while(true) {
-        //if (endings[endings.size()-1].found != -1) {
-        //	tp->end = endings[endings.size()-1].found-1;
-        //	break;
-        //} 
-        if (i >= text.length()) {
-            tp->end = i-1;
-            break;
-        } else {
-            if (textdata[i] == '\n') {
-                if (lastnewline) {
-                    while(i > 0 && textdata[i-1].isSpace())
-                        i--;
-                    while(textdata[i] != '\n')
-                        i++;
-                    CommandPart *cp = new PrimitiveCommandPart(i);
-                    while(i < text.length()-1 && textdata[i+1].isSpace())
-                        i++;
-                    while(textdata[i] != '\n')
-                        i--;
-                    cp->end = i;
-                    if (endingFound(cp)) {
-                        i++;
-                        tp->end = cp->start-1;
-                        break;
-                    } else {
-                        tp->addChild(cp);
-                    }
-                } else {
-                    lastnewline = true;
-                }
-            } else if (!textdata[i].isSpace()) {
-                lastnewline = false;
-            }
-            if (textdata[i] == '%') {
-                //qDebug() << "comment";
-                CommentPart * cp = parseComment(); // TODO include Comment in parsed document
-                tp->addChild(cp);
-                //delete cp;
-            } else if (textdata[i] == '\\') {
-                CommandWithArgsPart * cp = parseCommand();
-                QString commandname = cp->name(text);
-                if (endingFound(cp)) {
-                    tp->end = cp->start-1;
-                    break;
-                } else if ((commandname == "\\begin" && cp->children.size()) || Global::specialenvs.contains(commandname)) {
-                    EnvironmentPart * ep = parseEnvironment(cp);
-                    tp->addChild(ep);
-                } else {
-                    tp->addChild(cp);
-                }
-            } else if (textdata[i] == '{') {
-                //CommandPart * cp = new CommandPart(i);
-                //cp->nameend = i;
-                //cp->end = i;
-                //i++;
-                CommandPart * cp = parsePrimitiveCommand();
-                EnvironmentPart * ep = parseEnvironment(cp);
-                tp->addChild(ep);
-            } else if (textdata[i] == '}' || textdata[i] == ']') {
-                //CommandPart * cp = new CommandPart(i);
-                //cp->nameend = i;
-                //cp->end = i;
-                //i++;
-                CommandPart * cp = parsePrimitiveCommand();
-                if (endingFound(cp)) {
-                    tp->end = cp->start-1;
-                    break;
-                } else {
-                    delete cp;
-                }
-            } else if (textdata[i] == '$') {
-                CommandPart * cp = parsePrimitiveCommand();
-                if (expectedEndingFound(cp)) {
-                    tp->end = cp->start-1;
-                    break;
-                } else {
-                    EnvironmentPart * ep = parseEnvironment(cp);
-                    tp->addChild(ep);
-                }
-            } else {
-                i++;
-            }
-        }
-        if (endings.size() && endings.back().wanted == "1") {
-            tp->end = i-1;
-            break;
-        }
-    }
-    return tp;
-}
-
-CommentPart * Parser::parseComment() {
-    CommentPart * cp = new CommentPart(i);
-    while(true) {
-        if (i >= text.length()) {
-            cp->end = i-1;
-            break;
-        } else if (textdata[i] == '\n') {
-            cp->end = i;
-            i++;
-            break;
-        }
-        i++;
-    }
-    return cp;
-}
-
-CommandWithArgsPart * Parser::parseCommand() {
-    CommandWithArgsPart * cp = new CommandWithArgsPart(i);
+UArgsCommandPart Parser::parseCommand() {
+    int start = i;
+    int end;
+    int nameend = -1;
+    std::vector<UPart> args;
+    std::optional<UPart> optional;
     i++;
     bool lastnewline = false;
     while(true) {
-        if (i >= text.length()) {
-            if (cp->nameend == -1)
-                cp->nameend = i-1;
-            while(i > 0 && textdata[i-1].isSpace())
+        if (i >= m_text.length()) {
+            if (nameend == -1)
+                nameend = i-1;
+            while(i > 0 && m_textdata[i-1].isSpace())
                 i--;
-            cp->end = i-1;
+            end = i-1;
             break;
         } else {
-            if (cp->nameend == -1) {
-                if (code(textdata[i]) != 11) {
-                    if (i != cp->start+1) {
-                        cp->nameend = i-1;
+            if (nameend == -1) {
+                if (code(m_textdata[i]) != 11) {
+                    if (i != start+1) {
+                        nameend = i-1;
                     } else {
-                        cp->nameend = i;
+                        nameend = i;
                         i++;
                     }
                 } else {
                     i++;
                 }
             } else {
-                if (!textdata[i].isSpace()) {
+                if (!m_textdata[i].isSpace()) {
                     lastnewline = false;
-                    if (textdata[i] == '%') {
-                        CommentPart * comment = parseComment();
-                        delete comment; // TODO Handle comments
-                    } else if (textdata[i] == '}') {
-                        cp->end = i-1;
+                    if (m_textdata[i] == '%') {
+                        UCommentPart comment = parseComment();
+                        // TODO Handle comments
+                    } else if (m_textdata[i] == '}') {
+                        end = i-1;
                         break;
-                    } else if (textdata[i] == '[') {
-                        //CommandPart * ccp = new CommandPart(i);
-                        //ccp->nameend = i;
-                        //ccp->end = i;
-                        //i++;
-                        PrimitiveCommandPart * ccp = parsePrimitiveCommand();
-                        EnvironmentPart * arg = parseEnvironment(ccp);
-                        cp->optional = arg;
-                    } else if (cp->remainingArgs(text) > 0 || (cp->numArgs(text) == -1 && textdata[i] == '{')) {
-                        endings.push_back(Ending(QString("1")));
-                        TextPart * arg = parseText();
-                        endings.pop_back();
-                        cp->addChild(arg);
+                    } else if (m_textdata[i] == '[') {
+                        UPrimitiveCommandPart ccp = parsePrimitiveCommand();
+                        UEnvironmentPart arg = parseEnvironment(std::move(ccp));
+                        optional = std::move(arg);
                     } else {
-                        while(i > 0 && textdata[i-1].isSpace())
-                            i--;
-                        cp->end = i-1;
-                        break;
+                        int na = numArgs(Range(start, nameend), args.empty() ? std::optional<PPart>() : std::make_optional(to_ptr(args[0])), m_text);
+                        if (na > (int)args.size() || (na == -1 && m_textdata[i] == '{')) {
+                            endings.emplace_back(QString("1"));
+                            UTextPart arg = parseText();
+                            endings.pop_back();
+                            args.emplace_back(std::move(arg));
+                        } else {
+                            while(i > 0 && m_textdata[i-1].isSpace())
+                                i--;
+                            end = i-1;
+                            break;
+                        }
                     }
                 } else {
-                    if (textdata[i] == '\n') {
+                    if (m_textdata[i] == '\n') {
                         if (lastnewline) {
                             i--;
-                            while(i > 0 && textdata[i-1].isSpace())
+                            while(i > 0 && m_textdata[i-1].isSpace())
                                 i--;
-                            cp->end = i-1;
+                            end = i-1;
                             break;
                         } else {
                             lastnewline = true;
@@ -420,20 +321,21 @@ CommandWithArgsPart * Parser::parseCommand() {
             }
         }
     }
-    return cp;
+    return std::make_unique<ArgsCommandPart>(Range(start, end), Range(start, nameend), std::move(args), std::move(optional));
 }
 
-PrimitiveCommandPart* Parser::parsePrimitiveCommand() {
-    PrimitiveCommandPart * cp = new PrimitiveCommandPart(i);
-    cp->end = i;
+UPrimitiveCommandPart Parser::parsePrimitiveCommand() {
+    int start = i;
+    int end = i;
     i++;
-    return cp;
+    return std::make_unique<PrimitiveCommandPart>(Range(start, end));
 }
 
-
-EnvironmentPart * Parser::parseEnvironment(CommandPart * begincommand) {
-    EnvironmentPart * ep = new EnvironmentPart(begincommand);
-    QString commandname = begincommand->name(text);
+UEnvironmentPart Parser::parseEnvironment(UCommandPart&& begincommand) {
+    int start = std::visit([](auto&& T) {return T->range().m_start;}, begincommand);
+    int end;
+    Range commandnamerange = command_name_range(to_ptr(begincommand));
+    QString commandname = commandnamerange.source(m_text);
     QString wanted;
     bool epoe = true;
     if (commandname == "{")
@@ -441,71 +343,72 @@ EnvironmentPart * Parser::parseEnvironment(CommandPart * begincommand) {
     else if (commandname == "[")
         wanted = "]";
     else if (commandname == "\\begin")
-        wanted = "E" + dynamic_cast<CommandWithArgsPart*>(begincommand)->children[0]->source(text);
+        wanted = "E" + range(std::get<UArgsCommandPart >(begincommand)->args().at(0)).source(m_text);
     else if (Global::specialenvs.contains(commandname)) {
         wanted = Global::specialenvs[commandname].endcommand;
         epoe = Global::specialenvs[commandname].partofenvironment;
     }
-    endings.push_back(Ending(wanted));
-    ep->body = parseText();
-    Ending ne = endings.back();
-    if (wanted == "$" && ne.cp && text[ne.cp->start] == '\n')
+    endings.emplace_back(wanted);
+    UTextPart body = parseText();
+    std::optional<UCommandPart> endcommand;
+    Ending& ne = endings.back();
+    if (wanted == "$" && ne.cp.has_value() && m_text[range(generalize(to_ptr(ne.cp.value()))).m_start] == '\n')
         epoe = false;
     if (epoe) {
-        ep->ending = ne.cp;
-        if (ne.cp)
-            ep->end = ne.cp->end;
+        endcommand = std::move(ne.cp);
+        if (endcommand.has_value())
+            end = range(generalize(to_ptr(endcommand.value()))).m_end;
         else {
-            ep->end = ep->body->end;
-            i = ep->end+1;
+            end = body->range().m_end;
+            i = end+1;
         }
     } else {
-        if (ne.cp)
-            delete ne.cp;
-        ep->end = ep->body->end;
-        i = ep->end+1;
+        end = body->range().m_end;
+        i = end+1;
     }
     endings.pop_back();
-    return ep;
+//     assert(endcommand.has_value());
+    return std::make_unique<EnvironmentPart>(Range(start, end), std::move(begincommand), std::move(endcommand), std::move(body));
 }
 
-bool Parser::endingFound(CommandPart * cp) {
+std::optional<UCommandPart> Parser::endingFound(UCommandPart&& cp) {
     if (endings.empty())
-        return false;
-    if (matches(endings.back().wanted, cp)) {
-        endings.back().cp = cp;
-        return true;
+        return std::move(cp);
+    if (matches(endings.back().wanted, to_ptr(cp))) {
+        endings.back().cp = std::move(cp);
+        return std::nullopt;
     }
     for (int k = (int)endings.size()-2; k >= 0; k--) {
-        if (matches(endings[k].wanted, cp)) {
-            //endings[k].cp = cp;
-            //for (unsigned int l = k; l < endings.size(); l++)
-            //	endings[l].found = cp->start;
-            i = cp->start;
-            return true;
+        if (matches(endings[k].wanted, to_ptr(cp))) {
+            i = range(generalize(to_ptr(cp))).m_start;
+            return std::nullopt;
         }
     }
-    return false;
+    return std::move(cp);
 }
 
-bool Parser::expectedEndingFound(CommandPart * cp) {
+std::optional<UCommandPart> Parser::expectedEndingFound(UCommandPart&& cp) {
     if (endings.empty())
-        return false;
-    if (matches(endings.back().wanted, cp)) {
-        endings.back().cp = cp;
-        return true;
+        return std::move(cp);
+    if (matches(endings.back().wanted, to_ptr(cp))) {
+        endings.back().cp = std::move(cp);
+        return std::nullopt;
     }
-    return false;
+    return std::move(cp);
 }
 
-bool Parser::matches(QString wanted, CommandPart * cp) {
+bool Parser::matches(QString wanted, PCommandPart cp) {
     if (wanted.length() >= 1 && wanted.at(0) == 'E') {
-        CommandWithArgsPart *cwp = dynamic_cast<CommandWithArgsPart*>(cp);
-        if (!cwp)
-            return false;
-        return cp->nameEq(text, QString("\\end")) && cwp->children.size() && "E" + cwp->children[0]->source(text) == wanted;
+        return std::visit(overloaded{
+            [this,&wanted](PArgsCommandPart cp) -> bool {
+                return cp->name_range().equal(m_text, QString("\\end")) && cp->args().size() && "E" + range(cp->args()[0]).source(m_text) == wanted;
+            },
+            [](PPrimitiveCommandPart) -> bool {
+                return false;
+            },
+        }, cp);
     } else {
-        return cp->nameEq(text, wanted) || (wanted == "$" && text[cp->start] == '\n');
+        return command_name_range(cp).source(m_text) == wanted || (wanted == "$" && m_text[range(generalize(cp)).m_start] == '\n');
     }
 }
 
@@ -517,10 +420,12 @@ int Parser::code(QChar c) {
 }
 
 
+QMutex global_init_mutex;
 QMap<QString,int> Global::commands;
 QMap<QString,SpecialEnvironment> Global::specialenvs;
 
 void Global::init() {
+    QMutexLocker lock(&global_init_mutex);
     if (!commands.empty())
         return;
     QString commandsfilename = QStandardPaths::locate(QStandardPaths::DataLocation, "parser/commands.txt");
@@ -529,8 +434,7 @@ void Global::init() {
     if (!comfile.exists())
         qDebug() << "commands.txt missing";
     comfile.open(QIODevice::ReadOnly | QIODevice::Text);
-
-    //QString text;
+    
     QTextStream in(&comfile);
     in.setCodec("UTF-8");
     int state = 0;

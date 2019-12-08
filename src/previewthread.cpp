@@ -36,7 +36,7 @@ PreviewThread::PreviewThread(KileDocument::LaTeXInfo* info, QObject* parent)
     connect(m_masteruser, SIGNAL(documentChanged()), this, SLOT(textChanged()));
     connect(info, SIGNAL(inlinePreviewChanged(bool)), this, SLOT(textChanged()));
     m_currentrun = 0;
-    m_dir = new QTemporaryDir(QDir(QDir::tempPath()).filePath("kile-inlinepreview"));
+    m_dir.reset(new QTemporaryDir(QDir(QDir::tempPath()).filePath("kile-inlinepreview")));
     m_dir->setAutoRemove(true);
 }
 
@@ -47,7 +47,6 @@ PreviewThread::~PreviewThread() {
         m_dirtycond.wakeOne();
     }
     wait();
-    delete m_dir;
     m_dir = 0;
 }
 
@@ -93,11 +92,11 @@ void PreviewThread::run() {
 void PreviewThread::createPreviews() {
     if (!m_info->isInlinePreview())
         return;
-    QList<Part*> tempenvs;
+    QList<PPart> tempenvs;
     
-    CollectionPart *prp = User::preamble(m_masterres.doc(), m_masterres.text());
-    QString preamble = prp->source(m_masterres.text());
-    delete prp;
+    Range prp = User::preamble(m_masterres->doc(), m_masterres->text());
+    qDebug() << "Preamble range: " << prp.m_start << " " << prp.m_end;
+    QString preamble = prp.source(m_masterres->text());
     if (preamble != lastpreamble) {
         m_previmgs.clear();
         //qDebug() << "Preamble changed -> clear";
@@ -107,17 +106,17 @@ void PreviewThread::createPreviews() {
     QSet<QString> allmaths;
     
     // Insert new math
-    foreach(Part *env, m_res.mathgroups()) {
+    foreach(PPart env, m_res->mathgroups()) {
 //         qDebug() << "math" << env->source(m_res.text());
-        QString tt = env->source(m_res.text());
+        QString tt = range(env).source(m_res->text());
         if (!allmaths.contains(tt)) {
             allmaths.insert(tt);
-            if (!m_previmgs.contains(env->source(m_res.text())))
+            if (!m_previmgs.contains(range(env).source(m_res->text())))
                 tempenvs << env;
         }
     }
     
-    for(QMap<QString,QImage>::iterator it = m_previmgs.begin(); it != m_previmgs.end(); ) {
+    for(QHash<QString,QImage>::iterator it = m_previmgs.begin(); it != m_previmgs.end(); ) {
         if (!allmaths.contains(it.key())) {
             //qDebug() << "Erase:" << it.key();
             it = m_previmgs.erase(it);
@@ -130,15 +129,13 @@ void PreviewThread::createPreviews() {
 
 
 bool load_pages_from_pdf(QString filename, int expected_number_of_pages, QVector<QImage>& res) {
-    Poppler::Document* document = Poppler::Document::load(filename);
+    std::unique_ptr<Poppler::Document> document(Poppler::Document::load(filename));
     if (!document || document->isLocked()) {
         qDebug() << "Couldn't open PDF file " << filename << ".";
-        delete document;
         return false;
     }
     if (document->numPages() != expected_number_of_pages) {
         qDebug() << "Found " << document->numPages() << " pages, expected " << expected_number_of_pages << ".";
-        delete document;
         return false;
     }
     document->setRenderHint(Poppler::Document::RenderHint::Antialiasing);
@@ -147,32 +144,26 @@ bool load_pages_from_pdf(QString filename, int expected_number_of_pages, QVector
     res.clear();
     res.reserve(expected_number_of_pages);
     for (int pageNumber = 0; pageNumber < expected_number_of_pages; pageNumber++) {
-        Poppler::Page* pdfPage = document->page(pageNumber);
+        std::unique_ptr<Poppler::Page> pdfPage(document->page(pageNumber));
         if (!pdfPage) {
             qDebug() << "Couldn't open page " << pageNumber << ".";
-            delete pdfPage;
-            delete document;
             return false;
         }
         QImage img = pdfPage->renderToImage(96, 96);
         if (img.isNull()) {
             qDebug() << "Couldn't render page " << pageNumber << ".";
-            delete pdfPage;
-            delete document;
             return false;
         }
         res.push_back(img);
-        delete pdfPage;
     }
-    delete document;
     return true;
 }
 
-void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > tempenvs, int start, int end ) {
+void PreviewThread::binaryCreatePreviews (QString& preamble, QList< PPart > tempenvs, int start, int end ) {
     // Check if the document changed again in the meantime
-    if (m_res.text() != m_doc->text())
+    if (m_res->text() != m_doc->text())
         return;
-    if (m_masterres.text().isEmpty()) // Master document hasn't been parsed. (?)
+    if (m_masterres->text().isEmpty()) // Master document hasn't been parsed. (?)
         return;
     if (end < start)
         return;
@@ -198,9 +189,9 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > temp
         fout << "\\begin{document}" << endl;
         
         for (int i = start; i <= end; i++) {
-            Part *env = tempenvs[i];
+            PPart env = tempenvs[i];
             // FIXME Double dollar signs do not work! Without the preview environment they do!
-            fout << "\n\\begin{preview}\n" << env->source(m_res.text()) << "\n\\end{preview}\n" << endl << endl;
+            fout << "\n\\begin{preview}\n" << range(env).source(m_res->text()) << "\n\\end{preview}\n" << endl << endl;
         }
         
         fout << "\\end{document}" << endl;
@@ -231,8 +222,8 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > temp
             binaryCreatePreviews(preamble, tempenvs, start, (start+end)/2);
             binaryCreatePreviews(preamble, tempenvs, (start+end)/2+1, end);
         } else {
-            qDebug() << "Failed code:" << tempenvs[start]->source(m_res.text());
-            m_previmgs[tempenvs[start]->source(m_res.text())] = QImage();
+            qDebug() << "Failed code:" << range(tempenvs[start]).source(m_res->text());
+            m_previmgs[range(tempenvs[start]).source(m_res->text())] = QImage();
         }
     } else {
         qDebug() << "Succeeded:" << start << "--" << end << "(in" << tim.elapsed()*0.001 << "s)";
@@ -240,8 +231,8 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< Part* > temp
         // Load images from disk
         int ipr = 0;
         for (int i = start; i <= end; i++) {
-            Part *env = tempenvs[i];
-            m_previmgs[env->source(m_res.text())] = imgs[ipr];
+            PPart env = tempenvs[i];
+            m_previmgs[range(env).source(m_res->text())] = imgs[ipr];
             ipr++;
         }
     }
@@ -274,7 +265,7 @@ void PreviewThread::textChanged() {
 
 bool PreviewThread::startquestions() {
     m_dirtymutex.lock();
-    if (!m_dirty && m_res.text() == m_doc->text()) {
+    if (!m_dirty && m_res->text() == m_doc->text()) {
         return true;
     } else {
         m_dirtymutex.unlock();
@@ -286,18 +277,18 @@ void PreviewThread::endquestions() {
     m_dirtymutex.unlock();
 }
 
-QList<Part*> PreviewThread::mathpositions() {
-    return m_res.mathgroups();
+QList<PPart> PreviewThread::mathpositions() {
+    return m_res->mathgroups();
 }
 
-QImage PreviewThread::image(Part* part) {
-    return m_previmgs[part->source(m_res.text())];
+QImage PreviewThread::image(PPart part) {
+    return m_previmgs[range(part).source(m_res->text())];
 }
 
-QMap<QString,QImage> PreviewThread::images() {
+QHash<QString,QImage> PreviewThread::images() {
     return m_previmgs;
 }
 
 QString PreviewThread::parsedText() {
-    return m_res.text();
+    return m_res->text();
 }

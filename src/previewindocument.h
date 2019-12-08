@@ -45,20 +45,19 @@ class PreviewWidget : public QWidget, KTextEditor::MovingRangeFeedback {
     friend class PreviewWidgetUpdateRect;
     Q_OBJECT
     public:
-        PreviewWidget(ViewHandler* viewHandler, QImage* img, const KTextEditor::Range &range, QString text);
-        ~PreviewWidget();
+        PreviewWidget(ViewHandler* viewHandler, std::unique_ptr<QImage>&& img, const KTextEditor::Range &range, QString text);
         void setRange(const KTextEditor::Range &range);
         void caretEnteredRange (KTextEditor::MovingRange* range, KTextEditor::View* view) override;
         void caretExitedRange (KTextEditor::MovingRange* range, KTextEditor::View* view) override;
-        QImage *img() {return m_img;}
+        QImage *img() {return m_img.get();}
     public Q_SLOTS:
         void updateRect();
     protected:
         void paintEvent(QPaintEvent *event) override;
     private:
         ViewHandler *vh;
-        QImage *m_img;
-        KTextEditor::MovingRange *m_range;
+        std::unique_ptr<QImage> m_img;
+        std::unique_ptr<KTextEditor::MovingRange> m_range;
         QString m_text;
         bool m_dirty;
         QList<QLine> m_border;
@@ -69,11 +68,10 @@ class PreviewWidgetHandler : public QObject {
     Q_OBJECT
     public:
         PreviewWidgetHandler(KTextEditor::View *view, KileDocument::LaTeXInfo *info);
-        ~PreviewWidgetHandler();
     private:
-        ViewHandler *vh;
         KileDocument::LaTeXInfo *m_info;
-        PreviewThread *m_thread;
+        std::unique_ptr<ViewHandler> vh;
+        std::unique_ptr<PreviewThread> m_thread;
         QMultiMap<QString,PreviewWidget*> m_widgets;
     public Q_SLOTS:
         void picturesAvailable();

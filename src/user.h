@@ -23,73 +23,59 @@
 #include <QStringList>
 #include "myparser.h"
 
-// Unlike CPart, this doesn't delete its children.
-class CollectionPart : public Part {
-    public:
-        CollectionPart(int st) { start=st; };
-        ~CollectionPart() {};
-        vector<Part *> children;
-        void addChild(Part * p);
-        QString toString(const QString &text) const override;
-        QString toTeX(const QString &text) const override;
-};
-
 class User;
 class ParserResult {
 public:
-    ParserResult();
-    ParserResult(User *user, TextPart *doc, QString text);
-    ~ParserResult() {}
+    ParserResult(UTextPart&& doc, const QList<PPart>& mathgroups, QString text);
     TextPart *doc();
     QString text();
-    QList<Part*> mathgroups();
+    QList<PPart> mathgroups();
 private:
-    User *m_user;
-    QSharedPointer<TextPart> m_doc;
+    UTextPart m_doc;
+    QList<PPart> m_mathgroups;
     QString m_text;
-    bool m_initmathgroups;
-    QList<Part*> m_mathgroups;
 };
 
 // Parser thread
 class User : public QThread {
-    friend ParserResult;
-    Q_OBJECT
-    public:
-        User();
-        ~User();
-        // Returns main
-        ParserResult data();
-        // Notifies the user of a new text
-        void textChanged(QString ntext);
-    protected:
-        void run() override;
-    Q_SIGNALS:
-        // parsing complete
-        void documentChanged();
-    private:
-        ParserResult m_res;
-        
-        // The text to parse next
-        QString newtext;
-        
-        // Mutex for waitcond, m_res, abort, newtext
-        QMutex mutex;
-        // Wait for new text
-        QWaitCondition waitcond;
-        // Flag for aborting the thread
-        bool abort;
-        
-    public:
-        static QStringList mathcommands;
-        static QStringList mathbegincommands;
-        static QStringList mathenvs;
-        static void initMath();
-        
-        static TextPart * document(TextPart* ma, QString text);
-        static CollectionPart * preamble(TextPart* ma, QString text);
-        /// Returns the mathgroups that are not contained in another mathgroup
-        static QList<Part*> getMathgroups(Part *part, QString text);
+friend ParserResult;
+Q_OBJECT
+public:
+    User();
+    ~User();
+    // Returns main
+    std::shared_ptr<ParserResult> data();
+    // Notifies the user of a new text
+    void textChanged(QString ntext);
+protected:
+    void run() override;
+Q_SIGNALS:
+    // parsing complete
+    void documentChanged();
+private:
+    std::shared_ptr<ParserResult> m_res;
+    
+    // The text to parse next
+    QString newtext;
+    
+    // Mutex for waitcond, m_res, abort, newtext
+    QMutex mutex;
+    // Wait for new text
+    QWaitCondition waitcond;
+    // Flag for aborting the thread
+    bool abort;
+    
+public:
+    static QStringList mathcommands;
+    static QStringList mathbegincommands;
+    static QStringList mathenvs;
+    static void initMath();
+    
+    static std::shared_ptr<ParserResult> parse(const QString& text);
+    static PTextPart document(PTextPart ma, QString text);
+    static Range preamble(PTextPart ma, QString text);
+    /// Returns the mathgroups that are not contained in another mathgroup
+    static QList<PPart> getMathgroups(PPart part, QString text);
 };
 
 #endif

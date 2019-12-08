@@ -19,131 +19,131 @@
 #include <QSharedDataPointer>
 #include <stack>
 #include <vector>
+#include <memory>
+#include <variant>
 
-using namespace std;
+// helper type for visitors (see https://en.cppreference.com/w/cpp/utility/variant/visit)
+template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 
-class TextPart;
-
-bool midEqual(const QString &text, int start, int len, const QString &ref);
-
-class Part : public QSharedData {
-    public:
-        int start, end;
-        virtual ~Part() {};
-        virtual QString toString(const QString &text) const=0;
-        virtual QString toTeX(const QString &text) const=0;
-        QString source(const QString &text) const;
-        //virtual int visit();
+class Range {
+public:
+    int m_start, m_end;
+    Range(int start, int end);
+    QString source(const QString& text) const;
+    // Whether text[start..(end-1)] == ref
+    bool equal(const QString& text, const QString& ref) const;
 };
 
-//typedef QExplicitlySharedDataPointer<Part> PPart;
-class TextPart;
-//typedef QExplicitlySharedDataPointer<TextPart> PTextPart;
+#define PART(n) \
+    class n; \
+    typedef std::unique_ptr<n> U##n; \
+    typedef n* P##n;
 
-class CPart {
-    public:
-        vector<Part *> children;
-        virtual ~CPart();
-        void addChild(Part * p);
-        //int visit();
+PART(TextPart);
+PART(CommentPart);
+PART(PrimitiveCommandPart);
+PART(ArgsCommandPart);
+PART(EnvironmentPart);
+
+typedef std::variant<UTextPart,UCommentPart,UPrimitiveCommandPart,UArgsCommandPart,UEnvironmentPart > UPart;
+typedef std::variant<PTextPart,PCommentPart,PPrimitiveCommandPart,PArgsCommandPart,PEnvironmentPart > PPart;
+typedef std::variant<UPrimitiveCommandPart,UArgsCommandPart > UCommandPart;
+typedef std::variant<PPrimitiveCommandPart,PArgsCommandPart > PCommandPart;
+
+PPart to_ptr(const UPart& p);
+PCommandPart to_ptr(const UCommandPart& p);
+std::vector<PPart> to_ptr(const std::vector<UPart>& v);
+std::optional<PPart> to_ptr(const std::optional<UPart>& v);
+
+UPart generalize(UCommandPart&& p);
+PPart generalize(const PCommandPart& p);
+
+Range range(PPart part);
+Range command_name_range(const PCommandPart& part);
+
+class CommentPart {
+private:
+    Range m_range;
+public:
+    CommentPart(const Range& range);
+    Range range() {return m_range;}
 };
 
-class CommentPart : public Part {
-    public:
-        CommentPart(int start);
-        ~CommentPart() {};
-        QString toString(const QString &text) const override;
-        QString toTeX(const QString &text) const override;
+class PrimitiveCommandPart {
+private:
+    Range m_range;
+public:
+    PrimitiveCommandPart(const Range& range);
+    Range range() {return m_range;}
 };
 
-class CommandPart : public Part {
-    public:
-        virtual QString name(const QString &text) const = 0;
-        virtual bool nameEq(const QString &text, const QString &ref) const = 0;
+class ArgsCommandPart {
+private:
+    Range m_range;
+    Range m_name_range;
+    std::vector<UPart > m_args;
+    std::optional<UPart> m_optional;
+public:
+    ArgsCommandPart(const Range& range, const Range& name_range, std::vector< UPart >&& args, std::optional< UPart >&& optional);
+    Range range() {return m_range;}
+    Range name_range() {return m_name_range;}
+    std::vector<PPart> args() {return to_ptr(m_args);}
+    std::optional<PPart> optional() {return to_ptr(m_optional);}
 };
 
-class CommandWithArgsPart : public CommandPart, public CPart {
-    public:
-        int nameend;
-        Part * optional;
-        CommandWithArgsPart(int start);
-        ~CommandWithArgsPart();
-        QString name(const QString &text) const override;
-        bool nameEq(const QString &text, const QString &ref) const override;
-        int numArgs(const QString &text) const;
-        int remainingArgs(const QString &text) const;
-        QString toString(const QString &text) const override;
-        QString toTeX(const QString &text) const override;
+class TextPart {
+private:
+    Range m_range;
+    std::vector<UPart > m_parts;
+public:
+    TextPart(const Range& range, std::vector<UPart >&& parts);
+    Range range() {return m_range;}
+    std::vector<PPart> parts() {return to_ptr(m_parts);}
+    QString sourceWithoutVoid(const QString& text) const;
 };
 
-class PrimitiveCommandPart : public CommandPart {
-    public:
-        PrimitiveCommandPart(int st) { start = st; };
-        ~PrimitiveCommandPart() {};
-        QString name(const QString &text) const override;
-        bool nameEq(const QString &text, const QString &ref) const override;
-        QString toString(const QString &text) const override;
-        QString toTeX(const QString &text) const override;
+class EnvironmentPart {
+private:
+    Range m_range;
+    UCommandPart m_begin;
+    std::optional<UCommandPart> m_end;
+    UTextPart m_body;
+public:
+    EnvironmentPart(const Range& range, UCommandPart&& begin, std::optional<UCommandPart>&& end, UTextPart&& body);
+    Range range() {return m_range;}
+    PCommandPart begin() {return to_ptr(m_begin);}
+    std::optional<PCommandPart> end() {if (m_end) return to_ptr(m_end.value()); else return std::nullopt;}
+    PTextPart body() {return m_body.get();}
 };
-
-class TextPart : public CPart, public Part {
-    public:
-        TextPart(int start);
-//         virtual ~TextPart() {};
-        QString toString(const QString &text) const override;
-        QString toTeX(const QString &text) const override;
-        QString sourceWithoutVoid(const QString &text) const;
-};
-
-//typedef QExplicitlySharedDataPointer<CommandPart> PCommandPart;
-//typedef QExplicitlySharedDataPointer<CommentPart> PCommentPart;
-
-class EnvironmentPart : public Part {
-    public:
-        CommandPart * begin;
-        CommandPart * ending;
-        TextPart * body;
-        EnvironmentPart(CommandPart * cp);
-        ~EnvironmentPart();
-        QString toString(const QString &text) const override;
-        QString toTeX(const QString &text) const override;
-        //int visit();
-};
-
-//typedef QExplicitlySharedDataPointer<EnvironmentPart> PEnvironmentPart;
-
 
 class Ending {
-    public:
-        QString wanted;
-        //int found;
-        CommandPart * cp;
-        Ending(QString w);
-        // The behavior appears to be undefined unless we explicitly request these default constructors.
-        Ending(const Ending&) = default;
-        Ending& operator=(const Ending&) = default;
+public:
+    QString wanted;
+    std::optional<UCommandPart> cp;
+    Ending(QString w);
 };
 
 class Parser {
-    private:
-        QString text;
-        const QChar *textdata;
-        int i;
-        vector<Ending> endings;
-        int code(QChar c);
-    
-    public:
-        Parser(QString ptext, int pstart);
-        TextPart * parse();
-    private:
-        TextPart * parseText();
-        CommentPart * parseComment();
-        CommandWithArgsPart * parseCommand();
-        PrimitiveCommandPart * parsePrimitiveCommand();
-        EnvironmentPart * parseEnvironment(CommandPart * begincommand);
-        bool endingFound(CommandPart * cp);
-        bool expectedEndingFound(CommandPart *cp);
-        bool matches(QString wanted, CommandPart * cp);
+private:
+    QString m_text;
+    const QChar* m_textdata;
+    int i;
+    std::vector<Ending> endings;
+    int code(QChar c);
+
+public:
+    Parser(const QString& text, int start);
+    UTextPart parse();
+private:
+    UTextPart parseText();
+    UCommentPart parseComment();
+    UArgsCommandPart parseCommand();
+    UPrimitiveCommandPart parsePrimitiveCommand();
+    UEnvironmentPart parseEnvironment(UCommandPart&& begincommand);
+    std::optional<UCommandPart> endingFound(UCommandPart&& cp);
+    std::optional<UCommandPart> expectedEndingFound(UCommandPart&& cp);
+    bool matches(QString wanted, PCommandPart cp);
 };
 
 struct SpecialEnvironment {
@@ -152,10 +152,10 @@ struct SpecialEnvironment {
 };
 
 class Global {
-    public:
-        static QMap<QString,int> commands;
-        static QMap<QString,SpecialEnvironment> specialenvs;
-        static void init();
+public:
+    static QMap<QString,int> commands;
+    static QMap<QString,SpecialEnvironment> specialenvs;
+    static void init();
 };
 
 #endif

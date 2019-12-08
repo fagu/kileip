@@ -17,11 +17,29 @@
 #include <QStandardPaths>
 #include <QTime>
 
+
+ParserResult::ParserResult(UTextPart&& doc, const QList<PPart>& mathgroups, QString text) : m_doc(std::move(doc)), m_mathgroups(mathgroups), m_text(text) {
+}
+
+TextPart* ParserResult::doc() {
+    return m_doc.get();
+}
+
+QString ParserResult::text() {
+    return m_text;
+}
+
+QList< PPart > ParserResult::mathgroups() {
+    return m_mathgroups;
+}
+
+QMutex init_math_mutex;
 QStringList User::mathbegincommands;
 QStringList User::mathcommands;
 QStringList User::mathenvs;
 
 void User::initMath() {
+    QMutexLocker lock(&init_math_mutex);
     if (mathenvs.size())
         return;
     QString commandsfilename = QStandardPaths::locate(QStandardPaths::DataLocation, "parser/maths.txt");
@@ -57,95 +75,99 @@ void User::initMath() {
     comfile.close();
 }
 
-TextPart * User::document(TextPart *ma, QString text) {
-    for (unsigned int i = 0; i < ma->children.size(); i++) {
-        EnvironmentPart *ep = dynamic_cast<EnvironmentPart*>(ma->children[i]);
-        if (ep) {
-            if (ep->begin->name(text) == "\\begin" && dynamic_cast<CommandWithArgsPart*>(ep->begin)->children.size()) {
-                if (dynamic_cast<TextPart*>(dynamic_cast<CommandWithArgsPart*>(ep->begin)->children[0])->sourceWithoutVoid(text) == "document") {
-                    return ep->body;
+std::shared_ptr<ParserResult> User::parse(const QString& text) {
+    Parser p(text, 0);
+    //QTime tim; tim.start();
+    UTextPart newmain = p.parse();
+    auto pa = document(newmain.get(), text);
+    if (!pa)
+        pa = newmain.get();
+    QList<PPart> mathgroups = getMathgroups(pa, text);
+    //qDebug() << "Parsing time:" << tim.elapsed()*0.001;
+    return std::make_shared<ParserResult>(std::move(newmain), mathgroups, text);
+}
+
+PTextPart User::document(PTextPart ma, QString text) {
+    for (unsigned int i = 0; i < ma->parts().size(); i++) {
+        if (std::holds_alternative<PEnvironmentPart >(ma->parts()[i])) {
+            PEnvironmentPart ep = std::get<PEnvironmentPart >(ma->parts()[i]);
+            if (command_name_range(ep->begin()).source(text) == "\\begin" && std::get<PArgsCommandPart >(ep->begin())->args().size()) {
+                if (std::get<PTextPart >(std::get<PArgsCommandPart >(ep->begin())->args()[0])->sourceWithoutVoid(text) == "document") {
+                    return ep->body();
                 }
             }
         }
     }
-    return 0;
+    return nullptr;
 }
 
-CollectionPart * User::preamble(TextPart *ma, QString text) {
+Range User::preamble(PTextPart ma, QString text) {
     int preend = text.length()-1;
-    for (unsigned int i = 0; i < ma->children.size(); i++) {
-        EnvironmentPart *ep = dynamic_cast<EnvironmentPart*>(ma->children[i]);
-        if (ep) {
-            if (ep->begin->name(text) == "\\begin" && dynamic_cast<CommandWithArgsPart*>(ep->begin)->children.size()) {
-                if (dynamic_cast<TextPart*>(dynamic_cast<CommandWithArgsPart*>(ep->begin)->children[0])->sourceWithoutVoid(text) == "document") {
-                    preend = ep->start-1;
+    for (unsigned int i = 0; i < ma->parts().size(); i++) {
+        if (std::holds_alternative<PEnvironmentPart >(ma->parts()[i])) {
+            PEnvironmentPart ep = std::get<PEnvironmentPart >(ma->parts()[i]);
+            if (command_name_range(ep->begin()).source(text) == "\\begin" && std::get<PArgsCommandPart >(ep->begin())->args().size()) {
+                if (std::get<PTextPart >(std::get<PArgsCommandPart >(ep->begin())->args()[0])->sourceWithoutVoid(text) == "document") {
+                    preend = ep->range().m_start-1;
                 }
             }
         }
     }
-    
-    CollectionPart * preamble = new CollectionPart(0);
-    preamble->end = preend;
-    for (unsigned int i = 0; i < ma->children.size(); i++) {
-        if (ma->children[i]->end <= preend)
-            preamble->addChild(ma->children[i]);
-        else
-            break;
-    }
-    return preamble;
+    return Range(0, preend);
 }
 
-QList< Part* > User::getMathgroups ( Part* part, QString text ) {
+QList< PPart > User::getMathgroups(PPart part, QString text)
+{
     initMath();
-    QList<Part*> res;
-    EnvironmentPart *ep = dynamic_cast<EnvironmentPart*>(part);
-    if (ep) {
-        CommandPart * begin = ep->begin;
-        QString name = begin->name(text);
-        bool gef = false;
-        if (mathbegincommands.contains(name))
-            gef = true;
-        else if (name == "\\begin") {
-            CommandWithArgsPart *wa = dynamic_cast<CommandWithArgsPart*>(begin);
-            if (wa->children.size()) {
-                QString envname = dynamic_cast<TextPart*>(wa->children[0])->sourceWithoutVoid(text);
-                if (mathenvs.contains(envname))
-                    gef = true;
+    QList<PPart> res;
+    std::visit(overloaded{
+        [](PCommentPart) {
+        },
+        [](PPrimitiveCommandPart) {
+        },
+        [&res,&text](PEnvironmentPart ep) {
+            PCommandPart begin = ep->begin();
+            QString name = command_name_range(begin).source(text);
+            bool gef = false;
+            if (mathbegincommands.contains(name))
+                gef = true;
+            else if (name == "\\begin") {
+                PArgsCommandPart wa = std::get<PArgsCommandPart>(begin);
+                if (wa->args().size()) {
+                    QString envname = std::get<PTextPart>(wa->args()[0])->sourceWithoutVoid(text);
+                    if (mathenvs.contains(envname))
+                        gef = true;
+                }
             }
-        }
-        if (gef) {
-            res += ep;
-        } else {
-            res += getMathgroups(ep->begin, text);
-            res += getMathgroups(ep->body, text);
-            res += getMathgroups(ep->ending, text);
-        }
-    }
-    CPart *cp = dynamic_cast<CPart*>(part);
-    if (cp) {
-        CommandPart *cop = dynamic_cast<CommandPart*>(cp);
-        if (cop) {
-            if (mathcommands.contains(cop->name(text))) {
+            if (gef) {
+                res += ep;
+            } else {
+//                 res += getMathgroups(ep->begin(), text);
+                res += getMathgroups(ep->body(), text);
+//                 res += getMathgroups(ep->end(), text);
+            }
+        },
+        [&res,&text](PArgsCommandPart cop) {
+            if (mathcommands.contains(cop->name_range().source(text))) {
                 res += cop;
-                return res;
+            } else {
+                if (cop->optional().has_value())
+                    res += getMathgroups(cop->optional().value(), text);
+                for (unsigned int i = 0; i < cop->args().size(); i++) {
+                    res += getMathgroups(cop->args()[i], text);
+                }
             }
-            CommandWithArgsPart *cwp = dynamic_cast<CommandWithArgsPart*>(cp);
-            if (cwp) {
-                res += getMathgroups(cwp->optional, text);
+        },
+        [&res,&text](const PTextPart& tp) {
+            for (unsigned int i = 0; i < tp->parts().size(); i++) {
+                res += getMathgroups(tp->parts()[i], text);
             }
-        }
-        for (unsigned int i = 0; i < cp->children.size(); i++) {
-            res += getMathgroups(cp->children[i], text);
-        }
-    }
+        },
+    }, part);
     return res;
 }
 
-User::User() {
-    abort = false;
-    Parser p("", 0);
-    ParserResult r(ParserResult(this, p.parse(), ""));
-    m_res = r;
+User::User() : abort(false) {
 }
 
 User::~User() {
@@ -155,8 +177,6 @@ User::~User() {
         waitcond.wakeOne();
     }
     wait();
-    QMutexLocker lock(&mutex);
-    m_res = ParserResult();
 }
 
 void User::run() {
@@ -164,28 +184,23 @@ void User::run() {
         QString parsetext;
         {
             QMutexLocker lock(&mutex);
-            while(m_res.text() == newtext) {
+            while(m_res && m_res->text() == newtext) {
                 waitcond.wait(&mutex);
                 if (abort)
                     return;
             }
             parsetext = newtext;
         }
-//         qDebug() << "parsen...";
-        Parser p(parsetext, 0);
-        //QTime tim; tim.start();
-        TextPart *newmain = p.parse();
-//         qDebug() << newmain->toString(parsetext);
-        //qDebug() << "Parsing time:" << tim.elapsed()*0.001;
+        std::shared_ptr<ParserResult> res = parse(parsetext);
         {
             QMutexLocker lock(&mutex);
-            m_res = ParserResult(this, newmain, parsetext);
+            m_res = res;
         }
         emit documentChanged();
     }
 }
 
-ParserResult User::data() {
+std::shared_ptr<ParserResult> User::data() {
     QMutexLocker lock(&mutex);
     return m_res;
 }
@@ -196,62 +211,4 @@ void User::textChanged(QString ntext) {
     QMutexLocker lock(&mutex);
     newtext = ntext;
     waitcond.wakeOne();
-}
-
-
-
-void CollectionPart::addChild ( Part* p ) {
-    children.push_back(p);
-}
-
-QString CollectionPart::toString ( const QString& text ) const {
-    QString st = "(collection: ";
-    for (unsigned int i = 0; i < children.size(); i++) {
-        if (i > 0)
-            st += ";";
-        st += children[i]->toString(text);
-    }
-    st += ")";
-    return st;
-}
-
-
-QString CollectionPart::toTeX ( const QString& text ) const {
-    QString st = " ";
-    for (unsigned int i = 0; i < children.size(); i++) {
-        st += children[i]->toTeX(text);
-    }
-    return st + " ";
-}
-
-
-ParserResult::ParserResult() {
-    m_user = 0;
-    m_initmathgroups = false;
-}
-
-ParserResult::ParserResult(User* user, TextPart* doc, QString text) {
-    m_user = user;
-    m_initmathgroups = false;
-    m_doc = QSharedPointer<TextPart>(doc);
-    m_text = text;
-}
-
-TextPart* ParserResult::doc() {
-    return m_doc.get();
-}
-
-QString ParserResult::text() {
-    return m_text;
-}
-
-QList< Part* > ParserResult::mathgroups() {
-    if (!m_initmathgroups) {
-        Part *pa = User::document(m_doc.get(), m_text);
-        if (!pa)
-            pa = m_doc.get();
-        m_mathgroups = User::getMathgroups(pa, m_text);
-        m_initmathgroups = true;
-    }
-    return m_mathgroups;
 }
