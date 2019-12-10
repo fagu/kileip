@@ -24,66 +24,66 @@
 #include <queue>
 #include <algorithm>
 #include "documentinfo.h"
-#include "user.h"
 
 typedef std::pair<int,int> PII;
 typedef std::pair<PII,int> PIII;
 
+struct image_error{
+    friend bool operator==(image_error, image_error) {
+        return true;
+    }
+    friend bool operator!=(image_error, image_error) {
+        return false;
+    }
+};
+struct image_dirty{
+    friend bool operator==(image_dirty, image_dirty) {
+        return true;
+    }
+    friend bool operator!=(image_dirty, image_dirty) {
+        return false;
+    }
+};
+typedef std::variant<std::shared_ptr<QImage>,image_error,image_dirty> image_state;
+typedef std::vector<std::pair<QString,image_state> > VPSI;
+Q_DECLARE_METATYPE(VPSI);
+
 class PreviewThread : public QThread {
-    Q_OBJECT
+Q_OBJECT
+
+public:
+    PreviewThread(KileDocument::LaTeXInfo *info, QObject *parent = 0);
+    ~PreviewThread();
     
-    public:
-        PreviewThread(KileDocument::LaTeXInfo *info, QObject *parent = 0);
-        ~PreviewThread();
-        
-        void run() override;
-        
-        void setDoc(KTextEditor::Document *doc);
-        // Returns false if the contents are dirty. If they are not dirty, the text does not get reparsed as long as endquestions() is not called.
-        // This function has to be called before mathpositions() and getImage().
-        bool startquestions();
-        void endquestions();
-        QList<PPart> mathpositions();
-        QImage image(PPart part);
-        QHash<QString,QImage> images();
-        QString parsedText();
-    private:
-        bool m_abort; // whether to abort the thread
-        
-        KTextEditor::Document *m_doc;
-        KileDocument::LaTeXInfo* m_info;
-        
-        QMutex m_dirtymutex;
-        bool m_dirty;
-        bool m_newdirty;
-        QWaitCondition m_dirtycond;
-        
-        // The parser threads
-        User *m_user;
-        User *m_masteruser;
-        
-        // The result of parsing the current tex file
-        std::shared_ptr<ParserResult> m_res;
-        // The result of parsing the master tex file
-        std::shared_ptr<ParserResult> m_masterres;
-        
-        // The temporary directory containing directories numbered 1, 2, 3, ... (one for each run of latex).
-        std::unique_ptr<QTemporaryDir> m_dir;
-        
-        QHash<QString,QImage> m_previmgs;
-        
-        int m_currentrun;
-        
-        void createPreviews();
-        void binaryCreatePreviews(QString &preamble, QList<PPart> tempenvs, int start, int end);
-        
-        // The preamble used to generate the current images.
-        // Whenever the preamble changes, we regenerate all images.
-        QString lastpreamble;
-    Q_SIGNALS:
-        void dirtychanged();
-    public Q_SLOTS:
-        void textChanged();
+    void run() override;
+    
+    void setDoc(KTextEditor::Document *doc);
+    
+    void setPreamble(const QString& str);
+    
+    void enqueue(const std::vector<QString>& maths);
+private:
+    bool m_abort; // whether to abort the thread
+    
+    KTextEditor::Document *m_doc;
+    KileDocument::LaTeXInfo* m_info;
+    
+    QString m_preamble;
+    std::queue<QString> m_queue;
+    QMutex m_queue_mutex;
+    QWaitCondition m_queue_wait;
+    
+    // The temporary directory containing directories numbered 1, 2, 3, ... (one for each run of latex).
+    std::unique_ptr<QTemporaryDir> m_dir;
+    
+    int m_currentrun;
+    
+    bool m_keep_trying;
+    
+    void createPreviews(const QString& preamble, const std::vector<QString>& todo);
+    void binaryCreatePreviews(const QString &preamble, const std::vector<QString>& mathenvs, int start, int end);
+Q_SIGNALS:
+    void picturesAvailable(QString,VPSI);
 };
 
 #endif

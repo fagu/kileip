@@ -28,13 +28,8 @@ const bool keep_failed_folders = true;
 
 PreviewThread::PreviewThread(KileDocument::LaTeXInfo* info, QObject* parent)
 : QThread(parent), m_doc(info->getDoc()), m_info(info) {
-    m_user = m_info->user();
-    m_masteruser = m_info->masteruser();
     m_abort = false;
-    m_dirty = false;
-    connect(m_user, SIGNAL(documentChanged()), this, SLOT(textChanged()));
-    connect(m_masteruser, SIGNAL(documentChanged()), this, SLOT(textChanged()));
-    connect(info, SIGNAL(inlinePreviewChanged(bool)), this, SLOT(textChanged()));
+//     connect(info, SIGNAL(inlinePreviewChanged(bool)), this, SLOT(textChanged())); // TODO
     m_currentrun = 0;
     m_dir.reset(new QTemporaryDir(QDir(QDir::tempPath()).filePath("kile-inlinepreview")));
     m_dir->setAutoRemove(true);
@@ -42,9 +37,9 @@ PreviewThread::PreviewThread(KileDocument::LaTeXInfo* info, QObject* parent)
 
 PreviewThread::~PreviewThread() {
     {
-        QMutexLocker lock(&m_dirtymutex);
+        QMutexLocker lock(&m_queue_mutex);
         m_abort = true;
-        m_dirtycond.wakeOne();
+        m_queue_wait.wakeOne();
     }
     wait();
     m_dir = 0;
@@ -54,6 +49,25 @@ void PreviewThread::setDoc(KTextEditor::Document *doc) {
     m_doc = doc;
 }
 
+void PreviewThread::setPreamble(const QString& str) {
+    QMutexLocker lock(&m_queue_mutex);
+    m_preamble = str;
+    while(!m_queue.empty())
+        m_queue.pop();
+    m_keep_trying = false;
+}
+
+void PreviewThread::enqueue(const std::vector<QString>& maths) {
+    if (maths.empty())
+        return;
+    qDebug() << "Enqueue" << maths;
+    QMutexLocker lock(&m_queue_mutex);
+    for (const QString& math : maths)
+        m_queue.push(math);
+    m_queue_wait.wakeOne();
+}
+
+
 void PreviewThread::run() {
     if (!m_dir->isValid()) {
         qDebug() << "Could not create temporary directory! Not creating previews.";
@@ -61,70 +75,32 @@ void PreviewThread::run() {
     }
     forever {
         // Wait for dirty or abort
+        QString preamble;
+        std::vector<QString> todo;
         {
-            QMutexLocker lock(&m_dirtymutex);
-            while(!m_dirty && !m_abort)
-                m_dirtycond.wait(&m_dirtymutex);
-            if (m_abort) {
+            QMutexLocker lock(&m_queue_mutex);
+            while(m_queue.empty() && !m_abort)
+                m_queue_wait.wait(&m_queue_mutex);
+            if (m_abort)
                 break;
+            if (!m_info->isInlinePreview())
+                continue;
+            preamble = m_preamble;
+            while(!m_queue.empty()) {
+                todo.push_back(m_queue.front());
+                m_queue.pop();
             }
-            m_newdirty = false;
-            m_res = m_user->data();
-            m_masterres = m_masteruser->data();
+            m_keep_trying = true;
         }
         
         // Run LaTeX to create Previews
-        createPreviews();
-        
-        {
-            QMutexLocker lock(&m_dirtymutex);
-            if (m_newdirty) {
-                continue;
-            }
-            m_dirty = false;
-        }
-        
-        // Emit dirtychange
-        emit dirtychanged();
+        createPreviews(preamble, todo);
     }
 }
 
-void PreviewThread::createPreviews() {
-    if (!m_info->isInlinePreview())
-        return;
-    QList<PPart> tempenvs;
-    
-    Range prp = User::preamble(m_masterres->doc(), m_masterres->text());
-    qDebug() << "Preamble range: " << prp.m_start << " " << prp.m_end;
-    QString preamble = prp.source(m_masterres->text());
-    if (preamble != lastpreamble) {
-        m_previmgs.clear();
-        //qDebug() << "Preamble changed -> clear";
-        lastpreamble = preamble;
-    }
-    
-    QSet<QString> allmaths;
-    
-    // Insert new math
-    foreach(PPart env, m_res->mathgroups()) {
-//         qDebug() << "math" << env->source(m_res.text());
-        QString tt = range(env).source(m_res->text());
-        if (!allmaths.contains(tt)) {
-            allmaths.insert(tt);
-            if (!m_previmgs.contains(range(env).source(m_res->text())))
-                tempenvs << env;
-        }
-    }
-    
-    for(QHash<QString,QImage>::iterator it = m_previmgs.begin(); it != m_previmgs.end(); ) {
-        if (!allmaths.contains(it.key())) {
-            //qDebug() << "Erase:" << it.key();
-            it = m_previmgs.erase(it);
-        } else
-            it++;
-    }
-    
-    binaryCreatePreviews(preamble, tempenvs, 0, tempenvs.size()-1);
+void PreviewThread::createPreviews(const QString& preamble, const std::vector<QString>& todo) {
+    qDebug() << "create" << todo;
+    binaryCreatePreviews(preamble, todo, 0, todo.size()-1);
 }
 
 
@@ -159,12 +135,13 @@ bool load_pages_from_pdf(QString filename, int expected_number_of_pages, QVector
     return true;
 }
 
-void PreviewThread::binaryCreatePreviews (QString& preamble, QList< PPart > tempenvs, int start, int end ) {
-    // Check if the document changed again in the meantime
-    if (m_res->text() != m_doc->text())
-        return;
-    if (m_masterres->text().isEmpty()) // Master document hasn't been parsed. (?)
-        return;
+void PreviewThread::binaryCreatePreviews(const QString &preamble, const std::vector<QString>& mathenvs, int start, int end) {
+    // Check if the preamble changed again in the meantime
+    {
+        QMutexLocker lock(&m_queue_mutex);
+        if (!m_keep_trying)
+            return;
+    }
     if (end < start)
         return;
     m_currentrun++;
@@ -189,9 +166,8 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< PPart > temp
         fout << "\\begin{document}" << endl;
         
         for (int i = start; i <= end; i++) {
-            PPart env = tempenvs[i];
             // FIXME Double dollar signs do not work! Without the preview environment they do!
-            fout << "\n\\begin{preview}\n" << range(env).source(m_res->text()) << "\n\\end{preview}\n" << endl << endl;
+            fout << "\n\\begin{preview}\n" << mathenvs[i] << "\n\\end{preview}\n" << endl << endl;
         }
         
         fout << "\\end{document}" << endl;
@@ -219,22 +195,27 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< PPart > temp
     if (!success) {
         qDebug() << "Failed:" << start << "--" << end << "(in" << tim.elapsed()*0.001 << "s)";
         if (start != end) {
-            binaryCreatePreviews(preamble, tempenvs, start, (start+end)/2);
-            binaryCreatePreviews(preamble, tempenvs, (start+end)/2+1, end);
+            binaryCreatePreviews(preamble, mathenvs, start, (start+end)/2);
+            binaryCreatePreviews(preamble, mathenvs, (start+end)/2+1, end);
         } else {
-            qDebug() << "Failed code:" << range(tempenvs[start]).source(m_res->text());
-            m_previmgs[range(tempenvs[start]).source(m_res->text())] = QImage();
+            qDebug() << "Failed code:" << mathenvs[start];
+            std::vector<std::pair<QString,image_state> > upd;
+            upd.emplace_back(mathenvs[start], image_error());
+            emit picturesAvailable(preamble, upd);
         }
     } else {
         qDebug() << "Succeeded:" << start << "--" << end << "(in" << tim.elapsed()*0.001 << "s)";
         
+        std::vector<std::pair<QString,image_state> > upd;
         // Load images from disk
         int ipr = 0;
         for (int i = start; i <= end; i++) {
-            PPart env = tempenvs[i];
-            m_previmgs[range(env).source(m_res->text())] = imgs[ipr];
+            image_state img = std::make_shared<QImage>(imgs[ipr]);
+            upd.emplace_back(mathenvs[i], img);
             ipr++;
         }
+        
+        emit picturesAvailable(preamble, upd);
     }
     
     if (success || !keep_failed_folders) {
@@ -242,53 +223,4 @@ void PreviewThread::binaryCreatePreviews (QString& preamble, QList< PPart > temp
         folder.removeRecursively();
     }
     qDebug();
-}
-
-
-void PreviewThread::textChanged() {
-    if (m_info->isInlinePreview()) {
-        bool dirbef;
-        {
-            QMutexLocker lock(&m_dirtymutex);
-            dirbef = m_dirty;
-            m_dirty = true;
-            m_newdirty = true;
-            m_dirtycond.wakeOne();
-        }
-        if (!dirbef)
-            emit dirtychanged();
-    } else {
-        m_previmgs.clear();
-        emit dirtychanged();
-    }
-}
-
-bool PreviewThread::startquestions() {
-    m_dirtymutex.lock();
-    if (!m_dirty && m_res->text() == m_doc->text()) {
-        return true;
-    } else {
-        m_dirtymutex.unlock();
-        return false;
-    }
-}
-
-void PreviewThread::endquestions() {
-    m_dirtymutex.unlock();
-}
-
-QList<PPart> PreviewThread::mathpositions() {
-    return m_res->mathgroups();
-}
-
-QImage PreviewThread::image(PPart part) {
-    return m_previmgs[range(part).source(m_res->text())];
-}
-
-QHash<QString,QImage> PreviewThread::images() {
-    return m_previmgs;
-}
-
-QString PreviewThread::parsedText() {
-    return m_res->text();
 }

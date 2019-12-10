@@ -124,8 +124,7 @@ set(kile_SRCS
 	widgets/scrollwidget.cpp
 	previewthread.cpp
 	previewindocument.cpp
-	myparser.cpp
-	user.cpp
+	previewpreparer.cpp
 )
 
 set(kile_UI

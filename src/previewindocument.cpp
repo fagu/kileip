@@ -118,7 +118,7 @@ QPoint ViewHandler::pos(const KTextEditor::Cursor& c) {
 
 
 
-PreviewWidget::PreviewWidget(ViewHandler* viewHandler, std::unique_ptr<QImage>&& img, const KTextEditor::Range& range, QString text): QWidget(viewHandler->view), vh(viewHandler), m_img(std::move(img)), m_range(nullptr), m_text(text) {
+PreviewWidget::PreviewWidget(ViewHandler* viewHandler, const image_state& img, const KTextEditor::Range& range, QString text, WIDGETS* widgets_by_text): QWidget(viewHandler->view), vh(viewHandler), m_img(img), m_range(nullptr), m_text(text), m_widgets_by_text(widgets_by_text) {
     setAttribute(Qt::WA_TransparentForMouseEvents);
     setAttribute(Qt::WA_ShowWithoutActivating);
     setAutoFillBackground(true);
@@ -127,6 +127,13 @@ PreviewWidget::PreviewWidget(ViewHandler* viewHandler, std::unique_ptr<QImage>&&
     connect(vh->view, SIGNAL(verticalScrollPositionChanged(KTextEditor::View*,KTextEditor::Cursor)), this, SLOT(updateRect()));
     connect(vh->view, SIGNAL(horizontalScrollPositionChanged(KTextEditor::View*)), this, SLOT(updateRect()));
     setRange(range);
+    updateRect();
+    update();
+}
+
+PreviewWidget::~PreviewWidget() {
+    if (m_widgets_by_text_it)
+        m_widgets_by_text->erase(m_widgets_by_text_it.value());
 }
 
 void PreviewWidget::setRange(const KTextEditor::Range& range) {
@@ -195,18 +202,21 @@ void PreviewWidget::updateRect() {
         m_border.push_back(QLine(p2.x(),p1.y(), p2.x(),p1.y()+vh->dy));
         m_border.push_back(QLine(p1.x(),p1.y(), p2.x(),p1.y()));
         m_border.push_back(QLine(p1.x(),p1.y()+vh->dy, p2.x(),p1.y()+vh->dy));
-        QRectF rec(rect);
         avail += rect;
-        if ((float)rec.width()/rec.height() > (float)m_img->width()/m_img->height()) {
-            float delta = rec.width()-rec.height()*(float)m_img->width()/m_img->height();
-            rec.setWidth(rec.width()-delta);
-            rec.translate(delta/2, 0);
-        } else {
-            float delta = rec.height()-rec.width()*(float)m_img->height()/m_img->width();
-            rec.setHeight(rec.height()-delta);
-            rec.translate(0, delta/2);
+        if (std::holds_alternative<std::shared_ptr<QImage> >(m_img)) {
+            std::shared_ptr<QImage> img = std::get<std::shared_ptr<QImage> >(m_img);
+            QRectF rec(rect);
+            if ((float)rec.width()/rec.height() > (float)img->width()/img->height()) {
+                float delta = rec.width()-rec.height()*(float)img->width()/img->height();
+                rec.setWidth(rec.width()-delta);
+                rec.translate(delta/2, 0);
+            } else {
+                float delta = rec.height()-rec.width()*(float)img->height()/img->width();
+                rec.setHeight(rec.height()-delta);
+                rec.translate(0, delta/2);
+            }
+            imgrectf = rec;
         }
-        imgrectf = rec;
     } else {
         if (p1.x() != maxx) {
             avail += QRect(p1.x(), p1.y(), maxx-p1.x()+1, vh->dy+1);
@@ -240,33 +250,44 @@ void PreviewWidget::updateRect() {
                     xx2 = p2.x();
                     yy2 += vh->dy;
                 }
-                QRectF rec(xx1, yy1, xx2-xx1+1, yy2-yy1+1);
-                if ((float)rec.width()/rec.height() > (float)m_img->width()/m_img->height()) {
-                    float delta = rec.width()-rec.height()*(float)m_img->width()/m_img->height();
-                    rec.setWidth(rec.width()-delta);
-                    rec.translate(delta/2, 0);
-                } else {
-                    float delta = rec.height()-rec.width()*(float)m_img->height()/m_img->width();
-                    rec.setHeight(rec.height()-delta);
-                    rec.translate(0, delta/2);
+                if (std::holds_alternative<std::shared_ptr<QImage> >(m_img)) {
+                    std::shared_ptr<QImage> img = std::get<std::shared_ptr<QImage> >(m_img);
+                    QRectF rec(xx1, yy1, xx2-xx1+1, yy2-yy1+1);
+                    if ((float)rec.width()/rec.height() > (float)img->width()/img->height()) {
+                        float delta = rec.width()-rec.height()*(float)img->width()/img->height();
+                        rec.setWidth(rec.width()-delta);
+                        rec.translate(delta/2, 0);
+                    } else {
+                        float delta = rec.height()-rec.width()*(float)img->height()/img->width();
+                        rec.setHeight(rec.height()-delta);
+                        rec.translate(0, delta/2);
+                    }
+                    if (rec.width() > imgrectf.width())
+                        imgrectf = rec;
                 }
-                if (rec.width() > imgrectf.width())
-                    imgrectf = rec;
             }
         }
     }
-    if (imgrectf.width() > m_img->width()) {
-        float scale = (float)m_img->width()/imgrectf.width();
-        float dw = imgrectf.width()-scale*imgrectf.width();
-        float dh = imgrectf.height()-scale*imgrectf.height();
-        imgrectf.setWidth(scale*imgrectf.width());
-        imgrectf.setHeight(scale*imgrectf.height());
-        imgrectf.translate(dw/2, dh/2);
+    float scale = 1;
+    if (std::holds_alternative<std::shared_ptr<QImage> >(m_img)) {
+        std::shared_ptr<QImage> img = std::get<std::shared_ptr<QImage> >(m_img);
+        if (imgrectf.width() > img->width()) {
+            float scale = (float)img->width()/imgrectf.width();
+            float dw = imgrectf.width()-scale*imgrectf.width();
+            float dh = imgrectf.height()-scale*imgrectf.height();
+            imgrectf.setWidth(scale*imgrectf.width());
+            imgrectf.setHeight(scale*imgrectf.height());
+            imgrectf.translate(dw/2, dh/2);
+        }
+        m_imgrect = QRect(qRound(imgrectf.left()), qRound(imgrectf.top()), qRound(imgrectf.width()), qRound(imgrectf.height()));
+        scale = (float)m_imgrect.width()/img->width();
     }
-    m_imgrect = QRect(qRound(imgrectf.left()), qRound(imgrectf.top()), qRound(imgrectf.width()), qRound(imgrectf.height()));
-    float scale = (float)m_imgrect.width()/m_img->width();
-    if (scale < 0.8 || m_range->contains(vh->view->cursorPosition())) {
+    bool prev_cursor = m_cursor;
+    m_cursor = m_range->contains(vh->view->cursorPosition());
+    if (scale < 0.8) {
         setVisible(false);
+        if (m_cursor != prev_cursor)
+            update();
     } else {
         setVisible(true);
         QPoint shift = avail.boundingRect().topLeft();
@@ -279,25 +300,46 @@ void PreviewWidget::updateRect() {
         avail.translate(-shift);
         setMask(avail);
         resize(avail.boundingRect().size());
-        if (oldimgrect != m_imgrect || oldborder != m_border || olddirty != m_dirty)
+        if (oldimgrect != m_imgrect || oldborder != m_border || olddirty != m_dirty || m_cursor != prev_cursor)
             update();
     }
 }
 
+void PreviewWidget::setPicture(const image_state& img) {
+    m_img = img;
+    updateRect();
+    update();
+}
+
+bool PreviewWidget::setText(const QString& text) {
+    if (m_text == text)
+        return false;
+    m_text = text;
+    if (m_widgets_by_text_it)
+        m_widgets_by_text->erase(m_widgets_by_text_it.value());
+    m_widgets_by_text_it = m_widgets_by_text->emplace(text, this);
+    return true;
+}
+
 void PreviewWidget::paintEvent(QPaintEvent* ) {
-    if (m_dirty)
-        setPalette(QPalette(QColor(220,220,255,255)));
-    else if (m_img->isNull())
+    if (std::holds_alternative<image_dirty>(m_img) || m_dirty || m_cursor)
+        setPalette(QPalette(QColor(220,255,220,50)));
+    else if (std::holds_alternative<image_error>(m_img))
         setPalette(QPalette(QColor(255,0,0,50)));
+    else if (std::get<std::shared_ptr<QImage> >(m_img)->isNull())
+        setPalette(QPalette(QColor(0,0,255,50)));
     else
         setPalette(QPalette(Qt::white));
     QPainter painter(this);
     painter.setPen(QColor(240,240,240));
     foreach(QLine line, m_border)
         painter.drawLine(line);
-    painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
-    if (!m_img->isNull()) {
-        painter.drawImage(m_imgrect, *m_img);
+    if (std::holds_alternative<std::shared_ptr<QImage> >(m_img) && !m_dirty && !m_cursor) {
+        std::shared_ptr<QImage> img = std::get<std::shared_ptr<QImage> >(m_img);
+        painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+        if (!img->isNull()) {
+            painter.drawImage(m_imgrect, *img);
+        }
     }
 }
 
@@ -315,75 +357,220 @@ void PreviewWidget::caretExitedRange(KTextEditor::MovingRange*, KTextEditor::Vie
 
 
 
-
 PreviewWidgetHandler::PreviewWidgetHandler(KTextEditor::View* view, KileDocument::LaTeXInfo *info) : QObject(view), m_info(info), vh(new ViewHandler(view)), m_thread(new PreviewThread(m_info)) {
+    qRegisterMetaType<VPSI>();
+    connect(m_thread.get(), &PreviewThread::picturesAvailable, this, &PreviewWidgetHandler::updatePictures);
     m_thread->start();
-    m_thread->textChanged();
-    connect(m_thread.get(), SIGNAL(dirtychanged()), this, SLOT(picturesAvailable()));
+//     m_thread->textChanged();
+//     connect(info->user(), SIGNAL(documentChanged()), this, SLOT(updateWidgets()));
+//     updateWidgets();
+    connect(view->document(), &KTextEditor::Document::textInserted, this, &PreviewWidgetHandler::textInserted);
+    connect(view->document(), &KTextEditor::Document::textRemoved, this, &PreviewWidgetHandler::textRemoved);
+    connect(view->document(), &KTextEditor::Document::lineWrapped, this, &PreviewWidgetHandler::lineWrapped);
+    connect(view->document(), &KTextEditor::Document::lineUnwrapped, this, &PreviewWidgetHandler::lineUnwrapped);
+    connect(view->document(), &KTextEditor::Document::reloaded, this, &PreviewWidgetHandler::reloaded);
+    connect(view->document(), &KTextEditor::Document::editingFinished, this, &PreviewWidgetHandler::editingFinished);
+    reload();
     // TODO: Automatically switch to dynamic word wrapping
     // KTextEditor::ConfigInterface *conf = qobject_cast< KTextEditor::ConfigInterface* >(view);
     // qDebug() << "Keys:" << endl << conf->configKeys() << endl << endl;
 }
 
-void PreviewWidgetHandler::picturesAvailable() {
-    if (m_thread->startquestions()) {
-        QList<PPart> parts = m_thread->mathpositions();
-        QString gestext = m_thread->parsedText();
-        QHash<QString,QImage> previmgs = m_thread->images();
-        QHash<QString,int> aktinds;
-        
-        foreach(QString text, m_widgets.uniqueKeys()) {
-            if (*m_widgets.values(text)[0]->img() != previmgs[text]) { // TODO This is probably inefficient
-                foreach (PreviewWidget *wid, m_widgets.values(text))
-                    delete wid;
-                m_widgets.remove(text);
-            }
+void PreviewWidgetHandler::reload() {
+    auto* doc = vh->doc;
+    m_states.clear();
+    m_widgets_by_line.clear();
+    int nr_of_lines = doc->lines();
+    State state;
+    m_states.push_back(state);
+    for (int linenr = 0; linenr < nr_of_lines; linenr++) {
+        QString line = doc->line(linenr);
+//         qDebug() << "Line" << linenr << line;
+        auto p = parse(state, linenr, line);
+        state = p.first;
+        m_states.push_back(state);
+        m_widgets_by_line.emplace_back();
+        updateWidgets(linenr, p.second);
+    }
+    if (!m_states.back().in_document())
+        setBeginDocument(std::nullopt);
+    do_enqueue();
+    
+//     for (int linenr = 0; linenr < nr_of_lines; linenr++) {
+//         for (const auto& ra : m_mathenvs[linenr]) {
+//             qDebug() << *ra;
+//         }
+//     }
+}
+
+bool PreviewWidgetHandler::reloadLine(int linenr) {
+    auto* doc = vh->doc;
+    QString line = doc->line(linenr);
+//     qDebug() << "Line" << linenr << line;
+    auto p = parse(m_states[linenr], linenr, line);
+    bool changed = (m_states[linenr+1] != p.first);
+    if (changed)
+        m_states[linenr+1] = p.first;
+    updateWidgets(linenr, p.second);
+    return changed;
+}
+
+void PreviewWidgetHandler::reloadLineAuto(int linenr) {
+    auto* doc = vh->doc;
+    int nr_of_lines = doc->lines();
+    for (; linenr < nr_of_lines; linenr++) {
+        if (!reloadLine(linenr))
+            break;
+    }
+}
+
+void PreviewWidgetHandler::updateWidgets(int linenr, const ParsedLine& parsedline) {
+    if (parsedline.begin_document)
+        setBeginDocument(parsedline.begin_document);
+    
+    std::map<KTextEditor::Range, std::unique_ptr<PreviewWidget> > old;
+    for (std::unique_ptr<PreviewWidget>& widget : m_widgets_by_line[linenr]) {
+        KTextEditor::Range range = widget->range();
+        if (!old.count(range)) {
+            old.emplace(range, std::move(widget));
         }
-        
-        if (m_info->isInlinePreview()) {
-            QList<int> newlines;
-            for (int k = 0; k < gestext.length(); k++) {
-                if (gestext[k] == '\n') {
-                    newlines << k;
+    }
+    m_widgets_by_line[linenr].clear();
+    for (const MathEnv& mathenv : parsedline.mathenvs) {
+        KTextEditor::Range range = mathenv.range();
+        QString text = vh->doc->text(range);
+        if (old.count(range)) {
+            PreviewWidget* widget = old.at(range).get();
+            m_widgets_by_line[linenr].emplace_back(std::move(old.at(range)));
+            if (widget->setText(text)) { // text changed
+                if (!m_previmgs.count(text)) {
+                    m_previmgs.emplace(text, image_dirty());
+                    to_enqueue.push_back(text);
                 }
+                widget->setPicture(m_previmgs.at(text));
             }
-            
-            for (int i = 0; i < parts.size(); i++) {
-                PPart part = parts[i];
-                
-                int spos = range(part).m_start;
-                int sline = std::lower_bound(newlines.begin(),newlines.end(),spos)-newlines.begin();
-                int scol = spos-newlines[sline-1]-1;
-                
-                int epos = range(part).m_end+1;
-                int eline = std::lower_bound(newlines.begin(),newlines.end(),epos)-newlines.begin();
-                int ecol = epos-newlines[eline-1]-1;
-                
-                KTextEditor::Range ran(KTextEditor::Cursor(sline,scol), KTextEditor::Cursor(eline,ecol));
-                
-                QString text = range(part).source(gestext);
-                //if (!previmgs[text].isNull())
-                //	qDebug() << "Formula:" << text;
-                //else
-                //	qDebug() << "Formula (invalid):" << text;
-                if (aktinds[text] >= m_widgets.count(text)) {
-                    QImage img = previmgs[text];
-                    m_widgets.insert(text, new PreviewWidget(vh.get(), std::make_unique<QImage>(img), ran, text));
-                } else {
-                    m_widgets.values(text)[aktinds[text]]->setRange(ran);
-                }
-                
-                aktinds[text]++;
+        } else {
+            if (!m_previmgs.count(text)) {
+                m_previmgs.emplace(text, image_dirty());
+                to_enqueue.push_back(text);
             }
+            PreviewWidget* widget = new PreviewWidget(vh.get(), m_previmgs.at(text), range, text, &m_widgets_by_text);
+            m_widgets_by_line[linenr].emplace_back(widget);
+            widget->setWidgetsByTextIt(m_widgets_by_text.emplace(text, widget));
         }
-        
-        foreach(QString text, m_widgets.keys()) {
-            while(m_widgets.count(text) > aktinds[text]) {
-                PreviewWidget *wid = m_widgets.values(text).last();
-                m_widgets.remove(text, wid);
-                delete wid;
-            }
+    }
+}
+
+void PreviewWidgetHandler::setBeginDocument(std::optional<KTextEditor::Cursor> cursor) {
+    if (cursor) {
+        if (!m_begin_document || m_begin_document->toCursor() != cursor) {
+            KTextEditor::MovingInterface* moving = qobject_cast<KTextEditor::MovingInterface*>(vh->doc);
+            m_begin_document.reset(moving->newMovingCursor(cursor.value()));
+            updatePreamble();
         }
-        m_thread->endquestions();
+    } else {
+        if (m_begin_document) {
+            m_begin_document.reset();
+            updatePreamble();
+        }
+    }
+}
+
+void PreviewWidgetHandler::updatePreamble() {
+    QString preamble = vh->doc->text(KTextEditor::Range(KTextEditor::Cursor(0,0), m_begin_document ? m_begin_document->toCursor() : vh->doc->documentEnd()));
+    if (m_preamble != preamble) {
+        m_preamble = preamble;
+        m_thread->setPreamble(preamble);
+        QString prevmath;
+        for (const auto& p : m_widgets_by_text) {
+            QString math = p.first;
+            PreviewWidget* widget = p.second;
+            if (prevmath != math) {
+                prevmath = math;
+                to_enqueue.push_back(math);
+            }
+            widget->setPicture(image_dirty());
+        }
+    }
+}
+
+void PreviewWidgetHandler::do_enqueue() {
+    m_thread->enqueue(to_enqueue);
+    to_enqueue.clear();
+}
+
+void PreviewWidgetHandler::textInserted(KTextEditor::Document*, const KTextEditor::Cursor& position, const QString&) {
+//     qDebug() << "textInserted(" << position << text << ")";
+//     QTime tim; tim.start();
+    int linenr = position.line();
+    reloadLineAuto(linenr);
+    if (!m_states.back().in_document())
+        setBeginDocument(std::nullopt);
+    if (!m_begin_document || position <= m_begin_document->toCursor())
+        updatePreamble();
+//     qDebug() << " time:" << tim.elapsed()*0.001;
+}
+
+void PreviewWidgetHandler::textRemoved(KTextEditor::Document*, const KTextEditor::Range& range, const QString&) {
+//     qDebug() << "textRemoved(" << range << text << ")";
+    int linenr = range.start().line();
+    assert(linenr == range.end().line());
+    reloadLineAuto(linenr);
+    if (!m_states.back().in_document())
+        setBeginDocument(std::nullopt);
+    if (!m_begin_document || range.start() <= m_begin_document->toCursor())
+        updatePreamble();
+}
+
+void PreviewWidgetHandler::lineWrapped(KTextEditor::Document*, const KTextEditor::Cursor& position) {
+//     qDebug() << "lineWrapped(" << position << ")";
+    int linenr = position.line();
+    // TODO This is very inefficient.
+    m_states.insert(m_states.begin() + linenr + 1, m_states[linenr + 1]);
+    m_widgets_by_line.emplace(m_widgets_by_line.begin() + linenr);
+    reloadLine(linenr);
+    reloadLineAuto(linenr + 1);
+    if (!m_states.back().in_document())
+        setBeginDocument(std::nullopt);
+    if (!m_begin_document || position <= m_begin_document->toCursor())
+        updatePreamble();
+}
+
+void PreviewWidgetHandler::lineUnwrapped(KTextEditor::Document*, int linenr) {
+//     qDebug() << "lineUnwrapped(" << linenr << ")";
+    assert(linenr >= 1);
+    // TODO This is very inefficient.
+    m_states.erase(m_states.begin() + linenr + 1);
+    m_widgets_by_line.erase(m_widgets_by_line.begin() + linenr);
+    reloadLine(linenr - 1);
+    reloadLineAuto(linenr);
+    if (!m_states.back().in_document())
+        setBeginDocument(std::nullopt);
+    if (!m_begin_document || linenr-1 <= m_begin_document->line())
+        updatePreamble();
+}
+
+void PreviewWidgetHandler::reloaded(KTextEditor::Document*) {
+    qDebug() << "reloaded()";
+    reload();
+}
+
+void PreviewWidgetHandler::editingFinished(KTextEditor::Document*) {
+//     qDebug() << "editingFinished()";
+    do_enqueue();
+}
+
+void PreviewWidgetHandler::updatePictures(QString preamble, VPSI texts) {
+    if (preamble != m_preamble) // Was compiled with an older preamble
+        return;
+    for (const auto& p : texts) {
+        const QString& text = p.first;
+        const image_state& img = p.second;
+        m_previmgs[text] = img;
+        auto range = m_widgets_by_text.equal_range(text);
+        for (auto it = range.first; it != range.second; ++it) {
+            PreviewWidget* widget = it->second;
+            widget->setPicture(img);
+        }
     }
 }

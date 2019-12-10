@@ -28,7 +28,6 @@
 #include "kileextensions.h"
 #include "livepreview_utils.h"
 #include "outputinfo.h"
-class User;
 
 #define TEX_CAT0 '\\'
 #define TEX_CAT1 '{'
@@ -495,9 +494,6 @@ public:
 
     virtual void installParserOutput(KileParser::ParserOutput *parserOutput) override;
     
-    User *user();
-    User *masteruser();
-    
     void setDocument(KTextEditor::Document *doc) override;
     
     bool isInlinePreview();
@@ -505,7 +501,6 @@ public:
 
 public Q_SLOTS:
     virtual void updateStruct() override;
-    void textChanged();
 
 Q_SIGNALS:
     void inlinePreviewChanged(bool on);
@@ -520,8 +515,6 @@ protected:
     KileView::Manager *m_viewManager;
     KileDocument::Manager *m_documentManager;
 
-    User *m_user;
-    User *m_masteruser;
     bool m_inlinePreview;
 
     virtual void updateStructLevelInfo() override;
