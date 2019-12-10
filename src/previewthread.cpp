@@ -24,7 +24,10 @@
 #include <QSet>
 #include <poppler-qt5.h>
 
-const bool keep_failed_folders = true;
+// 2: keep all
+// 1: keep failed
+// 0: keep none
+const int keep_folders = 2;
 
 PreviewThread::PreviewThread(KileDocument::LaTeXInfo* info, QObject* parent)
 : QThread(parent), m_doc(info->getDoc()), m_info(info) {
@@ -218,7 +221,7 @@ void PreviewThread::binaryCreatePreviews(const QString &preamble, const std::vec
         emit picturesAvailable(preamble, upd);
     }
     
-    if (success || !keep_failed_folders) {
+    if (keep_folders <= (int)success) {
         qDebug() << "Removing temporary folder" << folder.absolutePath() << ".";
         folder.removeRecursively();
     }
