@@ -185,7 +185,7 @@ void PreviewThread::binaryCreatePreviews(const QString &preamble, const std::vec
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     env.insert("TEXINPUTS", ".:"+filedir.absolutePath()+":");
     proc.setProcessEnvironment(env);
-    proc.start("latexmk -pdf -silent inpreview.tex");
+    proc.start("pdflatex -interaction=batchmode inpreview.tex");
     proc.waitForFinished(15000);
     QVector<QImage> imgs;
     if (proc.exitCode()) {
