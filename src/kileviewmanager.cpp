@@ -387,8 +387,8 @@ KTextEditor::View * Manager::createTextView(KileDocument::TextInfo *info, int in
     m_tabBar->setTabData(index, QVariant::fromValue(view));
 
     if(info->getType() == KileDocument::LaTeX) {
-        PreviewWidgetHandler* h = new PreviewWidgetHandler(view, qobject_cast<KileDocument::LaTeXInfo*>(info));
-        view2handler[view] = h;
+        KileDocument::LaTeXInfo* linfo = qobject_cast<KileDocument::LaTeXInfo*>(info);
+        view2handler.emplace(view, new PreviewWidgetHandler(view, linfo));
     }
 
 
@@ -605,10 +605,8 @@ void Manager::removeView(KTextEditor::View *view)
             m_widgetStack->setCurrentIndex(0); // if there are no open views, then show the DropWidget
         }
         
-        PreviewWidgetHandler *h = view2handler[view];
-        view2handler.remove(view);
-        delete h;
-
+        view2handler.erase(view);
+        
         emit(textViewClosed(view, isActiveView));
         delete view;
     }

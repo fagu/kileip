@@ -15,6 +15,9 @@
 #ifndef KILEVIEWKILEVIEWMANAGER_H
 #define KILEVIEWKILEVIEWMANAGER_H
 
+#include <map>
+#include <memory>
+
 #include <okular/interfaces/viewerinterface.h>
 
 #include <KTextEditor/Cursor>
@@ -236,7 +239,7 @@ private:
     QPointer<KToolBar> m_viewerControlToolBar;
     QTimer *m_cursorPositionChangedTimer, *m_clearLastShownSourceLocationTimer;
     KToggleAction *m_synchronizeViewWithCursorAction;
-    QMap<KTextEditor::View*,PreviewWidgetHandler*> view2handler;
+    std::map<KTextEditor::View*,std::unique_ptr<PreviewWidgetHandler> > view2handler;
 };
 
 /**

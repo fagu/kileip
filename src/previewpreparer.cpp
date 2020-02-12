@@ -56,7 +56,7 @@ std::pair<State, ParsedLine> parse(State state, int linenr, const QString& line)
                 if (start == -1) { // Start a new inline math environment
                     state.start_math("$", KTextEditor::Cursor(linenr, i));
                 } else { // End inline math environment
-                    auto r = state.finish_math(start, KTextEditor::Cursor(linenr, i+1));
+                    auto r = state.finish_math(start, KTextEditor::Cursor(linenr, i + 1));
                     if (r)
                         res.mathenvs.emplace_back(r.value());
                 }
@@ -100,6 +100,7 @@ std::pair<State, ParsedLine> parse(State state, int linenr, const QString& line)
                                     state.start_math(en, KTextEditor::Cursor(linenr, i));
                                 }
                             }
+                            k++;
                         }
                         j = k;
                     }
@@ -116,10 +117,11 @@ std::pair<State, ParsedLine> parse(State state, int linenr, const QString& line)
                         if (k < line.size()) {
                             QString en = line.mid(j, k-j);
                             if (math_environment_names.count(en)) { // \end{equation}
-                                auto r = state.finish_math(en, KTextEditor::Cursor(linenr, i + 6 + en.size()));
+                                auto r = state.finish_math(en, KTextEditor::Cursor(linenr, k + 1));
                                 if (r)
                                     res.mathenvs.emplace_back(r.value());
                             }
+                            k++;
                         }
                         j = k;
                     }
@@ -133,6 +135,14 @@ std::pair<State, ParsedLine> parse(State state, int linenr, const QString& line)
                 i += 1;
             }
         }
+    }
+    
+    // Check that all ranges are disjoint.
+    for (int i = 0; i < (int)res.mathenvs.size(); i++) {
+        assert(res.mathenvs[i].range().isValid());
+        assert(!res.mathenvs[i].range().isEmpty());
+        if (i > 0)
+            assert(res.mathenvs[i].range().start() >= res.mathenvs[i-1].range().end());
     }
     
     return {std::move(state), std::move(res)};

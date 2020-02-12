@@ -20,59 +20,70 @@
 #include <QTextStream>
 #include <QProcess>
 #include <QMutexLocker>
-#include <QTime>
+#include <QElapsedTimer>
 #include <QSet>
+#include <QGuiApplication>
+#include <QScreen>
 #include <poppler-qt5.h>
 
 // 2: keep all
 // 1: keep failed
 // 0: keep none
-const int keep_folders = 2;
+const int keep_folders = 0;
 
 PreviewThread::PreviewThread(KileDocument::LaTeXInfo* info, QObject* parent)
-: QThread(parent), m_doc(info->getDoc()), m_info(info) {
+: QThread(parent), m_info(info), m_dir(QDir(QDir::tempPath()).filePath("kile-inlinepreview")) {
+    QScreen* screen = QGuiApplication::primaryScreen(); // FIXME There's no guarantee that the kile window is on the primary screen.
+    m_dpix = screen->logicalDotsPerInchX();
+    m_dpiy = screen->logicalDotsPerInchY();
+    // TODO Listen to primaryScreenChanged(), logicalDotsPerInchChanged() events.
     m_abort = false;
 //     connect(info, SIGNAL(inlinePreviewChanged(bool)), this, SLOT(textChanged())); // TODO
     m_currentrun = 0;
-    m_dir.reset(new QTemporaryDir(QDir(QDir::tempPath()).filePath("kile-inlinepreview")));
-    m_dir->setAutoRemove(true);
+    m_dir.setAutoRemove(true);
 }
 
 PreviewThread::~PreviewThread() {
     {
         QMutexLocker lock(&m_queue_mutex);
         m_abort = true;
+        m_abort_current = true;
+        if (m_process) {
+            m_process->kill();
+        }
         m_queue_wait.wakeOne();
     }
     wait();
-    m_dir = 0;
-}
-
-void PreviewThread::setDoc(KTextEditor::Document *doc) {
-    m_doc = doc;
 }
 
 void PreviewThread::setPreamble(const QString& str) {
     QMutexLocker lock(&m_queue_mutex);
     m_preamble = str;
-    while(!m_queue.empty())
-        m_queue.pop();
-    m_keep_trying = false;
+    m_queue.clear();
+    m_abort_current = true;
 }
 
 void PreviewThread::enqueue(const std::vector<QString>& maths) {
     if (maths.empty())
         return;
-    qDebug() << "Enqueue" << maths;
+//     qDebug() << "Enqueue" << maths;
     QMutexLocker lock(&m_queue_mutex);
     for (const QString& math : maths)
-        m_queue.push(math);
+        m_queue.insert(math);
     m_queue_wait.wakeOne();
+}
+
+void PreviewThread::remove_from_queue(const std::vector<QString>& maths) {
+    if (maths.empty())
+        return;
+    QMutexLocker lock(&m_queue_mutex);
+    for (const QString& math : maths)
+        m_queue.erase(math);
 }
 
 
 void PreviewThread::run() {
-    if (!m_dir->isValid()) {
+    if (!m_dir.isValid()) {
         qDebug() << "Could not create temporary directory! Not creating previews.";
         return;
     }
@@ -89,11 +100,10 @@ void PreviewThread::run() {
             if (!m_info->isInlinePreview())
                 continue;
             preamble = m_preamble;
-            while(!m_queue.empty()) {
-                todo.push_back(m_queue.front());
-                m_queue.pop();
-            }
-            m_keep_trying = true;
+            for (const QString& text : m_queue)
+                todo.push_back(text);
+            m_queue.clear();
+            m_abort_current = false;
         }
         
         // Run LaTeX to create Previews
@@ -102,12 +112,12 @@ void PreviewThread::run() {
 }
 
 void PreviewThread::createPreviews(const QString& preamble, const std::vector<QString>& todo) {
-    qDebug() << "create" << todo;
+//     qDebug() << "create" << todo;
     binaryCreatePreviews(preamble, todo, 0, todo.size()-1);
 }
 
 
-bool load_pages_from_pdf(QString filename, int expected_number_of_pages, QVector<QImage>& res) {
+bool PreviewThread::load_pages_from_pdf(QString filename, int expected_number_of_pages, QVector<QImage>& res) {
     std::unique_ptr<Poppler::Document> document(Poppler::Document::load(filename));
     if (!document || document->isLocked()) {
         qDebug() << "Couldn't open PDF file " << filename << ".";
@@ -123,12 +133,18 @@ bool load_pages_from_pdf(QString filename, int expected_number_of_pages, QVector
     res.clear();
     res.reserve(expected_number_of_pages);
     for (int pageNumber = 0; pageNumber < expected_number_of_pages; pageNumber++) {
+        { // Loading the pages can take a while, so we check before every page whether we should abort.
+            QMutexLocker lock(&m_queue_mutex);
+            if (m_abort_current)
+                return false;
+        }
+//         qDebug() << "Rendering page" << pageNumber;
         std::unique_ptr<Poppler::Page> pdfPage(document->page(pageNumber));
         if (!pdfPage) {
             qDebug() << "Couldn't open page " << pageNumber << ".";
             return false;
         }
-        QImage img = pdfPage->renderToImage(96, 96);
+        QImage img = pdfPage->renderToImage(m_dpix, m_dpiy);
         if (img.isNull()) {
             qDebug() << "Couldn't render page " << pageNumber << ".";
             return false;
@@ -142,19 +158,19 @@ void PreviewThread::binaryCreatePreviews(const QString &preamble, const std::vec
     // Check if the preamble changed again in the meantime
     {
         QMutexLocker lock(&m_queue_mutex);
-        if (!m_keep_trying)
+        if (m_abort_current)
             return;
     }
     if (end < start)
         return;
     m_currentrun++;
-    QDir top_folder(m_dir->path());
+    QDir top_folder(m_dir.path());
     top_folder.mkdir(QString::number(m_currentrun));
     QDir folder(top_folder.filePath(QString::number(m_currentrun)));
     QDir filedir(m_info->url().toLocalFile());
     filedir.cdUp();
     qDebug() << "Generating preview images for" << start << "--" << end << "; temporary directory" << folder.absolutePath() << "; working directory" << filedir.absolutePath();
-    QTime tim;
+    QElapsedTimer tim;
     tim.start();
     // Create LaTeX preview file
     QString latex_filename = folder.filePath("inpreview.tex");
@@ -185,10 +201,21 @@ void PreviewThread::binaryCreatePreviews(const QString &preamble, const std::vec
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     env.insert("TEXINPUTS", ".:"+filedir.absolutePath()+":");
     proc.setProcessEnvironment(env);
-    proc.start("pdflatex -interaction=batchmode inpreview.tex");
+    {
+        QMutexLocker proc_lock(&m_queue_mutex);
+        proc.start("pdflatex -interaction=batchmode inpreview.tex");
+        m_process = &proc;
+    }
     proc.waitForFinished(15000);
+    {
+        QMutexLocker proc_lock(&m_queue_mutex);
+        m_process = nullptr;
+    }
     QVector<QImage> imgs;
-    if (proc.exitCode()) {
+    if (proc.state() != QProcess::NotRunning) {
+        success = false;
+        proc.kill();
+    } else if (proc.exitStatus() != QProcess::NormalExit || proc.exitCode()) {
         success = false;
     } else {
         if (!load_pages_from_pdf(folder.filePath("inpreview.pdf"), end-start+1, imgs))
