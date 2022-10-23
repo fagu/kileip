@@ -1,6 +1,7 @@
 /**************************************************************************
-*   Copyright (C) 2003 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)   *
-***************************************************************************/
+ *   Copyright (C) 2003 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)  *
+ *             (C) 2022 by Michel Ludwig (michel.ludwig@kdemail.net)      *
+ **************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -137,12 +138,7 @@ void setupStdTags(KileInfo *ki, const QObject* receiver, KActionCollection *acti
 
     (void) new KileAction::Tag(i18n("Underline - \\underline{}"), i18n("Underline"), "format-text-underline", QKeySequence(), receiver, SLOT(insertTag(KileAction::TagData)), actionCollection,"tag_underline", "\\underline{","}",11);
 
-    QAction *action = actionCollection->addAction("tag_newline", ki->editorExtension(), SLOT(insertIntelligentNewline()));
-    action->setText(i18n("Smart New Line"));
-    actionCollection->setDefaultShortcut(action, QKeySequence(Qt::CTRL + Qt::Key_Return));
-    action->setIcon(QIcon::fromTheme("smartnewline"));
-
-    action = actionCollection->addAction("tag_tabulator", ki->editorExtension(), SLOT(insertIntelligentTabulator()));
+    QAction *action = actionCollection->addAction("tag_tabulator", ki->editorExtension(), SLOT(insertIntelligentTabulator()));
     action->setText(i18n("Smart Tabulator"));
     actionCollection->setDefaultShortcut(action, QKeySequence(Qt::ALT + Qt::Key_Ampersand));
 
@@ -252,7 +248,7 @@ void setupBibTags(const QObject *receiver, KActionCollection *actionCollection, 
     }
 
     if(filename.isEmpty()) {
-        KILE_DEBUG_MAIN << "found no filename" << endl;
+        KILE_DEBUG_MAIN << "found no filename" << Qt::endl;
         return;
     }
 
@@ -297,9 +293,9 @@ void setupBibTags(const QObject *receiver, KActionCollection *actionCollection, 
         tag = grp.name();
         name = grp.readEntry(QString("name"));
         internalName = grp.readEntry(QString("internalName"));
-        keyList = grp.readEntry(QString("key")).split(',', QString::SkipEmptyParts);
-        altKeyList = grp.readEntry(QString("altkey")).split(',', QString::SkipEmptyParts);
-        optKeyList = grp.readEntry(QString("optkey")).split(',', QString::SkipEmptyParts);
+        keyList = grp.readEntry(QString("key")).split(',', Qt::SkipEmptyParts);
+        altKeyList = grp.readEntry(QString("altkey")).split(',', Qt::SkipEmptyParts);
+        optKeyList = grp.readEntry(QString("optkey")).split(',', Qt::SkipEmptyParts);
 
 // 		KILE_DEBUG_MAIN << "length(keys)=" << keyList.count() << ", length(altkeys)=" << altKeyList.count() << ", length(optkeys)=" << optKeyList.count();
 // 		KILE_DEBUG_MAIN << "tag=" << tag << ", name=" << name << ", internalName=" << internalName;

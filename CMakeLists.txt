@@ -38,7 +38,7 @@ find_package(Qt5 5.6 CONFIG REQUIRED
 	Test
 )
 
-find_package(KF5 5.31 REQUIRED COMPONENTS
+find_package(KF5 5.68 REQUIRED COMPONENTS
 	Config
 	CoreAddons
 	Crash
@@ -47,7 +47,6 @@ find_package(KF5 5.31 REQUIRED COMPONENTS
 	GuiAddons
 	I18n
 	IconThemes
-	Init
 	KIO
 	Parts
 	TextEditor
@@ -116,7 +115,8 @@ install(FILES
 		README
 		README.cwl
 		kile-remote-control.txt
-		README.MacOSX
 	DESTINATION ${KDE_INSTALL_DATAROOTDIR}/doc/kile)
+
+ki18n_install(po)
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)

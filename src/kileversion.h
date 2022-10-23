@@ -1,7 +1,7 @@
 /****************************************************************************************
     begin                : Wednesday Jan 25 2006
     copyright            : (C) 2006 by Thomas Braun (thomas.braun@virtuell-zuhause.de)
-                               2011-2019 by Michel Ludwig (michel.ludwig@kdemail.net)
+                               2011-2022 by Michel Ludwig (michel.ludwig@kdemail.net)
  ****************************************************************************************/
 
 /***************************************************************************
@@ -19,14 +19,14 @@
 
 #include <QString>
 
-const QString kileVersion="3.0 beta 3";
-const QString kileFullVersion="2.9.93"; // only use numbers and '.'
+const QString kileVersion="3.0 beta 4";
+const QString kileFullVersion="2.9.94"; // only use numbers and '.'
 #define KILE_PROJECTFILE_VERSION 3
-#define KILERC_VERSION 8
+#define KILERC_VERSION 9
 
 // the last-copyright-year is used in 'main.cpp' and 'CMakeLists.txt'
 // KILE_LAST_COPYRIGHT_YEAR must be a string (it may appear as, e.g., 2,019 on Windows otherwise)
-#define KILE_LAST_COPYRIGHT_YEAR "2019"
+#define KILE_LAST_COPYRIGHT_YEAR "2022"
 
 /**
  * Compares two strings of the form "a.b(.c)" and "d.e(.f)" lexicographically,

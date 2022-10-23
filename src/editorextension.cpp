@@ -2689,7 +2689,7 @@ void EditorExtension::initDoubleQuotes()
 
     m_leftDblQuote = m_quoteList[index].first;
     m_rightDblQuote = m_quoteList[index].second;
-    KILE_DEBUG_MAIN << "new quotes: " << m_dblQuotes << " left=" << m_leftDblQuote << " right=" << m_rightDblQuote<< endl;
+    KILE_DEBUG_MAIN << "new quotes: " << m_dblQuotes << " left=" << m_leftDblQuote << " right=" << m_rightDblQuote<< Qt::endl;
 }
 
 bool EditorExtension::insertDoubleQuotes(KTextEditor::View *view)
@@ -2706,6 +2706,16 @@ bool EditorExtension::insertDoubleQuotes(KTextEditor::View *view)
     view = determineView(view);
     if(!view) {
         return true;
+    }
+
+    // don't insert double quotes when in vimode
+    // but not in a "text insert" mode (e.g normal mode)
+    // return false so that the " can be handled normally
+    KTextEditor::View::ViewMode viewMode = view->viewMode();
+    if (view->viewInputMode() == KTextEditor::View::ViInputMode
+        && viewMode != KTextEditor::View::ViModeInsert
+        && viewMode != KTextEditor::View::ViModeReplace) {
+            return false;
     }
 
     KTextEditor::Document *doc = view->document();

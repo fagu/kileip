@@ -1,5 +1,5 @@
 /********************************************************************************
-  Copyright (C) 2011-2018 by Michel Ludwig (michel.ludwig@kdemail.net)
+  Copyright (C) 2011-2022 by Michel Ludwig (michel.ludwig@kdemail.net)
  ********************************************************************************/
 
 /***************************************************************************
@@ -29,7 +29,6 @@
 #include <QTemporaryDir>
 
 #include <KActionCollection>
-#include <KIconLoader>
 #include <KLocalizedString>
 #include <KTextEditor/Application>
 #include <KTextEditor/CodeCompletionInterface>
@@ -278,7 +277,7 @@ void LivePreviewManager::updateLivePreviewToolActions(LivePreviewUserStatusHandl
 
 void LivePreviewManager::setLivePreviewToolActionsEnabled(bool b)
 {
-    Q_FOREACH(QAction *action, m_livePreviewToolActionList) {
+    for(QAction *action : m_livePreviewToolActionList) {
         action->setEnabled(b);
     }
 }
@@ -443,7 +442,13 @@ void LivePreviewManager::readLivePreviewStatusSettings(KConfigGroup &configGroup
 
     const QString livePreviewToolConfigString = configGroup.readEntry("kile_livePreviewTool", "");
     if(livePreviewToolConfigString.isEmpty()) {
-        handler->setLivePreviewTool(ToolConfigPair(LIVEPREVIEW_DEFAULT_TOOL_NAME, DEFAULT_TOOL_CONFIGURATION));
+        // if nothing is set for this fallback to the configured global default, otherwise to the hardcoded default
+        QString defaultToolName = KileConfig::livePreviewDefaultTool();
+        if(defaultToolName.isEmpty()) {
+            defaultToolName = LIVEPREVIEW_DEFAULT_TOOL_NAME;
+        }
+        KileTool::ToolConfigPair defaultTool = KileTool::ToolConfigPair::fromConfigStringRepresentation(defaultToolName);
+        handler->setLivePreviewTool(defaultTool);
     }
     else {
         handler->setLivePreviewTool(ToolConfigPair::fromConfigStringRepresentation(livePreviewToolConfigString));
@@ -1299,7 +1304,7 @@ void LivePreviewManager::handleDocumentSavedAs(KTextEditor::View *view, KileDocu
 
 void LivePreviewManager::toolDestroyed()
 {
-    KILE_DEBUG_MAIN << "\tLivePreviewManager: tool destroyed" << endl;
+    KILE_DEBUG_MAIN << "\tLivePreviewManager: tool destroyed" << Qt::endl;
 }
 
 void LivePreviewManager::handleSpawnedChildTool(KileTool::Base *parent, KileTool::Base *child)
@@ -1319,9 +1324,9 @@ void LivePreviewManager::handleSpawnedChildTool(KileTool::Base *parent, KileTool
 
 void LivePreviewManager::toolDone(KileTool::Base *base, int i, bool childToolSpawned)
 {
-    KILE_DEBUG_MAIN << "\t!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << i << endl;
-    KILE_DEBUG_MAIN << "\t!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << i << endl;
-    KILE_DEBUG_MAIN << "\tLivePreviewManager: tool done" << base->name() << i << childToolSpawned <<  endl;
+    KILE_DEBUG_MAIN << "\t!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << i << Qt::endl;
+    KILE_DEBUG_MAIN << "\t!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << i << Qt::endl;
+    KILE_DEBUG_MAIN << "\tLivePreviewManager: tool done" << base->name() << i << childToolSpawned << Qt::endl;
     if(i != Success) {
         KILE_DEBUG_MAIN << "tool didn't return successfully, doing nothing";
         showPreviewFailed();
@@ -1337,9 +1342,9 @@ void LivePreviewManager::toolDone(KileTool::Base *base, int i, bool childToolSpa
 
 void LivePreviewManager::childToolDone(KileTool::Base *base, int i, bool childToolSpawned)
 {
-    KILE_DEBUG_MAIN << "\t!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << i << endl;
-    KILE_DEBUG_MAIN << "\t!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << i << endl;
-    KILE_DEBUG_MAIN << "\tLivePreviewManager: child tool done" << base->name() << i << childToolSpawned << endl;
+    KILE_DEBUG_MAIN << "\t!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << i << Qt::endl;
+    KILE_DEBUG_MAIN << "\t!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << i << Qt::endl;
+    KILE_DEBUG_MAIN << "\tLivePreviewManager: child tool done" << base->name() << i << childToolSpawned << Qt::endl;
     if(!m_ki->viewManager()->viewerPart()) {
         return;
     }

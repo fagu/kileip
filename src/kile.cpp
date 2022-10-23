@@ -1,6 +1,6 @@
 /****************************************************************************************
   Copyright (C) 2003 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)
-            (C) 2007-2018 by Michel Ludwig (michel.ludwig@kdemail.net)
+            (C) 2007-2022 by Michel Ludwig (michel.ludwig@kdemail.net)
             (C) 2007 Holger Danielsson (holger.danielsson@versanet.de)
             (C) 2009 Thomas Braun (thomas.braun@virtuell-zuhause.de)
  ****************************************************************************************/
@@ -38,10 +38,10 @@
 #include <KEditToolBar>
 #include <KHelpMenu>
 #include <KIconLoader>
+#include <KIO/DesktopExecParser>
 #include <KLocalizedString>
 #include <KMessageBox>
 #include <KRecentFilesAction>
-#include <KRun>
 #include <KShortcutsDialog>
 #include <KToggleAction>
 #include <KXMLGUIFactory>
@@ -94,6 +94,7 @@
 #include "symbolviewclasses.h"
 #include "livepreview.h"
 #include "parser/parsermanager.h"
+#include "scripting/script.h"
 
 #include "dialogs/usermenu/usermenudialog.h"
 #include "usermenu/usermenudata.h"
@@ -123,6 +124,7 @@ Kile::Kile(bool allowRestore, QWidget *parent)
       ModeAction(Q_NULLPTR),
       WatchFileAction(Q_NULLPTR),
       m_actionMessageView(Q_NULLPTR),
+      m_actionShowMenuBar(Q_NULLPTR),
       m_actRecentFiles(Q_NULLPTR),
       m_pFullScreen(Q_NULLPTR),
       m_sideBar(Q_NULLPTR),
@@ -299,6 +301,17 @@ Kile::Kile(bool allowRestore, QWidget *parent)
             // needed
         }
     }
+    if(KileConfig::rCVersion() < 9) {
+        // in Kile 3.0 beta 4, the user help was updated, some old config settings were no longer needed
+        if(m_config->hasGroup("Help")) {
+            KConfigGroup helpGroup = m_config->group("Help");
+            helpGroup.deleteEntry("location");
+            helpGroup.deleteEntry("texrefs");
+            helpGroup.deleteEntry("external");
+            helpGroup.deleteEntry("embedded");
+        }
+    }
+
     readGUISettings();
     readRecentFileSettings();
     readConfig();
@@ -418,11 +431,13 @@ Kile::Kile(bool allowRestore, QWidget *parent)
         m_livePreviewManager->buildLivePreviewMenu(m_config.data());
         m_livePreviewManager->disableBootUpMode();
     }
+
+    menuBar()->show();
 }
 
 Kile::~Kile()
 {
-    KILE_DEBUG_MAIN << "cleaning up..." << endl;
+    KILE_DEBUG_MAIN << "cleaning up..." << Qt::endl;
 
     guiFactory()->removeClient(viewManager()->viewerPart());
 
@@ -774,6 +789,25 @@ QAction* Kile::createAction(const QString &text, const QString &actionName, cons
 }
 
 template<class ContextType, class Func>
+QAction* Kile::createAction(const QString &text, const QString &actionName, const QString& iconName, const QList<QKeySequence>& shortcut, const ContextType* context, Func function)
+{
+    QAction *action = new QAction(this);
+    action->setText(text);
+
+    connect(action, &QAction::triggered, context, function);
+    actionCollection()->addAction(actionName, action);
+
+    if(!shortcut.isEmpty()) {
+        actionCollection()->setDefaultShortcuts(action, shortcut);
+    }
+    if(!iconName.isEmpty()) {
+        action->setIcon(QIcon::fromTheme(iconName));
+    }
+
+    return action;
+}
+
+template<class ContextType, class Func>
 QAction* Kile::createAction(KStandardAction::StandardAction actionType, const QString &actionName, const ContextType* context, Func function)
 {
     QAction *action = KStandardAction::create(actionType, context, function, this);
@@ -861,10 +895,18 @@ void Kile::setupActions()
     //build actions
     act = createAction(i18n("Clean"), "CleanAll", "user-trash", this, [this]() { cleanAll(); });
 
-    createAction(i18n("Next Document"), "gotoNextDocument", "go-next-view-page", QKeySequence(Qt::ALT + Qt::Key_Right),
-                 viewManager(), &KileView::Manager::gotoNextView);
-    createAction(i18n("Previous Document"), "gotoPrevDocument", "go-previous-view-page", QKeySequence(Qt::ALT + Qt::Key_Left),
-                 viewManager(), &KileView::Manager::gotoPrevView);
+    QList<QKeySequence> nextTabShorcuts;
+    nextTabShorcuts.append(QKeySequence(Qt::ALT + Qt::Key_Right));
+    nextTabShorcuts.append(KStandardShortcut::tabNext());
+    createAction(i18n("Next Document"), "gotoNextDocument", "go-next-view-page",
+                 nextTabShorcuts, viewManager(), &KileView::Manager::gotoNextView);
+
+    QList<QKeySequence> prevTabShorcuts;
+    prevTabShorcuts.append(QKeySequence(Qt::ALT + Qt::Key_Left));
+    prevTabShorcuts.append(KStandardShortcut::tabPrev());
+    createAction(i18n("Previous Document"), "gotoPrevDocument", "go-previous-view-page",
+                 prevTabShorcuts, viewManager(), &KileView::Manager::gotoPrevView);
+
     createAction(i18n("Focus Log/Messages View"), "focus_log", QKeySequence("CTRL+Alt+M"), this, &Kile::focusLog);
     createAction(i18n("Focus Output View"), "focus_output", QKeySequence("CTRL+Alt+O"), this, &Kile::focusOutput);
     createAction(i18n("Focus Konsole View"), "focus_konsole", QKeySequence("CTRL+Alt+K"), this, &Kile::focusKonsole);
@@ -953,7 +995,7 @@ void Kile::setupActions()
     KileStdActions::setupMathTags(this, actionCollection());
 
     m_bibTagActionMenu = new KActionMenu(i18n("&Bibliography"), actionCollection());
-    m_bibTagActionMenu->setDelayed(false);
+    m_bibTagActionMenu->setPopupMode(QToolButton::InstantPopup);
     actionCollection()->addAction("menu_bibliography", m_bibTagActionMenu);
 
     createAction(i18n("Clean"), "CleanBib", this, &Kile::cleanBib);
@@ -1023,15 +1065,11 @@ void Kile::setupActions()
         WatchFileAction->setChecked(false);
     }
 
-    createAction(i18n("TeX Guide"), "help_tex_guide", QKeySequence("CTRL+Alt+H, G"), m_help, &KileHelp::Help::helpTexGuide);
     createAction(i18n("LaTeX"), "help_latex_index", QKeySequence("CTRL+Alt+H, L"), m_help, &KileHelp::Help::helpLatexIndex);
-    createAction(i18n("LaTeX Command"), "help_latex_command", QKeySequence("CTRL+Alt+H, C"), m_help, &KileHelp::Help::helpLatexCommand);
-    createAction(i18n("LaTeX Subject"), "help_latex_subject", QKeySequence("CTRL+Alt+H, S"), m_help, &KileHelp::Help::helpLatexSubject);
-    createAction(i18n("LaTeX Env"), "help_latex_env", QKeySequence("CTRL+Alt+H, E"), m_help, &KileHelp::Help::helpLatexEnvironment);
+    createAction(i18n("LaTeX Commands"), "help_latex_command", QKeySequence("CTRL+Alt+H, C"), m_help, &KileHelp::Help::helpLatexCommand);
+    createAction(i18n("LaTeX Environments"), "help_latex_env", QKeySequence("CTRL+Alt+H, E"), m_help, &KileHelp::Help::helpLatexEnvironment);
     createAction(i18n("Context Help"), "help_context", QKeySequence("CTRL+Alt+H, K"), m_help, [this]() { m_help->helpKeyword(); });
     createAction(i18n("Documentation Browser"), "help_docbrowser", QKeySequence("CTRL+Alt+H, B"), m_help, &KileHelp::Help::helpDocBrowser);
-
-    createAction(i18n("LaTeX Reference"), "help_latex_reference", "help-latex", this, &Kile::helpLaTex);
 
     createAction(i18n("&About Editor Component"), "help_about_editor", this, &Kile::aboutEditorComponent);
 
@@ -1047,6 +1085,9 @@ void Kile::setupActions()
     actionCollection()->addAction("help_userhelp", m_userHelpActionMenu);
 
     m_pFullScreen = KStandardAction::fullScreen(this, &Kile::slotToggleFullScreen, this, actionCollection());
+    m_actionShowMenuBar = KStandardAction::showMenubar(this,
+                                                       [this]() { toggleShowMenuBar(true); },
+                                                       actionCollection());
 }
 
 void Kile::rebuildBibliographyMenu() {
@@ -1097,7 +1138,7 @@ void Kile::createToolActions()
 
 void Kile::setupTools()
 {
-    KILE_DEBUG_MAIN << "==Kile::setupTools()===================" << endl;
+    KILE_DEBUG_MAIN << "==Kile::setupTools()===================" << Qt::endl;
 
     if(!m_buildMenuCompile || !m_buildMenuConvert ||  !m_buildMenuTopLevel || !m_buildMenuQuickPreview || !m_buildMenuViewer || !m_buildMenuOther) {
         KILE_DEBUG_MAIN << "BUG, menu pointers are Q_NULLPTR"
@@ -1166,7 +1207,7 @@ void Kile::setupTools()
             pSelectAction = Q_NULLPTR;
         }
 
-        KILE_DEBUG_MAIN << "\tadding " << tools[i] << " " << toolMenu << " #" << pl->count() << endl;
+        KILE_DEBUG_MAIN << "\tadding " << tools[i] << " " << toolMenu << " #" << pl->count() << Qt::endl;
 
         act = actionCollection()->action("tool_" + tools[i]);
         if(!act) {
@@ -1225,7 +1266,7 @@ void Kile::initSelectActions() {
 
 void Kile::saveLastSelectedAction() {
 
-    KILE_DEBUG_MAIN << "Kile::saveLastSelectedAction()" << endl;
+    KILE_DEBUG_MAIN << "Kile::saveLastSelectedAction()" << Qt::endl;
     QStringList list;
     list << "Compile" << "Convert" << "View" << "Quick";
 
@@ -1331,7 +1372,7 @@ void Kile::restoreFilesAndProjects(bool allowRestore)
     m_listDocsOpenOnStart.clear();
     m_listEncodingsOfDocsOpenOnStart.clear();
 
-    KILE_DEBUG_MAIN << "lastDocument=" << KileConfig::lastDocument() << endl;
+    KILE_DEBUG_MAIN << "lastDocument=" << KileConfig::lastDocument() << Qt::endl;
     KTextEditor::Document *doc = docManager()->docFor(QUrl::fromUserInput(KileConfig::lastDocument()));
     if (doc) {
         viewManager()->switchToTextView(doc->url(), true); // request the focus on the view
@@ -1341,7 +1382,7 @@ void Kile::restoreFilesAndProjects(bool allowRestore)
 
 void Kile::setActive()
 {
-    KILE_DEBUG_MAIN << "Activating" << endl;
+    KILE_DEBUG_MAIN << "Activating" << Qt::endl;
     raise();
     activateWindow();
     show();
@@ -1399,7 +1440,7 @@ void Kile::runArchiveTool(const QUrl &url)
 //TODO: move to KileView::Manager
 void Kile::activateView(QWidget* w, bool updateStruct /* = true */ )  //Needs to be QWidget because of QTabWidget::currentChanged
 {
-    //KILE_DEBUG_MAIN << "==Kile::activateView==========================" << endl;
+    //KILE_DEBUG_MAIN << "==Kile::activateView==========================" << Qt::endl;
     if (!w || !w->inherits("KTextEditor::View")) {
         return;
     }
@@ -1562,7 +1603,7 @@ bool Kile::queryClose()
     }
 
     //don't close Kile if embedded viewers are present
-    KILE_DEBUG_MAIN << "==bool Kile::queryClose==========" << endl;
+    KILE_DEBUG_MAIN << "==bool Kile::queryClose==========" << Qt::endl;
 
     m_listProjectsOpenOnStart.clear();
     m_listDocsOpenOnStart.clear();
@@ -1578,7 +1619,7 @@ bool Kile::queryClose()
         m_listEncodingsOfDocsOpenOnStart.append(doc->encoding());
     }
 
-    KILE_DEBUG_MAIN << "#projects = " << docManager()->projects().count() << endl;
+    KILE_DEBUG_MAIN << "#projects = " << docManager()->projects().count() << Qt::endl;
     QList<KileProject*> projectList = docManager()->projects();
     for(QList<KileProject*>::iterator i = projectList.begin(); i != projectList.end(); ++i) {
         const QUrl url = (*i)->url();
@@ -1707,7 +1748,7 @@ void Kile::newCaption()
 void Kile::grepItemSelected(const QString &abs_filename, int line)
 {
     KILE_DEBUG_MAIN << "Open file: "
-                    << abs_filename << " (" << line << ")" << endl;
+                    << abs_filename << " (" << line << ")" << Qt::endl;
     docManager()->fileOpen(QUrl::fromUserInput(abs_filename));
     setLine(QString::number(line));
 }
@@ -1717,13 +1758,13 @@ void Kile::findInFiles()
     static QPointer<KileDialog::FindFilesDialog> dlg = 0;
 
     if (!dlg) {
-        KILE_DEBUG_MAIN << "grep guard: create findInFiles dlg" << endl;
+        KILE_DEBUG_MAIN << "grep guard: create findInFiles dlg" << Qt::endl;
         dlg = new KileDialog::FindFilesDialog(mainWindow(), this, KileGrep::Directory);
         dlg->show();
         connect(dlg, &KileDialog::FindFilesDialog::itemSelected, this, &Kile::grepItemSelected);
     }
     else {
-        KILE_DEBUG_MAIN << "grep guard: show findInFiles dlg" << endl;
+        KILE_DEBUG_MAIN << "grep guard: show findInFiles dlg" << Qt::endl;
         dlg->activateWindow();
         dlg->raise();
     }
@@ -1734,13 +1775,13 @@ void Kile::findInProjects()
     static QPointer<KileDialog::FindFilesDialog> project_dlg = Q_NULLPTR;
 
     if(!project_dlg) {
-        KILE_DEBUG_MAIN << "grep guard: create findInProjects dlg" << endl;
+        KILE_DEBUG_MAIN << "grep guard: create findInProjects dlg" << Qt::endl;
         project_dlg = new KileDialog::FindFilesDialog(mainWindow(), this, KileGrep::Project);
         project_dlg->show();
         connect(project_dlg, &KileDialog::FindFilesDialog::itemSelected, this, &Kile::grepItemSelected);
     }
     else {
-        KILE_DEBUG_MAIN << "grep guard: show findInProjects dlg" << endl;
+        KILE_DEBUG_MAIN << "grep guard: show findInProjects dlg" << Qt::endl;
         project_dlg->activateWindow();
         project_dlg->raise();
     }
@@ -1749,7 +1790,7 @@ void Kile::findInProjects()
 /////////////////// PART & EDITOR WIDGET //////////
 bool Kile::resetPart()
 {
-    KILE_DEBUG_MAIN << "==Kile::resetPart()=============================" << endl;
+    KILE_DEBUG_MAIN << "==Kile::resetPart()=============================" << Qt::endl;
 
     statusBar()->reset();
     updateModeStatus();
@@ -1971,7 +2012,7 @@ void Kile::setMenuItems(QStringList &list, QMap<QString,bool> &dict)
 
 void Kile::updateMenu()
 {
-    KILE_DEBUG_MAIN << "==Kile::updateMenu()====================" << endl;
+    KILE_DEBUG_MAIN << "==Kile::updateMenu()====================" << Qt::endl;
     QAction *a;
     QMap<QString,bool>::Iterator it;
 
@@ -1995,7 +2036,7 @@ void Kile::updateMenu()
     // update file menus
     m_actRecentFiles->setEnabled( m_actRecentFiles->items().count() > 0 );
     bool file_open = ( viewManager()->currentTextView() );
-    KILE_DEBUG_MAIN << "\tprojectopen=" << project_open << " fileopen=" << file_open << endl;
+    KILE_DEBUG_MAIN << "\tprojectopen=" << project_open << " fileopen=" << file_open << Qt::endl;
 
     enableGUI(file_open);
 }
@@ -2138,7 +2179,7 @@ void Kile::insertTag(const KileAction::TagData& data,const QList<Package> &pkgs)
 
 void Kile::insertTag(const KileAction::TagData& data,const QStringList &pkgs)
 {
-    KILE_DEBUG_MAIN << "void Kile::insertTag(const KileAction::TagData& data,const QStringList " << pkgs.join(",") << ")" << endl;
+    KILE_DEBUG_MAIN << "void Kile::insertTag(const KileAction::TagData& data,const QStringList " << pkgs.join(",") << ")" << Qt::endl;
     insertTag(data);
 
     KileDocument::TextInfo *docinfo = docManager()->textInfoFor(getCompileName());
@@ -2340,21 +2381,6 @@ void Kile::updateUserMenuStatus(bool state)
     }
 }
 
-void Kile::helpLaTex()
-{
-    QString loc = KileUtilities::locate(QStandardPaths::AppDataLocation, "help/latexhelp.html");
-    KileTool::Base *tool = toolManager()->createTool("ViewHTML", QString(), false);
-    if(!tool) {
-        errorHandler()->printMessage(KileTool::Error, i18n("Could not create the \"ViewHTML\" tool. Please reset the tools."));
-        return;
-    }
-    tool->setFlags(KileTool::NeedSourceExists | KileTool::NeedSourceRead);
-    tool->setSource(loc);
-    tool->setTargetPath(loc);
-    tool->prepareToRun();
-    m_manager->run(tool);
-}
-
 void Kile::readGUISettings()
 {
 }
@@ -2445,7 +2471,7 @@ void Kile::transformOldUserSettings()
             KileTool::setGUIOptions(tempItem.name, "Other", "preferences-other", m_config.data());
 
             KConfigGroup group = m_config->group(KileTool::groupFor(tempItem.name, "Default"));
-            QString bin = KRun::binaryName(tempItem.tag, false);
+            QString bin = KIO::DesktopExecParser::executablePath(tempItem.tag);
             group.writeEntry("command", bin);
             group.writeEntry("options", tempItem.tag.mid(bin.length()));
             group.writeEntry("class", "Base");
@@ -2604,7 +2630,7 @@ void Kile::setMasterDocumentFileName(const QString& fileName)
     m_singlemode = false;
     updateModeStatus();
     emit masterDocumentChanged();
-    KILE_DEBUG_MAIN << "SETTING master to " << m_masterDocumentFileName << " singlemode = " << m_singlemode << endl;
+    KILE_DEBUG_MAIN << "SETTING master to " << m_masterDocumentFileName << " singlemode = " << m_singlemode << Qt::endl;
 }
 
 void Kile::clearMasterDocument()
@@ -2769,13 +2795,27 @@ void Kile::configureKeys()
     if(part) {
         dlg.addCollection(part->actionCollection());
     }
+    connect(&dlg, &KShortcutsDialog::saved, this, [this]() {
+        // tell all the documents and views to update their action shortcuts (bug 247646)
+        docManager()->reloadXMLOnAllDocumentsAndViews();
+
+        // tell m_userMenu that key bindings may have been changed
+        m_userMenu->updateKeyBindings();
+
+        // transfer the shortcuts to the scripts
+        const QList<KileScript::Script*> scripts = scriptManager()->getScripts();
+        for(KileScript::Script *script : scripts) {
+            QAction *action = script->getActionObject();
+
+            if(action && !action->shortcut().isEmpty()) {
+                scriptManager()->setShortcut(script, action->shortcut());
+            }
+        }
+
+        scriptManager()->writeConfig();
+        m_scriptsManagementWidget->update();
+    });
     dlg.configure();
-
-    // tell all the documents and views to update their action shortcuts (bug 247646)
-    docManager()->reloadXMLOnAllDocumentsAndViews();
-
-    // tell m_userMenu that key bindings may have been changed
-    m_userMenu->updateKeyBindings();
 }
 
 void Kile::configureToolbars()
@@ -2876,7 +2916,7 @@ void Kile::slotToggleFullScreen()
 
 void Kile::slotQuickPreview(int type)
 {
-    KILE_DEBUG_MAIN << "==Kile::slotQuickPreview()=========================="  << endl;
+    KILE_DEBUG_MAIN << "==Kile::slotQuickPreview()=========================="  << Qt::endl;
 
     KTextEditor::View *view = viewManager()->currentTextView();
     if ( ! view) return;
@@ -2906,7 +2946,7 @@ void Kile::slotQuickPreview(int type)
  Port the citeViewBib function as soon as we got a kbib version for KDE4.
 void Kile::citeViewBib()
 {
-	KILE_DEBUG_MAIN  << "===void Kile::citeViewBib()===" << endl;
+	KILE_DEBUG_MAIN  << "===void Kile::citeViewBib()===" << Qt::endl;
 
 	DCOPClient *client = kapp->dcopClient();
 	QByteArray params, replyData;
@@ -2955,7 +2995,7 @@ void Kile::citeViewBib()
 	if ( !client->call(viewBibApp, viewBibObj, viewBibFnc, params, replyType, replyData) )
 	{
 		// we should never get here
-		qWarning() << "internal error in viewbib citation" << endl;
+		qWarning() << "internal error in viewbib citation" << Qt::endl;
 		return;
 	}
 	else{
@@ -3048,4 +3088,23 @@ void Kile::handleDocumentParsingStarted()
 void Kile::handleDocumentParsingComplete()
 {
     statusBar()->clearParserStatus();
+}
+
+void Kile::toggleShowMenuBar(bool showMessage)
+{
+    if (m_actionShowMenuBar->isChecked()) {
+        menuBar()->show();
+        return;
+    }
+    
+    if (showMessage) {
+        const QString accel = m_actionShowMenuBar->shortcut().toString(QKeySequence::NativeText);
+        KMessageBox::information(this,
+                                    i18n("This will hide the menu bar completely."
+                                        " You can show it again by typing %1.",
+                                        accel),
+                                    i18n("Hide menu bar"),
+                                    QStringLiteral("HideMenuBarWarning"));
+    }
+    menuBar()->hide();
 }

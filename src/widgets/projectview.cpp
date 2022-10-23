@@ -26,7 +26,7 @@
 #include <QUrl>
 
 #include <KActionMenu>
-#include <KMimeTypeTrader>
+#include <KApplicationTrader>
 #include <KRun>
 
 #include "kileinfo.h"
@@ -557,7 +557,7 @@ ProjectViewItem* ProjectView::parentFor(const KileProjectItem *projitem, Project
             KILE_DEBUG_MAIN << "\t\t" << vi->url().toLocalFile();
             if (vi->url() == parpi->url()) {
                 parpvi = vi;
-                KILE_DEBUG_MAIN << "\t\tfound" <<endl;
+                KILE_DEBUG_MAIN << "\t\tfound" << Qt::endl;
                 break;
             }
             ++it;
@@ -790,7 +790,7 @@ void ProjectView::contextMenuEvent(QContextMenuEvent *event)
     if(projectViewItem->type() == KileType::ProjectExtra && !isKilePrFile) {
         QMenu *servicesMenu = popup.addMenu(QIcon::fromTheme("fork"), i18n("&Open With"));
         QMimeDatabase db;
-        m_offerList = KMimeTypeTrader::self()->query(db.mimeTypeForUrl(projectViewItem->url()).name(), "Application");
+        m_offerList = KApplicationTrader::queryByMimeType(db.mimeTypeForUrl(projectViewItem->url()).name());
         for (int i = 0; i < m_offerList.count(); ++i) {
             action = new QAction(servicesMenu);
             action->setIcon(QIcon::fromTheme(m_offerList[i]->icon()));

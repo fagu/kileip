@@ -1,7 +1,7 @@
 /***************************************************************************************
     begin                : sam jui 13 09:50:06 CEST 2002
     copyright            : (C) 2003 by Jeroen Wijnhout (wijnhout@science.uva.nl)
-                               2007-2018 by Michel Ludwig (michel.ludwig@kdemail.net)
+                               2007-2019 by Michel Ludwig (michel.ludwig@kdemail.net)
                            (C) 2009 Thomas Braun (thomas.braun@virtuell-zuhause.de)
 
  ***************************************************************************************/
@@ -171,6 +171,7 @@ private:
 
     KToggleAction                  *InlinePreviewAction;
     KToggleAction                  *m_actionMessageView;
+    KToggleAction                  *m_actionShowMenuBar;
     KRecentFilesAction             *m_actRecentFiles;
     KToggleFullScreenAction        *m_pFullScreen;
 
@@ -291,6 +292,9 @@ private:
     template<class ContextType, class Func>
     QAction* createAction(KStandardAction::StandardAction actionType, const QString &name, const ContextType* context, Func function);
 
+    template<class ContextType, class Func>
+    QAction* createAction(const QString &text, const QString &actionName, const QString& iconName, const QList<QKeySequence>& shortcut, const ContextType* context, Func function);
+
     void setMasterDocumentFileName(const QString& fileName);
     void clearMasterDocument();
 
@@ -299,11 +303,11 @@ private Q_SLOTS:
     void toggleWatchFile();
     void refreshStructure();
 
-    void helpLaTex();
-
     bool resetPart();
     void enableGUI(bool);
     void slotToggleFullScreen();
+
+    void toggleShowMenuBar(bool showMessage = true);
 
     void restoreFilesAndProjects(bool allowRestore);
     void readGUISettings();

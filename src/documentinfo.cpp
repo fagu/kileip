@@ -1,7 +1,7 @@
 /*********************************************************************************************
     Copyright (C) 2003 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)
               (C) 2005-2007 by Holger Danielsson (holger.danielsson@versanet.de)
-              (C) 2006-2017 by Michel Ludwig (michel.ludwig@kdemail.net)
+              (C) 2006-2022 by Michel Ludwig (michel.ludwig@kdemail.net)
  *********************************************************************************************/
 
 /***************************************************************************
@@ -69,7 +69,6 @@
 #include <QRegExp>
 
 #include <KConfig>
-#include <KIconLoader>
 #include <KJobWidgets>
 #include <KIO/StatJob>
 #include <KLocalizedString>
@@ -238,7 +237,7 @@ Type Info::getType()
     return Undefined;
 }
 
-QLinkedList<Extensions::ExtensionType> Info::getFileFilter() const
+std::list<Extensions::ExtensionType> Info::getFileFilter() const
 {
     return {};
 }
@@ -821,7 +820,7 @@ void TextInfo::slotViewDestroyed(QObject *object)
 
 void TextInfo::activateDefaultMode()
 {
-    KILE_DEBUG_MAIN << "m_defaultMode = " <<  m_defaultMode << endl;
+    KILE_DEBUG_MAIN << "m_defaultMode = " <<  m_defaultMode << Qt::endl;
 
     if(m_doc && !m_defaultMode.isEmpty()) {
         m_doc->setMode(m_defaultMode);
@@ -879,7 +878,7 @@ Type LaTeXInfo::getType()
     return LaTeX;
 }
 
-QLinkedList<Extensions::ExtensionType> LaTeXInfo::getFileFilter() const
+std::list<Extensions::ExtensionType> LaTeXInfo::getFileFilter() const
 {
     return {Extensions::TEX, Extensions::PACKAGES};
 }
@@ -1081,7 +1080,7 @@ void LaTeXInfo::updateStruct()
 void LaTeXInfo::checkChangedDeps()
 {
     if(m_depsPrev != m_deps) {
-        KILE_DEBUG_MAIN << "===void LaTeXInfo::checkChangedDeps()===, deps have changed"<< endl;
+        KILE_DEBUG_MAIN << "===void LaTeXInfo::checkChangedDeps()===, deps have changed"<< Qt::endl;
         emit(depChanged());
         m_depsPrev = m_deps;
     }
@@ -1172,7 +1171,7 @@ Type BibInfo::getType()
     return BibTeX;
 }
 
-QLinkedList<Extensions::ExtensionType> BibInfo::getFileFilter() const
+std::list<Extensions::ExtensionType> BibInfo::getFileFilter() const
 {
     return {Extensions::BIB};
 }
@@ -1199,7 +1198,7 @@ Type ScriptInfo::getType()
     return Script;
 }
 
-QLinkedList<Extensions::ExtensionType> ScriptInfo::getFileFilter() const
+std::list<Extensions::ExtensionType> ScriptInfo::getFileFilter() const
 {
     return {Extensions::JS};
 }

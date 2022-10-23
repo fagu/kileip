@@ -1,7 +1,7 @@
 /*************************************************************************************************
    Copyright (C) 2003 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net
                  2005-2007 by Holger Danielsson (holger.danielsson@versanet.de)
-                 2008-2016 by Michel Ludwig (michel.ludwig@kdemail.net)
+                 2008-2022 by Michel Ludwig (michel.ludwig@kdemail.net)
  *************************************************************************************************/
 
 /***************************************************************************
@@ -67,6 +67,7 @@
 #include <QScrollBar>
 #include <QUrl>
 
+#include <KApplicationTrader>
 #include <KLocalizedString>
 #include <KMessageBox>
 #include <KRun>
@@ -787,7 +788,7 @@ void StructureWidget::viewContextMenuEvent(StructureView *view, QContextMenuEven
             url.setPath(m_popupInfo);
 
             QMimeDatabase db;
-            m_offerList = KMimeTypeTrader::self()->query(db.mimeTypeForUrl(url).name(), "Application");
+            m_offerList = KApplicationTrader::queryByMimeType(db.mimeTypeForUrl(url).name());
             for(int i = 0; i < m_offerList.count(); ++i) {
                 popup.addAction(QIcon::fromTheme(m_offerList[i]->icon()), m_offerList[i]->name(),
                                          this, [this, i] { slotPopupGraphics(i + SectioningGraphicsOfferlist); });
@@ -819,7 +820,7 @@ void StructureWidget::viewContextMenuEvent(StructureView *view, QContextMenuEven
 // id's 10..16 (already checked)
 void StructureWidget::slotPopupSectioning(int id)
 {
-    KILE_DEBUG_MAIN << "\tStructureWidget::slotPopupSectioning (" << id << ")"<< endl;
+    KILE_DEBUG_MAIN << "\tStructureWidget::slotPopupSectioning (" << id << ")"<< Qt::endl;
     if(m_popupItem->level() >= 1 && m_popupItem->level() <= 7) {
         emit(sectioningPopup(m_popupItem, id));
     }
@@ -828,7 +829,7 @@ void StructureWidget::slotPopupSectioning(int id)
 // id's 100ff (already checked)
 void StructureWidget::slotPopupGraphics(int id)
 {
-    KILE_DEBUG_MAIN << "\tStructureWidget::slotPopupGraphics (" << id << ")"<< endl;
+    KILE_DEBUG_MAIN << "\tStructureWidget::slotPopupGraphics (" << id << ")"<< Qt::endl;
 
     QUrl url;
     url.setPath(m_popupInfo);
@@ -934,7 +935,7 @@ void StructureWidget::update(KileDocument::Info *docinfo, bool forceParsing)
     view->activate();
 }
 
-void StructureWidget::updateAfterParsing(KileDocument::Info *info, const QLinkedList<KileParser::StructureViewItem*>& items)
+void StructureWidget::updateAfterParsing(KileDocument::Info *info, const std::list<KileParser::StructureViewItem*>& items)
 {
     KILE_DEBUG_MAIN;
     StructureView *view = viewFor(info);
@@ -948,7 +949,7 @@ void StructureWidget::updateAfterParsing(KileDocument::Info *info, const QLinked
     // avoid flickering when parsing
     view->setUpdatesEnabled(false);
     view->cleanUp();
-    Q_FOREACH( KileParser::StructureViewItem *item, items) {
+    for(KileParser::StructureViewItem *item : items) {
         view->addItem(item->title, item->line, item->column, item->type, item->level, item->startline, item->startcol, item->pix, item->folder);
     }
     view->setUpdatesEnabled(true);
