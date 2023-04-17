@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kile\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
-"POT-Creation-Date: 2022-10-10 00:46+0000\n"
-"PO-Revision-Date: 2022-09-29 05:07+0200\n"
+"POT-Creation-Date: 2022-12-21 00:47+0000\n"
+"PO-Revision-Date: 2023-02-03 17:12+0100\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <kde-i18n-doc@kde.org>\n"
 "Language: ka\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Poedit 3.2.2\n"
 
 #, kde-format
 msgctxt "NAME OF TRANSLATORS"
@@ -1365,7 +1365,7 @@ msgstr "&დამატება.."
 #: dialogs/latexcommanddialog_base.ui:186
 #, kde-format
 msgid "Delete a user-defined environment."
-msgstr "მომხმარებლის მიერ აღწერილი გარემოს წაშლა"
+msgstr "მომხმარებლის მიერ აღწერილი გარემოს წაშლა."
 
 #. i18n: ectx: property (text), widget (QPushButton, deleteButton)
 #: dialogs/latexcommanddialog_base.ui:189 dialogs/quickdocumentdialog.cpp:255
@@ -1378,7 +1378,7 @@ msgstr "წა&შლა"
 #: dialogs/latexcommanddialog_base.ui:196
 #, kde-format
 msgid "Edit a user-defined environment."
-msgstr "მომხმარებლის მიერ აღწერილი გარემოს ჩასწორება"
+msgstr "მომხმარებლის მიერ აღწერილი გარემოს ჩასწორება."
 
 #. i18n: ectx: property (text), widget (QPushButton, editButton)
 #: dialogs/latexcommanddialog_base.ui:199
@@ -2302,7 +2302,7 @@ msgstr "პაროლი:"
 #: dialogs/usermenu/usermenudialog_base.ui:492
 #, kde-format
 msgid "Icon"
-msgstr "_ხატულა"
+msgstr "ხატულა"
 
 #. i18n: ectx: property (text), widget (QLabel, m_lbParameterInfo)
 #: dialogs/pdf-wizard/pdfdialog_base.ui:158
@@ -2467,7 +2467,7 @@ msgstr "შიფრაცია:"
 #: dialogs/pdf-wizard/pdfdialog_base.ui:528
 #, kde-format
 msgid "Creation date:"
-msgstr "შექმნის თარიღი"
+msgstr "შექმნის თარიღი:"
 
 #. i18n: ectx: property (text), widget (QLabel, m_lbCreationDate)
 #. i18n: ectx: property (text), widget (QLabel, m_lbModDate)
@@ -2505,13 +2505,13 @@ msgstr "დაბეჭდვა :"
 #: dialogs/pdf-wizard/pdfdialog_base.ui:622
 #, kde-format
 msgid "Copy text or graphics:"
-msgstr "ტექსტის ან სურათების კოპირება"
+msgstr "ტექსტის ან სურათების კოპირება:"
 
 #. i18n: ectx: property (text), widget (QLabel, label_4)
 #: dialogs/pdf-wizard/pdfdialog_base.ui:632
 #, kde-format
 msgid "Modify contents:"
-msgstr "შემცველობის ჩასწორება"
+msgstr "შემცველობის ჩასწორება:"
 
 #. i18n: ectx: property (text), widget (QLabel, label_9)
 #: dialogs/pdf-wizard/pdfdialog_base.ui:642
@@ -2990,7 +2990,7 @@ msgstr "&დოკუმენტის თვისებები"
 #: dialogs/quickdocumentdialog.cpp:145
 #, kde-format
 msgid "Doc&ument class:"
-msgstr "დოკუმენტის &კლასი"
+msgstr "დოკუმენტის &კლასი:"
 
 #: dialogs/quickdocumentdialog.cpp:152 dialogs/quickdocumentdialog.cpp:174
 #: dialogs/quickdocumentdialog.cpp:197
@@ -4181,17 +4181,17 @@ msgstr "ცენტრზე სწორება"
 msgid "Align Right"
 msgstr "მარჯვნივ სწორება"
 
-#: dialogs/tabular/newtabulardialog.cpp:85 kilestdactions.cpp:205
+#: dialogs/tabular/newtabulardialog.cpp:85 kilestdactions.cpp:202
 #, kde-format
 msgid "Bold"
 msgstr "მუქი"
 
-#: dialogs/tabular/newtabulardialog.cpp:86 kilestdactions.cpp:208
+#: dialogs/tabular/newtabulardialog.cpp:86 kilestdactions.cpp:205
 #, kde-format
 msgid "Italic"
 msgstr "დახრილი"
 
-#: dialogs/tabular/newtabulardialog.cpp:87 kilestdactions.cpp:139
+#: dialogs/tabular/newtabulardialog.cpp:87 kilestdactions.cpp:136
 #, kde-format
 msgid "Underline"
 msgstr "ხაზგასმული"
@@ -4254,7 +4254,7 @@ msgstr "ვარსკვლავდასმული ვერსიის �
 #: dialogs/tabular/newtabulardialog.cpp:154
 #, kde-format
 msgid "Table width:"
-msgstr "ცხრილის სიგანე"
+msgstr "ცხრილის სიგანე:"
 
 #: dialogs/tabular/newtabulardialog.cpp:161
 #, kde-format
@@ -4460,7 +4460,7 @@ msgstr ""
 #: dialogs/texdocumentationdialog.cpp:57 kile.cpp:1065
 #, kde-format
 msgid "Documentation Browser"
-msgstr ""
+msgstr "დოკუმენტაციაში ძებნა"
 
 #: dialogs/texdocumentationdialog.cpp:66 dialogs/texdocumentationdialog.cpp:381
 #: kilestdactions.cpp:43
@@ -4604,7 +4604,7 @@ msgstr ""
 #: dialogs/userhelpdialog.cpp:384
 #, kde-format
 msgid "&Menu entry:"
-msgstr "&მენიუს პუნქტი"
+msgstr "&მენიუს პუნქტი:"
 
 #: dialogs/userhelpdialog.cpp:392
 #, kde-format
@@ -4918,7 +4918,7 @@ msgstr ""
 #: dialogs/usermenu/usermenudialog_base.ui:276
 #, kde-format
 msgid "Save"
-msgstr "save"
+msgstr "შენახვა"
 
 #. i18n: ectx: property (whatsThis), widget (QPushButton, m_pbSaveAs)
 #: dialogs/usermenu/usermenudialog_base.ui:283
@@ -4938,7 +4938,7 @@ msgstr "შენახვა როგორც"
 #: dialogs/usermenu/usermenudialog_base.ui:352
 #, kde-format
 msgid "(installed)"
-msgstr "(დაყენებული) "
+msgstr "(დაყენებულია)"
 
 #. i18n: ectx: property (whatsThis), widget (QPushButton, m_pbNew)
 #: dialogs/usermenu/usermenudialog_base.ui:375
@@ -5616,7 +5616,7 @@ msgstr ""
 #: kile.cpp:838
 #, kde-format
 msgid "&Remove Template..."
-msgstr "შაბლონის &წაშლა"
+msgstr "შაბლონის &წაშლა..."
 
 #: kile.cpp:840 kile.cpp:970
 #, kde-format
@@ -5930,7 +5930,7 @@ msgstr ""
 #: kile.cpp:990
 #, kde-format
 msgid "&Bibliography"
-msgstr ""
+msgstr "&ბიბლიოგრაფია"
 
 #. i18n: ectx: Menu (settings)
 #: kile.cpp:996 kileui.rc:503
@@ -5953,7 +5953,7 @@ msgstr ""
 msgid "Quick Start"
 msgstr ""
 
-#: kile.cpp:1013 kilestdactions.cpp:387
+#: kile.cpp:1013 kilestdactions.cpp:384
 #, kde-format
 msgid "Array"
 msgstr "მასივი"
@@ -6124,30 +6124,30 @@ msgid ""
 "saved first."
 msgstr ""
 
-#: kile.cpp:3069
+#: kile.cpp:2990
 #, kde-format
 msgctxt "@info:status status bar label for block selection mode"
 msgid "BLOCK"
 msgstr "ბლოკი"
 
-#: kile.cpp:3070
+#: kile.cpp:2991
 #, kde-format
 msgctxt "@info:status status bar label for line selection mode"
 msgid "LINE"
 msgstr "ხაზი"
 
-#: kile.cpp:3077
+#: kile.cpp:2998
 #, kde-format
 msgid "Refreshing structure..."
 msgstr ""
 
-#: kile.cpp:3095
+#: kile.cpp:3016
 #, kde-format
 msgid ""
 "This will hide the menu bar completely. You can show it again by typing %1."
-msgstr ""
+msgstr "ეს მენიუს ზოლს სრულად დამალავს. მისი ჩვენება %1-ზე დაწოლით შეგიძლიათ."
 
-#: kile.cpp:3098
+#: kile.cpp:3019
 #, kde-format
 msgid "Hide menu bar"
 msgstr "მენიუს ზოლის დამალვა"
@@ -7286,7 +7286,7 @@ msgstr ""
 #: kilelauncher.cpp:223
 #, kde-format
 msgid "terminated"
-msgstr ""
+msgstr "სწეყდა"
 
 #: kilelauncher.cpp:232
 #, kde-format
@@ -7530,7 +7530,7 @@ msgstr ""
 #: kilestdactions.cpp:50
 #, kde-format
 msgid "Quote"
-msgstr ""
+msgstr "ციტატა"
 
 #: kilestdactions.cpp:50
 #, kde-format
@@ -7723,7 +7723,7 @@ msgstr ""
 msgid "Slanted - \\textsl{}"
 msgstr ""
 
-#: kilestdactions.cpp:73 kilestdactions.cpp:209
+#: kilestdactions.cpp:73 kilestdactions.cpp:206
 #, kde-format
 msgid "Slanted"
 msgstr ""
@@ -7756,7 +7756,7 @@ msgstr ""
 #: kilestdactions.cpp:75
 #, kde-format
 msgid "Typewriter"
-msgstr ""
+msgstr "საბეჭდი მანქანა"
 
 #: kilestdactions.cpp:75
 #, kde-format
@@ -7871,7 +7871,7 @@ msgstr ""
 #: kilestdactions.cpp:82
 #, kde-format
 msgid "Horizontal Line"
-msgstr ""
+msgstr "ჰორიზონტალური ხაზი"
 
 #: kilestdactions.cpp:82
 #, kde-format
@@ -7886,7 +7886,7 @@ msgstr ""
 #: kilestdactions.cpp:83
 #, kde-format
 msgid "Vertical Line"
-msgstr ""
+msgstr "ვერტიკალური ხაზი"
 
 #: kilestdactions.cpp:83
 #, kde-format
@@ -8231,29 +8231,27 @@ msgid ""
 "You can open the bib file with Kile to see all the available references"
 msgstr ""
 
-#. i18n("cite from ViewBib"));
-#. actionother_list->addAction(action);
-#: kilestdactions.cpp:139
+#: kilestdactions.cpp:136
 #, kde-format
 msgid "Underline - \\underline{}"
 msgstr ""
 
-#: kilestdactions.cpp:142
+#: kilestdactions.cpp:139
 #, kde-format
 msgid "Smart Tabulator"
 msgstr ""
 
-#: kilestdactions.cpp:149
+#: kilestdactions.cpp:146
 #, kde-format
 msgid "Abstract - \\begin{abstract}"
 msgstr ""
 
-#: kilestdactions.cpp:149
+#: kilestdactions.cpp:146
 #, kde-format
 msgid "Abstract"
 msgstr "ანოტაცია"
 
-#: kilestdactions.cpp:149
+#: kilestdactions.cpp:146
 #, kde-format
 msgid ""
 "\\begin{abstract}\n"
@@ -8263,17 +8261,17 @@ msgid ""
 "page number or heading."
 msgstr ""
 
-#: kilestdactions.cpp:151
+#: kilestdactions.cpp:148
 #, kde-format
 msgid "Tabular* - \\begin{tabular*}"
 msgstr ""
 
-#: kilestdactions.cpp:151
+#: kilestdactions.cpp:148
 #, kde-format
 msgid "Tabular*"
 msgstr ""
 
-#: kilestdactions.cpp:151
+#: kilestdactions.cpp:148
 #, kde-format
 msgid ""
 "\\begin{tabular*}{width}[pos]{cols}\n"
@@ -8285,17 +8283,17 @@ msgid ""
 "stretch to fill out the specified width."
 msgstr ""
 
-#: kilestdactions.cpp:153
+#: kilestdactions.cpp:150
 #, kde-format
 msgid "Minipage - \\begin{minipage}"
 msgstr ""
 
-#: kilestdactions.cpp:153
+#: kilestdactions.cpp:150
 #, kde-format
 msgid "Minipage"
 msgstr ""
 
-#: kilestdactions.cpp:153
+#: kilestdactions.cpp:150
 #, kde-format
 msgid ""
 "The minipage environment is similar to a \\parbox command. It takes the same "
@@ -8303,92 +8301,92 @@ msgid ""
 "paragraph-making environments inside a minipage."
 msgstr ""
 
-#: kilestdactions.cpp:156
+#: kilestdactions.cpp:153
 #, kde-format
 msgid "Table of Figures - \\listoffigures"
 msgstr ""
 
-#: kilestdactions.cpp:156
+#: kilestdactions.cpp:153
 #, kde-format
 msgid "Table of Figures"
 msgstr ""
 
-#: kilestdactions.cpp:156
+#: kilestdactions.cpp:153
 #, kde-format
 msgid "Put this command where you want the list of figures to go."
 msgstr ""
 
-#: kilestdactions.cpp:158
+#: kilestdactions.cpp:155
 #, kde-format
 msgid "Table of Tables - \\listoftables"
 msgstr ""
 
-#: kilestdactions.cpp:158
+#: kilestdactions.cpp:155
 #, kde-format
 msgid "Table of Tables"
 msgstr ""
 
-#: kilestdactions.cpp:158
+#: kilestdactions.cpp:155
 #, kde-format
 msgid "Put this command where you want the list of tables to go."
 msgstr ""
 
-#: kilestdactions.cpp:160
+#: kilestdactions.cpp:157
 #, kde-format
 msgid "Generate Index - \\makeindex"
 msgstr ""
 
-#: kilestdactions.cpp:160
+#: kilestdactions.cpp:157
 #, kde-format
 msgid "Generate Index"
 msgstr ""
 
-#: kilestdactions.cpp:160
+#: kilestdactions.cpp:157
 #, kde-format
 msgid "Put this command when you want to generate the raw index."
 msgstr ""
 
-#: kilestdactions.cpp:162
+#: kilestdactions.cpp:159
 #, kde-format
 msgid "Print Index - \\printindex"
 msgstr ""
 
-#: kilestdactions.cpp:162
+#: kilestdactions.cpp:159
 #, kde-format
 msgid "Print Index"
 msgstr ""
 
-#: kilestdactions.cpp:162
+#: kilestdactions.cpp:159
 #, kde-format
 msgid "Put this command when you want to print the formatted index."
 msgstr ""
 
-#: kilestdactions.cpp:164
+#: kilestdactions.cpp:161
 #, kde-format
 msgid "Glossary - \\makeglossary"
 msgstr ""
 
-#: kilestdactions.cpp:164
+#: kilestdactions.cpp:161
 #, kde-format
 msgid "Glossary"
 msgstr "სარჩევი"
 
-#: kilestdactions.cpp:164
+#: kilestdactions.cpp:161
 #, kde-format
 msgid "Put this command when you want to print a glossary."
 msgstr ""
 
-#: kilestdactions.cpp:166
+#: kilestdactions.cpp:163
 #, kde-format
 msgid "Bibliography - \\begin{thebibliography}"
 msgstr ""
 
-#: kilestdactions.cpp:166 widgets/projectview.cpp:460
+#: kilestdactions.cpp:163 widgets/projectview.cpp:460
 #, kde-format
 msgid "Bibliography"
 msgstr "ბიბლიოგრაფია"
 
-#: kilestdactions.cpp:166
+#: kilestdactions.cpp:163
 #, kde-format
 msgid ""
 "\\begin{thebibliography}{widest-label}\n"
@@ -8401,152 +8399,152 @@ msgid ""
 "\\bibitem : Specify a bibliography item"
 msgstr ""
 
-#: kilestdactions.cpp:169
+#: kilestdactions.cpp:166
 #, kde-format
 msgid "Verbatim (show spaces) - \\begin{verbatim*}"
 msgstr ""
 
-#: kilestdactions.cpp:169
+#: kilestdactions.cpp:166
 #, kde-format
 msgid "Verbatim (show spaces)"
 msgstr ""
 
-#: kilestdactions.cpp:169
+#: kilestdactions.cpp:166
 #, kde-format
 msgid ""
 "Environment that gets LaTeX to print exactly what you type in. In this "
 "variant, spaces are printed in a special manner."
 msgstr ""
 
-#: kilestdactions.cpp:171
+#: kilestdactions.cpp:168
 #, kde-format
 msgid "Embedded Code - \\verb||"
 msgstr ""
 
-#: kilestdactions.cpp:171
+#: kilestdactions.cpp:168
 #, kde-format
 msgid "Embedded Code"
 msgstr ""
 
-#: kilestdactions.cpp:171
+#: kilestdactions.cpp:168
 #, kde-format
 msgid "Macro form of the verbatim environment."
 msgstr ""
 
-#: kilestdactions.cpp:173
+#: kilestdactions.cpp:170
 #, kde-format
 msgid "Embedded Code (show spaces) - \\verb*||"
 msgstr ""
 
-#: kilestdactions.cpp:173
+#: kilestdactions.cpp:170
 #, kde-format
 msgid "Embedded Code (show spaces)"
 msgstr ""
 
-#: kilestdactions.cpp:173
+#: kilestdactions.cpp:170
 #, kde-format
 msgid "Macro form of the verbatim* environment."
 msgstr ""
 
-#: kilestdactions.cpp:176
+#: kilestdactions.cpp:173
 #, kde-format
 msgid "\"Small\" Vertical Space - \\smallskip"
 msgstr ""
 
-#: kilestdactions.cpp:176
+#: kilestdactions.cpp:173
 #, kde-format
 msgid "\"Small\" Vertical Space"
 msgstr ""
 
-#: kilestdactions.cpp:176
+#: kilestdactions.cpp:173
 #, kde-format
 msgid "The \\smallskip command adds a 'small' vertical space."
 msgstr ""
 
-#: kilestdactions.cpp:178
+#: kilestdactions.cpp:175
 #, kde-format
 msgid "\\enskip"
 msgstr ""
 
-#: kilestdactions.cpp:180
+#: kilestdactions.cpp:177
 #, kde-format
 msgid "Horizontal Variable Space - \\hfill"
 msgstr ""
 
-#: kilestdactions.cpp:180
+#: kilestdactions.cpp:177
 #, kde-format
 msgid "Horizontal Variable Space"
 msgstr ""
 
-#: kilestdactions.cpp:180
+#: kilestdactions.cpp:177
 #, kde-format
 msgid ""
 "The \\hfill fill command produces a \"rubber length\" which can stretch or "
 "shrink horizontally. It will be filled with spaces."
 msgstr ""
 
-#: kilestdactions.cpp:182
+#: kilestdactions.cpp:179
 #, kde-format
 msgid "Horizontal Dots - \\dotfill"
 msgstr ""
 
-#: kilestdactions.cpp:182
+#: kilestdactions.cpp:179
 #, kde-format
 msgid "Horizontal Dots"
 msgstr ""
 
-#: kilestdactions.cpp:182
+#: kilestdactions.cpp:179
 #, kde-format
 msgid ""
 "The \\dotfill command produces a \"rubber length\" that produces dots "
 "instead of just spaces."
 msgstr ""
 
-#: kilestdactions.cpp:184
+#: kilestdactions.cpp:181
 #, kde-format
 msgid "Horizontal Rule - \\hrulefill"
 msgstr ""
 
-#: kilestdactions.cpp:184
+#: kilestdactions.cpp:181
 #, kde-format
 msgid "Horizontal Rule"
 msgstr "ჰორიზონტალური წესი"
 
-#: kilestdactions.cpp:184
+#: kilestdactions.cpp:181
 #, kde-format
 msgid ""
 "The \\hrulefill fill command produces a \"rubber length\" which can stretch "
 "or shrink horizontally. It will be filled with a horizontal rule."
 msgstr ""
 
-#: kilestdactions.cpp:186
+#: kilestdactions.cpp:183
 #, kde-format
 msgid "Vertical Variable Space - \\vfill"
 msgstr ""
 
-#: kilestdactions.cpp:186
+#: kilestdactions.cpp:183
 #, kde-format
 msgid "Vertical Variable Space"
 msgstr ""
 
-#: kilestdactions.cpp:186
+#: kilestdactions.cpp:183
 #, kde-format
 msgid ""
 "The \\vfill fill command produces a \"rubber length\" which can stretch or "
 "shrink vertically."
 msgstr ""
 
-#: kilestdactions.cpp:188
+#: kilestdactions.cpp:185
 #, kde-format
 msgid "Horizontal Space - \\hspace{}"
 msgstr ""
 
-#: kilestdactions.cpp:188
+#: kilestdactions.cpp:185
 #, kde-format
 msgid "Horizontal Space"
 msgstr ""
 
-#: kilestdactions.cpp:188
+#: kilestdactions.cpp:185
 #, kde-format
 msgid ""
 "The \\hspace command adds horizontal space. The length of the space can be "
@@ -8555,17 +8553,17 @@ msgid ""
 "Adding negative space is like backspacing."
 msgstr ""
 
-#: kilestdactions.cpp:190
+#: kilestdactions.cpp:187
 #, kde-format
 msgid "Horizontal Space (forced) - \\hspace*{}"
 msgstr ""
 
-#: kilestdactions.cpp:190
+#: kilestdactions.cpp:187
 #, kde-format
 msgid "Horizontal Space (forced)"
 msgstr ""
 
-#: kilestdactions.cpp:190
+#: kilestdactions.cpp:187
 #, kde-format
 msgid ""
 "The \\hspace* command adds horizontal space like the \\hspace command. LaTeX "
@@ -8574,17 +8572,17 @@ msgid ""
 "is never removed."
 msgstr ""
 
-#: kilestdactions.cpp:192
+#: kilestdactions.cpp:189
 #, kde-format
 msgid "Vertical Space - \\vspace{}"
 msgstr ""
 
-#: kilestdactions.cpp:192
+#: kilestdactions.cpp:189
 #, kde-format
 msgid "Vertical Space"
 msgstr ""
 
-#: kilestdactions.cpp:192
+#: kilestdactions.cpp:189
 #, kde-format
 msgid ""
 "The \\vspace command adds vertical space. The length of the space can be "
@@ -8592,17 +8590,17 @@ msgid ""
 "You can add negative as well as positive space with an \\vspace command."
 msgstr ""
 
-#: kilestdactions.cpp:194
+#: kilestdactions.cpp:191
 #, kde-format
 msgid "Vertical Space (forced) - \\vspace*{}"
 msgstr ""
 
-#: kilestdactions.cpp:194
+#: kilestdactions.cpp:191
 #, kde-format
 msgid "Vertical Space (forced)"
 msgstr ""
 
-#: kilestdactions.cpp:194
+#: kilestdactions.cpp:191
 #, kde-format
 msgid ""
 "The \\vspace* command adds vertical space like the \\vspace command. LaTeX "
@@ -8611,122 +8609,122 @@ msgid ""
 "is never removed."
 msgstr ""
 
-#: kilestdactions.cpp:197
+#: kilestdactions.cpp:194
 #, kde-format
 msgid "Emphasized - \\emph{}"
 msgstr ""
 
-#: kilestdactions.cpp:197
+#: kilestdactions.cpp:194
 #, kde-format
 msgid "Emphasized"
 msgstr ""
 
-#: kilestdactions.cpp:197
+#: kilestdactions.cpp:194
 #, kde-format
 msgid "\\emph{emphasized text}"
 msgstr ""
 
-#: kilestdactions.cpp:198
+#: kilestdactions.cpp:195
 #, kde-format
 msgid "Strong - \\strong{}"
 msgstr ""
 
-#: kilestdactions.cpp:198
+#: kilestdactions.cpp:195
 #, kde-format
 msgid "Strong"
 msgstr "ძლიერი"
 
-#: kilestdactions.cpp:198
+#: kilestdactions.cpp:195
 #, kde-format
 msgid "\\strong{text}"
 msgstr ""
 
-#: kilestdactions.cpp:200
+#: kilestdactions.cpp:197
 #, kde-format
 msgid "Roman - \\rmfamily"
 msgstr ""
 
-#: kilestdactions.cpp:200
+#: kilestdactions.cpp:197
 #, kde-format
 msgid "Roman"
 msgstr "რომანული"
 
-#: kilestdactions.cpp:201
+#: kilestdactions.cpp:198
 #, kde-format
 msgid "Sans Serif - \\sffamily"
 msgstr ""
 
-#: kilestdactions.cpp:201
+#: kilestdactions.cpp:198
 #, kde-format
 msgid "Sans Serif"
 msgstr "შესახებ"
 
-#: kilestdactions.cpp:202
+#: kilestdactions.cpp:199
 #, kde-format
 msgid "Monospace - \\ttfamily"
 msgstr ""
 
-#: kilestdactions.cpp:202
+#: kilestdactions.cpp:199
 #, kde-format
 msgid "Monospace"
 msgstr "ერთსიგანიანი"
 
-#: kilestdactions.cpp:204
+#: kilestdactions.cpp:201
 #, kde-format
 msgid "Medium - \\mdseries"
 msgstr ""
 
-#: kilestdactions.cpp:204
+#: kilestdactions.cpp:201
 #, kde-format
 msgid "Medium"
 msgstr "საშუალო"
 
-#: kilestdactions.cpp:205
+#: kilestdactions.cpp:202
 #, kde-format
 msgid "Bold - \\bfseries"
 msgstr ""
 
-#: kilestdactions.cpp:207
+#: kilestdactions.cpp:204
 #, kde-format
 msgid "Upright - \\upshape"
 msgstr ""
 
-#: kilestdactions.cpp:207
+#: kilestdactions.cpp:204
 #, kde-format
 msgid "Upright"
 msgstr ""
 
-#: kilestdactions.cpp:208
+#: kilestdactions.cpp:205
 #, kde-format
 msgid "Italic - \\itshape"
 msgstr ""
 
-#: kilestdactions.cpp:209
+#: kilestdactions.cpp:206
 #, kde-format
 msgid "Slanted - \\slshape"
 msgstr ""
 
-#: kilestdactions.cpp:210
+#: kilestdactions.cpp:207
 #, kde-format
 msgid "Smallcaps - \\scshape"
 msgstr ""
 
-#: kilestdactions.cpp:210
+#: kilestdactions.cpp:207
 #, kde-format
 msgid "Smallcaps"
 msgstr ""
 
-#: kilestdactions.cpp:222
+#: kilestdactions.cpp:219
 #, kde-format
 msgid "Bibliography Style Selection - \\bibliographystyle{}"
 msgstr ""
 
-#: kilestdactions.cpp:222
+#: kilestdactions.cpp:219
 #, kde-format
 msgid "Bibliography Style Selection"
 msgstr ""
 
-#: kilestdactions.cpp:222
+#: kilestdactions.cpp:219
 #, kde-format
 msgid ""
 "The argument to \\bibliographystyle refers to a file style.bst, which "
@@ -8739,17 +8737,17 @@ msgid ""
 "abbrv  : like plain, but more compact labels."
 msgstr ""
 
-#: kilestdactions.cpp:223 kilestdactions.cpp:231
+#: kilestdactions.cpp:220 kilestdactions.cpp:228
 #, kde-format
 msgid "Bibliography Generation - \\bibliography{}"
 msgstr ""
 
-#: kilestdactions.cpp:223 kilestdactions.cpp:231
+#: kilestdactions.cpp:220 kilestdactions.cpp:228
 #, kde-format
 msgid "Bibliography Generation"
 msgstr ""
 
-#: kilestdactions.cpp:223 kilestdactions.cpp:231
+#: kilestdactions.cpp:220 kilestdactions.cpp:228
 #, kde-format
 msgid ""
 "The argument to \\bibliography refers to the bib file (without extension)\n"
@@ -8757,282 +8755,282 @@ msgid ""
 "Kile inserts automatically the base name of the TeX file"
 msgstr ""
 
-#: kilestdactions.cpp:230
+#: kilestdactions.cpp:227
 #, kde-format
 msgid "Load Biblatex Package - \\usepackage{biblatex}"
 msgstr ""
 
-#: kilestdactions.cpp:230
+#: kilestdactions.cpp:227
 #, kde-format
 msgid "Load Biblatex Package"
 msgstr ""
 
-#: kilestdactions.cpp:230
+#: kilestdactions.cpp:227
 #, kde-format
 msgid "This includes the package biblatex"
 msgstr ""
 
-#: kilestdactions.cpp:232
+#: kilestdactions.cpp:229
 #, kde-format
 msgid "Print Bibliography"
 msgstr ""
 
-#: kilestdactions.cpp:232
+#: kilestdactions.cpp:229
 #, kde-format
 msgid "Prints the complete bibliography"
 msgstr ""
 
-#: kilestdactions.cpp:233
+#: kilestdactions.cpp:230
 #, kde-format
 msgid "Print Bibliography by Section"
 msgstr ""
 
-#: kilestdactions.cpp:233
+#: kilestdactions.cpp:230
 #, kde-format
 msgid "Print the bibliography for each section"
 msgstr ""
 
-#: kilestdactions.cpp:234
+#: kilestdactions.cpp:231
 #, kde-format
 msgid "Print List of Shorthands"
 msgstr ""
 
-#: kilestdactions.cpp:333
+#: kilestdactions.cpp:330
 #, kde-format
 msgid "ALT.... : you have the choice between these two fields\n"
 msgstr ""
 
-#: kilestdactions.cpp:334
+#: kilestdactions.cpp:331
 #, kde-format
 msgid "OPT.... : optional fields (use the 'Clean' command to remove them)"
 msgstr ""
 
-#: kilestdactions.cpp:335
+#: kilestdactions.cpp:332
 #, kde-format
 msgid "Bib fields - %1\n"
 msgstr ""
 
-#: kilestdactions.cpp:350
+#: kilestdactions.cpp:347
 #, kde-format
 msgid "\\mathrm{}"
 msgstr ""
 
-#: kilestdactions.cpp:351
+#: kilestdactions.cpp:348
 #, kde-format
 msgid "\\mathit{}"
 msgstr ""
 
-#: kilestdactions.cpp:352
+#: kilestdactions.cpp:349
 #, kde-format
 msgid "\\mathbf{}"
 msgstr ""
 
-#: kilestdactions.cpp:353
+#: kilestdactions.cpp:350
 #, kde-format
 msgid "\\mathsf{}"
 msgstr ""
 
-#: kilestdactions.cpp:354
+#: kilestdactions.cpp:351
 #, kde-format
 msgid "\\mathtt{}"
 msgstr ""
 
-#: kilestdactions.cpp:355
+#: kilestdactions.cpp:352
 #, kde-format
 msgid "\\mathcal{}"
 msgstr ""
 
-#: kilestdactions.cpp:356
+#: kilestdactions.cpp:353
 #, kde-format
 msgid "\\mathbb{}"
 msgstr ""
 
-#: kilestdactions.cpp:357
+#: kilestdactions.cpp:354
 #, kde-format
 msgid "\\mathfrak{}"
 msgstr ""
 
-#: kilestdactions.cpp:359
+#: kilestdactions.cpp:356
 #, kde-format
 msgid "\\acute{}"
 msgstr ""
 
-#: kilestdactions.cpp:360
+#: kilestdactions.cpp:357
 #, kde-format
 msgid "\\grave{}"
 msgstr ""
 
-#: kilestdactions.cpp:361
+#: kilestdactions.cpp:358
 #, kde-format
 msgid "\\tilde{}"
 msgstr ""
 
-#: kilestdactions.cpp:362
+#: kilestdactions.cpp:359
 #, kde-format
 msgid "\\bar{}"
 msgstr ""
 
-#: kilestdactions.cpp:363
+#: kilestdactions.cpp:360
 #, kde-format
 msgid "\\vec{}"
 msgstr ""
 
-#: kilestdactions.cpp:364
+#: kilestdactions.cpp:361
 #, kde-format
 msgid "\\hat{}"
 msgstr ""
 
-#: kilestdactions.cpp:365
+#: kilestdactions.cpp:362
 #, kde-format
 msgid "\\check{}"
 msgstr ""
 
-#: kilestdactions.cpp:366
+#: kilestdactions.cpp:363
 #, kde-format
 msgid "\\breve{}"
 msgstr ""
 
-#: kilestdactions.cpp:367
+#: kilestdactions.cpp:364
 #, kde-format
 msgid "\\dot{}"
 msgstr ""
 
-#: kilestdactions.cpp:368
+#: kilestdactions.cpp:365
 #, kde-format
 msgid "\\ddot{}"
 msgstr ""
 
-#: kilestdactions.cpp:370
+#: kilestdactions.cpp:367
 #, kde-format
 msgid "Small Space"
 msgstr ""
 
-#: kilestdactions.cpp:371
+#: kilestdactions.cpp:368
 #, kde-format
 msgid "Medium Space"
 msgstr ""
 
-#: kilestdactions.cpp:372
+#: kilestdactions.cpp:369
 #, kde-format
 msgid "Large Space"
 msgstr ""
 
-#: kilestdactions.cpp:373
+#: kilestdactions.cpp:370
 #, kde-format
 msgid "\\quad"
 msgstr ""
 
-#: kilestdactions.cpp:374
+#: kilestdactions.cpp:371
 #, kde-format
 msgid "\\qquad"
 msgstr ""
 
-#: kilestdactions.cpp:376
+#: kilestdactions.cpp:373
 #, kde-format
 msgid "Math Mode - $...$"
 msgstr ""
 
-#: kilestdactions.cpp:376
+#: kilestdactions.cpp:373
 #, kde-format
 msgid "Math Mode"
 msgstr ""
 
-#: kilestdactions.cpp:377
+#: kilestdactions.cpp:374
 #, kde-format
 msgid "Displaymath Mode - \\[...\\]"
 msgstr ""
 
-#: kilestdactions.cpp:377
+#: kilestdactions.cpp:374
 #, kde-format
 msgid "Displaymath Mode"
 msgstr ""
 
-#: kilestdactions.cpp:378
+#: kilestdactions.cpp:375
 #, kde-format
 msgid "Equation - \\begin{equation}"
 msgstr ""
 
-#: kilestdactions.cpp:378
+#: kilestdactions.cpp:375
 #, kde-format
 msgid "Equation"
 msgstr "ტოლობა"
 
-#: kilestdactions.cpp:379
+#: kilestdactions.cpp:376
 #, kde-format
 msgid "Subscript - _{}"
 msgstr ""
 
-#: kilestdactions.cpp:379
+#: kilestdactions.cpp:376
 #, kde-format
 msgid "Subscript"
 msgstr "ქვედა ხაზზე"
 
-#: kilestdactions.cpp:380
+#: kilestdactions.cpp:377
 #, kde-format
 msgid "Superscript - ^{}"
 msgstr ""
 
-#: kilestdactions.cpp:380
+#: kilestdactions.cpp:377
 #, kde-format
 msgid "Superscript"
 msgstr "ზედა ხაზზე"
 
-#: kilestdactions.cpp:381
+#: kilestdactions.cpp:378
 #, kde-format
 msgid "Normal Fraction - \\frac{}{}"
 msgstr ""
 
-#: kilestdactions.cpp:381
+#: kilestdactions.cpp:378
 #, kde-format
 msgid "Normal Fraction"
 msgstr ""
 
-#: kilestdactions.cpp:382
+#: kilestdactions.cpp:379
 #, kde-format
 msgid "Displaystyle Fraction - \\dfrac{}{}"
 msgstr ""
 
-#: kilestdactions.cpp:382
+#: kilestdactions.cpp:379
 #, kde-format
 msgid "Displaystyle Fraction"
 msgstr ""
 
-#: kilestdactions.cpp:383
+#: kilestdactions.cpp:380
 #, kde-format
 msgid "Textstyle Fraction - \\tfrac{}{}"
 msgstr ""
 
-#: kilestdactions.cpp:383
+#: kilestdactions.cpp:380
 #, kde-format
 msgid "Textstyle Fraction"
 msgstr ""
 
-#: kilestdactions.cpp:384
+#: kilestdactions.cpp:381
 #, kde-format
 msgid "Square Root - \\sqrt{}"
 msgstr ""
 
-#: kilestdactions.cpp:384
+#: kilestdactions.cpp:381
 #, kde-format
 msgid "Square Root"
-msgstr ""
+msgstr "კვადრატული ფესვი"
 
-#: kilestdactions.cpp:385
+#: kilestdactions.cpp:382
 #, kde-format
 msgid "\\left"
 msgstr ""
 
-#: kilestdactions.cpp:386
+#: kilestdactions.cpp:383
 #, kde-format
 msgid "\\right"
 msgstr ""
 
-#: kilestdactions.cpp:387
+#: kilestdactions.cpp:384
 #, kde-format
 msgid "Array - \\begin{array}"
 msgstr ""
 
-#: kilestdactions.cpp:388
+#: kilestdactions.cpp:385
 #, kde-format
 msgid ""
 "\\begin{array}{col1col2...coln}\n"
@@ -9046,512 +9044,512 @@ msgid ""
 "     r -- for flush right\n"
 msgstr ""
 
-#: kilestdactions.cpp:391
+#: kilestdactions.cpp:388
 #, kde-format
 msgid "Left Delimiter"
 msgstr ""
 
-#: kilestdactions.cpp:393
+#: kilestdactions.cpp:390
 #, kde-format
 msgid "left ("
 msgstr ""
 
-#: kilestdactions.cpp:394
+#: kilestdactions.cpp:391
 #, kde-format
 msgid "left ["
 msgstr ""
 
-#: kilestdactions.cpp:395
+#: kilestdactions.cpp:392
 #, kde-format
 msgid "left {"
 msgstr ""
 
-#: kilestdactions.cpp:396
+#: kilestdactions.cpp:393
 #, kde-format
 msgid "left &lt;"
 msgstr ""
 
-#: kilestdactions.cpp:398
+#: kilestdactions.cpp:395
 #, kde-format
 msgid "left )"
 msgstr ""
 
-#: kilestdactions.cpp:399
+#: kilestdactions.cpp:396
 #, kde-format
 msgid "left ]"
 msgstr ""
 
-#: kilestdactions.cpp:400
+#: kilestdactions.cpp:397
 #, kde-format
 msgid "left }"
 msgstr ""
 
-#: kilestdactions.cpp:401
+#: kilestdactions.cpp:398
 #, kde-format
 msgid "left &gt;"
 msgstr ""
 
-#: kilestdactions.cpp:403
+#: kilestdactions.cpp:400
 #, kde-format
 msgid "left ."
 msgstr ""
 
-#: kilestdactions.cpp:405
+#: kilestdactions.cpp:402
 #, kde-format
 msgid "Right Delimiter"
 msgstr ""
 
-#: kilestdactions.cpp:407
+#: kilestdactions.cpp:404
 #, kde-format
 msgid "right )"
 msgstr ""
 
-#: kilestdactions.cpp:408
+#: kilestdactions.cpp:405
 #, kde-format
 msgid "right ]"
 msgstr ""
 
-#: kilestdactions.cpp:409
+#: kilestdactions.cpp:406
 #, kde-format
 msgid "right }"
 msgstr ""
 
-#: kilestdactions.cpp:410
+#: kilestdactions.cpp:407
 #, kde-format
 msgid "right &gt;"
 msgstr ""
 
-#: kilestdactions.cpp:412
+#: kilestdactions.cpp:409
 #, kde-format
 msgid "right ("
 msgstr ""
 
-#: kilestdactions.cpp:413
+#: kilestdactions.cpp:410
 #, kde-format
 msgid "right ["
 msgstr ""
 
-#: kilestdactions.cpp:414
+#: kilestdactions.cpp:411
 #, kde-format
 msgid "right {"
 msgstr ""
 
-#: kilestdactions.cpp:415
+#: kilestdactions.cpp:412
 #, kde-format
 msgid "right &lt;"
 msgstr ""
 
-#: kilestdactions.cpp:417
+#: kilestdactions.cpp:414
 #, kde-format
 msgid "right ."
 msgstr ""
 
-#: kilestdactions.cpp:422
+#: kilestdactions.cpp:419
 #, kde-format
 msgid "Normal Binomial - \\binom{}{}"
 msgstr ""
 
-#: kilestdactions.cpp:422
+#: kilestdactions.cpp:419
 #, kde-format
 msgid "Normal Binomial"
 msgstr ""
 
-#: kilestdactions.cpp:424
+#: kilestdactions.cpp:421
 #, kde-format
 msgid "Displaystyle Binomial - \\dbinom{}{}"
 msgstr ""
 
-#: kilestdactions.cpp:424
+#: kilestdactions.cpp:421
 #, kde-format
 msgid "Displaystyle Binomial"
 msgstr ""
 
-#: kilestdactions.cpp:426
+#: kilestdactions.cpp:423
 #, kde-format
 msgid "Textstyle Binomial - \\tbinom{}{}"
 msgstr ""
 
-#: kilestdactions.cpp:426
+#: kilestdactions.cpp:423
 #, kde-format
 msgid "Textstyle Binomial"
 msgstr ""
 
-#: kilestdactions.cpp:428
+#: kilestdactions.cpp:425
 #, kde-format
 msgid "N-th Root - \\sqrt[]{}"
 msgstr ""
 
-#: kilestdactions.cpp:428
+#: kilestdactions.cpp:425
 #, kde-format
 msgid "N-th Root"
 msgstr ""
 
-#: kilestdactions.cpp:430
+#: kilestdactions.cpp:427
 #, kde-format
 msgid "Left-Right () - \\left(..\\right)"
 msgstr ""
 
-#: kilestdactions.cpp:430
+#: kilestdactions.cpp:427
 #, kde-format
 msgid "Left-Right ()"
 msgstr ""
 
-#: kilestdactions.cpp:432
+#: kilestdactions.cpp:429
 #, kde-format
 msgid "Extendable Left Arrow - \\xleftarrow{}"
 msgstr ""
 
-#: kilestdactions.cpp:432
+#: kilestdactions.cpp:429
 #, kde-format
 msgid "Extendable Left Arrow"
 msgstr ""
 
-#: kilestdactions.cpp:434
+#: kilestdactions.cpp:431
 #, kde-format
 msgid "Extendable Right Arrow - \\xrightarrow{}"
 msgstr ""
 
-#: kilestdactions.cpp:434
+#: kilestdactions.cpp:431
 #, kde-format
 msgid "Extendable Right Arrow"
 msgstr ""
 
-#: kilestdactions.cpp:436
+#: kilestdactions.cpp:433
 #, kde-format
 msgid "Boxed Formula - \\boxed{}"
 msgstr ""
 
-#: kilestdactions.cpp:436
+#: kilestdactions.cpp:433
 #, kde-format
 msgid "Boxed Formula"
 msgstr ""
 
-#: kilestdactions.cpp:438
+#: kilestdactions.cpp:435
 #, kde-format
 msgid "bigl - \\bigl"
 msgstr ""
 
-#: kilestdactions.cpp:438
+#: kilestdactions.cpp:435
 #, kde-format
 msgid "bigl"
 msgstr ""
 
-#: kilestdactions.cpp:439
+#: kilestdactions.cpp:436
 #, kde-format
 msgid "Bigl - \\Bigl"
 msgstr ""
 
-#: kilestdactions.cpp:439
+#: kilestdactions.cpp:436
 #, kde-format
 msgid "Bigl"
 msgstr ""
 
-#: kilestdactions.cpp:440
+#: kilestdactions.cpp:437
 #, kde-format
 msgid "biggl - \\biggl"
 msgstr ""
 
-#: kilestdactions.cpp:440
+#: kilestdactions.cpp:437
 #, kde-format
 msgid "biggl"
 msgstr ""
 
-#: kilestdactions.cpp:441
+#: kilestdactions.cpp:438
 #, kde-format
 msgid "Biggl - \\Biggl"
 msgstr ""
 
-#: kilestdactions.cpp:441
+#: kilestdactions.cpp:438
 #, kde-format
 msgid "Biggl"
 msgstr ""
 
-#: kilestdactions.cpp:443
+#: kilestdactions.cpp:440
 #, kde-format
 msgid "bigr - \\bigr"
 msgstr ""
 
-#: kilestdactions.cpp:443
+#: kilestdactions.cpp:440
 #, kde-format
 msgid "bigr"
 msgstr ""
 
-#: kilestdactions.cpp:444
+#: kilestdactions.cpp:441
 #, kde-format
 msgid "Bigr - \\Bigr"
 msgstr ""
 
-#: kilestdactions.cpp:444
+#: kilestdactions.cpp:441
 #, kde-format
 msgid "Bigr"
 msgstr ""
 
-#: kilestdactions.cpp:445
+#: kilestdactions.cpp:442
 #, kde-format
 msgid "biggr - \\biggr"
 msgstr ""
 
-#: kilestdactions.cpp:445
+#: kilestdactions.cpp:442
 #, kde-format
 msgid "biggr"
 msgstr ""
 
-#: kilestdactions.cpp:446
+#: kilestdactions.cpp:443
 #, kde-format
 msgid "Biggr - \\Biggr"
 msgstr ""
 
-#: kilestdactions.cpp:446
+#: kilestdactions.cpp:443
 #, kde-format
 msgid "Biggr"
 msgstr ""
 
-#: kilestdactions.cpp:449
+#: kilestdactions.cpp:446
 #, kde-format
 msgid "Text in Mathmode - \\text{}"
 msgstr ""
 
-#: kilestdactions.cpp:449
+#: kilestdactions.cpp:446
 #, kde-format
 msgid "Text in Mathmode"
 msgstr ""
 
-#: kilestdactions.cpp:451
+#: kilestdactions.cpp:448
 #, kde-format
 msgid "Intertext - \\intertext{}"
 msgstr ""
 
-#: kilestdactions.cpp:451
+#: kilestdactions.cpp:448
 #, kde-format
 msgid "Intertext"
 msgstr ""
 
-#: kilestdactions.cpp:454
+#: kilestdactions.cpp:451
 #, kde-format
 msgid "Displaymath - \\begin{displaymath}"
 msgstr ""
 
-#: kilestdactions.cpp:454
+#: kilestdactions.cpp:451
 #, kde-format
 msgid "Displaymath"
 msgstr ""
 
-#: kilestdactions.cpp:456
+#: kilestdactions.cpp:453
 #, kde-format
 msgid "Equation (not numbered) - \\begin{equation*}"
 msgstr ""
 
-#: kilestdactions.cpp:456
+#: kilestdactions.cpp:453
 #, kde-format
 msgid "Equation (not numbered)"
 msgstr ""
 
-#: kilestdactions.cpp:459
+#: kilestdactions.cpp:456
 #, kde-format
 msgid "Multline - \\begin{multline}"
 msgstr ""
 
-#: kilestdactions.cpp:459
+#: kilestdactions.cpp:456
 #, kde-format
 msgid "Multline"
 msgstr ""
 
-#: kilestdactions.cpp:460
+#: kilestdactions.cpp:457
 #, kde-format
 msgid "Multline* - \\begin{multline*}"
 msgstr ""
 
-#: kilestdactions.cpp:460
+#: kilestdactions.cpp:457
 #, kde-format
 msgid "Multline*"
 msgstr ""
 
-#: kilestdactions.cpp:462
+#: kilestdactions.cpp:459
 #, kde-format
 msgid "Split - \\begin{split}"
 msgstr ""
 
-#: kilestdactions.cpp:462
+#: kilestdactions.cpp:459
 #, kde-format
 msgid "Split"
 msgstr "გაყოფა"
 
-#: kilestdactions.cpp:464
+#: kilestdactions.cpp:461
 #, kde-format
 msgid "Gather - \\begin{gather}"
 msgstr ""
 
-#: kilestdactions.cpp:464
+#: kilestdactions.cpp:461
 #, kde-format
 msgid "Gather"
 msgstr ""
 
-#: kilestdactions.cpp:465
+#: kilestdactions.cpp:462
 #, kde-format
 msgid "Gather* - \\begin{gather*}"
 msgstr ""
 
-#: kilestdactions.cpp:465
+#: kilestdactions.cpp:462
 #, kde-format
 msgid "Gather*"
 msgstr ""
 
-#: kilestdactions.cpp:467
+#: kilestdactions.cpp:464
 #, kde-format
 msgid "Align - \\begin{align}"
 msgstr ""
 
-#: kilestdactions.cpp:467
+#: kilestdactions.cpp:464
 #, kde-format
 msgid "Align"
 msgstr "სწორება"
 
-#: kilestdactions.cpp:468
+#: kilestdactions.cpp:465
 #, kde-format
 msgid "Align* - \\begin{align*}"
 msgstr ""
 
-#: kilestdactions.cpp:468
+#: kilestdactions.cpp:465
 #, kde-format
 msgid "Align*"
 msgstr ""
 
-#: kilestdactions.cpp:470
+#: kilestdactions.cpp:467
 #, kde-format
 msgid "Flalign - \\begin{flalign}"
 msgstr ""
 
-#: kilestdactions.cpp:470
+#: kilestdactions.cpp:467
 #, kde-format
 msgid "Flalign"
 msgstr ""
 
-#: kilestdactions.cpp:471
+#: kilestdactions.cpp:468
 #, kde-format
 msgid "Flalign* - \\begin{flalign*}"
 msgstr ""
 
-#: kilestdactions.cpp:471
+#: kilestdactions.cpp:468
 #, kde-format
 msgid "Flalign*"
 msgstr ""
 
-#: kilestdactions.cpp:473
+#: kilestdactions.cpp:470
 #, kde-format
 msgid "Alignat - \\begin{alignat}"
 msgstr ""
 
-#: kilestdactions.cpp:473
+#: kilestdactions.cpp:470
 #, kde-format
 msgid "Alignat"
 msgstr ""
 
-#: kilestdactions.cpp:474
+#: kilestdactions.cpp:471
 #, kde-format
 msgid "Alignat* - \\begin{alignat*}"
 msgstr ""
 
-#: kilestdactions.cpp:474
+#: kilestdactions.cpp:471
 #, kde-format
 msgid "Alignat*"
 msgstr ""
 
-#: kilestdactions.cpp:476
+#: kilestdactions.cpp:473
 #, kde-format
 msgid "Aligned - \\begin{aligned}"
 msgstr ""
 
-#: kilestdactions.cpp:476
+#: kilestdactions.cpp:473
 #, kde-format
 msgid "Aligned"
 msgstr "გასწორებულია"
 
-#: kilestdactions.cpp:477
+#: kilestdactions.cpp:474
 #, kde-format
 msgid "Gathered - \\begin{gathered}"
 msgstr ""
 
-#: kilestdactions.cpp:477
+#: kilestdactions.cpp:474
 #, kde-format
 msgid "Gathered"
 msgstr ""
 
-#: kilestdactions.cpp:478
+#: kilestdactions.cpp:475
 #, kde-format
 msgid "Alignedat - \\begin{alignedat}"
 msgstr ""
 
-#: kilestdactions.cpp:478
+#: kilestdactions.cpp:475
 #, kde-format
 msgid "Alignedat"
 msgstr ""
 
-#: kilestdactions.cpp:480
+#: kilestdactions.cpp:477
 #, kde-format
 msgid "Cases - \\begin{cases}"
 msgstr ""
 
-#: kilestdactions.cpp:480
+#: kilestdactions.cpp:477
 #, kde-format
 msgid "Cases"
 msgstr "კეისები"
 
-#: kilestdactions.cpp:482
+#: kilestdactions.cpp:479
 #, kde-format
 msgid "matrix - \\begin{matrix}"
 msgstr ""
 
-#: kilestdactions.cpp:482
+#: kilestdactions.cpp:479
 #, kde-format
 msgid "matrix"
 msgstr "მატრიცა"
 
-#: kilestdactions.cpp:483
+#: kilestdactions.cpp:480
 #, kde-format
 msgid "pmatrix - \\begin{pmatrix}"
 msgstr ""
 
-#: kilestdactions.cpp:483
+#: kilestdactions.cpp:480
 #, kde-format
 msgid "pmatrix"
 msgstr ""
 
-#: kilestdactions.cpp:484
+#: kilestdactions.cpp:481
 #, kde-format
 msgid "vmatrix - \\begin{vmatrix}"
 msgstr ""
 
-#: kilestdactions.cpp:484
+#: kilestdactions.cpp:481
 #, kde-format
 msgid "vmatrix"
 msgstr ""
 
-#: kilestdactions.cpp:485
+#: kilestdactions.cpp:482
 #, kde-format
 msgid "Vmatrix - \\begin{Vmatrix}"
 msgstr ""
 
-#: kilestdactions.cpp:485
+#: kilestdactions.cpp:482
 #, kde-format
 msgid "Vmatrix"
 msgstr ""
 
-#: kilestdactions.cpp:486
+#: kilestdactions.cpp:483
 #, kde-format
 msgid "bmatrix - \\begin{bmatrix}"
 msgstr ""
 
-#: kilestdactions.cpp:486
+#: kilestdactions.cpp:483
 #, kde-format
 msgid "bmatrix"
 msgstr ""
 
-#: kilestdactions.cpp:487
+#: kilestdactions.cpp:484
 #, kde-format
 msgid "Bmatrix - \\begin{Bmatrix}"
 msgstr ""
 
-#: kilestdactions.cpp:487
+#: kilestdactions.cpp:484
 #, kde-format
 msgid "Bmatrix"
 msgstr ""
@@ -9566,8 +9564,8 @@ msgstr ""
 #, kde-format
 msgid "1 error"
 msgid_plural "%1 errors"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 შეცდომა"
+msgstr[1] "%1 შეცდომა"
 
 #: kilestdtools.cpp:328
 #, kde-format
@@ -9578,8 +9576,8 @@ msgstr ""
 #, kde-format
 msgid "1 warning"
 msgid_plural "%1 warnings"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "1 გაფრთხილება"
+msgstr[1] "%1 გაფრთხილება"
 
 #: kilestdtools.cpp:329
 #, kde-format
@@ -9761,7 +9759,7 @@ msgstr ""
 #: kiletoolmanager.cpp:753
 #, kde-format
 msgid "Auto-Detect"
-msgstr ""
+msgstr "ავტომატური გამოცნობა"
 
 #: kiletoolmanager.cpp:754
 #, kde-format
@@ -9777,19 +9775,19 @@ msgstr ""
 #: kileui.rc:12
 #, kde-format
 msgid "&File"
-msgstr ""
+msgstr "&ფაილი"
 
 #. i18n: ectx: Menu (convert)
 #: kileui.rc:32
 #, kde-format
 msgid "Con&vert To"
-msgstr ""
+msgstr "&გადაყვანა"
 
 #. i18n: ectx: Menu (edit)
 #: kileui.rc:53 widgets/abbreviationview.cpp:120
 #, kde-format
 msgid "&Edit"
-msgstr ""
+msgstr "&ჩასწორება"
 
 #. i18n: ectx: Menu (complete)
 #: kileui.rc:61
@@ -9801,7 +9799,7 @@ msgstr ""
 #: kileui.rc:66
 #, kde-format
 msgid "&Bullets"
-msgstr ""
+msgstr "&ტყვიები"
 
 #. i18n: ectx: Menu (select)
 #: kileui.rc:70 widgets/structurewidget.cpp:770
@@ -9819,13 +9817,13 @@ msgstr "&წაშლა"
 #: kileui.rc:96
 #, kde-format
 msgid "Environmen&t"
-msgstr ""
+msgstr "&გარემო"
 
 #. i18n: ectx: Menu (texgroup)
 #: kileui.rc:104
 #, kde-format
 msgid "Te&X Group"
-msgstr ""
+msgstr "ჯგუფი Te&X"
 
 #. i18n: ectx: Menu (selection)
 #: kileui.rc:116
@@ -9852,73 +9850,73 @@ msgstr "დოკუმენტების მნახველი"
 #: kileui.rc:129
 #, kde-format
 msgid "&Go"
-msgstr ""
+msgstr "&წავიდა"
 
 #. i18n: ectx: Menu (menu_build)
 #: kileui.rc:143
 #, kde-format
 msgid "B&uild"
-msgstr ""
+msgstr "&აგება"
 
 #. i18n: ectx: Menu (menu_compile)
 #: kileui.rc:156
 #, kde-format
 msgid "&Compile"
-msgstr ""
+msgstr "&კომპილაცია"
 
 #. i18n: ectx: Menu (menu_convert)
 #: kileui.rc:158
 #, kde-format
 msgid "C&onvert"
-msgstr ""
+msgstr "&გადაყვანა"
 
 #. i18n: ectx: Menu (menu_other)
 #: kileui.rc:162
 #, kde-format
 msgid "O&ther"
-msgstr ""
+msgstr "&სხვა"
 
 #. i18n: ectx: Menu (menu_project)
 #: kileui.rc:180
 #, kde-format
 msgid "Pro&ject"
-msgstr ""
+msgstr "&პროექტი"
 
 #. i18n: ectx: Menu (menu_latex)
 #: kileui.rc:202
 #, kde-format
 msgid "LaTe&X"
-msgstr ""
+msgstr "LaTe&X"
 
 #. i18n: ectx: Menu (menu_preamble)
 #: kileui.rc:203
 #, kde-format
 msgid "&Preamble"
-msgstr ""
+msgstr "&პრეამბულა"
 
 #. i18n: ectx: Menu (menu_lists)
 #: kileui.rc:217
 #, kde-format
 msgid "Tables and Lists"
-msgstr ""
+msgstr "&ცხრილები და ჩამონათვალები"
 
 #. i18n: ectx: Menu (menu_sectioning)
 #: kileui.rc:228
 #, kde-format
 msgid "&Sectioning"
-msgstr ""
+msgstr "&დაყოფა"
 
 #. i18n: ectx: Menu (references)
 #: kileui.rc:239
 #, kde-format
 msgid "&References"
-msgstr ""
+msgstr "&მიმართვები"
 
 #. i18n: ectx: Menu (menu_environment)
 #: kileui.rc:251
 #, kde-format
 msgid "&Environment"
-msgstr ""
+msgstr "&გარემო"
 
 #. i18n: ectx: Menu (menu_listenv)
 #: kileui.rc:262
@@ -9954,7 +9952,7 @@ msgstr ""
 #: kileui.rc:302
 #, kde-format
 msgid "Braces"
-msgstr ""
+msgstr "ფრჩხილები"
 
 #. i18n: ectx: Menu (menu_mathtext)
 #: kileui.rc:320
@@ -10056,7 +10054,7 @@ msgstr ""
 #: kileui.rc:443
 #, kde-format
 msgid "Font Shape"
-msgstr ""
+msgstr "ფონტის ფორმა"
 
 #. i18n: ectx: Menu (menu_spacing)
 #: kileui.rc:450
@@ -10086,13 +10084,13 @@ msgstr ""
 #: kileui.rc:487
 #, kde-format
 msgid "&Wizard"
-msgstr ""
+msgstr "&ოსტატი"
 
 #. i18n: ectx: Menu (help)
 #: kileui.rc:516
 #, kde-format
 msgid "&Help"
-msgstr ""
+msgstr "&დახმარება"
 
 #. i18n: ectx: Menu (help_tex)
 #: kileui.rc:519
@@ -10245,7 +10243,7 @@ msgstr ""
 #: main.cpp:113
 #, kde-format
 msgid "Holger Danielsson"
-msgstr ""
+msgstr "Holger Danielsson"
 
 #: main.cpp:113
 #, kde-format
@@ -10255,17 +10253,17 @@ msgstr "პროგრამისტი"
 #: main.cpp:114
 #, kde-format
 msgid "Thomas Braun"
-msgstr ""
+msgstr "Thomas Braun"
 
 #: main.cpp:114
 #, kde-format
 msgid "Former Developer"
-msgstr ""
+msgstr "ყოფილი პროგრამისტი"
 
 #: main.cpp:115
 #, kde-format
 msgid "Jeroen Wijnhout"
-msgstr ""
+msgstr "Jeroen Wijnhout"
 
 #: main.cpp:115
 #, kde-format
@@ -10275,7 +10273,7 @@ msgstr ""
 #: main.cpp:116
 #, kde-format
 msgid "Brachet Pascal"
-msgstr ""
+msgstr "Brachet Pascal"
 
 #: main.cpp:118
 #, kde-format
@@ -10290,7 +10288,7 @@ msgstr ""
 #: main.cpp:119
 #, kde-format
 msgid "Simon Martin"
-msgstr ""
+msgstr "Simon Martin"
 
 #: main.cpp:119
 #, kde-format
@@ -10300,7 +10298,7 @@ msgstr ""
 #: main.cpp:120
 #, kde-format
 msgid "Roland Schulz"
-msgstr ""
+msgstr "Roland Schulz"
 
 #: main.cpp:120
 #, kde-format
@@ -10310,7 +10308,7 @@ msgstr ""
 #: main.cpp:121
 #, kde-format
 msgid "Thorsten Lück"
-msgstr ""
+msgstr "Thorsten Lück"
 
 #: main.cpp:121
 #, kde-format
@@ -10320,7 +10318,7 @@ msgstr ""
 #: main.cpp:122
 #, kde-format
 msgid "Jan-Marek Glogowski"
-msgstr ""
+msgstr "Jan-Marek Glogowski"
 
 #: main.cpp:122
 #, kde-format
@@ -10330,7 +10328,7 @@ msgstr ""
 #: main.cpp:123
 #, kde-format
 msgid "Jonathan Pechta"
-msgstr ""
+msgstr "Jonathan Pechta"
 
 #: main.cpp:123 main.cpp:124
 #, kde-format
@@ -10340,7 +10338,7 @@ msgstr "დოკუმენტაცია"
 #: main.cpp:124
 #, kde-format
 msgid "Federico Zenith"
-msgstr ""
+msgstr "Federico Zenith"
 
 #: main.cpp:142
 #, kde-format
@@ -10612,7 +10610,7 @@ msgstr ""
 #: scriptmanager.cpp:106
 #, kde-format
 msgid "Script Error"
-msgstr ""
+msgstr "სკრიპტის შეცდომა"
 
 #: scriptmanager.cpp:486
 #, kde-format
@@ -10646,12 +10644,12 @@ msgstr ""
 #, kde-format
 msgctxt "<tool name> - <configuration>"
 msgid "%1 - %2"
-msgstr ""
+msgstr "%1 - %2"
 
 #: userhelp.cpp:150
 #, kde-format
 msgid "The file '%1' does not exist."
-msgstr ""
+msgstr "ფაილი '%1' არ არსებობს."
 
 #: usermenu/usermenu.cpp:919
 #, kde-format
@@ -10672,12 +10670,12 @@ msgstr ""
 #: widgets/abbreviationview.cpp:111 widgets/quicktoolconfigwidget.ui:91
 #, kde-format
 msgid "&Add"
-msgstr ""
+msgstr "&დამატება"
 
 #: widgets/abbreviationview.cpp:124 widgets/structurewidget.cpp:771
 #, kde-format
 msgid "&Delete"
-msgstr ""
+msgstr "&წაშლა"
 
 #: widgets/abbreviationview.cpp:173
 #, kde-format
@@ -10716,7 +10714,7 @@ msgstr ""
 #: widgets/codecompletionconfigwidget.cpp:53
 #, kde-format
 msgid "TeX/LaTeX"
-msgstr ""
+msgstr "TeX/LaTeX"
 
 #: widgets/codecompletionconfigwidget.cpp:54
 #, kde-format
@@ -10808,7 +10806,7 @@ msgstr "ზღვარი:"
 #: widgets/codecompletionconfigwidget.ui:57
 #, kde-format
 msgid "letters"
-msgstr ""
+msgstr "წერილები"
 
 #. i18n: ectx: property (title), widget (QGroupBox, cb_autocompleteabbrev)
 #: widgets/codecompletionconfigwidget.ui:82
@@ -10820,7 +10818,7 @@ msgstr ""
 #: widgets/codecompletionconfigwidget.ui:133
 #, kde-format
 msgid "Add..."
-msgstr ""
+msgstr "დამატება..."
 
 #. i18n: ectx: property (text), widget (QPushButton, m_removeFileButton)
 #. i18n: ectx: property (text), widget (QPushButton, m_pshbRemoveTool)
@@ -10831,7 +10829,7 @@ msgstr ""
 #: widgets/usermenuconfigwidget.ui:115
 #, kde-format
 msgid "Remove"
-msgstr ""
+msgstr "წაშლა"
 
 #. i18n: ectx: property (text), widget (QCheckBox, cb_showcwlview)
 #: widgets/codecompletionconfigwidget.ui:162
@@ -10949,7 +10947,7 @@ msgstr ""
 #: widgets/filebrowserwidget.cpp:135 widgets/structureviewconfigwidget.ui:128
 #, kde-format
 msgid "Options"
-msgstr ""
+msgstr "ვარიანტები"
 
 #. i18n: ectx: property (text), widget (QLabel, textLabel2_2)
 #: widgets/generalconfigwidget.ui:43
@@ -10973,7 +10971,7 @@ msgstr ""
 #: widgets/generalconfigwidget.ui:92
 #, kde-format
 msgid "A&uthor:"
-msgstr ""
+msgstr "&ავტორი:"
 
 #. i18n: ectx: property (text), widget (QLabel, textLabel4)
 #: widgets/generalconfigwidget.ui:105
@@ -11051,7 +11049,7 @@ msgstr ""
 #: widgets/graphicsconfigwidget.ui:103
 #, kde-format
 msgid "ImageMagick:"
-msgstr ""
+msgstr "ImageMagick:"
 
 #. i18n: ectx: property (title), widget (QGroupBox, m_gbContextHelp)
 #: widgets/helpconfigwidget.ui:32
@@ -11075,7 +11073,7 @@ msgstr ""
 #: widgets/helpconfigwidget.ui:97
 #, kde-format
 msgid "Con&figure..."
-msgstr ""
+msgstr "&მორგება..."
 
 #. i18n: ectx: property (text), widget (QPushButton, m_pbCommands)
 #: widgets/latexconfigwidget.ui:37
@@ -11106,7 +11104,7 @@ msgstr ""
 #: widgets/latexconfigwidget.ui:89 widgets/maintoolconfigwidget.ui:362
 #, kde-format
 msgid "&Type:"
-msgstr ""
+msgstr "&ტიპი:"
 
 #. i18n: ectx: property (toolTip), widget (QCheckBox, kcfg_InsertSpecialCharacters)
 #: widgets/latexconfigwidget.ui:142
@@ -11266,7 +11264,7 @@ msgstr ""
 #: widgets/maintoolconfigwidget.ui:94 widgets/maintoolconfigwidget.ui:203
 #, kde-format
 msgid "New..."
-msgstr ""
+msgstr "ახალი..."
 
 #. i18n: ectx: property (title), widget (QGroupBox, m_groupBox)
 #: widgets/maintoolconfigwidget.ui:130
@@ -11338,7 +11336,7 @@ msgstr ""
 #: widgets/maintoolconfigwidget.ui:577
 #, kde-format
 msgid "&Icon:"
-msgstr ""
+msgstr "&ხატულა:"
 
 #. i18n: ectx: property (text), widget (QPushButton, m_pshbDefault)
 #: widgets/maintoolconfigwidget.ui:636
@@ -11413,7 +11411,7 @@ msgstr ""
 #: widgets/previewconfigwidget.cpp:92 widgets/previewconfigwidget.cpp:260
 #, kde-format
 msgid "dvi --> png"
-msgstr ""
+msgstr "dvi --> png"
 
 #: widgets/previewconfigwidget.cpp:92
 #, kde-format
@@ -11423,7 +11421,7 @@ msgstr ""
 #: widgets/previewconfigwidget.cpp:93 widgets/previewconfigwidget.cpp:263
 #, kde-format
 msgid "dvi --> ps --> png"
-msgstr ""
+msgstr "dvi --> ps --> png"
 
 #: widgets/previewconfigwidget.cpp:93
 #, kde-format
@@ -11433,7 +11431,7 @@ msgstr ""
 #: widgets/previewconfigwidget.cpp:94 widgets/previewconfigwidget.cpp:264
 #, kde-format
 msgid "pdf --> png"
-msgstr ""
+msgstr "pdf --> png"
 
 #: widgets/previewconfigwidget.cpp:94
 #, kde-format
@@ -11448,7 +11446,7 @@ msgstr ""
 #: widgets/previewconfigwidget.cpp:99
 #, kde-format
 msgid "convert:"
-msgstr ""
+msgstr "გადაყვანა:"
 
 #: widgets/previewconfigwidget.cpp:127
 #, kde-format
@@ -11570,7 +11568,7 @@ msgstr ""
 #: widgets/projectview.cpp:451
 #, kde-format
 msgid "Project File"
-msgstr ""
+msgstr "პროექტის ფაილი"
 
 #: widgets/projectview.cpp:454
 #, kde-format
@@ -11585,7 +11583,7 @@ msgstr "გამოსახულებები"
 #: widgets/projectview.cpp:791
 #, kde-format
 msgid "&Open With"
-msgstr ""
+msgstr "&გამხსნელი პროგრამა"
 
 #: widgets/projectview.cpp:803 widgets/structurewidget.cpp:797
 #, kde-format
@@ -11595,12 +11593,12 @@ msgstr "სხვა..."
 #: widgets/projectview.cpp:809
 #, kde-format
 msgid "&Open"
-msgstr ""
+msgstr "&გახსნა"
 
 #: widgets/projectview.cpp:812
 #, kde-format
 msgid "&Save"
-msgstr ""
+msgstr "&შენახვა"
 
 #: widgets/projectview.cpp:822
 #, kde-format
@@ -11620,7 +11618,7 @@ msgstr ""
 #: widgets/projectview.cpp:849
 #, kde-format
 msgid "A&dd Files..."
-msgstr ""
+msgstr "&ფაილების დამატება..."
 
 #: widgets/projectview.cpp:865 widgets/projectview.cpp:868
 #, kde-format
@@ -11641,7 +11639,7 @@ msgstr ""
 #: widgets/quicktoolconfigwidget.ui:27
 #, kde-format
 msgid "Tool:"
-msgstr ""
+msgstr "ხელსაწყო:"
 
 #. i18n: ectx: property (text), widget (QLabel, m_lbConfig)
 #: widgets/quicktoolconfigwidget.ui:53
@@ -11693,7 +11691,7 @@ msgstr ""
 #: widgets/scriptsmanagementwidget.cpp:81
 #, kde-format
 msgid "Create New Script"
-msgstr ""
+msgstr "ახალ სკრიპტის შექმნა"
 
 #: widgets/scriptsmanagementwidget.cpp:87
 #, kde-format
@@ -11718,7 +11716,7 @@ msgstr "სიის განახლება"
 #: widgets/scriptsmanagementwidget.cpp:115
 #, kde-format
 msgid "Script Name"
-msgstr ""
+msgstr "სკრიპტის სახელი"
 
 #: widgets/scriptsmanagementwidget.cpp:116
 #, kde-format
@@ -11910,31 +11908,31 @@ msgstr ""
 #: widgets/structureviewconfigwidget.ui:243
 #, kde-format
 msgid "eps"
-msgstr ""
+msgstr "eps"
 
 #. i18n: ectx: property (text), item, widget (QComboBox, kcfg_SvDefaultGraphicExt)
 #: widgets/structureviewconfigwidget.ui:248
 #, kde-format
 msgid "pdf"
-msgstr ""
+msgstr "pdf"
 
 #. i18n: ectx: property (text), item, widget (QComboBox, kcfg_SvDefaultGraphicExt)
 #: widgets/structureviewconfigwidget.ui:253
 #, kde-format
 msgid "png"
-msgstr ""
+msgstr "png"
 
 #. i18n: ectx: property (text), item, widget (QComboBox, kcfg_SvDefaultGraphicExt)
 #: widgets/structureviewconfigwidget.ui:258
 #, kde-format
 msgid "jpg"
-msgstr ""
+msgstr "jpg"
 
 #. i18n: ectx: property (text), item, widget (QComboBox, kcfg_SvDefaultGraphicExt)
 #: widgets/structureviewconfigwidget.ui:263
 #, kde-format
 msgid "tif"
-msgstr ""
+msgstr "tif"
 
 #: widgets/structurewidget.cpp:102
 #, kde-format
@@ -11955,7 +11953,7 @@ msgstr ""
 #: widgets/structurewidget.cpp:126
 #, kde-format
 msgid "Label: %1"
-msgstr ""
+msgstr "ჭდე: %1"
 
 #: widgets/structurewidget.cpp:160
 #, kde-format
@@ -12027,7 +12025,7 @@ msgstr "ამ&ოჭრა"
 #: widgets/structurewidget.cpp:767
 #, kde-format
 msgid "&Copy"
-msgstr ""
+msgstr "&კოპირება"
 
 #: widgets/structurewidget.cpp:768
 #, kde-format
@@ -12037,7 +12035,7 @@ msgstr ""
 #: widgets/structurewidget.cpp:773
 #, kde-format
 msgid "C&omment"
-msgstr ""
+msgstr "&კომენტარი"
 
 #: widgets/structurewidget.cpp:775
 #, kde-format
@@ -12087,7 +12085,7 @@ msgstr ""
 #: widgets/symbolview.cpp:207
 #, kde-format
 msgid "Command: %1"
-msgstr ""
+msgstr "ბრძანება: %1"
 
 #: widgets/symbolview.cpp:209
 #, kde-format
