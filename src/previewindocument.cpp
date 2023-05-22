@@ -813,6 +813,7 @@ void PreviewWidgetHandler::lineUnwrapped(KTextEditor::Document*, int linenr) {
 //     qDebug() << "lineUnwrapped(" << linenr << ")";
     assert(linenr >= 1);
     
+    int linelen = m_lines[linenr-1].size();
     // Update text
     m_lines[linenr-1].append(m_lines[linenr]);
     m_lines.erase(m_lines.begin() + linenr);
@@ -822,7 +823,6 @@ void PreviewWidgetHandler::lineUnwrapped(KTextEditor::Document*, int linenr) {
     }
     
     // Update ranges
-    int linelen = m_lines[linenr-1].size();
     for (int l = 0; l < (int)m_widgets_by_line.size(); l++) {
         for (std::unique_ptr<PreviewWidget>& widget : m_widgets_by_line[l]) {
             Cursor start = cursorUnwrap(widget->range().start(), linenr, linelen);
