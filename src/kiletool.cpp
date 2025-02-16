@@ -17,7 +17,6 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QMetaObject>
-#include <QRegExp>
 #include <QTimer>
 
 #include <KConfig>
@@ -38,7 +37,7 @@ namespace KileTool
 {
 Base::Base(const QString &name, Manager *manager, bool prepare /* = true */) :
     QObject(manager), // ensure that they are deleted whenever the tool manager gets deleted
-    m_launcher(Q_NULLPTR),
+    m_launcher(nullptr),
     m_quickie(false),
     m_isPartOfLivePreview(false),
     m_manager(manager),
@@ -71,7 +70,7 @@ Base::Base(const QString &name, Manager *manager, bool prepare /* = true */) :
 Base::~Base()
 {
     KILE_DEBUG_MAIN << "DELETING TOOL: " << name() << this;
-    emit(aboutToBeDestroyed(this));
+    Q_EMIT(aboutToBeDestroyed(this));
     delete m_launcher;
 }
 
@@ -182,39 +181,39 @@ int Base::run()
     KILE_DEBUG_MAIN << "==KileTool::Base::run()=================";
 
     if(m_nPreparationResult != 0) {
-        emit(failedToRun(this, m_nPreparationResult));
+        Q_EMIT(failedToRun(this, m_nPreparationResult));
         return m_nPreparationResult;
     }
 
     if(!checkSource()) {
-        emit(failedToRun(this, NoValidSource));
+        Q_EMIT(failedToRun(this, NoValidSource));
         return NoValidSource;
     }
 
     if(!checkTarget()) {
-        emit(failedToRun(this, TargetHasWrongPermissions));
+        Q_EMIT(failedToRun(this, TargetHasWrongPermissions));
         return TargetHasWrongPermissions;
     }
 
     if (!checkPrereqs()) {
-        emit(failedToRun(this, NoValidPrereqs));
+        Q_EMIT(failedToRun(this, NoValidPrereqs));
         return NoValidPrereqs;
     }
 
-    emit(start(this));
+    Q_EMIT(start(this));
 
     if (!m_launcher || !m_launcher->launch()) {
         KILE_DEBUG_MAIN << "\tlaunching failed";
         if(!m_launcher) {
-            emit(failedToRun(this, CouldNotLaunch));
+            Q_EMIT(failedToRun(this, CouldNotLaunch));
             return CouldNotLaunch;
         }
         if(!m_launcher->selfCheck()) {
-            emit(failedToRun(this, SelfCheckFailed));
+            Q_EMIT(failedToRun(this, SelfCheckFailed));
             return SelfCheckFailed;
         }
         else {
-            emit(failedToRun(this, CouldNotLaunch));
+            Q_EMIT(failedToRun(this, CouldNotLaunch));
             return CouldNotLaunch;
         }
     }
@@ -248,12 +247,12 @@ bool Base::checkSource()
 {
     //FIXME deal with tools that do not need a source or target (yes they exist)
     //Is there an active document? Only check if the source file is not explicitly set.
-    if((m_source.isEmpty()) && (m_manager->info()->activeTextDocument() == Q_NULLPTR)) {
+    if((m_source.isEmpty()) && (m_manager->info()->activeTextDocument() == nullptr)) {
         sendMessage(Error, msg(NeedActiveDoc).subs(name()).toString());
         return false;
     }
 
-    if(m_source.isEmpty() && m_manager->info()->activeTextDocument() != Q_NULLPTR) {
+    if(m_source.isEmpty() && m_manager->info()->activeTextDocument() != nullptr) {
         if(m_manager->info()->activeTextDocument()->url().isEmpty()
                 && (flags() & NoUntitledDoc)) {
             sendMessage(Error, msg(NoUntitledDoc).toString());
@@ -298,7 +297,7 @@ void Base::setSource(const QString &source, const QString& workingDir)
     if(!from().isEmpty()) {
         QString src = source;
         if(info.suffix().length() > 0) {
-            src.replace(QRegExp(info.suffix() + '$'), from());
+            src.replace(QRegularExpression(info.suffix() + '$'), from());
         }
         info.setFile(src);
     }
@@ -362,8 +361,6 @@ void Base::copyPaths(Base* tool)
 
 bool Base::determineTarget()
 {
-    QFileInfo info(source());
-
     //if the target is not set previously, use the source filename
     if(m_target.isEmpty()) {
         //test for explicit override
@@ -467,7 +464,7 @@ void Base::stop()
         m_launcher->kill();
     }
 
-    emit(done(this, Aborted, m_childToolSpawned));
+    Q_EMIT(done(this, Aborted, m_childToolSpawned));
 }
 
 bool Base::finish(int result)
@@ -485,7 +482,7 @@ bool Base::finish(int result)
         sendMessage(Info,"Done!");
 
     KILE_DEBUG_MAIN << "\temitting done(KileTool::Base*, int) " << name();
-    emit(done(this, result, m_childToolSpawned));
+    Q_EMIT(done(this, result, m_childToolSpawned));
 
     //we will only get here if the done() signal is not connected to the manager (who will destroy this object)
     if (result == Success) {
@@ -535,7 +532,7 @@ bool Base::installLauncher()
 
     QString type = readEntry("type");
     KILE_DEBUG_MAIN << "installing launcher of type " << type;
-    Launcher *lr = Q_NULLPTR;
+    Launcher *lr = nullptr;
 
     if ( type == "Process" ) {
         lr = new ProcessLauncher();
@@ -552,7 +549,7 @@ bool Base::installLauncher()
         return true;
     }
     else {
-        m_launcher = Q_NULLPTR;
+        m_launcher = nullptr;
         return false;
     }
 }
@@ -564,7 +561,7 @@ void Base::setupAsChildTool(KileTool::Base *child)
 
 void Base::sendMessage(int type, const QString &msg)
 {
-    emit(message(type, msg, name()));
+    Q_EMIT(message(type, msg, name()));
 }
 
 void Base::filterOutput(const QString & str)
@@ -575,7 +572,7 @@ void Base::filterOutput(const QString & str)
     //idea: store the buffer until a complete line (or more) has been received then parse these lines
     //just send the buf immediately to the output widget, the results of the parsing are displayed in
     //the log widget anyway.
-    emit(output(str));
+    Q_EMIT(output(str));
 }
 
 bool Base::addDict(const QString & key, const QString & value)
@@ -726,7 +723,7 @@ bool Convert::determineSource()
 }
 
 Sequence::Sequence(const QString &name, Manager *manager, bool prepare /*= true*/)
-    : Base(name, manager, prepare), m_latexOutputHandler(Q_NULLPTR)
+    : Base(name, manager, prepare), m_latexOutputHandler(nullptr)
 {
 }
 
@@ -755,7 +752,7 @@ bool Sequence::determineSource()
 
     // the basedir is determined from the current compile target,
     // determined by getCompileName()
-    LaTeXOutputHandler *h = Q_NULLPTR;
+    LaTeXOutputHandler *h = nullptr;
     src = m_ki->getCompileName(false, &h);
 
     setSource(src);
@@ -781,12 +778,11 @@ void Sequence::setupSequenceTools()
 {
     QStringList toolNameList = readEntry("sequence").split(',');
     QString tl, cfg;
-    Base *tool;
     for(QStringList::iterator i = toolNameList.begin(); i != toolNameList.end(); ++i) {
         QString fullToolSpec = (*i).trimmed();
         extract(fullToolSpec, tl, cfg);
 
-        tool = manager()->createTool(tl, cfg, false); // create tool with delayed preparation
+        Base *tool = manager()->createTool(tl, cfg, false); // create tool with delayed preparation
         if (tool) {
             KILE_DEBUG_MAIN << "===tool created with name " << tool->name();
             if(!(manager()->info()->watchFile() && tool->isViewer())) { // FIXME: why this?
@@ -819,7 +815,7 @@ int Sequence::run()
     if(!m_unknownToolSpec.isEmpty()) {
         // 'm_tools' is empty
         sendMessage(Error, i18n("Unknown tool %1.", m_unknownToolSpec));
-        emit(done(this, Failed, m_childToolSpawned));
+        Q_EMIT(done(this, Failed, m_childToolSpawned));
         return ConfigureFailed;
     }
 
@@ -839,7 +835,7 @@ int Sequence::run()
     }
 
     m_tools.clear(); // the tools will be deleted by the tool manager from now on
-    emit(done(this, Silent, m_childToolSpawned));
+    Q_EMIT(done(this, Silent, m_childToolSpawned));
 
     return Success;
 }

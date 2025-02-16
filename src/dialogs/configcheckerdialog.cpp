@@ -36,7 +36,7 @@ namespace KileDialog
 
 class ResultItemDelegate : public QItemDelegate {
 public:
-    ResultItemDelegate(QListWidget *parent) : QItemDelegate(parent) {}
+    explicit ResultItemDelegate(QListWidget *parent) : QItemDelegate(parent) {}
 
     virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override
     {
@@ -73,7 +73,7 @@ ResultItem::ResultItem(QListWidget *listWidget, const QString &toolGroup, int st
                 itemcolor = "#FFA201";
             }
         }
-        rt += QString("<li><b><font color=\"%1\">%2</font></b>: &nbsp;%3</li>").arg(itemcolor).arg(tests[i]->name()).arg(tests[i]->resultText());
+        rt += QString("<li><b><font color=\"%1\">%2</font></b>: &nbsp;%3</li>").arg(itemcolor, tests[i]->name(), tests[i]->resultText());
     }
     rt += "</ul>";
 
@@ -89,7 +89,7 @@ ResultItem::ResultItem(QListWidget *listWidget, const QString &toolGroup, int st
         }
     }
 
-    setData(Qt::UserRole, rt.arg(color).arg(toolGroup).arg(statustr));
+    setData(Qt::UserRole, rt.arg(color, toolGroup, statustr));
 
     //this is for sorting only
     setText(QString::number(status) + ':' + toolGroup);
@@ -98,7 +98,7 @@ ResultItem::ResultItem(QListWidget *listWidget, const QString &toolGroup, int st
 ConfigChecker::ConfigChecker(KileInfo *kileInfo, QWidget* parent)
     : KAssistantDialog(parent)
     , m_ki(kileInfo)
-    , m_tester(Q_NULLPTR)
+    , m_tester(nullptr)
 {
     // don't show the 'help' button in the title bar
     setWindowFlags(this->windowFlags() & ~Qt::WindowContextHelpButtonHint);
@@ -206,7 +206,6 @@ void ConfigChecker::finished(bool ok)
 
     nextButton()->setVisible(false);
     finishButton()->setVisible(true);
-    QString testResultText = "<br/>";
 
     QStringList tools = m_tester->testGroups();
     QStringList critical, failure;
@@ -227,8 +226,7 @@ void ConfigChecker::finished(bool ok)
     m_listWidget->sortItems();
 
     if(ok) {
-        QString cap = i18n("Test Results");
-        QString overallResultText;
+        QString testResultText = "<br/>";
         if (critical.count() > 0) {
             testResultText += i18n("The following <b>critical</b> tests did not succeed:"
                                    "<br/><br/>%1<br/><br/>Kile cannot function correctly on your system. Please consult the "
@@ -279,7 +277,8 @@ void ConfigChecker::finished(bool ok)
     }
     else {
         // start by hiding all the labels
-        Q_FOREACH(QWidget *widget, m_testResultsPageWidgetItem->widget()->findChildren<QLabel*>()) {
+        const QList<QLabel*> widgets = m_testResultsPageWidgetItem->widget()->findChildren<QLabel*>();
+        for(QWidget *widget : widgets) {
             widget->setVisible(false);
         }
         // and then we show those again that we want

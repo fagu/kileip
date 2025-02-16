@@ -103,8 +103,8 @@ class Kile : public KParts::MainWindow, public KileInfo
     Q_OBJECT
 
 public:
-    explicit Kile(bool allowRestore = true, QWidget *parent = Q_NULLPTR);
-    ~Kile();
+    explicit Kile(bool allowRestore = true, QWidget *parent = nullptr);
+    ~Kile() override;
 
     int lineNumber() override;
     KileWidget::StatusBar * statusBar();
@@ -130,7 +130,7 @@ public Q_SLOTS:
     /**
      * @param line : Jump to give line in current editor (can be called via DBUS interface).
      **/
-    void setLine(const QString &line) override;
+    void setLine(const QString &line, const QString &startupId = {}) override;
     void openProject(const QString& proj);
     void runTool(const QString& tool);
     void runToolWithConfig(const QString &tool, const QString &config);
@@ -240,7 +240,7 @@ private:
     void transformOldUserTags();
 
     void initMenu();
-    void setMenuItems(QStringList &list, QMap<QString,bool> &dict);
+    void setMenuItems(const QStringList &list, QMap<QString,bool> &dict);
     void updateMenu();
     bool updateMenuActivationStatus(QMenu *menu);
     bool updateMenuActivationStatus(QMenu *menu, const QSet<QMenu*>& visited);
@@ -337,11 +337,12 @@ private Q_SLOTS:
 
     void sideOrBottomBarChanged(bool visible);
 
-    void showDocInfo(KTextEditor::View *view = Q_NULLPTR);
-    void convertToASCII(KTextEditor::Document *doc = Q_NULLPTR);
-    void convertToEnc(KTextEditor::Document *doc = Q_NULLPTR);
+    void showDocInfo(KTextEditor::View *view = nullptr);
+    void openContainingFolder(KTextEditor::View *view = nullptr);
+    void convertToASCII(KTextEditor::Document *doc = nullptr);
+    void convertToEnc(KTextEditor::Document *doc = nullptr);
 
-    void cleanAll(KileDocument::TextInfo *docinfo = Q_NULLPTR);
+    void cleanAll(KileDocument::TextInfo *docinfo = nullptr);
     void cleanBib();
 
     void findInFiles();

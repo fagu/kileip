@@ -26,8 +26,11 @@
 #include <QUrl>
 
 #include <KActionMenu>
+#include <KIO/ApplicationLauncherJob>
+#include <KIO/JobUiDelegateFactory>
+#include <KIO/OpenUrlJob>
 #include <KApplicationTrader>
-#include <KRun>
+#include <KJobUiDelegate>
 
 #include "kileinfo.h"
 #include "documentinfo.h"
@@ -46,38 +49,38 @@ namespace KileWidget {
  * ProjectViewItem
  */
 ProjectViewItem::ProjectViewItem(QTreeWidget *parent, KileProjectItem *item, bool ar)
-    : QTreeWidgetItem(parent, QStringList(item->url().fileName())), m_docinfo(Q_NULLPTR), m_folder(-1), m_projectItem(item)
+    : QTreeWidgetItem(parent, QStringList(item->url().fileName())), m_docinfo(nullptr), m_folder(-1), m_projectItem(item)
 {
     setArchiveState(ar);
 }
 
 ProjectViewItem::ProjectViewItem(QTreeWidget *parent, QTreeWidgetItem *after, KileProjectItem *item, bool ar)
-    : QTreeWidgetItem(parent, after), m_docinfo(Q_NULLPTR), m_folder(-1), m_projectItem(item)
+    : QTreeWidgetItem(parent, after), m_docinfo(nullptr), m_folder(-1), m_projectItem(item)
 {
     setText(0, item->url().fileName());
     setArchiveState(ar);
 }
 
 ProjectViewItem::ProjectViewItem(QTreeWidgetItem *parent, KileProjectItem *item, bool ar)
-    : QTreeWidgetItem(parent, QStringList(item->url().fileName())), m_docinfo(Q_NULLPTR), m_folder(-1), m_projectItem(item)
+    : QTreeWidgetItem(parent, QStringList(item->url().fileName())), m_docinfo(nullptr), m_folder(-1), m_projectItem(item)
 {
     setArchiveState(ar);
 }
 
 //use this to create folders
 ProjectViewItem::ProjectViewItem(QTreeWidgetItem *parent, const QString& name)
-    : QTreeWidgetItem(parent, QStringList(name)), m_docinfo(Q_NULLPTR), m_folder(-1), m_projectItem(Q_NULLPTR)
+    : QTreeWidgetItem(parent, QStringList(name)), m_docinfo(nullptr), m_folder(-1), m_projectItem(nullptr)
 {
 }
 
 //use this to create non-project files
 ProjectViewItem::ProjectViewItem(QTreeWidget *parent, const QString& name)
-    : QTreeWidgetItem(parent, QStringList(name)), m_docinfo(Q_NULLPTR), m_folder(-1), m_projectItem(Q_NULLPTR)
+    : QTreeWidgetItem(parent, QStringList(name)), m_docinfo(nullptr), m_folder(-1), m_projectItem(nullptr)
 {
 }
 
 ProjectViewItem::ProjectViewItem(QTreeWidget *parent, const KileProject *project)
-    : QTreeWidgetItem(parent, QStringList(project->name())), m_docinfo(Q_NULLPTR), m_folder(-1), m_projectItem(Q_NULLPTR)
+    : QTreeWidgetItem(parent, QStringList(project->name())), m_docinfo(nullptr), m_folder(-1), m_projectItem(nullptr)
 {
 }
 
@@ -264,10 +267,10 @@ void ProjectView::slotClicked(QTreeWidgetItem *item)
     ProjectViewItem *itm = static_cast<ProjectViewItem*>(item);
     if(itm) {
         if(itm->type() == KileType::File) {
-            emit(fileSelected(itm->url()));
+            Q_EMIT(fileSelected(itm->url()));
         }
         else if(itm->type() == KileType::ProjectItem) {
-            emit(fileSelected(itm->projectItem()));
+            Q_EMIT(fileSelected(itm->projectItem()));
         }
         else if(itm->type() != KileType::Folder) {
             // don't open project configuration files (*.kilepr)
@@ -276,10 +279,12 @@ void ProjectView::slotClicked(QTreeWidgetItem *item)
                 QMimeDatabase db;
                 QMimeType pMime = db.mimeTypeForUrl(itm->url());
                 if(pMime.name().startsWith(QLatin1String("text/"))) {
-                    emit(fileSelected(itm->url()));
+                    Q_EMIT(fileSelected(itm->url()));
                 }
                 else {
-                    KRun::runUrl(itm->url(), pMime.name(), this, KRun::RunFlags());
+                    auto *job = new KIO::OpenUrlJob(itm->url(), pMime.name());
+                    job->setUiDelegate(KIO::createDefaultJobUiDelegate(KJobUiDelegate::AutoHandlingEnabled, this));
+                    job->start();
                 }
             }
         }
@@ -294,16 +299,16 @@ void ProjectView::slotFile(int id)
         if(item->type() == KileType::File) {
             switch(id) {
             case KPV_ID_OPEN:
-                emit(fileSelected(item->url()));
+                Q_EMIT(fileSelected(item->url()));
                 break;
             case KPV_ID_SAVE:
-                emit(saveURL(item->url()));
+                Q_EMIT(saveURL(item->url()));
                 break;
             case KPV_ID_ADD:
-                emit(addToProject(item->url()));
+                Q_EMIT(addToProject(item->url()));
                 break;
             case KPV_ID_CLOSE:
-                emit(closeURL(item->url()));
+                Q_EMIT(closeURL(item->url()));
                 return; //don't access "item" later on
             default:
                 break;
@@ -319,13 +324,13 @@ void ProjectView::slotProjectItem(int id)
         if(item->type() == KileType::ProjectItem || item->type() == KileType::ProjectExtra) {
             switch(id) {
             case KPV_ID_OPEN:
-                emit(fileSelected(item->projectItem()));
+                Q_EMIT(fileSelected(item->projectItem()));
                 break;
             case KPV_ID_SAVE:
-                emit(saveURL(item->url()));
+                Q_EMIT(saveURL(item->url()));
                 break;
             case KPV_ID_REMOVE:
-                emit(removeFromProject(item->projectItem()));
+                Q_EMIT(removeFromProject(item->projectItem()));
                 break;
             case KPV_ID_INCLUDE :
                 if(item->text(1) == "*") {
@@ -334,14 +339,19 @@ void ProjectView::slotProjectItem(int id)
                 else {
                     item->setText(1, "*");
                 }
-                emit(toggleArchive(item->projectItem()));
+                Q_EMIT(toggleArchive(item->projectItem()));
                 break;
             case KPV_ID_CLOSE:
-                emit(closeURL(item->url()));
+                Q_EMIT(closeURL(item->url()));
                 break; //we can access "item" later as it isn't deleted
             case KPV_ID_OPENWITH:
-                KRun::displayOpenWithDialog(QList<QUrl>() << item->url(), this);
+            {
+                auto *job = new KIO::ApplicationLauncherJob();
+                job->setUrls(QList<QUrl>() << item->url());
+                job->setUiDelegate(KIO::createDefaultJobUiDelegate(KJobUiDelegate::AutoHandlingEnabled, this));
+                job->start();
                 break;
+            }
             default:
                 break;
             }
@@ -356,22 +366,22 @@ void ProjectView::slotProject(int id)
         if(item->type() == KileType::Project) {
             switch(id) {
             case KPV_ID_BUILDTREE:
-                emit(buildProjectTree(item->url()));
+                Q_EMIT(buildProjectTree(item->url()));
                 break;
             case KPV_ID_OPTIONS:
-                emit(projectOptions(item->url()));
+                Q_EMIT(projectOptions(item->url()));
                 break;
             case KPV_ID_CLOSE:
-                emit(closeProject(item->url()));
+                Q_EMIT(closeProject(item->url()));
                 return; //don't access "item" later on
             case KPV_ID_ARCHIVE:
-                emit(projectArchive(item->url()));
+                Q_EMIT(projectArchive(item->url()));
                 break;
             case KPV_ID_ADDFILES:
-                emit(addFiles(item->url()));
+                Q_EMIT(addFiles(item->url()));
                 break;
             case KPV_ID_OPENALLFILES:
-                emit(openAllFiles(item->url()));
+                Q_EMIT(openAllFiles(item->url()));
                 break;
             default:
                 break;
@@ -389,10 +399,17 @@ void ProjectView::slotRun(int id)
     }
 
     if(id == 0) {
-        KRun::displayOpenWithDialog(QList<QUrl>() << itm->url(), this);
+        // open with dialog
+        auto *job = new KIO::ApplicationLauncherJob();
+        job->setUrls(QList<QUrl>() << itm->url());
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate(KJobUiDelegate::AutoHandlingEnabled, this));
+        job->start();
     }
     else {
-        KRun::runService(*m_offerList[id-1], QList<QUrl>() << itm->url(), this);
+        auto *job = new KIO::ApplicationLauncherJob(m_offerList[id - 1]);
+        job->setUrls(QList<QUrl>() << itm->url());
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate(KJobUiDelegate::AutoHandlingEnabled, this));
+        job->start();
     }
 
     itm->setSelected(false);
@@ -433,7 +450,7 @@ ProjectViewItem* ProjectView::folder(const KileProjectItem *pi, ProjectViewItem 
 
     if(!parent) {
         qCritical() << "no parent for " << pi->url().toLocalFile();
-        return Q_NULLPTR;
+        return nullptr;
     }
 
     // we have already found the parent folder
@@ -511,7 +528,7 @@ void ProjectView::add(const KileProject *project)
 
 ProjectViewItem* ProjectView::projectViewItemFor(const QUrl &url)
 {
-    ProjectViewItem *item = Q_NULLPTR;
+    ProjectViewItem *item = nullptr;
 
     //find project view item
     QTreeWidgetItemIterator it(this);
@@ -528,7 +545,7 @@ ProjectViewItem* ProjectView::projectViewItemFor(const QUrl &url)
 
 ProjectViewItem* ProjectView::itemFor(const QUrl &url)
 {
-    ProjectViewItem *item = Q_NULLPTR;
+    ProjectViewItem *item = nullptr;
 
     QTreeWidgetItemIterator it(this);
     while(*it) {
@@ -583,7 +600,7 @@ ProjectViewItem* ProjectView::parentFor(const KileProjectItem *projitem, Project
     return (!parpvi) ? projvi : parpvi;
 }
 
-ProjectViewItem* ProjectView::add(KileProjectItem *projitem, ProjectViewItem *projvi /* = Q_NULLPTR */)
+ProjectViewItem* ProjectView::add(KileProjectItem *projitem, ProjectViewItem *projvi /* = nullptr */)
 {
     KILE_DEBUG_MAIN << "\tprojectitem=" << projitem->path()
                     << " projvi=" << projvi;
@@ -595,7 +612,7 @@ ProjectViewItem* ProjectView::add(KileProjectItem *projitem, ProjectViewItem *pr
 
     KILE_DEBUG_MAIN << "\tparent projectviewitem " << projvi->url().fileName();
 
-    ProjectViewItem *item = Q_NULLPTR, *parent = Q_NULLPTR;
+    ProjectViewItem *item = nullptr, *parent = nullptr;
 
     switch (projitem->type()) {
     case (KileProjectItem::Source):
@@ -714,7 +731,7 @@ void ProjectView::remove(const KileProject *project)
         ProjectViewItem *item = static_cast<ProjectViewItem*>(topLevelItem(i));
 
         if(item->url() == project->url()) {
-            item->setParent(Q_NULLPTR);
+            item->setParent(nullptr);
             delete item;
             --m_nProjects;
             break;
@@ -731,7 +748,7 @@ void ProjectView::remove(const QUrl &url)
         ProjectViewItem *item = dynamic_cast<ProjectViewItem*>(topLevelItem(i));
 
         if(item && (item->type() == KileType::File) && (item->url() == url)) {
-            item->setParent(Q_NULLPTR);
+            item->setParent(nullptr);
             delete item;
             break;
         }
@@ -764,7 +781,7 @@ void ProjectView::removeItem(const KileProjectItem *projitem, bool open)
 void ProjectView::contextMenuEvent(QContextMenuEvent *event)
 {
     QMenu popup;
-    QAction *action = Q_NULLPTR;
+    QAction *action = nullptr;
 
     QTreeWidgetItem* treeWidgetItem = itemAt(event->pos());
     if(!treeWidgetItem) {

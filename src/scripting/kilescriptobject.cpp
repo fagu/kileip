@@ -18,7 +18,7 @@
 #include <QFileInfo>
 #include <QInputDialog>
 #include <QMap>
-#include <QRegExpValidator>
+#include <QRegularExpressionValidator>
 #include <QVariant>
 
 #include <KMessageBox>
@@ -46,7 +46,7 @@ void KileAlert::information(const QString &text, const QString &caption)
 void KileAlert::sorry(const QString &text, const QString &caption)
 {
     QString msgCaption = ( caption.isEmpty() ) ? i18n("Script: sorry") : caption;
-    KMessageBox::sorry(m_mainWindow,text,msgCaption);
+    KMessageBox::error(m_mainWindow,text,msgCaption);
 }
 
 void KileAlert::error(const QString &text, const QString &caption)
@@ -58,7 +58,8 @@ void KileAlert::error(const QString &text, const QString &caption)
 QString KileAlert::question(const QString &text, const QString &caption)
 {
     QString msgCaption = ( caption.isEmpty() ) ? i18n("Script: question") : caption;
-    return ( KMessageBox::questionYesNo(m_mainWindow,text,msgCaption) == KMessageBox::No ) ? "no" : "yes";
+    return ( KMessageBox::questionTwoActions(m_mainWindow, text, msgCaption, KStandardGuiItem::ok(), KStandardGuiItem::cancel())
+             == KMessageBox::PrimaryAction ) ? "yes" : "no";
 }
 
 QString KileAlert::warning(const QString &text, const QString &caption)
@@ -82,20 +83,20 @@ QString KileInput::getListboxItem(const QString &caption, const QString &label, 
 QString KileInput::getText(const QString &caption, const QString &label)
 {
     QStringList list = checkCaptionAndLabel(caption, label);
-    return QInputDialog::getText(Q_NULLPTR, list[0], list[1]);
+    return QInputDialog::getText(nullptr, list[0], list[1]);
 }
 
 QString KileInput::getLatexCommand(const QString &caption, const QString &label)
 {
-    QRegExpValidator validator(QRegExp("[A-Za-z]+"),this);
+    QRegularExpressionValidator validator(QRegularExpression("[A-Za-z]+"),this);
     QStringList list = checkCaptionAndLabel(caption, label);
-    return KileDialog::getText(list[0], list[1], QString(), Q_NULLPTR, &validator);
+    return KileDialog::getText(list[0], list[1], QString(), nullptr, &validator);
 }
 
 int KileInput::getInteger(const QString &caption, const QString &label, int min, int max)
 {
     QStringList list = checkCaptionAndLabel(caption, label);
-    return QInputDialog::getInt(Q_NULLPTR, list[0], list[1], 0, min, max, 1);
+    return QInputDialog::getInt(nullptr, list[0], list[1], 0, min, max, 1);
 }
 
 int KileInput::getPosInteger(const QString &caption, const QString &label, int min, int max)
@@ -106,7 +107,7 @@ int KileInput::getPosInteger(const QString &caption, const QString &label, int m
 QString KileInput::getItem(const QString &caption, const QString &label, const QStringList &itemlist)
 {
     QStringList list = checkCaptionAndLabel(caption, label);
-    return QInputDialog::getItem(Q_NULLPTR, list[0], list[1], itemlist, 0);
+    return QInputDialog::getItem(nullptr, list[0], list[1], itemlist, 0);
 }
 
 QStringList KileInput::checkCaptionAndLabel(const QString &caption, const QString &label)
@@ -217,7 +218,7 @@ QMap<QString, QVariant> KileFile::read(const QString& filename) const
 
     // read data
     QTextStream stream(&file);
-    stream.setCodec("UTF-8");
+    stream.setEncoding(QStringConverter::Utf8);
     result["text"] = stream.readAll();
     file.close();
 

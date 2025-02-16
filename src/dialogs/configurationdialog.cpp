@@ -49,8 +49,7 @@
 #include "widgets/toolconfigwidget.h"
 #include "widgets/usermenuconfigwidget.h"
 
-namespace KileDialog
-{
+namespace KileDialog {
 Config::Config(KConfig *config, KileInfo *ki, QWidget* parent)
     : KPageDialog(parent),
       m_config(config),
@@ -95,16 +94,17 @@ Config::Config(KConfig *config, KileInfo *ki, QWidget* parent)
         // every config page is added to a KileWidget::ScrollWidget, but all the scroll widgets should have
         // the same size; first we find the maximal page size
         QSize maximumSizeHint;
-        for(KPageWidgetItem *item : const_cast<const QList<KPageWidgetItem*>&>(m_pageWidgetItemList)) { // use 'qAsConst' later
+        for(KPageWidgetItem *item : std::as_const(m_pageWidgetItemList)) {
             QScrollArea *scrollArea = dynamic_cast<QScrollArea*>(item->widget());
             if(!scrollArea) {
                 qWarning() << "One scroll area not a KileWidget::ScrollWidget!";
-                continue;
             }
-            maximumSizeHint = maximumSizeHint.expandedTo(scrollArea->widget()->sizeHint());
+            else {
+                maximumSizeHint = maximumSizeHint.expandedTo(scrollArea->widget()->sizeHint());
+            }
         }
         // and then we set the size of all the scroll widgets to the maximal page size
-        for(KPageWidgetItem *item : const_cast<const QList<KPageWidgetItem*>&>(m_pageWidgetItemList)) { // use 'qAsConst' later
+        for(KPageWidgetItem *item : std::as_const(m_pageWidgetItemList)) {
             KileWidget::ScrollWidget *scrollWidget = dynamic_cast<KileWidget::ScrollWidget*>(item->widget());
             if(!scrollWidget) {
                 continue;
@@ -279,10 +279,8 @@ void Config::setupAppearance(KPageWidgetItem* parent)
 
 void Config::setupLatex(KPageWidgetItem* parent)
 {
-    latexPage = new KileWidgetLatexConfig(this);
-    latexPage->setObjectName("LaTeX");
-    latexPage->kcfg_DoubleQuotes->addItems(m_ki->editorExtension()->doubleQuotesListI18N());
-    latexPage->setLatexCommands(m_config,m_ki->latexCommands());
+    latexPage = new KileWidgetLatexConfig(m_config, m_ki, this);
+    latexPage->readConfig();
 
     addConfigPage(parent, latexPage, i18n("General"), "configure");
 }
@@ -360,8 +358,8 @@ void Config::slotAcceptChanges()
     previewPage->writeConfig();   // Quick Preview (dani)
     usermenuPage->writeConfig();
     livePreviewPage->writeConfig();
+    latexPage->writeConfig();
 
     m_config->sync();
 }
-}
-
+} // namespace KileDialog

@@ -1,6 +1,6 @@
 /********************************************************************************
 *   Copyright (C) 2007 by Holger Danielsson (holger.danielsson@versanet.de)     *
-*                 2008 - 2010 by Michel Ludwig (michel.ludwig@kdemail.net)      *
+*                 2008 - 2024 by Michel Ludwig (michel.ludwig@kdemail.net)      *
 *********************************************************************************/
 
 /**************************************************************************
@@ -24,10 +24,13 @@ namespace KileAbbreviation {
 Manager::Manager(KileInfo* kileInfo, QObject *parent) : QObject(parent), m_kileInfo(kileInfo), m_abbreviationsDirty(false)
 {
     setObjectName("KileAbbreviation::Manager");
-    m_localAbbreviationFile = KileUtilities::writableLocation(QStandardPaths::AppDataLocation) + '/' + "complete/abbreviation/" + "kile-abbrevs.cwl";
-    QDir testDir(m_localAbbreviationFile);
-    if (!testDir.exists()) {
-        testDir.mkpath(m_localAbbreviationFile);
+    const QString m_localAbbreviationDirectory = KileUtilities::writableLocation(QStandardPaths::AppDataLocation) + QLatin1String("/complete/abbreviation");
+    m_localAbbreviationFile = m_localAbbreviationDirectory + QLatin1String("/kile-abbrevs.cwl");
+    {
+        QDir testDir(m_localAbbreviationDirectory);
+        if(!testDir.exists()) {
+            testDir.mkpath(m_localAbbreviationDirectory);
+        }
     }
 }
 
@@ -55,7 +58,7 @@ void Manager::updateLocalAbbreviation(const QString& text, const QString& replac
     }
     m_abbreviationMap[text] = createLocalAbbreviationPair(replacement);
     m_abbreviationsDirty = true;
-    emit(abbreviationsChanged());
+    Q_EMIT(abbreviationsChanged());
 }
 
 void Manager::removeLocalAbbreviation(const QString& text)
@@ -69,7 +72,7 @@ void Manager::removeLocalAbbreviation(const QString& text)
         m_abbreviationMap.erase(it);
         m_abbreviationsDirty = true;
     }
-    emit(abbreviationsChanged());
+    Q_EMIT(abbreviationsChanged());
 }
 
 void Manager::readAbbreviationFiles()
@@ -78,14 +81,14 @@ void Manager::readAbbreviationFiles()
         saveLocalAbbreviations();
     }
     m_abbreviationMap.clear();
-    QStringList list = m_kileInfo->codeCompletionManager()->readCWLFiles(KileConfig::completeAbbrev(), "abbreviation");
+    QStringList list = m_kileInfo->codeCompletionManager()->readCWLFiles(KileConfig::completeAbbrev(), QStringLiteral("abbreviation"));
     addAbbreviationListToMap(list, true);
 
     // read local wordlist
     list = m_kileInfo->codeCompletionManager()->readCWLFile(m_localAbbreviationFile, true);
     addAbbreviationListToMap(list, false);
 
-    emit(abbreviationsChanged());
+    Q_EMIT(abbreviationsChanged());
 }
 
 void Manager::saveLocalAbbreviations()
@@ -113,7 +116,7 @@ void Manager::saveLocalAbbreviations()
             i != m_abbreviationMap.end(); ++i) {
         StringBooleanPair pair = i.value();
         if(!pair.second) {
-            stream << QString(i.key()).replace('=', "\\=")
+            stream << QString(i.key()).replace(QLatin1Char('='), QLatin1String("\\="))
                    << '=' << pair.first << '\n';
         }
     }
@@ -125,14 +128,13 @@ void Manager::saveLocalAbbreviations()
 void Manager::addAbbreviationListToMap(const QStringList& list, bool global)
 {
     // a '=' symbol in the left-hand side is encoded by '\='
-    for(QStringList::const_iterator i = list.begin(); i != list.end(); ++i) {
-        QString entry = *i;
-        int delimiter = entry.indexOf(QRegExp("[^\\\\]="));
+    for(const QString& entry : list) {
+        int delimiter = entry.indexOf(QRegularExpression(QLatin1String("[^\\\\]=")));
         if(delimiter < 0) {
             continue;
         }
         QString left = entry.left(delimiter + 1); // [^\\\\]= has length 2.
-        left.replace("\\=", "=");
+        left.replace(QLatin1String("\\="), QLatin1String("="));
         QString right = entry.mid(delimiter + 2); // [^\\\\]= has length 2.
         if(right.isEmpty()) {
             continue;

@@ -39,6 +39,7 @@
 #include <KHelpMenu>
 #include <KIconLoader>
 #include <KIO/DesktopExecParser>
+#include <KIO/OpenFileManagerWindowJob>
 #include <KLocalizedString>
 #include <KMessageBox>
 #include <KRecentFilesAction>
@@ -48,6 +49,10 @@
 #include <KXmlGuiWindow>
 #include <KSelectAction>
 #include <KWindowSystem>
+#include <qregularexpression.h>
+#if __has_include(<kx11extras.h>)
+#include <kx11extras.h>
+#endif
 
 #include "abbreviationmanager.h"
 #include "configurationmanager.h"
@@ -113,48 +118,48 @@
 Kile::Kile(bool allowRestore, QWidget *parent)
     : KParts::MainWindow(),
       KileInfo(this),
-      m_toolsToolBar(Q_NULLPTR),       // we have to set all of these to null as the constructor
-      m_userHelpActionMenu(Q_NULLPTR), // might return early
-      m_bibTagSettings(Q_NULLPTR),
-      m_compilerActions(Q_NULLPTR),
-      m_viewActions(Q_NULLPTR),
-      m_convertActions(Q_NULLPTR),
-      m_quickActions(Q_NULLPTR),
-      m_bibTagActionMenu(Q_NULLPTR),
-      ModeAction(Q_NULLPTR),
-      WatchFileAction(Q_NULLPTR),
-      m_actionMessageView(Q_NULLPTR),
-      m_actionShowMenuBar(Q_NULLPTR),
-      m_actRecentFiles(Q_NULLPTR),
-      m_pFullScreen(Q_NULLPTR),
-      m_sideBar(Q_NULLPTR),
-      m_kileAbbrevView(Q_NULLPTR),
-      m_topWidgetStack(Q_NULLPTR),
-      m_horizontalSplitter(Q_NULLPTR),
-      m_verticalSplitter(Q_NULLPTR),
-      m_toolBox(Q_NULLPTR),
-      m_commandViewToolBox(Q_NULLPTR),
-      m_symbolViewMFUS(Q_NULLPTR),
-      m_symbolViewRelation(Q_NULLPTR),
-      m_symbolViewArrows(Q_NULLPTR),
-      m_symbolViewMiscMath(Q_NULLPTR),
-      m_symbolViewMiscText(Q_NULLPTR),
-      m_symbolViewOperators(Q_NULLPTR),
-      m_symbolViewUser(Q_NULLPTR),
-      m_symbolViewDelimiters(Q_NULLPTR),
-      m_symbolViewGreek(Q_NULLPTR),
-      m_symbolViewSpecial(Q_NULLPTR),
-      m_symbolViewCyrillic(Q_NULLPTR),
-      m_commandView(Q_NULLPTR),
-      m_latexOutputErrorToolBar(Q_NULLPTR),
-      m_buildMenuTopLevel(Q_NULLPTR),
-      m_buildMenuCompile(Q_NULLPTR),
-      m_buildMenuConvert(Q_NULLPTR),
-      m_buildMenuViewer(Q_NULLPTR),
-      m_buildMenuOther(Q_NULLPTR),
-      m_buildMenuQuickPreview(Q_NULLPTR),
-      m_actRecentProjects(Q_NULLPTR),
-      m_lyxserver(Q_NULLPTR)
+      m_toolsToolBar(nullptr),       // we have to set all of these to null as the constructor
+      m_userHelpActionMenu(nullptr), // might return early
+      m_bibTagSettings(nullptr),
+      m_compilerActions(nullptr),
+      m_viewActions(nullptr),
+      m_convertActions(nullptr),
+      m_quickActions(nullptr),
+      m_bibTagActionMenu(nullptr),
+      ModeAction(nullptr),
+      WatchFileAction(nullptr),
+      m_actionMessageView(nullptr),
+      m_actionShowMenuBar(nullptr),
+      m_actRecentFiles(nullptr),
+      m_pFullScreen(nullptr),
+      m_sideBar(nullptr),
+      m_kileAbbrevView(nullptr),
+      m_topWidgetStack(nullptr),
+      m_horizontalSplitter(nullptr),
+      m_verticalSplitter(nullptr),
+      m_toolBox(nullptr),
+      m_commandViewToolBox(nullptr),
+      m_symbolViewMFUS(nullptr),
+      m_symbolViewRelation(nullptr),
+      m_symbolViewArrows(nullptr),
+      m_symbolViewMiscMath(nullptr),
+      m_symbolViewMiscText(nullptr),
+      m_symbolViewOperators(nullptr),
+      m_symbolViewUser(nullptr),
+      m_symbolViewDelimiters(nullptr),
+      m_symbolViewGreek(nullptr),
+      m_symbolViewSpecial(nullptr),
+      m_symbolViewCyrillic(nullptr),
+      m_commandView(nullptr),
+      m_latexOutputErrorToolBar(nullptr),
+      m_buildMenuTopLevel(nullptr),
+      m_buildMenuCompile(nullptr),
+      m_buildMenuConvert(nullptr),
+      m_buildMenuViewer(nullptr),
+      m_buildMenuOther(nullptr),
+      m_buildMenuQuickPreview(nullptr),
+      m_actRecentProjects(nullptr),
+      m_lyxserver(nullptr)
 {
     setObjectName("Kile");
 
@@ -238,6 +243,7 @@ Kile::Kile(bool allowRestore, QWidget *parent)
     qApp->processEvents();
 
     setupBottomBar();
+
     m_verticalSplitter->addWidget(m_bottomBar);
     m_topWidgetStack->addWidget(m_horizontalSplitter);
     setCentralWidget(m_topWidgetStack);
@@ -378,7 +384,7 @@ Kile::Kile(bool allowRestore, QWidget *parent)
     new MainAdaptor(this);
     QDBusConnection dbus = QDBusConnection::sessionBus();
     dbus.registerObject("/main", this);
-    dbus.registerService("net.sourceforge.kile"); // register under a constant name
+    dbus.registerService("org.kde.kile"); // register under a constant name
 
     m_lyxserver = new KileLyxServer(KileConfig::runLyxServer());
     connect(m_lyxserver, &KileLyxServer::insert, this, [this](const KileAction::TagData &data) { insertTag(data); });
@@ -391,11 +397,13 @@ Kile::Kile(bool allowRestore, QWidget *parent)
     if(KileConfig::rCVersion() < 8) {
         // if KileConfig::rCVersion() <= 0, then 'kilerc' is (most likely) fresh or empty,
         // otherwise, we have to ask the user if she wants to reset the tools
-        if ((KileConfig::rCVersion() <= 0) || (KMessageBox::questionYesNo(mainWindow(),
-                                               i18n("<p>The tool settings need to be reset for this version of Kile to function properly.<br/>"
-                                                       "This will overwrite any changes you have made.</p>"
-                                                       "<p>Do you want to reset the tools now?</p>"),
-                                               i18n("Tools need to be reset"))  == KMessageBox::Yes)) {
+        if ((KileConfig::rCVersion() <= 0) ||
+            (KMessageBox::questionTwoActions(mainWindow(),
+                                             i18n("<p>The tool settings need to be reset for this version of Kile to function properly.<br/>"
+                                                  "This will overwrite any changes you have made.</p>"
+                                                  "<p>Do you want to reset the tools now?</p>"),
+                                             i18n("Tools need to be reset"),
+                                             KStandardGuiItem::reset(), KStandardGuiItem::cancel())  == KMessageBox::PrimaryAction)) {
             m_toolFactory->resetToolConfigurations();
         }
     }
@@ -424,7 +432,7 @@ Kile::Kile(bool allowRestore, QWidget *parent)
         settings.setValue(QStringLiteral("autodetectLanguage"), false);
 #endif
         slotPerformCheck();
-        KileConfig::setSystemCheckLastVersionRunForAtStartUp(kileFullVersion);
+        KileConfig::setSystemCheckLastVersionRunForAtStartUp(QLatin1StringView(KILE_VERSION_STRING));
     }
 
     if(m_livePreviewManager) {
@@ -712,6 +720,7 @@ void Kile::setupBottomBar()
     QWidget *widget = new QWidget(this);
     QHBoxLayout *layout = new QHBoxLayout(widget);
     layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
     widget->setLayout(layout);
 
     m_latexOutputErrorToolBar = new KToolBar(widget);
@@ -719,7 +728,12 @@ void Kile::setupBottomBar()
     m_latexOutputErrorToolBar->setIconDimensions(KIconLoader::SizeSmall);
     m_latexOutputErrorToolBar->setOrientation(Qt::Vertical);
 
+    auto horizontalSeparator = new QFrame(widget);
+    horizontalSeparator->setFrameShape(QFrame::VLine);
+    horizontalSeparator->setMaximumWidth(1);
+
     layout->addWidget(errorHandler()->outputWidget());
+    layout->addWidget(horizontalSeparator);
     layout->addWidget(m_latexOutputErrorToolBar);
     m_bottomBar->addPage(widget, QIcon::fromTheme("utilities-log-viewer"), i18n("Log and Messages"));
 
@@ -840,6 +854,7 @@ void Kile::setupActions()
     createAction(i18n("Close All"), "file_close_all", docManager(), &KileDocument::Manager::fileCloseAll);
     createAction(i18n("Close All Ot&hers"), "file_close_all_others", docManager(), [this]() { docManager()->fileCloseAllOthers(); });
     createAction(i18n("S&tatistics"), "Statistics", this, [this]() { showDocInfo(); });
+    createAction(i18nc("@action:inmenu", "&Open Containing Folder"), "open_containing_folder", "document-open-folder", this, [this]() { openContainingFolder(); });
     createAction(i18n("&ASCII"), "file_export_ascii", this, [this]() { convertToASCII(); });
     createAction(i18n("Latin-&1 (iso 8859-1)"), "file_export_latin1", this, [this]() { convertToEnc(); });
     createAction(i18n("Latin-&2 (iso 8859-2)"), "file_export_latin2", this, [this]() { convertToEnc(); });
@@ -854,13 +869,13 @@ void Kile::setupActions()
     createAction(i18n("Move Tab Left"), "move_view_tab_left", "arrow-left", viewManager(), [this]() { viewManager()->moveTabLeft(); });
     createAction(i18n("Move Tab Right"), "move_view_tab_right", "arrow-right", viewManager(), [this]() { viewManager()->moveTabRight(); });
 
-    createAction(i18n("Next section"), "edit_next_section", "nextsection", QKeySequence(Qt::ALT + Qt::Key_Down),
+    createAction(i18n("Next section"), "edit_next_section", "nextsection", QKeySequence(Qt::ALT | Qt::Key_Down),
                  m_edit, &KileDocument::EditorExtension::gotoNextSectioning);
-    createAction(i18n("Prev section"), "edit_prev_section", "prevsection", QKeySequence(Qt::ALT + Qt::Key_Up),
+    createAction(i18n("Prev section"), "edit_prev_section", "prevsection", QKeySequence(Qt::ALT | Qt::Key_Up),
                  m_edit, &KileDocument::EditorExtension::gotoPrevSectioning);
-    createAction(i18n("Next paragraph"), "edit_next_paragraph", "nextparagraph", QKeySequence(Qt::ALT + Qt::SHIFT + Qt::Key_Down),
+    createAction(i18n("Next paragraph"), "edit_next_paragraph", "nextparagraph", QKeySequence(Qt::ALT | Qt::SHIFT | Qt::Key_Down),
                  m_edit, [this]() { m_edit->gotoNextParagraph(); });
-    createAction(i18n("Prev paragraph"), "edit_prev_paragraph", "prevparagraph", QKeySequence(Qt::ALT + Qt::SHIFT + Qt::Key_Up),
+    createAction(i18n("Prev paragraph"), "edit_prev_paragraph", "prevparagraph", QKeySequence(Qt::ALT | Qt::SHIFT | Qt::Key_Up),
                  m_edit, [this]() { m_edit->gotoPrevParagraph(); });
 
     createAction(i18n("Find &in Files..."), "FindInFiles", "filegrep", this, &Kile::findInFiles);
@@ -896,13 +911,13 @@ void Kile::setupActions()
     act = createAction(i18n("Clean"), "CleanAll", "user-trash", this, [this]() { cleanAll(); });
 
     QList<QKeySequence> nextTabShorcuts;
-    nextTabShorcuts.append(QKeySequence(Qt::ALT + Qt::Key_Right));
+    nextTabShorcuts.append(QKeySequence(Qt::ALT | Qt::Key_Right));
     nextTabShorcuts.append(KStandardShortcut::tabNext());
     createAction(i18n("Next Document"), "gotoNextDocument", "go-next-view-page",
                  nextTabShorcuts, viewManager(), &KileView::Manager::gotoNextView);
 
     QList<QKeySequence> prevTabShorcuts;
-    prevTabShorcuts.append(QKeySequence(Qt::ALT + Qt::Key_Left));
+    prevTabShorcuts.append(QKeySequence(Qt::ALT | Qt::Key_Left));
     prevTabShorcuts.append(KStandardShortcut::tabPrev());
     createAction(i18n("Previous Document"), "gotoPrevDocument", "go-previous-view-page",
                  prevTabShorcuts, viewManager(), &KileView::Manager::gotoPrevView);
@@ -920,15 +935,15 @@ void Kile::setupActions()
 
 
     createAction(i18nc("@action: Starts the completion of the current LaTeX command", "Complete (La)TeX Command"), "edit_complete_word", "complete1",
-                 QKeySequence(Qt::SHIFT + Qt::CTRL + Qt::Key_Space), codeCompletionManager(), [this]() { codeCompletionManager()->startLaTeXCompletion(); });
+                 QKeySequence(Qt::SHIFT | Qt::CTRL | Qt::Key_Space), codeCompletionManager(), [this]() { codeCompletionManager()->startLaTeXCompletion(); });
     createAction(i18nc("@action: Starts the input (and completion) of a LaTeX environment", "Complete LaTeX Environment"), "edit_complete_env", "complete2",
-                 QKeySequence(Qt::SHIFT + Qt::ALT + Qt::Key_Space), codeCompletionManager(), [this]() { codeCompletionManager()->startLaTeXEnvironment(); });
+                 QKeySequence(Qt::SHIFT | Qt::ALT | Qt::Key_Space), codeCompletionManager(), [this]() { codeCompletionManager()->startLaTeXEnvironment(); });
     createAction(i18nc("@action: Starts the completion of the current abbreviation", "Complete Abbreviation"), "edit_complete_abbrev", "complete3",
-                 QKeySequence(Qt::CTRL + Qt::ALT + Qt::Key_Space), codeCompletionManager(), [this]() { codeCompletionManager()->startAbbreviationCompletion(); });
+                 QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_Space), codeCompletionManager(), [this]() { codeCompletionManager()->startAbbreviationCompletion(); });
 
-    createAction(i18n("Next Bullet"), "edit_next_bullet", "nextbullet", QKeySequence(Qt::CTRL + Qt::ALT + Qt::Key_Right),
+    createAction(i18n("Next Bullet"), "edit_next_bullet", "nextbullet", QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_Right),
                  m_edit, [this]() { m_edit->nextBullet(); });
-    createAction(i18n("Prev Bullet"), "edit_prev_bullet", "prevbullet", QKeySequence(Qt::CTRL + Qt::ALT + Qt::Key_Left),
+    createAction(i18n("Prev Bullet"), "edit_prev_bullet", "prevbullet", QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_Left),
                  m_edit, [this]() { m_edit->prevBullet(); });
 
 // advanced editor (dani)
@@ -1010,7 +1025,7 @@ void Kile::setupActions()
     act = createAction(i18n("Settings for Biblatex"), "setting_biblatex", this, &Kile::rebuildBibliographyMenu);
     act->setCheckable(true);
     m_bibTagSettings->addAction(act);
-    m_bibTagSettings->setCurrentAction(action((QString("setting_") + KileConfig::bibliographyType()).toLatin1()));
+    m_bibTagSettings->setCurrentAction(action((QStringLiteral("setting_") + KileConfig::bibliographyType())));
 
     rebuildBibliographyMenu();
 
@@ -1126,9 +1141,8 @@ QAction* Kile::createToolAction(const QString& toolName)
 
 void Kile::createToolActions()
 {
-    QStringList tools = KileTool::toolList(m_config.data());
-    for (QStringList::iterator i = tools.begin(); i != tools.end(); ++i) {
-        QString toolName = *i;
+    const QStringList tools = KileTool::toolList(m_config.data());
+    for(const QString& toolName : tools) {
         if(!actionCollection()->action("tool_" + toolName)) {
             KILE_DEBUG_MAIN << "Creating action for tool" << toolName;
             createToolAction(toolName);
@@ -1141,21 +1155,19 @@ void Kile::setupTools()
     KILE_DEBUG_MAIN << "==Kile::setupTools()===================" << Qt::endl;
 
     if(!m_buildMenuCompile || !m_buildMenuConvert ||  !m_buildMenuTopLevel || !m_buildMenuQuickPreview || !m_buildMenuViewer || !m_buildMenuOther) {
-        KILE_DEBUG_MAIN << "BUG, menu pointers are Q_NULLPTR"
-                        << (m_buildMenuCompile == Q_NULLPTR)
-                        << (m_buildMenuConvert == Q_NULLPTR)
-                        << (m_buildMenuTopLevel == Q_NULLPTR)
-                        << (m_buildMenuQuickPreview == Q_NULLPTR)
-                        << (m_buildMenuViewer == Q_NULLPTR)
-                        << (m_buildMenuOther == Q_NULLPTR);
+        KILE_DEBUG_MAIN << "BUG, menu pointers are nullptr"
+                        << (m_buildMenuCompile == nullptr)
+                        << (m_buildMenuConvert == nullptr)
+                        << (m_buildMenuTopLevel == nullptr)
+                        << (m_buildMenuQuickPreview == nullptr)
+                        << (m_buildMenuViewer == nullptr)
+                        << (m_buildMenuOther == nullptr);
         return;
     }
 
     QStringList tools = KileTool::toolList(m_config.data());
-    QString toolMenu, grp;
     QList<QAction*> *pl;
-    QAction *act;
-    ToolbarSelectAction *pSelectAction = Q_NULLPTR;
+    ToolbarSelectAction *pSelectAction = nullptr;
 
     m_compilerActions->saveCurrentAction();
     m_viewActions->saveCurrentAction();
@@ -1163,7 +1175,7 @@ void Kile::setupTools()
     m_quickActions->saveCurrentAction();
 
     // do plugActionList by hand ...
-    foreach(act, m_listQuickActions) {
+    for(QAction *act: std::as_const(m_listQuickActions)) {
         m_buildMenuTopLevel->removeAction(act);
     }
 
@@ -1178,8 +1190,8 @@ void Kile::setupTools()
     m_quickActions->removeAllActions();
 
     for (int i = 0; i < tools.count(); ++i) {
-        grp = KileTool::groupFor(tools[i], m_config.data());
-        toolMenu = KileTool::menuFor(tools[i], m_config.data());
+        QString grp = KileTool::groupFor(tools[i], m_config.data());
+        QString toolMenu = KileTool::menuFor(tools[i], m_config.data());
 
         KILE_DEBUG_MAIN << tools[i] << " is using group: " << grp << " and menu: "<< toolMenu;
         if(toolMenu == "none") {
@@ -1204,12 +1216,12 @@ void Kile::setupTools()
         }
         else {
             pl = &m_listOtherActions;
-            pSelectAction = Q_NULLPTR;
+            pSelectAction = nullptr;
         }
 
         KILE_DEBUG_MAIN << "\tadding " << tools[i] << " " << toolMenu << " #" << pl->count() << Qt::endl;
 
-        act = actionCollection()->action("tool_" + tools[i]);
+        QAction *act = actionCollection()->action("tool_" + tools[i]);
         if(!act) {
             KILE_DEBUG_MAIN << "no tool for " << tools[i];
             createToolAction(tools[i]);
@@ -1267,63 +1279,63 @@ void Kile::initSelectActions() {
 void Kile::saveLastSelectedAction() {
 
     KILE_DEBUG_MAIN << "Kile::saveLastSelectedAction()" << Qt::endl;
-    QStringList list;
-    list << "Compile" << "Convert" << "View" << "Quick";
+    const QStringList list =
+        {QLatin1String("Compile"), QLatin1String("Convert"), QLatin1String("View"), QLatin1String("Quick")};
 
-    ToolbarSelectAction *pSelectAction = Q_NULLPTR ;
+    const ToolbarSelectAction *pSelectAction = nullptr ;
 
     KConfigGroup grp = m_config->group("ToolSelectAction");
 
-    for(QStringList::Iterator it = list.begin(); it != list.end() ; ++it) {
-        if ( *it == "Compile" ) {
+    for(const QString& action : list) {
+        if(action == "Compile") {
             pSelectAction = m_compilerActions;
         }
-        else if ( *it == "View" ) {
+        else if(action == "View") {
             pSelectAction = m_viewActions;
         }
-        else if ( *it == "Convert" ) {
+        else if(action == "Convert") {
             pSelectAction = m_convertActions;
         }
-        else if ( *it == "Quick" ) {
+        else if(action == "Quick") {
             pSelectAction = m_quickActions;
         }
 
         KILE_DEBUG_MAIN << "current item is " << pSelectAction->currentItem();
 
-        grp.writeEntry(*it, pSelectAction->currentItem());
+        grp.writeEntry(action, pSelectAction->currentItem());
     }
 }
 
 void Kile::restoreLastSelectedAction() {
 
-    QStringList list;
-    list << "Compile" << "Convert" << "View" << "Quick";
+    const QStringList list =
+        {QLatin1String("Compile"), QLatin1String("Convert"), QLatin1String("View"), QLatin1String("Quick")};
 
-    ToolbarSelectAction *pSelectAction = Q_NULLPTR;
+    ToolbarSelectAction *pSelectAction = nullptr;
     int defaultAction = 0;
 
     KConfigGroup grp = m_config->group("ToolSelectAction");
 
-    for(QStringList::Iterator it = list.begin(); it != list.end(); ++it) {
-        if ( *it == "Compile" ) {
+    for(const QString& action : list) {
+        if(action == "Compile") {
             pSelectAction = m_compilerActions;
             defaultAction = 9; // PDFLatex
         }
-        else if ( *it == "View" ) {
+        else if(action == "View") {
             pSelectAction = m_viewActions;
             defaultAction = 4; // ViewPDF
         }
-        else if ( *it == "Convert" ) {
+        else if(action == "Convert") {
             pSelectAction = m_convertActions;
             defaultAction = 0;
         }
-        else if ( *it == "Quick" ) {
+        else if(action == "Quick") {
             pSelectAction = m_quickActions;
             defaultAction = 0;
         }
 
-        int actIndex = grp.readEntry(*it, defaultAction);
-        KILE_DEBUG_MAIN << "selecting" << actIndex << "for" << *it;
+        int actIndex = grp.readEntry(action, defaultAction);
+        KILE_DEBUG_MAIN << "selecting" << actIndex << "for" << action;
         pSelectAction->setCurrentItem(actIndex);
     }
 }
@@ -1334,9 +1346,13 @@ void Kile::cleanUpActionList(QList<QAction*> &list, const QStringList &tools)
     QList<QAction*>::iterator it, testIt;
     for ( it= list.begin(); it != list.end(); ++it) {
         QAction *act = *it;
-        if ( act != Q_NULLPTR && !act->objectName().isEmpty() && !tools.contains(act->objectName().mid(5)) ) {
-            if (act->associatedWidgets().contains(toolBar("toolsToolBar"))) {
-                toolBar("toolsToolBar")->removeAction(act);
+        if ( act != nullptr && !act->objectName().isEmpty() && !tools.contains(act->objectName().mid(5)) ) {
+            const QList<QObject*> widgetList = act->associatedObjects();
+            for (QObject *widget : widgetList) {
+                if (qobject_cast<QWidget*>(widget) == toolBar("toolsToolBar")) {
+                    toolBar("toolsToolBar")->removeAction(act);
+                    break;
+                }
             }
 //             KILE_DEBUG_MAIN << "about to delete action: " << act->objectName();
             testIt = list.erase(it);
@@ -1353,7 +1369,6 @@ void Kile::restoreFilesAndProjects(bool allowRestore)
         return;
     }
 
-    QUrl url;
     for (int i=0; i < m_listProjectsOpenOnStart.count(); ++i) {
         // don't open project files as they will be opened later in this method
         docManager()->projectOpen(QUrl::fromUserInput(m_listProjectsOpenOnStart[i]), i, m_listProjectsOpenOnStart.count(), false);
@@ -1388,7 +1403,7 @@ void Kile::setActive()
     show();
 }
 
-void Kile::setLine(const QString &line)
+void Kile::setLine(const QString &line, const QString &startupId)
 {
     bool ok;
     uint l = line.toUInt(&ok, 10);
@@ -1398,7 +1413,9 @@ void Kile::setLine(const QString &line)
         raise();
         activateWindow();
         // be very aggressive when it comes to raising the main window to the top
-        KWindowSystem::forceActiveWindow(winId());
+        if (!startupId.isEmpty() && KWindowSystem::isPlatformWayland()) {
+            KWindowSystem::setCurrentXdgActivationToken(startupId);
+        }
         focusTextView(view);
         editorExtension()->goToLine(l - 1, view);
     }
@@ -1408,7 +1425,7 @@ void Kile::setCursor(const QUrl &url, int parag, int index)
 {
     KTextEditor::Document *doc = docManager()->docFor(url);
     if(doc) {
-        KTextEditor::View *view = (KTextEditor::View*)doc->views().first();
+        KTextEditor::View *view = static_cast<KTextEditor::View*>(doc->views().first());
         if(view) {
             view->setCursorPosition(KTextEditor::Cursor(parag, index));
             focusTextView(view);
@@ -1448,12 +1465,10 @@ void Kile::activateView(QWidget* w, bool updateStruct /* = true */ )  //Needs to
     //disable gui updates to avoid flickering of toolbars
     setUpdatesEnabled(false);
 
-    QList<KToolBar*> toolBarsList = toolBars();
+    const QList<KToolBar*> toolBarsList = toolBars();
     QHash<KToolBar*, bool> toolBarVisibilityHash;
 
-    for(QList<KToolBar*>::iterator i = toolBarsList.begin();
-            i != toolBarsList.end(); ++i) {
-        KToolBar *toolBar = *i;
+    for(KToolBar* toolBar : toolBarsList) {
         toolBarVisibilityHash[toolBar] = toolBar->isVisible();
     }
 
@@ -1471,10 +1486,8 @@ void Kile::activateView(QWidget* w, bool updateStruct /* = true */ )  //Needs to
 
     guiFactory()->addClient(view);
 
-    for(QList<KToolBar*>::iterator i = toolBarsList.begin();
-            i != toolBarsList.end(); ++i) {
-        KToolBar *toolBar = *i;
-        toolBar->setVisible(toolBarVisibilityHash[*i]);
+    for(KToolBar* toolBar : toolBarsList) {
+        toolBar->setVisible(toolBarVisibilityHash[toolBar]);
     }
 
     setUpdatesEnabled(true);
@@ -1524,7 +1537,7 @@ void Kile::updateModeStatus()
     updateMenu();
 
     KTextEditor::View *view = viewManager()->currentTextView();
-    // Passing Q_NULLPTR is ok
+    // Passing nullptr is ok
     updateStatusBarCursorPosition(view, (view ? view->cursorPosition() : KTextEditor::Cursor()));
     updateStatusBarViewMode(view);
     updateStatusBarSelection(view);
@@ -1620,13 +1633,12 @@ bool Kile::queryClose()
     }
 
     KILE_DEBUG_MAIN << "#projects = " << docManager()->projects().count() << Qt::endl;
-    QList<KileProject*> projectList = docManager()->projects();
-    for(QList<KileProject*>::iterator i = projectList.begin(); i != projectList.end(); ++i) {
-        const QUrl url = (*i)->url();
-        if(url.isEmpty()) { // shouldn't happen, but just in case...
-            continue;
+    const QList<KileProject*> projectList = docManager()->projects();
+    for(const KileProject* project : projectList) {
+        const QUrl url = project->url();
+        if(!url.isEmpty()) { // shoul always be the case, but just in case...
+            m_listProjectsOpenOnStart.append(url.toLocalFile());
         }
-        m_listProjectsOpenOnStart.append(url.toLocalFile());
     }
 
     bool stage1 = docManager()->projectCloseAll();
@@ -1667,6 +1679,29 @@ void Kile::showDocInfo(KTextEditor::View *view)
     else {
         qWarning() << "There is no KileDocument::Info object belonging to this document!";
     }
+}
+
+void Kile::openContainingFolder(KTextEditor::View *view)
+{
+    if(!view) {
+        view = viewManager()->currentTextView();
+    }
+
+    if(!view) {
+        return;
+    }
+
+    const KTextEditor::Document *currentDocument = view->document();
+    if(!currentDocument) {
+        return;
+    }
+
+    const QUrl currentDocumentUrl = currentDocument->url();
+    if(!currentDocumentUrl.isValid()) {
+        return;
+    }
+
+    KIO::highlightInFileManager({currentDocumentUrl});
 }
 
 void Kile::convertToASCII(KTextEditor::Document *doc)
@@ -1772,7 +1807,7 @@ void Kile::findInFiles()
 
 void Kile::findInProjects()
 {
-    static QPointer<KileDialog::FindFilesDialog> project_dlg = Q_NULLPTR;
+    static QPointer<KileDialog::FindFilesDialog> project_dlg = nullptr;
 
     if(!project_dlg) {
         KILE_DEBUG_MAIN << "grep guard: create findInProjects dlg" << Qt::endl;
@@ -1821,19 +1856,25 @@ void Kile::updateUserDefinedMenus()
 void Kile::enableGUI(bool enable)
 {
     // update action lists
-    QList<QAction *> actions = actionCollection()->actions();
-    for(QList<QAction *>::iterator itact = actions.begin(); itact != actions.end(); ++itact) {
-        if (m_dictMenuAction.contains((*itact)->objectName())
-                || m_dictMenuFile.contains((*itact)->objectName())) {
-            (*itact)->setEnabled(enable);
+    const QList<QAction *> actions = actionCollection()->actions();
+    for(QAction *action : actions) {
+        if (m_dictMenuAction.contains(action->objectName())
+                || m_dictMenuFile.contains(action->objectName())) {
+            action->setEnabled(enable);
         }
     }
 
     // update latex usermenu actions
-    if ( m_userMenu ) {
-        QList<QAction *> useractions = m_userMenu->menuActions();
-        foreach ( QAction *action, useractions ) {
-            action->setEnabled(enable);
+    if(m_userMenu) {
+        const QList<QAction *> useractions = m_userMenu->menuActions();
+        for(QAction *action : useractions) {
+            if(action) {
+                action->setEnabled(enable);
+            }
+            else
+            {
+                KILE_WARNING_MAIN << "null action found.";
+            }
         }
     }
 
@@ -1847,20 +1888,20 @@ void Kile::enableGUI(bool enable)
                << m_listViewerActions
                << m_listOtherActions;
     // enable or disable list actions
-    for(QList<QAction*>::iterator i = actionList.begin(); i != actionList.end(); ++i) {
-        (*i)->setEnabled(enable);
+    for(QAction* action : std::as_const(actionList)) {
+        action->setEnabled(enable);
     }
 
     // enable or disable bibliography menu entries
-    actionList = m_bibTagActionMenu->menu()->actions();
-    for(QList<QAction*>::iterator it = actionList.begin(); it != actionList.end(); ++it) {
-        (*it)->setEnabled(enable);
+    const QList<QAction*> bibTagActionList = m_bibTagActionMenu->menu()->actions();
+    for(QAction* action : bibTagActionList) {
+        action->setEnabled(enable);
     }
 
-    QStringList menuList;
-    menuList << "file" << "edit" << "view" << "menu_build" << "menu_project" << "menu_latex" << "wizard" << "tools";
-    for(QStringList::iterator it = menuList.begin(); it != menuList.end(); ++it) {
-        QMenu *menu = dynamic_cast<QMenu*>(guiFactory()->container(*it, this));
+    const QStringList menuList =
+        {"file", "edit", "view", "menu_build", "menu_project", "menu_latex", "wizard", "tools"};
+    for(const QString& entry : menuList) {
+        QMenu *menu = dynamic_cast<QMenu*>(guiFactory()->container(entry, this));
         if(menu) {
             updateMenuActivationStatus(menu);
         }
@@ -1900,7 +1941,7 @@ void Kile::initMenu()
 
     actionlist
     // file
-            << "file_save_copy_as" << "file_save_all" << "template_create" << "Statistics"
+            << "file_save_copy_as" << "file_save_all" << "template_create" << "Statistics" << "open_containing_folder"
             << "file_close" << "file_close_all" << "file_close_all_others"
             // edit
             << "RefreshStructure"
@@ -1926,7 +1967,7 @@ void Kile::initMenu()
             << "tag_multicolumn" << "tag_hline" << "tag_vline" << "tag_cline"
             << "tag_figure" << "tag_table"
             << "tag_verbatim" << "tag_env_verbatim*" << "tag_verb" << "tag_verb*"
-            << "tag_mathmode" << "tag_equation" << "tag_subscript" << "tag_superscript"
+            << "tag_mathmode" << "tag_mathmode_latex" << "tag_equation" << "tag_subscript" << "tag_superscript"
             << "tag_sqrt" << "tag_nroot" << "tag_left" << "tag_right" << "tag_leftright"
             << "tag_bigl" << "tag_bigr" << "tag_Bigl" << "tag_Bigr"
             << "tag_biggl" << "tag_biggr" << "tag_Biggl" << "tag_Biggr"
@@ -1940,12 +1981,13 @@ void Kile::initMenu()
             << "tag_hat" << "tag_check" << "tag_breve" << "tag_dot" << "tag_ddot"
             << "tag_space_small" << "tag_space_medium" << "tag_space_large"
             << "tag_quad" << "tag_qquad" << "tag_enskip"
-            << "tag_env_displaymath" << "tag_env_equation" << "tag_env_equation*"
+            << "tag_env_math" << "tag_env_displaymath" << "tag_env_equation" << "tag_env_equation*"
             << "tag_env_array"
             << "tag_env_multline" << "tag_env_multline*" << "tag_env_split"
             << "tag_env_gather" << "tag_env_gather*" << "tag_env_align" << "tag_env_align*"
             << "tag_env_flalign" << "tag_env_flalign*" << "tag_env_alignat" << "tag_env_alignat*"
             << "tag_env_aligned" << "tag_env_gathered" << "tag_env_alignedat" << "tag_env_cases"
+            << "tag_env_dmath" << "tag_env_dmath*" << "tag_env_dseries" << "tag_env_dseries*" << "tag_env_dgroup" << "tag_env_dgroup*"
             << "tag_env_matrix" << "tag_env_pmatrix" << "tag_env_vmatrix"
             << "tag_env_VVmatrix" << "tag_env_bmatrix" << "tag_env_BBmatrix"
             // bibliography stuff
@@ -2003,32 +2045,30 @@ void Kile::initMenu()
     setMenuItems(actionlist,m_dictMenuAction);
 }
 
-void Kile::setMenuItems(QStringList &list, QMap<QString,bool> &dict)
+void Kile::setMenuItems(const QStringList &list, QMap<QString,bool> &dict)
 {
-    for ( QStringList::Iterator it=list.begin(); it!=list.end(); ++it ) {
-        dict[(*it)] = true;
+    for(const QString& entry : list) {
+        dict[entry] = true;
     }
 }
 
 void Kile::updateMenu()
 {
     KILE_DEBUG_MAIN << "==Kile::updateMenu()====================" << Qt::endl;
-    QAction *a;
-    QMap<QString,bool>::Iterator it;
 
     // update project menus
     m_actRecentProjects->setEnabled( m_actRecentProjects->items().count() > 0 );
     bool project_open = ( docManager()->isProjectOpen() ) ;
 
-    for ( it=m_dictMenuProject.begin(); it!=m_dictMenuProject.end(); ++it ) {
-        a = actionCollection()->action(it.key());
+    for(auto [key, value] : m_dictMenuProject.asKeyValueRange()) {
+        QAction *a = actionCollection()->action(key);
         if(a) {
             a->setEnabled(project_open);
         }
     }
 
     // project_show is only enabled, when more than 1 project is opened
-    a = actionCollection()->action("project_show");
+    QAction *a = actionCollection()->action("project_show");
     if(a) {
         a->setEnabled(project_open && docManager()->projects().count() > 1);
     }
@@ -2059,10 +2099,9 @@ bool Kile::updateMenuActivationStatus(QMenu *menu, const QSet<QMenu*>& visited)
     }
 
     bool enabled = false;
-    QList<QAction*> actionList = menu->actions();
+    const QList<QAction*> actionList = menu->actions();
 
-    for(QList<QAction*>::iterator it = actionList.begin(); it != actionList.end(); ++it) {
-        QAction *action = *it;
+    for(QAction *action : actionList) {
         QMenu *subMenu = action->menu();
         if(subMenu) {
             QSet<QMenu*> newVisited(visited);
@@ -2164,13 +2203,10 @@ void Kile::insertAmsTag(const KileAction::TagData& data)
 void Kile::insertTag(const KileAction::TagData& data,const QList<Package> &pkgs) {
 
     QStringList packages;
-    QString pkgName;
 
-    QList<Package>::const_iterator it;
-    for(it = pkgs.begin(); it != pkgs.end() ; it++) {
-        pkgName = (*it).name;
-        if(!pkgName.isEmpty()) {
-            packages.append(pkgName);
+    for(const Package& pkg : pkgs) {
+        if(!pkg.name.isEmpty()) {
+            packages.append(pkg.name);
         }
     }
 
@@ -2185,12 +2221,11 @@ void Kile::insertTag(const KileAction::TagData& data,const QStringList &pkgs)
     KileDocument::TextInfo *docinfo = docManager()->textInfoFor(getCompileName());
     if(docinfo) {
         QStringList packagelist = allPackages(docinfo);
-        QStringList::const_iterator it;
         QStringList warnPkgs;
 
-        for ( it = pkgs.begin(); it != pkgs.end(); ++it) {
-            if(!packagelist.contains(*it)) {
-                warnPkgs.append(*it);
+        for(const QString& pkg : pkgs) {
+            if(!packagelist.contains(pkg)) {
+                warnPkgs.append(pkg);
             }
         }
 
@@ -2503,10 +2538,9 @@ void Kile::readRecentFileSettings()
     n = group.readEntry("NoPOOS", 0);
     for(int i = 0; i < n; ++i) {
         const QString urlString = group.readPathEntry("ProjectsOpenOnStart" + QString::number(i), "");
-        if(urlString.isEmpty()) {
-            continue;
+        if(!urlString.isEmpty()) {
+            m_listProjectsOpenOnStart.append(urlString);
         }
-        m_listProjectsOpenOnStart.append(urlString);
     }
 }
 
@@ -2629,7 +2663,7 @@ void Kile::setMasterDocumentFileName(const QString& fileName)
     ModeAction->setChecked(true);
     m_singlemode = false;
     updateModeStatus();
-    emit masterDocumentChanged();
+    Q_EMIT masterDocumentChanged();
     KILE_DEBUG_MAIN << "SETTING master to " << m_masterDocumentFileName << " singlemode = " << m_singlemode << Qt::endl;
 }
 
@@ -2640,7 +2674,7 @@ void Kile::clearMasterDocument()
     m_singlemode = true;
     m_masterDocumentFileName.clear();
     updateModeStatus();
-    emit masterDocumentChanged();
+    Q_EMIT masterDocumentChanged();
     KILE_DEBUG_MAIN << "CLEARING master document";
 }
 
@@ -2869,13 +2903,13 @@ void Kile::cleanBib()
             ++i;
         }
     }
-    int j = 0;
+
     for (i = 0; i < view->document()->lines(); ++i) {
-        j = i+1;
-        if(j < view->document()->lines() && view->document()->line(j).contains(QRegExp("^\\s*\\}\\s*$"))) {
+        int j = i+1;
+        if(j < view->document()->lines() && view->document()->line(j).contains(QRegularExpression("^\\s*\\}\\s*$"))) {
             s =  view->document()->line(i);
             view->document()->removeLine(i);
-            s.remove(QRegExp(",\\s*$"));
+            s.remove(QRegularExpression(",\\s*$"));
             view->document()->setModified(true);
             view->document()->insertLine(i, s);
         }

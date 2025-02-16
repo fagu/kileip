@@ -354,7 +354,7 @@
 >ch</emphasis
 >. Si vous ne connaissez pas à quoi ressemble <emphasis
 >ch</emphasis
->, c'est plus ou moins le son que fait un chat qui siffle : le symbole IPA est /ç/. Certaines personnes disent que ça se prononce <emphasis
+>, c'est plus ou moins le son que fait un chat qui siffle : le symbole « IPA » est /ç/. Certaines personnes disent que ça se prononce <emphasis
 >ach</emphasis
 > (symbole IPA /x/), mais d'après certains Grecs, la première version est en effet correcte. Gardez à l'esprit que beaucoup de personnes prononcent &tex; à tort /teks/ ou /tek/.</para>
 			<para
@@ -376,9 +376,9 @@
 >&latex; 101</title>
 
 		<para
->Le système de composition typographique &latex; est similaire à d'autres langages balisés comme &XML;, qui est utilisé dans beaucoup de types de documents (y compris celui que vous lisez actuellement), ou &HTML;, utilisé pour les pages web. L'idée générale derrière les langages balisés est d'avoir des mot clés spéciaux appelés <emphasis
+>Le système de composition typographique &latex; est similaire à d'autres langages balisés comme &XML;, qui est utilisé dans beaucoup de types de documents (y compris celui que vous lisez actuellement), ou &HTML;, utilisé pour les pages Internet. L'idée générale derrière les langages balisés est d'avoir des mot clés spéciaux appelés <emphasis
 >balises</emphasis
->, qui indiquent au programme (un traitement de texte, un navigateur web ou le compilateur &latex;) comment le texte encadré par ces balises doit être interprété. &kile; vous offre un grand nombre de balises dans le menu <guimenu
+>, qui indiquent au programme (un traitement de texte, un navigateur Internet ou le compilateur &latex;) comment le texte encadré par ces balises doit être interprété. &kile; vous offre un grand nombre de balises dans le menu <guimenu
 >LaTeX</guimenu
 > dans la barre de menus.</para>
 
@@ -522,7 +522,7 @@
 ></listitem>
 				<listitem
 ><para
->Scrartcl, Scrbook, Scrreprt, Scrlttr2 : les classes de documents KOMA-Script, particulièrement adaptées pour la typographie allemande. Utilisez-les si vous écrivez des textes en allemand.</para
+>Types scrartcl, scrbook, scrreprt, scrlttr2 : les classes de documents KOMA-Script, particulièrement adaptées pour la typographie allemande. Utilisez-les si vous écrivez des textes en Allemand.</para
 ></listitem>
 				<listitem
 ><para
@@ -582,7 +582,7 @@
 >Aller à l'élément de structure</title>
 
 			<para
->Tous les documents sont normalement structurés en une hiérarchie d'un certain type. &latex; vous permet de couper les documents avec la hiérarchie suivante (part étant la structure de plus haut niveau dans la hiérarchie, et subparagraph étant celle de plus bas niveau) :</para>
+>Tous les documents sont normalement structurés en une hiérarchie d'un certain type. &latex; vous permet de couper les documents avec la hiérarchie suivante (« part » étant la structure de plus haut niveau dans la hiérarchie et « subparagraph » étant celle de plus bas niveau) :</para>
 
 			<itemizedlist>
 				<listitem
@@ -628,7 +628,7 @@
 >Recherche inverse</title>
 
 			<para
->Lorsque vous créez votre propre fichier &latex;, la recherche inverse peut être très utile. Une fois que vous avez créé un fichier &DVI; (DeVice Independant File, ou fichier indépendant du périphérique), ou un fichier PDF, lorsque vous cliquez avec le bouton gauche de la souris tout en maintenant la touche &Maj; dans l'afficheur, &kile; ira à la ligne correspondante dans le code source &latex;.</para>
+>Lorsque vous créez votre propre fichier &latex;, la recherche inverse peut être très utile. Une fois que vous avez créé un fichier &DVI; (DeVice Independent File, ou fichier indépendant du périphérique), ou un fichier PDF, lorsque vous cliquez avec le bouton gauche de la souris tout en maintenant la touche &Maj; dans l'afficheur, &kile; ira à la ligne correspondante dans le code source &latex;.</para>
 
 			<para
 >Un &DVI; est un type de fichier contenant une description du document formaté, ainsi que d'autres informations, incluant les polices de caractères, et est souvent le format de sortie de &tex; ou &latex;. Il existe beaucoup d'utilitaires pour afficher ou imprimer les fichiers &DVI; sur divers systèmes et périphériques.</para>
@@ -1325,13 +1325,17 @@
 >Compilation</guilabel
 ></menuchoice
 > et choisissez toujours la configuration <guilabel
->PDFLatTeX+ViewPDF</guilabel
+>PDFLaTeX + ViewPDF</guilabel
 >.</para>
 
 		<para
->Pour réaliser une recherche avant, positionnez le curseur sur la ligne du code source, et cliquez sur <guilabel
->ForwardDVI</guilabel
-> pour aller à la position associée dans la fenêtre de l'afficheur &DVI; ou PDF.</para>
+>Pour réaliser une recherche en avant, veuillez placer le curseur sur la ligne du code source puis cliquer sur le bouton de souris <mousebutton
+>gauche</mousebutton
+> en maintenant la touche &Maj; enfoncée ou cliquer sur <guilabel
+>DVI en avant</guilabel
+> / <guilabel
+>PDF en avant</guilabel
+>pour avancer à la position associée dans la fenêtre de l'afficheur &DVI; ou PDF.</para>
 	</sect1>
 
 	<sect1 id="quick_inverse">
@@ -1341,7 +1345,7 @@
 
 		<para
 >La recherche inverse est une caractéristique très utile lorsque vous écrivez un document &latex; vous-même. Si tout est configuré correctement, vous pouvez cliquer dans la fenêtre de &okular; avec le &BGS; tout en maintenant enfoncée la touche &Maj;. Après cela, &kile; chargera le fichier source &latex; et ira au paragraphe approprié. Pour utiliser la recherche inverse, vous devez compiler votre fichier &latex; avec la configuration <guilabel
->PDFLatTeX+ViewPDF</guilabel
+>Moderne</guilabel
 >.</para>
 
 		<para
@@ -1394,7 +1398,7 @@
 >Résolution des erreurs</title>
 
 		<para
->Si vous essayez d'utiliser QuickBuild, et que l'afficheur &DVI; ne s'ouvre pas, il est probable que vous avez une erreur. Si c'est le cas, elle sera visible dans le fichier journal ou la zone de message, et le résumé de l'erreur sera donné.</para>
+>Si vous essayez d'utiliser Quickbuild, et que l'afficheur &DVI; ne s'ouvre pas, il est probable que vous avez une erreur. Si c'est le cas, elle sera visible dans le fichier journal ou la zone de message, et le résumé de l'erreur sera donné.</para>
 
 		<para
 >Le fichier journal explique la source de l'erreur dans votre code. Dans l'éditeur, vous pouvez utiliser les boutons de la barre d'outils nommés <guibutton
@@ -1425,11 +1429,11 @@
 ></listitem>
 		<listitem
 ><para
->Beamer</para
+>Type » beamer »</para
 ></listitem>
 		<listitem
 ><para
->Book</para
+>Type « book »</para
 ></listitem>
 		<listitem
 ><para
@@ -1445,23 +1449,23 @@
 ></listitem>
 		<listitem
 ><para
->Report</para
+>Signaler</para
 ></listitem>
 		<listitem
 ><para
->Scrartcl (du paquet KOMA-Script)</para
+>scrartcl (du paquet KOMA-Script)</para
 ></listitem>
 		<listitem
 ><para
->Scrbook (du paquet KOMA-Script)</para
+>scrbook (du paquet KOMA-Script)</para
 ></listitem>
 		<listitem
 ><para
->Scrlttr2 (du paquet KOMA-Script)</para
+>scrlttr2 (du paquet KOMA-Script)</para
 ></listitem>
 		<listitem
 ><para
->Scrreprt (du paquet KOMA-Script)</para
+>scrreprt (du paquet KOMA-Script)</para
 ></listitem>
 		<listitem
 ><para
@@ -1475,8 +1479,8 @@
 
 	<para
 >Si vous choisissez <guilabel
->Empty File</guilabel
-> (fichier vide), vous pouvez soit commencer à écrire votre document en partant de rien, soit utiliser l'assistant pour démarrer rapidement un nouveau document (voir <xref linkend="intro_docwizard" role="select: title pageabbrv"/>).</para>
+>Document vide</guilabel
+>, vous pouvez soit commencer à écrire votre document en partant de rien, soit utiliser l'assistant pour démarrer rapidement un nouveau document (voir <xref linkend="intro_docwizard" role="select: title pageabbrv"/>).</para>
 
 
 	<sect1 id="startnew_templates">
@@ -1614,13 +1618,11 @@
 >Un modèle peut être créé à partir de n'importe quel fichier &latex;. Si vous cherchez un moyen facile de configurer un modèle, allez en chercher un qui vous plaît sur Internet, et suivez les mêmes étapes que celles vues dans <xref linkend="templ_wiz" role="select: title pageabbrv"/>.</para>
 
 			<para
->Par exemple, vous voulez créer un poster A0 à part entière. Ces posters sont fréquemment rencontrés lors de conférences scientifiques, et &latex; vous aidera à faire un poster attractif et captivant. Vous pouvez obtenir un modèle de poster A0 sur <ulink url="http://www.stats.ox.ac.uk/~marchini/a0poster.html"
->le site web de Jonathan Marchini</ulink
->, mais beaucoup d'autres sont disponibles. Souvenez-vous que vous aurez besoin du paquet <filename
+>Par exemple, vous voulez créer un poster « A0 » à part entière. Ces posters sont fréquemment rencontrés lors de conférences scientifiques. &latex; vous aidera à faire un poster attractif et captivant. Veuillez noter que vous avez besoin d'un paquet <filename
 >a0poster</filename
->, qui ne fait pas partie de l'installation standard de &tex;. Téléchargez-le depuis <ulink url="http://www.ctan.org/tex-archive/macros/latex/contrib/a0poster/"
+>, qui, en général, n'est pas inclus dans les distributions standards de &tex;. Vous pouvez le télécharger depuis <ulink url="http://www.ctan.org/tex-archive/macros/latex/contrib/a0poster/"
 >ici</ulink
-> et placez-le dans le même dossier que votre fichier &latex;.</para>
+> et le placer dans le même dossier que votre fichier &latex;.</para>
 		</sect2>
 
 		 <sect2 id="templ_rem">
@@ -2746,7 +2748,7 @@
 >Lorsque vous appuyez sur &Correction;, la dernière lettre de votre motif est effacée, et la liste de complètement devrait augmenter. En revanche, si vous saisissez une nouvelle lettre, le motif est étendu et les mots visibles dans la liste devraient être moins nombreux.</para>
 
 		<para
->Si vous décidez de ne pas utiliser les suggestions de cette liste, faites-la disparaître avec &Echap;.</para>
+>Si vous décidez de ne pas utiliser les suggestions de cette liste, faites-la disparaître avec &Esc;.</para>
 
 		<para
 >Vous verrez que toutes les commandes sont écrites avec une courte description de leurs paramètres. Ces descriptions disparaissent bien évidemment lorsque vous choisissez une commande. Vous pouvez également si vous le souhaitez laisser &kile; insérer des puces à ces endroits, de façon à pouvoir y aller facilement avec <menuchoice
@@ -3046,7 +3048,7 @@
 
     <para
 >Les spécifications du format des fichiers de complètement se trouvent dans les <ulink url="https://commits.kde.org/kile?path=README.cwl"
->spécifications du format de fichier CWL</ulink
+>spécifications du format de fichier « CWL »</ulink
 >. </para>
 
 		<para
@@ -3113,7 +3115,7 @@
 		<procedure>
 		<step
 ><para
->Choisissez un fichier image. Ce peut être un JPEG, PNG, PDF, EPS ou même un fichier eps zippé ou gzippé, si vous avez correctement installé votre système &tetex;. Si vous avez installé <ulink url="http://www.imagemagick.org/"
+>Choisissez un fichier image. Cela peut être un fichier au format JPEG, PNG, PDF, EPS ou même « eps » compressé avec Zip ou GZip. Si vous avez correctement installé <ulink url="http://www.imagemagick.org/"
 >&imagemagick;</ulink
 > et configuré &kile; pour l'utiliser (<menuchoice
 ><guimenu
@@ -3457,7 +3459,7 @@
 				<listitem
 ><para
 ><guilabel
->Mode displaymath :</guilabel
+>Mode « Displaymath » :</guilabel
 > pour les environnements comme les matrices ou les tableaux, vous pouvez choisir avec quel environnement mathématique votre texte mathématique sera affiché. </para
 ></listitem>
 				<listitem
@@ -3498,7 +3500,7 @@
 
 		<screenshot>
 			<screeninfo
->Boîte de dialogue PSTools</screeninfo>
+>Boîte de dialogue de PSTools</screeninfo>
 			<mediaobject>
 			<imageobject>
 			<imagedata fileref="dialog-pstools.png" format="PNG"/>
@@ -3856,8 +3858,8 @@
 ><para
 ><command
 >pdftk</command
->, qui est un excellent outil en ligne de commande pour la manipulation de documents PDF au quotidien (voir <ulink url="http://www.pdflabs.com/tools/pdftk-the-pdf-toolkit"
->The PDF Toolkit</ulink
+>, qui est un excellent outil en ligne de commandes pour la manipulation de documents « PDF » au quotidien (voir <ulink url="http://www.pdflabs.com/tools/pdftk-the-pdf-toolkit"
+>La boîte à outils « PDF »</ulink
 >).</para
 ></listitem>
 		</itemizedlist>
@@ -4435,7 +4437,7 @@
 > (version 1.7 et supérieures). La procédure consiste à créer un fichier &latex; avec <userinput
 >\input{definitions}</userinput
 > qui rend les commandes listées en dessous disponibles, et laisser <userinput
->gesymb monsymbole.tex user</userinput
+>gesymb mon-symbole.tex user</userinput
 > (qui appelle &latex; et &dvipng;) créer les icônes. Après les avoir copiés dans <userinput
 >$HOME/.kde/share/apps/kile/mathsymbols/user/</userinput
 > et avoir redémarré kile, vous pouvez utiliser vos propres symboles. </para>
@@ -4448,7 +4450,7 @@
 ><userinput
 >\command[\optarg]{\symbole}</userinput
 > : inclut le symbole <userinput
->\symbole</userinput
+>\symbol</userinput
 > dans la liste des symboles, l'argument optionnel <userinput
 >\optarg</userinput
 > spécifie la commande que kile doit insérer. S'il n'est pas donné, la commande dans l'argument obligatoire est utilisée. </para>
@@ -4519,7 +4521,7 @@
 ><userinput
 >\bibitem</userinput
 > est une commande utilisée pour saisir une référence dans un environnement <userinput
->thebibliography</userinput
+>de bibliographie</userinput
 > dans votre document. La syntaxe pour utiliser <userinput
 >\bibitem</userinput
 > est <userinput
@@ -4543,7 +4545,7 @@
 > contient le label associé avec le futur <userinput
 >\bibitem</userinput
 >, qui se trouve dans un environnement <userinput
->thebibliography</userinput
+>de bibliographie</userinput
 >, et contient les données de la référence. Deux <userinput
 >\bibitem</userinput
 > et <userinput
@@ -4551,7 +4553,7 @@
 > correspondant doivent avoir la même <userinput
 >{key}</userinput
 > ; le moyen le plus simple d'organiser les clés est d'utiliser le nom de l'auteur. Les secondes accolades dans l'environnement <userinput
->thebibliography</userinput
+>de bibliographie</userinput
 > correspond au label bibliographique le plus long que vous comptez utiliser. Ainsi, en insérant <userinput
 >{<replaceable
 >machin</replaceable
@@ -5051,8 +5053,8 @@
 >, peut compiler correctement des fichiers PNG et JPG en &DVI; ou PDF, mais ne peut pas gérer les fichiers EPS. Inversement, la compilation avec &latex; pour produire un &DVI;, puis le convertir en PS et éventuellement en PDF prend en charge les EPS, mais ne reconnaît pas les PNG et JPG.</para>
 
 		<para
->Beaucoup d'utilisateurs souhaitent créer des documents PDF, mais veulent également utiliser l'excellent paquet <application
->Pstricks</application
+>Beaucoup d'utilisateurs souhaitent créer des documents « PDF », mais veulent également utiliser l'excellente application <application
+>PStricks</application
 > pour créer des graphiques &PostScript;, ou veulent utiliser la sortie &PostScript; de logiciels mathématiques ou scientifiques comme <application
 >Mathematica</application
 >, <application
@@ -5137,9 +5139,9 @@
 
 			<listitem
 ><para
->Vous pouvez convertir d'autres manières, et utiliser &latex; et les conversions PS-PDF. Ce n'est pas toujours une bonne idée, puisque l'encapsulation EPS de JPG ou de PNG ne gère pas les gros fichiers, qui en revanche mènent à des documents inutilement gros. Ceci dépend cependant <emphasis
+>Vous pouvez convertir d'autres manières, et utiliser &latex; et les conversions « PS / PDF ». Ce n'est pas toujours une bonne idée, puisque l'encapsulation « EPS » de JPG ou de PNG ne gère pas les gros fichiers, qui en revanche mènent à des documents inutilement gros. Ceci dépend cependant <emphasis
 >grandement</emphasis
-> de l'utilitaire graphique que vous avez utilisé, puisque l'EPS peut encapsuler d'autres graphiques, mais toutes les applications ne gèrent pas ça parfaitement. Certaines tenteront de construire votre image JPG avec des vecteurs et des scripts divers, ce qui résultera en un fichier gigantesque. La conversion de tous les formats graphiques en EPS peut être réalisée par <ulink url="http://www.imagemagick.org/"
+> de l'utilitaire graphique que vous avez utilisé, puisque le format « EPS » peut encapsuler d'autres graphiques, mais toutes les applications ne gèrent pas ça parfaitement. Certaines tenteront de construire votre image JPG avec des vecteurs et des scripts divers, ce qui résultera en un fichier gigantesque. La conversion de tous les formats graphiques en EPS peut être réalisée par <ulink url="http://www.imagemagick.org/"
 >&imagemagick;</ulink
 >. Un autre programme simple qui fait cela correctement est <ulink url="http://www.tex.uniyar.ac.ru/win32/tools/jpg2ps/"
 ><application
@@ -5173,7 +5175,7 @@
 ><para
 >PNG (ou l'ancien &GIF;) est un format de fichier <emphasis
 >sans pertes</emphasis
->, avec une bonne compression et une bonne qualité. Il est très bon pour les diagrammes, les dessins numérisés. Il est parfois contreproductif lorsqu'utilisé pour des photos.</para
+>, avec une bonne compression et une bonne qualité. Il est très bon pour les diagrammes, les dessins numérisés. Il est parfois contre-productif lorsqu'il est utilisé pour des photos.</para
 ></listitem>
 			<listitem
 ><para
@@ -5392,7 +5394,7 @@
 > comme précédemment. Cette fois nous cherchons :</para>
 
 <programlisting
->% pdfTeX is running in pdf mode
+>% pdftex est lancé en mode « PDF »
    \ExecuteOptions{pdftex}%
 </programlisting>
 
@@ -5400,7 +5402,7 @@
 >et ajoutons simplement quelques lignes : </para>
 
 <programlisting
->% pdfTeX is running in pdf mode
+>% pdfTeX est lancé en mode « PDF »
    \ExecuteOptions{pdftex}%
    \AtEndOfPackage{%
       \g@addto@macro\Gin@extensions{.eps.gz,.eps.zip}%
@@ -5494,16 +5496,16 @@
 
 			<para
 >Lorsque vous lancez la commande <guibutton
->QuickBuild</guibutton
+>Quickbuild</guibutton
 >, un afficheur est normalement appelé après la compilation. Si vous n'utilisez pas d'afficheur intégré, une nouvelle fenêtre s'affichera à chaque fois.</para>
 
 			<para
 >Si vous ajustez l'apparence de votre document, vous lancez probablement très souvent <guibutton
->QuickBuild</guibutton
+>Quickbuild</guibutton
 >, et aurez par conséquent beaucoup de fenêtres ouvertes sur votre bureau. Pour éviter la confusion, vous pouvez activer le mode <guibutton
 >surveillance fichier</guibutton
 >, qui empêchera <guibutton
->QuickBuild</guibutton
+>Quickbuild</guibutton
 > de lancer un afficheur.</para>
 
 			<para
@@ -6309,7 +6311,7 @@
 >/web2c/texmf.cnf</filename
 >, et assurez-vous que la ligne mentionnant <envar
 >TTFONTS</envar
-> est décommentée et pointe vers le dossier dans lequel vous avez enregistré <filename
+> est non commentée et pointe vers le dossier dans lequel vous avez enregistré <filename
 >cyberbit.ttf</filename
 >.</para
 ></listitem>
@@ -6365,7 +6367,7 @@
 
 			<listitem
 ><para
->Évidemment, puisque vous exécutez &latex; comme utilisateur et non en superutilisateur, vous devez <emphasis
+>Évidemment, puisque vous exécutez &latex; comme utilisateur et non en mode administrateur, vous devez <emphasis
 >permettre</emphasis
 > aux utilisateurs d'accéder aux nouveaux fichiers. Assurez-vous que tous les dossiers et fichiers sont accessibles en utilisant la commande <command
 >chmod</command
@@ -6416,7 +6418,7 @@
 >Scim<application
 ></application
 ></ulink
->. Référez-vous à la documentation de votre distribution pour apprendre à installer ces programmes. La configuration de tels programmes peut être compliquée également, dans le cas de <application
+>. Référez-vous à la documentation de votre distribution pour apprendre à installer ces programmes. La configuration de tels programmes peut être compliquée également, dans le cas de l'application <application
 >Skim</application
 >, vous devrez définir une variable d'environnement <userinput
 ><envar

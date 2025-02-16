@@ -17,6 +17,7 @@
 
 #include <QFileInfo>
 #include <QRegExp>
+#include <QRegularExpression>
 
 #include <QAction>
 #include <KActionCollection>
@@ -54,7 +55,7 @@ Factory::~Factory()
 Base* Factory::create(const QString& toolName, const QString& config, bool prepare /* = true */)
 {
     KILE_DEBUG_MAIN << toolName << config << prepare;
-    KileTool::Base *tool = Q_NULLPTR;
+    KileTool::Base *tool = nullptr;
     //perhaps we can find the tool in the config file
     if (m_config->hasGroup(groupFor(toolName, m_config))) {
         KConfigGroup configGroup = m_config->group(groupFor(toolName, m_config));
@@ -101,12 +102,12 @@ Base* Factory::create(const QString& toolName, const QString& config, bool prepa
         }
     }
     if(!tool) {
-        return Q_NULLPTR;
+        return nullptr;
     }
 
     if(!m_manager->configure(tool, config)) {
         delete tool;
-        return Q_NULLPTR;
+        return nullptr;
     }
     tool->setToolConfig(config);
 
@@ -126,14 +127,16 @@ void Factory::resetToolConfigurations()
     m_config->deleteGroup(QLatin1String("ToolsGUI"));
 
     // we delete all the groups whose names start with "Tool/";
-    for(QString groupName : m_config->groupList()) {
+    const QList<QString> groupList = m_config->groupList();
+    for (const QString& groupName : groupList) {
         if(groupName.startsWith(QLatin1String("Tool/"))) {
             m_config->deleteGroup(groupName);
         }
     }
 
     // now we copy all the "Tool/" groups, the "Tools", and "ToolsGUI" groups over
-    for(QString groupName : stdToolConfig.groupList()) {
+    const QList<QString> groupConfigList = stdToolConfig.groupList();
+    for (const QString& groupName : groupConfigList) {
         if(groupName != SHORTCUTS_GROUP_NAME) {
             KConfigGroup configGroup = stdToolConfig.group(groupName);
             m_config->deleteGroup(groupName);
@@ -146,7 +149,7 @@ void Factory::resetToolConfigurations()
 static void transferKeyStringPairsStartingWith(KConfigGroup& src, KConfigGroup& target, const QString& startsWith)
 {
     const QStringList keyList = src.keyList();
-    for(QString key : keyList) {
+    for (const QString& key : keyList) {
         if(key.startsWith(startsWith)) {
             QString value = src.readEntry(key, QString());
             target.writeEntry(key, value);
@@ -159,7 +162,7 @@ void Factory::installStandardLivePreviewTools()
     KConfig stdToolConfig(m_standardToolConfigurationFileName, KConfig::NoGlobals);
 
     const QStringList groupList = stdToolConfig.groupList();
-    for(QString groupName : groupList) {
+    for (const QString& groupName : groupList) {
         if(groupName.startsWith(QStringLiteral("Tool/LivePreview"))) {
             KConfigGroup configGroup = stdToolConfig.group(groupName);
             m_config->deleteGroup(groupName);
@@ -186,7 +189,7 @@ void Factory::installStandardLivePreviewTools()
 /////////////// LaTeX ////////////////
 
 LaTeX::LaTeX(const QString& tool, Manager *mngr, bool prepare)
-    : Compile(tool, mngr, prepare), m_latexOutputHandler(Q_NULLPTR)
+    : Compile(tool, mngr, prepare), m_latexOutputHandler(nullptr)
 {
 }
 
@@ -223,7 +226,7 @@ bool LaTeX::determineSource()
 
     //the basedir is determined from the current compile target
     //determined by getCompileName()
-    LaTeXOutputHandler *h = Q_NULLPTR;
+    LaTeXOutputHandler *h = nullptr;
     src = m_ki->getCompileName(false, &h);
 
     setSource(src);
@@ -334,7 +337,7 @@ void LaTeX::checqCriticals()
     // jump to first error
     if(!isPartOfLivePreview() && m_nErrors > 0 && (readEntry("jumpToFirstError") == "yes")) {
         connect(this, SIGNAL(jumpToFirstError()), manager(), SIGNAL(jumpToFirstError()));
-        emit(jumpToFirstError());
+        Q_EMIT(jumpToFirstError());
     }
 }
 
@@ -517,8 +520,8 @@ void LaTeX::checkAutoRun()
     if(index) {
         KILE_DEBUG_MAIN << "need to run MakeIndex";
         Base *tool = manager()->createTool("MakeIndex", QString());
-        KILE_DEBUG_MAIN << targetDir() << S() << tool->from();
         if(tool) {
+            KILE_DEBUG_MAIN << targetDir() << S() << tool->from();
             configureMakeIndex(tool, targetDir() + '/' + S() + '.' + tool->from());
             // e.g. for LivePreview, it is necessary that the paths are copied to child processes
             tool->copyPaths(this);
@@ -641,12 +644,12 @@ bool ForwardDVI::checkPrereqs ()
 
     if (okularVersionTester.waitForFinished()) {
         QString output = okularVersionTester.readAll();
-        QRegExp regExp = QRegExp("Okular: (\\d+).(\\d+).(\\d+)");
-
+        static const QRegularExpression regExp("Okular: (\\d+).(\\d+).(\\d+)");
+        const auto match = regExp.match(output);
         if(output.contains(regExp)) {
-            int majorVersion = regExp.cap(1).toInt();
-            int minorVersion = regExp.cap(2).toInt();
-            int veryMinorVersion = regExp.cap(3).toInt();
+            int majorVersion = match.captured(1).toInt();
+            int minorVersion = match.captured(2).toInt();
+            int veryMinorVersion = match.captured(3).toInt();
 
             //  see https://mail.kde.org/pipermail/okular-devel/2009-May/003741.html
             // 	the required okular version is > 0.8.5
@@ -773,8 +776,8 @@ bool ViewHTML::determineTarget()
 
         //auto-detect the file to view
         if(dir.isEmpty() && trg.isEmpty()) {
-            QFileInfo file1 = QFileInfo(baseDir() + '/' + S() + "/index.html");
-            QFileInfo file2 = QFileInfo(baseDir() + '/' + S() + ".html");
+            QFileInfo file1 = QFileInfo(baseDir() + '/' + S() + QLatin1String("/index.html"));
+            QFileInfo file2 = QFileInfo(baseDir() + '/' + S() + QLatin1String(".html"));
 
             bool read1 = file1.isReadable();
             bool read2 = file2.isReadable();
@@ -793,12 +796,17 @@ bool ViewHTML::determineTarget()
             if(read1) {
                 dir = S();
                 trg = "index.html";
-
-                translate(dir);
-                setRelativeBaseDir(dir);
-                translate(trg);
-                setTarget(trg);
             }
+            else if(read2) {
+                dir = QLatin1String(".");
+                trg = S() + QLatin1String(".html");
+            }
+
+            translate(dir);
+            setRelativeBaseDir(dir);
+            translate(trg);
+            setTarget(trg);
+
         }
     }
 

@@ -21,7 +21,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLayout>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QTreeWidget>
 #include <QValidator>
 #include <QVBoxLayout>
@@ -195,8 +195,6 @@ NewLatexCommand::NewLatexCommand(QWidget *parent, const QString &caption,
             // m_coParameter->addItem(QString());
             m_coParameter->setWhatsThis(i18n("Does this command need an argument?"));
         }
-
-        currentRow++;
     }
 
     // stretch last row
@@ -213,8 +211,8 @@ NewLatexCommand::NewLatexCommand(QWidget *parent, const QString &caption,
             label1->setText(i18n("Define a new LaTeX command:"));
             pattern = "\\\\?[A-Za-z]+";
         }
-        QRegExp reg(pattern);
-        m_edName->setValidator(new QRegExpValidator(reg, m_edName));
+        QRegularExpression reg(pattern);
+        m_edName->setValidator(new QRegularExpressionValidator(reg, m_edName));
         m_edName->setFocus();
     }
     else {                         // edit mode
@@ -400,12 +398,11 @@ void LatexCommandsDialog::resetListviews()
     m_lviInputs     = new QTreeWidgetItem(m_widget.commands, QStringList(i18n("Includes")));
 
     QStringList list;
-    QStringList::ConstIterator it;
     KileDocument::LatexCmdAttributes attr;
 
     m_commands->commandList(list, KileDocument::CmdAttrNone, m_widget.showOnlyUserDefined->isChecked());
-    for (it = list.constBegin(); it != list.constEnd(); ++it) {
-        if (m_commands->commandAttributes(*it, attr)) {
+    for(const QString &command : std::as_const(list)) {
+        if (m_commands->commandAttributes(command, attr)) {
             QTreeWidgetItem *parent;
             switch (attr.type) {
             case KileDocument::CmdAttrAmsmath:
@@ -441,7 +438,7 @@ void LatexCommandsDialog::resetListviews()
             default:
                 continue;
             }
-            setEntry(parent, *it, attr);
+            setEntry(parent, command, attr);
         }
     }
 }
@@ -575,9 +572,8 @@ bool LatexCommandsDialog::isUserDefined(const QString &name)
 
 bool LatexCommandsDialog::hasUserDefined(QTreeWidget *listview)
 {
-    QTreeWidgetItem *tli;
     for (int i = 0; i < listview->topLevelItemCount(); ++i) {
-        tli = listview->topLevelItem(i);
+        QTreeWidgetItem *tli = listview->topLevelItem(i);
         for (int j = 0; j < tli->childCount(); ++j) {
             if (isUserDefined(tli->child(j)->text(0))) {
                 return true;
@@ -599,7 +595,7 @@ void LatexCommandsDialog::slotEnableButtons()
     QTreeWidget *listview = (getListviewMode() == lvEnvMode) ? m_widget.environments : m_widget.commands;
     resetState = (hasUserDefined(listview));
 
-    QTreeWidgetItem *item = (QTreeWidgetItem *)listview->currentItem();
+    QTreeWidgetItem *item = listview->currentItem();
 
     if (item && item != m_lviAmsmath)
     {
@@ -631,7 +627,7 @@ void LatexCommandsDialog::slotAddClicked()
         caption  = i18n("LaTeX Commands");
     }
 
-    QTreeWidgetItem *item = (QTreeWidgetItem *)listview->currentItem();
+    QTreeWidgetItem *item = listview->currentItem();
     if (item && isParentItem(item)) {
         // get current command type
         KileDocument::CmdAttribute type = getCommandMode(item);
@@ -641,7 +637,7 @@ void LatexCommandsDialog::slotAddClicked()
         }
 
         // add a new environment or command
-        NewLatexCommand *dialog = new NewLatexCommand(this, caption, item->text(0), Q_NULLPTR, type, &m_dictCommands);
+        NewLatexCommand *dialog = new NewLatexCommand(this, caption, item->text(0), nullptr, type, &m_dictCommands);
         if (dialog->exec() == QDialog::Accepted) {
             m_commandChanged = true;
 
@@ -649,7 +645,7 @@ void LatexCommandsDialog::slotAddClicked()
             QString name;
             KileDocument::LatexCmdAttributes attr;
             dialog->getParameter(name, attr);
-            setEntry((QTreeWidgetItem *)item, name, attr);
+            setEntry(item, name, attr);
             // open this parent item
             if (!item->isExpanded()) {
                 item->setExpanded(true);
@@ -674,7 +670,7 @@ void LatexCommandsDialog::slotDeleteClicked()
         message  = i18n("Do you want to delete this command?");
     }
 
-    QTreeWidgetItem *item = (QTreeWidgetItem *)listview->currentItem();
+    QTreeWidgetItem *item = listview->currentItem();
     if (item && !isParentItem(item)) {
         if (KMessageBox::warningContinueCancel(this, message, i18n("Delete")) == KMessageBox::Continue) {
             m_commandChanged = true;
@@ -703,9 +699,9 @@ void LatexCommandsDialog::slotEditClicked()
         caption  = i18n("LaTeX Commands");
     }
 
-    QTreeWidgetItem *item = (QTreeWidgetItem *)listview->currentItem();
+    QTreeWidgetItem *item = listview->currentItem();
     if (item && !isParentItem(item)) {
-        QTreeWidgetItem *parentitem = (QTreeWidgetItem *)item->parent();
+        QTreeWidgetItem *parentitem = item->parent();
         if (parentitem) {
             // get current command type
             KileDocument::CmdAttribute type = getCommandMode(parentitem);

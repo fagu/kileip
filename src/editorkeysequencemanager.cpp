@@ -42,7 +42,7 @@ void Manager::addAction(const QString& seq, Action *action)
     if(m_actionMap.find(seq) == m_actionMap.end()) {
         m_actionMap[seq] = action;
         m_watchedKeySequencesList.push_back(seq);
-        emit watchedKeySequencesChanged();
+        Q_EMIT watchedKeySequencesChanged();
     }
 }
 
@@ -56,27 +56,27 @@ void Manager::removeKeySequence(const QString& seq)
         delete (it.value());
         m_actionMap.erase(it);
         m_watchedKeySequencesList.removeAll(seq);
-        emit watchedKeySequencesChanged();
+        Q_EMIT watchedKeySequencesChanged();
     }
 }
 
 void Manager::removeKeySequence(const QStringList& l)
 {
     bool changed = false;
-    for(QStringList::const_iterator i = l.begin(); i != l.end(); ++i) {
-        if((*i).isEmpty()) {
+    for(const QString& entry : l) {
+        if(entry.isEmpty()) {
             continue;
         }
-        QMap<QString, Action*>::iterator it = m_actionMap.find(*i);
+        QMap<QString, Action*>::iterator it = m_actionMap.find(entry);
         if(it != m_actionMap.end()) {
             delete (it.value());
             m_actionMap.erase(it);
-            m_watchedKeySequencesList.removeAll(*i);
+            m_watchedKeySequencesList.removeAll(entry);
             changed = true;
         }
     }
     if(changed) {
-        emit watchedKeySequencesChanged();
+        Q_EMIT watchedKeySequencesChanged();
     }
 }
 
@@ -84,16 +84,13 @@ void Manager::addActionMap(const QMap<QString, Action*>& map)
 {
     bool changed = false;
     for(QMap<QString, Action*>::const_iterator i = map.begin(); i != map.end(); ++i) {
-        if(i.key().isEmpty()) {
-            continue;
-        }
-        if(m_actionMap[i.key()] != i.value()) {
+        if(!i.key().isEmpty() && (m_actionMap[i.key()] != i.value())) {
             m_actionMap[i.key()] = i.value();
             changed = true;
         }
     }
     if(changed) {
-        emit watchedKeySequencesChanged();
+        Q_EMIT watchedKeySequencesChanged();
     }
 }
 
@@ -110,7 +107,7 @@ QString Manager::getKeySequence(const Action* a)
 Action* Manager::getAction(const QString& seq)
 {
     QMap<QString, Action*>::iterator i = m_actionMap.find(seq);
-    return (i == m_actionMap.end()) ? Q_NULLPTR : (*i);
+    return (i == m_actionMap.end()) ? nullptr : (*i);
 }
 
 void Manager::setEditorKeySequence(const QString& /* seq */, Action* /* action */)
@@ -126,7 +123,7 @@ void Manager::clear()
 {
     m_watchedKeySequencesList.clear();
     m_actionMap.clear();
-    emit watchedKeySequencesChanged();
+    Q_EMIT watchedKeySequencesChanged();
 }
 
 
@@ -136,8 +133,8 @@ const QStringList& Manager::getWatchedKeySequences()
 }
 
 bool Manager::isSequenceAssigned(const QString& seq) const {
-    for(QList<QString>::const_iterator i = m_watchedKeySequencesList.begin(); i != m_watchedKeySequencesList.end(); ++i) {
-        if((*i).startsWith(seq)) {
+    for(const QString& entry : std::as_const(m_watchedKeySequencesList)) {
+        if(entry.startsWith(seq)) {
             return true;
         }
     }
@@ -146,15 +143,15 @@ bool Manager::isSequenceAssigned(const QString& seq) const {
 
 QPair<int, QString> Manager::checkSequence(const QString& seq, const QString& skip)
 {
-    for(QList<QString>::iterator i = m_watchedKeySequencesList.begin(); i != m_watchedKeySequencesList.end(); ++i) {
-        if((*i) == skip) {
+    for(const QString& entry : std::as_const(m_watchedKeySequencesList)) {
+        if (entry == skip) {
             continue;
         }
-        if((*i).startsWith(seq)) {
-            return (*i == seq) ? qMakePair<int, QString>(1, seq) : qMakePair<int, QString>(2, *i);
+        if(entry.startsWith(seq)) {
+            return (entry == seq) ? std::pair<int, QString>(1, seq) : std::pair<int, QString>(2, entry);
         }
-        if(!(*i).isEmpty() && seq.startsWith(*i)) {
-            return qMakePair<int, QString>(3, *i);
+        if(!entry.isEmpty() && seq.startsWith(entry)) {
+            return std::pair<int, QString>(3, entry);
         }
     }
     return qMakePair<int, QString>(0, QString());
@@ -178,7 +175,7 @@ Recorder::~Recorder()
 bool Recorder::eventFilter(QObject* /* o */, QEvent *e)
 {
     if (e->type() == QEvent::KeyPress) {
-        QKeyEvent *keyEvent = (QKeyEvent*)(e);
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(e);
         int curLine, curCol;
         KTextEditor::Cursor cursor = m_view->cursorPosition();
         curLine = cursor.line();
@@ -207,7 +204,7 @@ bool Recorder::seekForKeySequence(const QString& s)
         if(m_watchedKeySequencesList.contains(toCheck)) {
             m_view->document()->removeText(KTextEditor::Range(m_oldLine, m_oldCol - (s.length() - i - 1), m_oldLine, m_oldCol));
             m_typedSequence.clear(); // clean m_typedSequence to avoid wrong action triggering if one presses keys without printable character
-            emit detectedTypedKeySequence(toCheck);
+            Q_EMIT detectedTypedKeySequence(toCheck);
             return true;
         }
     }

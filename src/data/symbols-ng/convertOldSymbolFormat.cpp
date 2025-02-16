@@ -24,7 +24,7 @@ int main( int argc, char ** argv )
 
     bool mathMode;
     QList<Package> PackagesList;
-    QString  texfile, type, greedyOptArgString, line;
+    QString texfile, type, greedyOptArgString;
     QString pkgs, pkgsarg, savepkgs, savepkgsarg;
     bool env=false, greedyOptArg=true;
 
@@ -71,7 +71,7 @@ int main( int argc, char ** argv )
 
     while( !t.atEnd() ) {
 
-        line = t.readLine();
+        QString line = t.readLine();
 // 		cout << "<!-- line is " << qPrintable(line) << " -->";
 
         if( line.contains(comment) ) {
@@ -148,9 +148,8 @@ void usage()
     exit(1);
 }
 
-void outputXML(const QString latexCommand, const QString imageCommand, QList< Package >& packages, bool mathMode)
+void outputXML(const QString &latexCommand, const QString &imageCommand, const QList< Package >& packages, bool mathMode)
 {
-    Package pkg;
     QString output;
     output = "<commandDefinition>\n";
     if(imageCommand == latexCommand) {
@@ -165,7 +164,7 @@ void outputXML(const QString latexCommand, const QString imageCommand, QList< Pa
         output += "   <mathMode>true</mathMode>\n";
     }
 
-    foreach(pkg, packages) {
+    for(Package pkg: packages) {
         if(pkg.name.isEmpty()) {
             continue;
         }

@@ -23,6 +23,7 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QMap>
+#include <qplaintextedit.h>
 
 #include "kiledebug.h"
 #include "kileconfig.h"
@@ -38,7 +39,7 @@ namespace KileScript {
 ////////////////////////////// Manager //////////////////////////////
 
 Manager::Manager(KileInfo *kileInfo, KConfig *config, KActionCollection *actionCollection, QObject *parent, const char *name)
-    : QObject(parent), m_jScriptDirWatch(Q_NULLPTR), m_kileInfo(kileInfo), m_config(config), m_actionCollection(actionCollection)
+    : QObject(parent), m_jScriptDirWatch(nullptr), m_kileInfo(kileInfo), m_config(config), m_actionCollection(actionCollection)
 {
     setObjectName(name);
 
@@ -76,7 +77,7 @@ Manager::~Manager()
     delete m_kileScriptObject;
 
     //still need to delete the scripts
-    for(Script *script : qAsConst(m_jScriptList)) {
+    for(Script *script : std::as_const(m_jScriptList)) {
         delete script;
     }
     m_jScriptList.clear();
@@ -88,14 +89,15 @@ void Manager::executeScript(const Script *script)
 
     // compatibility check
     QString code = script->getCode();
-    QRegExp endOfLineExp("(\r\n)|\n|\r");
+    QRegularExpression endOfLineExp("(\r\n)|\n|\r");
     int i = code.indexOf(endOfLineExp);
     QString firstLine = (i >= 0 ? code.left(i) : code);
     QRegExp requiredVersionTagExp("(kile-version:\\s*)(\\d+\\.\\d+(.\\d+)?)");
     if(requiredVersionTagExp.indexIn(firstLine) != -1) {
         QString requiredKileVersion = requiredVersionTagExp.cap(2);
-        if(compareVersionStrings(requiredKileVersion, kileFullVersion) > 0) {
-            KMessageBox::sorry(m_kileInfo->mainWindow(), i18n("Version %1 of Kile is at least required to execute the script \"%2\". The execution has been aborted.", requiredKileVersion, script->getName()), i18n("Version Error"));
+        if(compareVersionStrings(requiredKileVersion, QLatin1StringView(KILE_VERSION_STRING)) > 0) {
+            KMessageBox::error(m_kileInfo->mainWindow(), i18n("Version %1 of Kile is at least required to execute the script \"%2\". The execution has been aborted.",
+                                                              requiredKileVersion, script->getName()), i18n("Version Error"));
             return;
         }
     }
@@ -103,7 +105,7 @@ void Manager::executeScript(const Script *script)
     // TODO only scripts with a current view can be started at this moment
     KTextEditor::View *view = m_kileInfo->viewManager()->currentTextView();
     if(!view) {
-        KMessageBox::sorry(m_kileInfo->mainWindow(), i18n("Cannot start the script: no view available"), i18n("Script Error"));
+        KMessageBox::error(m_kileInfo->mainWindow(), i18n("Cannot start the script: no view available"), i18n("Script Error"));
         return;
     }
 
@@ -129,7 +131,7 @@ void Manager::executeScript(unsigned int id)
 const Script* Manager::getScript(unsigned int id)
 {
     QMap<unsigned int, Script*>::iterator i = m_idScriptMap.find(id);
-    return ((i != m_idScriptMap.end()) ? (*i) : Q_NULLPTR);
+    return ((i != m_idScriptMap.end()) ? (*i) : nullptr);
 }
 
 void Manager::scanScriptDirectories()
@@ -182,13 +184,13 @@ void Manager::scanScriptDirectories()
         }
     }
 
-    for(const QString &scriptFileName : qAsConst(scriptFileNamesSet)) {
+    for(const QString &scriptFileName : std::as_const(scriptFileNamesSet)) {
         registerScript(scriptFileName, pathIDMap, takenIDMap, maxID);
     }
     //rewrite the IDs that are currently in use
     writeIDs();
     m_actionCollection->readSettings();
-    emit scriptsChanged();
+    Q_EMIT scriptsChanged();
 }
 
 void Manager::deleteScripts()
@@ -204,16 +206,19 @@ void Manager::deleteScripts()
     for(QList<Script*>::iterator it = scriptList.begin(); it != scriptList.end(); ++it) {
         QAction *action = (*it)->getActionObject();
         if(action) {
-            const QList<QWidget*> widgets = action->associatedWidgets();
-            for(QWidget *w : widgets) {
-                w->removeAction(action);
+            const QList<QObject*> associatedObjects = action->associatedObjects();
+            for(QObject *object : associatedObjects) {
+                QWidget* widget = qobject_cast<QWidget*>(object);
+                if(widget) {
+                    widget->removeAction(action);
+                }
             }
             m_actionCollection->takeAction(action);
             delete action;
         }
         delete *it;
     }
-    emit scriptsChanged();
+    Q_EMIT scriptsChanged();
 }
 
 QList<Script*> Manager::getScripts()
@@ -292,9 +297,9 @@ void Manager::writeConfig()
 
     // write the key sequences
     KConfigGroup configGroup = m_config->group("Scripts");
-    for(const Script *script : qAsConst(m_jScriptList)) {
+    for(const Script *script : std::as_const(m_jScriptList)) {
         QString seq = script->getKeySequence();
-        QString sequenceEntry = (seq.isEmpty()) ? seq : QString("%1-%2").arg(QString::number(script->getSequenceType())).arg(seq);
+        QString sequenceEntry = (seq.isEmpty()) ? seq : QString("%1-%2").arg(QString::number(script->getSequenceType()), seq);
         configGroup.writeEntry("Script" + QString::number(script->getID()) + "KeySequence", sequenceEntry);
     }
 }
@@ -406,7 +411,7 @@ void Manager::writeIDs()
     KConfigGroup configGroup = m_config->group("Scripts");
     //delete old entries
     QList<unsigned int> idList = configGroup.readEntry("IDs", QList<unsigned int>());
-    for(const int i : qAsConst(idList)) {
+    for(const int i : std::as_const(idList)) {
         configGroup.deleteEntry("Script" + QString::number(i));
     }
     //write new ones

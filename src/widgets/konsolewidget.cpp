@@ -2,7 +2,7 @@
     begin                : Mon Dec 22 2003
     copyright            : (C) 2001 - 2003 by Brachet Pascal
                                2003 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)
-                               2007-2012 by Michel Ludwig (michel.ludwig@kdemail.net)
+                               2007-2023 by Michel Ludwig (michel.ludwig@kdemail.net)
  ***************************************************************************************************/
 
 /***************************************************************************
@@ -24,12 +24,12 @@
 #include <QVBoxLayout>
 
 #include <KLocalizedString>
-#include <KPluginLoader>
-#include <KService>
+#include <KPluginFactory>
 #include <KShell>
 #include <QUrl>
 
 #include <KParts/Part>
+#include <KParts/PartLoader>
 #include <KTextEditor/Document>
 #include <KTextEditor/View>
 
@@ -39,7 +39,7 @@ namespace KileWidget
 {
 Konsole::Konsole(KileInfo * info, QWidget *parent) :
     QFrame(parent),
-    m_part(Q_NULLPTR),
+    m_part(nullptr),
     m_ki(info)
 {
     setLayout(new QVBoxLayout(this));
@@ -56,29 +56,25 @@ void Konsole::spawn()
 {
     KILE_DEBUG_MAIN << "void Konsole::spawn()";
 
-    KPluginFactory *factory = Q_NULLPTR;
-    KService::Ptr service = KService::serviceByDesktopName("konsolepart");
-    if(!service) {
-        KILE_DEBUG_MAIN << "No service for konsolepart";
-        return;
-    }
+    const QString konsolePart = QStringLiteral("kf6/parts/konsolepart");
+    KPluginFactory *factory = KPluginFactory::loadFactory(konsolePart).plugin;
 
-    factory = KPluginLoader(service->library()).factory();
     if(!factory) {
         KILE_DEBUG_MAIN << "No factory for konsolepart";
         return;
     }
 
-    // the catalog for translations is added by the Konsole part constructor already
-    m_part = static_cast<KParts::ReadOnlyPart*>(factory->create<QObject>(this, this));
+    m_part = factory->create<KParts::ReadOnlyPart>(this);
+
     if(!m_part) {
+        KILE_DEBUG_MAIN << "Could not create konsolepart";
         return;
     }
 
     if(!qobject_cast<TerminalInterface*>(m_part)) {
         KILE_DEBUG_MAIN << "Did not find the TerminalInterface";
         delete m_part;
-        m_part = Q_NULLPTR;
+        m_part = nullptr;
         return;
     }
 
@@ -98,14 +94,13 @@ void Konsole::sync()
     }
 
     KTextEditor::Document *doc = m_ki->activeTextDocument();
-    KTextEditor::View *view = Q_NULLPTR;
+    KTextEditor::View *view = nullptr;
 
     if(doc) {
         view = doc->views().first();
     }
 
     if(view) {
-        QString finame;
         QUrl url = view->document()->url();
 
         if(url.path().isEmpty()) {
@@ -155,7 +150,7 @@ void Konsole::slotDestroyed ()
 {
     // there is no need to remove the widget from the layout as this is done
     // automatically when the widget is destroyed
-    m_part = Q_NULLPTR;
+    m_part = nullptr;
     spawn();
 }
 }

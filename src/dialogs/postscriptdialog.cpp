@@ -55,7 +55,7 @@ PostscriptDialog::PostscriptDialog(QWidget *parent,
     m_startdir(startdir),
     m_errorHandler(errorHandler),
     m_output(output),
-    m_proc(Q_NULLPTR)
+    m_proc(nullptr)
 {
     setWindowTitle(i18n("Rearrange Postscript File"));
     setModal(true);
@@ -76,7 +76,7 @@ PostscriptDialog::PostscriptDialog(QWidget *parent,
                 QString basename = psfilename = texfilename.left(texfilename.length() - (*it).length());
                 psfilename = basename + ".ps";
                 psoutfilename = basename + "-out.ps";
-                if (!QFileInfo(psfilename).exists())
+                if (!QFileInfo::exists(psfilename))
                     psfilename.clear();
                 break;
             }
@@ -136,9 +136,12 @@ PostscriptDialog::PostscriptDialog(QWidget *parent,
     if (psselect) {
         m_PostscriptDialog.m_cbTask->addItem(i18n("psselect: Choose Parameter")); // 17  PS_PSSELECT_FREE
     }
-
-    m_PostscriptDialog.m_edInfile->setFilter("*.ps|PS Files\n*.ps.gz|Zipped PS Files");
-    m_PostscriptDialog.m_edOutfile->setFilter("*.ps|PS Files\n*.ps.gz|Zipped PS Files");
+    const QStringList postscriptMimeTypes = {
+        QStringLiteral("application/postscript"),
+        QStringLiteral("application/x-gzpostscript"),
+    };
+    m_PostscriptDialog.m_edInfile->setMimeTypeFilters(postscriptMimeTypes);
+    m_PostscriptDialog.m_edOutfile->setMimeTypeFilters(postscriptMimeTypes);
     m_PostscriptDialog.m_edOutfile->setMode(KFile::File | KFile::LocalOnly);
 
     // choose one common task
@@ -215,7 +218,7 @@ void PostscriptDialog::execute()
                     + i18n("***** output file: ") + to.fileName()+ '\n'
                     + i18n("***** viewer:      ") + ((m_PostscriptDialog.m_cbView->isChecked()) ? i18n("yes") : i18n("no")) + '\n'
                     + "*****\n";
-        emit( output(s) );
+        Q_EMIT( output(s) );
 
         // delete old KProcess
         if (m_proc)
@@ -241,8 +244,8 @@ void PostscriptDialog::execute()
 
 void PostscriptDialog::slotProcessOutput()
 {
-    emit(output(m_proc->readAllStandardOutput()));
-    emit(output(m_proc->readAllStandardError()));
+    Q_EMIT(output(m_proc->readAllStandardOutput()));
+    Q_EMIT(output(m_proc->readAllStandardError()));
 }
 
 
@@ -472,9 +475,11 @@ bool PostscriptDialog::checkParameter()
 
         if (infile != outfile && fo.exists()) {
             QString s = i18n("A file named \"%1\" already exists. Are you sure you want to overwrite it?", fo.fileName());
-            if (KMessageBox::questionYesNo(this,
-                                           "<center>" + s + "</center>",
-                                           "Postscript tools") == KMessageBox::No) {
+            if (KMessageBox::questionTwoActions(this,
+                                                "<center>" + s + "</center>",
+                                                "Postscript tools",
+                                                KStandardGuiItem::overwrite(), KStandardGuiItem::cancel())
+                == KMessageBox::SecondaryAction) {
                 return false;
             }
         }

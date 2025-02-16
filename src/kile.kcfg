@@ -9,7 +9,6 @@
 	<include>QString</include>
 	<include>QTextCodec</include>
 	<include>QDir</include>
-	<include>QDesktopWidget</include>
 
 	<kcfgfile name="kilerc"/>
 
@@ -210,6 +209,14 @@
 		<entry name="envIndentNumSpaces" type="Int">
 			<label>Use this number of spaces to autoindent environments</label>
 			<default>1</default>
+		</entry>
+		<entry name="envEventSelectModifier" type="Int">
+			<label>Click in editor to select from cursor</label>
+			<default>Qt::ControlModifier</default>
+			</entry>
+		<entry name="envEventSearchModifier" type="Int">
+			<label>Click in editor to search in viewer</label>
+			<default>Qt::ShiftModifier</default>
 		</entry>
 		<entry name="ShowUserCommands" type="Bool">
 			<label></label>

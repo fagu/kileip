@@ -24,8 +24,8 @@
 #include <kio/global.h>
 #include <KLocalizedString>
 #include <KMessageBox>
+#include <KPluginFactory>
 #include <KTextEditor/Application>
-#include <KTextEditor/CodeCompletionInterface>
 #include <KTextEditor/Document>
 #include <KTextEditor/Editor>
 #include <KTextEditor/MainWindow>
@@ -67,6 +67,8 @@
 #include "codecompletion.h"
 
 
+using namespace Qt::Literals::StringLiterals;
+
 namespace KileView
 {
 
@@ -89,13 +91,13 @@ DocumentViewerWindow::~DocumentViewerWindow()
 void DocumentViewerWindow::showEvent(QShowEvent *event)
 {
     KMainWindow::showEvent(event);
-    emit visibilityChanged(true);
+    Q_EMIT visibilityChanged(true);
 }
 
 void DocumentViewerWindow::closeEvent(QCloseEvent *event)
 {
     KMainWindow::closeEvent(event);
-    emit visibilityChanged(false);
+    Q_EMIT visibilityChanged(false);
 }
 
 //END DocumentViewerWindow
@@ -103,20 +105,20 @@ void DocumentViewerWindow::closeEvent(QCloseEvent *event)
 Manager::Manager(KileInfo *info, KActionCollection *actionCollection, QObject *parent, const char *name) :
     QObject(parent),
     m_ki(info),
-//     m_projectview(Q_NULLPTR),
-    m_tabsAndEditorWidget(Q_NULLPTR),
-    m_tabBar(Q_NULLPTR),
-    m_documentListButton(Q_NULLPTR),
-    m_viewerPartWindow(Q_NULLPTR),
-    m_widgetStack(Q_NULLPTR),
-    m_pasteAsLaTeXAction(Q_NULLPTR),
-    m_convertToLaTeXAction(Q_NULLPTR),
-    m_quickPreviewAction(Q_NULLPTR),
-    m_showCursorPositionInViewerAction(Q_NULLPTR),
-    m_viewerControlToolBar(Q_NULLPTR),
-    m_cursorPositionChangedTimer(Q_NULLPTR),
-    m_clearLastShownSourceLocationTimer(Q_NULLPTR),
-    m_synchronizeViewWithCursorAction(Q_NULLPTR)
+// 	m_projectview(nullptr),
+    m_tabsAndEditorWidget(nullptr),
+    m_tabBar(nullptr),
+    m_documentListButton(nullptr),
+    m_viewerPartWindow(nullptr),
+    m_widgetStack(nullptr),
+    m_pasteAsLaTeXAction(nullptr),
+    m_convertToLaTeXAction(nullptr),
+    m_quickPreviewAction(nullptr),
+    m_showCursorPositionInViewerAction(nullptr),
+    m_viewerControlToolBar(nullptr),
+    m_cursorPositionChangedTimer(nullptr),
+    m_clearLastShownSourceLocationTimer(nullptr),
+    m_synchronizeViewWithCursorAction(nullptr)
 {
     setObjectName(name);
     createViewerPart(actionCollection);
@@ -149,7 +151,7 @@ Manager::~Manager()
 {
     KILE_DEBUG_MAIN;
 
-    // the parent of the widget might be Q_NULLPTR; see 'destroyDocumentViewerWindow()'
+    // the parent of the widget might be nullptr; see 'destroyDocumentViewerWindow()'
     if(m_viewerPart) {
         delete m_viewerPart->widget();
         delete m_viewerPart;
@@ -165,7 +167,7 @@ KTextEditor::View * Manager::textViewAtTab(int index) const
 
 void Manager::createViewerControlToolBar()
 {
-    m_viewerControlToolBar = new KToolBar(Q_NULLPTR, false, false);
+    m_viewerControlToolBar = new KToolBar(nullptr, false, false);
     m_viewerControlToolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
     m_viewerControlToolBar->setFloatable(false);
     m_viewerControlToolBar->setMovable(false);
@@ -177,15 +179,15 @@ void Manager::createViewerControlToolBar()
 void Manager::setClient(KXMLGUIClient *client)
 {
     m_client = client;
-    if(Q_NULLPTR == m_client->actionCollection()->action("popup_pasteaslatex")) {
+    if(nullptr == m_client->actionCollection()->action("popup_pasteaslatex")) {
         m_pasteAsLaTeXAction = new QAction(i18n("Paste as LaTe&X"), this);
         connect(m_pasteAsLaTeXAction, &QAction::triggered, this, &Manager::pasteAsLaTeX);
     }
-    if(Q_NULLPTR == m_client->actionCollection()->action("popup_converttolatex")) {
+    if(nullptr == m_client->actionCollection()->action("popup_converttolatex")) {
         m_convertToLaTeXAction = new QAction(i18n("Convert Selection to &LaTeX"), this);
         connect(m_convertToLaTeXAction, &QAction::triggered, this, &Manager::convertSelectionToLaTeX);
     }
-    if(Q_NULLPTR == m_client->actionCollection()->action("popup_quickpreview")) {
+    if(nullptr == m_client->actionCollection()->action("popup_quickpreview")) {
         m_quickPreviewAction = new QAction(this);
         connect(m_quickPreviewAction, &QAction::triggered, this, &Manager::quickPreviewPopup);
     }
@@ -200,7 +202,7 @@ void Manager::readConfig(QSplitter *splitter)
 
     m_synchronizeViewWithCursorAction->setChecked(KileConfig::synchronizeCursorWithView());
 
-    Okular::ViewerInterface *viewerInterface = dynamic_cast<Okular::ViewerInterface*>(m_viewerPart.data());
+    Okular::ViewerInterface *viewerInterface = qobject_cast<Okular::ViewerInterface*>(m_viewerPart.data());
     if(viewerInterface && !m_ki->livePreviewManager()->isLivePreviewActive()) {
         viewerInterface->setWatchFileModeEnabled(KileConfig::watchFileForDocumentViewer());
         // also reload the document; this is necessary for switching back on watch-file mode as otherwise
@@ -217,7 +219,7 @@ void Manager::writeConfig()
         KileConfig::setShowDocumentViewer(isViewerPartShown());
     }
     if(m_viewerPartWindow) {
-        KConfigGroup group(KSharedConfig::openConfig(), "KileDocumentViewerWindow");
+        KConfigGroup group(KSharedConfig::openConfig(), u"KileDocumentViewerWindow"_s);
         m_viewerPartWindow->saveMainWindowSettings(group);
     }
 
@@ -231,6 +233,7 @@ void Manager::setTabsAndEditorVisible(bool b)
 
 QWidget * Manager::createTabs(QWidget *parent)
 {
+    delete m_widgetStack;
     m_widgetStack = new QStackedWidget(parent);
     DropWidget *emptyDropWidget = new DropWidget(m_widgetStack);
     m_widgetStack->insertWidget(0, emptyDropWidget);
@@ -267,7 +270,7 @@ QWidget * Manager::createTabs(QWidget *parent)
         }
         std::sort(views.begin(), views.end(), sortDocuments);
 
-        foreach(KTextEditor::View* view, views) {
+        for(KTextEditor::View* view: std::as_const(views)) {
             QAction *action = m_documentListButton->menu()->addAction(view->document()->documentName());
             action->setData(QVariant::fromValue(view));
         }
@@ -340,10 +343,10 @@ void Manager::currentTabChanged(int index)
     }
     m_widgetStack->insertWidget(1, newlyActivatedWidget);
     m_widgetStack->setCurrentIndex(1);
-    emit currentViewChanged(newlyActivatedWidget);
+    Q_EMIT currentViewChanged(newlyActivatedWidget);
     KTextEditor::View *view = dynamic_cast<KTextEditor::View*>(newlyActivatedWidget);
     if(view) {
-        emit textViewActivated(view);
+        Q_EMIT textViewActivated(view);
     }
 }
 
@@ -368,7 +371,7 @@ void Manager::handleCursorPositionChanged(KTextEditor::View *view, const KTextEd
 KTextEditor::View * Manager::createTextView(KileDocument::TextInfo *info, int index)
 {
     KTextEditor::Document *doc = info->getDoc();
-    KTextEditor::View *view = info->createView(m_tabBar, Q_NULLPTR);
+    KTextEditor::View *view = info->createView(m_tabBar, nullptr);
     Q_ASSERT(view);
 
     if(!view) {
@@ -407,10 +410,7 @@ KTextEditor::View * Manager::createTextView(KileDocument::TextInfo *info, int in
     connect(this, &KileView::Manager::textViewClosed, m_cursorPositionChangedTimer, &QTimer::stop);
 
     // code completion
-    KTextEditor::CodeCompletionInterface *completionInterface = qobject_cast<KTextEditor::CodeCompletionInterface*>(view);
-    if(completionInterface) {
-        completionInterface->setAutomaticInvocationEnabled(true);
-    }
+    view->setAutomaticInvocationEnabled(true);
 
     // install a working text editor part popup dialog thingy
     installContextMenu(view);
@@ -460,11 +460,11 @@ KTextEditor::View * Manager::createTextView(KileDocument::TextInfo *info, int in
     }
 
     //activate the newly created view
-    emit(textViewCreated(view));
-    emit(activateView(view, false));
-    emit(updateCaption());  //make sure the caption gets updated
+    Q_EMIT(textViewCreated(view));
+    Q_EMIT(activateView(view, false));
+    Q_EMIT(updateCaption());  //make sure the caption gets updated
 
-    reflectDocumentModificationStatus(view->document(), false, KTextEditor::ModificationInterface::OnDiskUnmodified);
+    reflectDocumentModificationStatus(view->document(), false, KTextEditor::Document::OnDiskUnmodified);
 
     return view;
 }
@@ -484,11 +484,12 @@ void Manager::installContextMenu(KTextEditor::View *view)
         popupMenu->addAction(m_quickPreviewAction);
 
         // insert actions from user-defined latex menu
-        KileMenu::UserMenu *usermenu = m_ki->userMenu();
+        const KileMenu::UserMenu *usermenu = m_ki->userMenu();
         if(usermenu) {
             KILE_DEBUG_MAIN << "Insert actions from user-defined latex menu";
             popupMenu->addSeparator();
-            foreach(QAction *action, usermenu->contextMenuActions()) {
+            const QList<QAction*> contextActions = usermenu->contextMenuActions();
+            for(QAction *action : contextActions) {
                 if(action) {
                     popupMenu->addAction(action);
                 }
@@ -609,19 +610,17 @@ void Manager::removeView(KTextEditor::View *view)
         const bool isActiveView = (KTextEditor::Editor::instance()->application()->activeMainWindow()->activeView() == view);
         m_tabBar->removeTab(tabIndexOf(view));
 
-        emit(updateCaption());  //make sure the caption gets updated
+        Q_EMIT(updateCaption());  //make sure the caption gets updated
         if(m_tabBar->count() == 0) {
             m_ki->structureWidget()->clear();
             m_widgetStack->setCurrentIndex(0); // if there are no open views, then show the DropWidget
         }
-        
-        view2handler.erase(view);
-        
-        emit(textViewClosed(view, isActiveView));
+
+        Q_EMIT(textViewClosed(view, isActiveView));
         delete view;
     }
     else {
-        KILE_DEBUG_MAIN << "View should be removed but is Q_NULLPTR";
+        KILE_DEBUG_MAIN << "View should be removed but is nullptr";
     }
 }
 
@@ -638,22 +637,18 @@ KTextEditor::View * Manager::textView(int index) const
 
 KTextEditor::View * Manager::textView(KileDocument::TextInfo *info) const
 {
-    KTextEditor::Document *doc = info->getDoc();
+    const KTextEditor::Document *doc = info->getDoc();
     if(!doc) {
-        return Q_NULLPTR;
+        return nullptr;
     }
     for(int i = 0; i < m_tabBar->count(); ++i) {
         KTextEditor::View *view = textViewAtTab(i);
-        if(!view) {
-            continue;
-        }
-
-        if(view->document() == doc) {
+        if(view && (view->document() == doc)) {
             return view;
         }
     }
 
-    return Q_NULLPTR;
+    return nullptr;
 }
 
 int Manager::textViewCount() const
@@ -683,7 +678,7 @@ KTextEditor::View * Manager::switchToTextView(const QUrl &url, bool requestFocus
 
 KTextEditor::View * Manager::switchToTextView(KTextEditor::Document *doc, bool requestFocus)
 {
-    KTextEditor::View *view = Q_NULLPTR;
+    KTextEditor::View *view = nullptr;
     if(doc) {
         if(doc->views().count() > 0) {
             view = doc->views().first();
@@ -712,7 +707,7 @@ void Manager::setTabIcon(QWidget *view, const QIcon& icon)
     m_tabBar->setTabIcon(tabIndexOf(qobject_cast<KTextEditor::View *>(view)), icon);
 }
 
-void Manager::updateStructure(bool parse /* = false */, KileDocument::Info *docinfo /* = Q_NULLPTR */)
+void Manager::updateStructure(bool parse /* = false */, KileDocument::Info *docinfo /* = nullptr */)
 {
     if(!docinfo) {
         docinfo = m_ki->docManager()->getInfo();
@@ -813,19 +808,19 @@ void Manager::moveTabRight(QWidget *widget)
 
 void Manager::reflectDocumentModificationStatus(KTextEditor::Document *doc,
         bool isModified,
-        KTextEditor::ModificationInterface::ModifiedOnDiskReason reason)
+        KTextEditor::Document::ModifiedOnDiskReason reason)
 {
     QIcon icon;
-    if(reason == KTextEditor::ModificationInterface::OnDiskUnmodified && isModified) { //nothing
+    if(reason == KTextEditor::Document::OnDiskUnmodified && isModified) { //nothing
         icon = QIcon::fromTheme("modified"); // This icon is taken from Kate. Therefore
         // our thanks go to the authors of Kate.
     }
-    else if(reason == KTextEditor::ModificationInterface::OnDiskModified
-            || reason == KTextEditor::ModificationInterface::OnDiskCreated) { //dirty file
+    else if(reason == KTextEditor::Document::OnDiskModified
+            || reason == KTextEditor::Document::OnDiskCreated) { //dirty file
         icon = QIcon::fromTheme("emblem-warning"); // This icon is taken from Kate. Therefore
         // our thanks go to the authors of Kate.
     }
-    else if(reason == KTextEditor::ModificationInterface::OnDiskDeleted) { //file deleted
+    else if(reason == KTextEditor::Document::OnDiskDeleted) { //file deleted
         icon = QIcon::fromTheme("emblem-warning");
     }
     else if(m_ki->extensions()->isScriptFile(doc->url())) {
@@ -889,13 +884,13 @@ void Manager::convertSelectionToLaTeX()
 {
     KTextEditor::View *view = currentTextView();
 
-    if(view == Q_NULLPTR) {
+    if(view == nullptr) {
         return;
     }
 
     KTextEditor::Document *doc = view->document();
 
-    if(doc == Q_NULLPTR) {
+    if(doc == nullptr) {
         return;
     }
 
@@ -1002,13 +997,13 @@ void Manager::quickPreviewPopup()
     }
 
     if(view->selection()) {
-        emit(startQuickPreview(KileTool::qpSelection));
+        Q_EMIT(startQuickPreview(KileTool::qpSelection));
     }
     else if(m_ki->editorExtension()->hasMathgroup(view)) {
-        emit(startQuickPreview(KileTool::qpMathgroup));
+        Q_EMIT(startQuickPreview(KileTool::qpMathgroup));
     }
     else if(m_ki->editorExtension()->hasEnvironment(view)) {
-        emit(startQuickPreview(KileTool::qpEnvironment));
+        Q_EMIT(startQuickPreview(KileTool::qpEnvironment));
     }
 }
 
@@ -1029,7 +1024,7 @@ void Manager::replaceLoadedURL(QWidget *w, QDropEvent *e)
         return;
     }
     int index = tabIndexOf(qobject_cast<KTextEditor::View *>(w));
-    KileDocument::Extensions *extensions = m_ki->extensions();
+    const KileDocument::Extensions *extensions = m_ki->extensions();
     bool hasReplacedTab = false;
     for(QList<QUrl>::iterator i = urls.begin(); i != urls.end(); ++i) {
         QUrl url = *i;
@@ -1085,7 +1080,7 @@ DropWidget::~DropWidget()
 void DropWidget::dragEnterEvent(QDragEnterEvent *e)
 {
     bool b;
-    emit testCanDecode(e, b);
+    Q_EMIT testCanDecode(e, b);
     if(b) {
         e->acceptProposedAction();
     }
@@ -1093,13 +1088,13 @@ void DropWidget::dragEnterEvent(QDragEnterEvent *e)
 
 void DropWidget::dropEvent(QDropEvent *e)
 {
-    emit receivedDropEvent(e);
+    Q_EMIT receivedDropEvent(e);
 }
 
 void DropWidget::mouseDoubleClickEvent(QMouseEvent *e)
 {
     Q_UNUSED(e);
-    emit mouseDoubleClick();
+    Q_EMIT mouseDoubleClick();
 }
 
 void Manager::installEventFilter(KTextEditor::View *view, QObject *eventFilter)
@@ -1128,24 +1123,23 @@ void Manager::removeEventFilter(KTextEditor::View *view, QObject *eventFilter)
 
 void Manager::createViewerPart(KActionCollection *actionCollection)
 {
-    m_viewerPart = Q_NULLPTR;
+    m_viewerPart = nullptr;
 
-    KPluginLoader pluginLoader(OKULAR_LIBRARY_NAME);
-    KPluginFactory *factory = pluginLoader.factory();
-    if(!factory) {
-        KILE_DEBUG_MAIN << "Could not find the Okular library.";
-        m_viewerPart = Q_NULLPTR;
+    const KPluginMetaData okularPart(QStringLiteral(OKULAR_LIBRARY_NAME));
+    const QVariantList args {"ViewerWidget", "ConfigFileName=kile-livepreview-okularpartrc"};
+
+    auto result = KPluginFactory::instantiatePlugin<KParts::ReadOnlyPart>(okularPart, nullptr, args);
+    if(!result) {
+        KILE_DEBUG_MAIN << "Could not load the Okular library:" << result.errorString;
+        m_viewerPart = nullptr;
         return;
-    }
-    else {
-        QVariantList argList;
-        argList << "ViewerWidget" << "ConfigFileName=kile-livepreview-okularpartrc";
-        m_viewerPart = factory->create<KParts::ReadOnlyPart>(this, argList);
-        Okular::ViewerInterface *viewerInterface = dynamic_cast<Okular::ViewerInterface*>(m_viewerPart.data());
+    } else {
+        m_viewerPart = result.plugin;
+        Okular::ViewerInterface *viewerInterface = qobject_cast<Okular::ViewerInterface*>(m_viewerPart.data());
         if(!viewerInterface) {
             // OkularPart doesn't provide the ViewerInterface
             delete m_viewerPart;
-            m_viewerPart = Q_NULLPTR;
+            m_viewerPart = nullptr;
             return;
         }
         viewerInterface->setWatchFileModeEnabled(false);
@@ -1205,7 +1199,7 @@ void Manager::destroyDocumentViewerWindow()
     disconnect(m_viewerPartWindow, &KileView::DocumentViewerWindow::visibilityChanged, this, &Manager::documentViewerWindowVisibilityChanged);
     m_viewerPartWindow->hide();
     delete m_viewerPartWindow;
-    m_viewerPartWindow = Q_NULLPTR;
+    m_viewerPartWindow = nullptr;
 }
 
 void Manager::handleActivatedSourceReference(const QString& absFileName, int line, int col)
@@ -1286,7 +1280,7 @@ bool Manager::isViewerPartShown() const
 
 bool Manager::openInDocumentViewer(const QUrl &url)
 {
-    Okular::ViewerInterface *v = dynamic_cast<Okular::ViewerInterface*>(m_viewerPart.data());
+    Okular::ViewerInterface *v = qobject_cast<Okular::ViewerInterface*>(m_viewerPart.data());
     if(!v) {
         return false;
     }
@@ -1297,7 +1291,7 @@ bool Manager::openInDocumentViewer(const QUrl &url)
 
 void Manager::clearLastShownSourceLocationInDocumentViewer()
 {
-    Okular::ViewerInterface *v = dynamic_cast<Okular::ViewerInterface*>(m_viewerPart.data());
+    Okular::ViewerInterface *v = qobject_cast<Okular::ViewerInterface*>(m_viewerPart.data());
     if(v) {
         v->clearLastShownSourceLocation();
     }
@@ -1305,7 +1299,7 @@ void Manager::clearLastShownSourceLocationInDocumentViewer()
 
 void Manager::showSourceLocationInDocumentViewer(const QString& fileName, int line, int column)
 {
-    Okular::ViewerInterface *v = dynamic_cast<Okular::ViewerInterface*>(m_viewerPart.data());
+    Okular::ViewerInterface *v = qobject_cast<Okular::ViewerInterface*>(m_viewerPart.data());
     if(v) {
         m_clearLastShownSourceLocationTimer->stop();
         v->showSourceLocation(fileName, line, column, true);
@@ -1315,7 +1309,7 @@ void Manager::showSourceLocationInDocumentViewer(const QString& fileName, int li
 
 void Manager::setLivePreviewModeForDocumentViewer(bool b)
 {
-    Okular::ViewerInterface *viewerInterface = dynamic_cast<Okular::ViewerInterface*>(m_viewerPart.data());
+    Okular::ViewerInterface *viewerInterface = qobject_cast<Okular::ViewerInterface*>(m_viewerPart.data());
     if(viewerInterface) {
         if(b) {
             viewerInterface->setWatchFileModeEnabled(false);
@@ -1343,10 +1337,7 @@ bool Manager::viewForLocalFilePresent(const QString& localFileName)
 {
     for(int i = 0; i < m_tabBar->count(); ++i) {
         KTextEditor::View *view = textViewAtTab(i);
-        if(!view) {
-            continue;
-        }
-        if(view->document()->url().toLocalFile() == localFileName) {
+        if(view && (view->document()->url().toLocalFile() == localFileName)) {
             return true;
         }
     }

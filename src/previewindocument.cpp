@@ -16,7 +16,6 @@
 #include <QMouseEvent>
 #include <QBoxLayout>
 #include <ktexteditor/range.h>
-#include <ktexteditor/configinterface.h>
 #include <QTime>
 #include <ktextedit.h>
 
@@ -645,8 +644,7 @@ void PreviewWidgetHandler::updateWidgets(int linenr, const ParsedLine& parsedlin
 void PreviewWidgetHandler::setBeginDocument(std::optional<Cursor> cursor) {
     if (cursor) {
         if (!m_begin_document || m_begin_document->toCursor() != cursor) {
-            KTextEditor::MovingInterface* moving = qobject_cast<KTextEditor::MovingInterface*>(vh.doc);
-            m_begin_document.reset(moving->newMovingCursor(cursor.value()));
+            m_begin_document.reset(vh.doc->newMovingCursor(cursor.value()));
             updatePreamble();
         }
     } else {

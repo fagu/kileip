@@ -40,7 +40,6 @@ namespace KileMenu {
 // - Menu items with errors are displayed in red (Qt:UserRole+2)
 void MenuentryDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex& index) const
 {
-    QString menutitle = index.data(Qt::DisplayRole).toString();
     int error = index.data(Qt::UserRole+2).toInt();
 
     // any errors?
@@ -102,21 +101,10 @@ bool UserMenuTree::isEmpty()
 void UserMenuTree::initEnvPathlist()
 {
     QString envpath;
-#if QT_VERSION >= 0x040600
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     if ( env.contains("PATH") ) {
         envpath = env.value("PATH");
     }
-#else
-    // Returns the environment of the calling process as a list of key=value pairs.
-    QStringList environment = QProcess::systemEnvironment();
-    foreach ( const QString &s, environment ) {
-        if ( s.startsWith(QLatin1String("PATH=")) ) {
-            envpath = s.mid(5);
-            break;
-        }
-    }
-#endif
 
 #ifdef Q_WS_WIN
     m_envPathlist = envpath.split(';');
@@ -263,7 +251,7 @@ bool UserMenuTree::readXml(const QString &filename)
     while ( !e.isNull()) {
         QString tag = e.tagName();
 
-        UserMenuItem *item = Q_NULLPTR;
+        UserMenuItem *item = nullptr;
         if ( tag == "submenu" ) {
             item = readXmlSubmenu(e);
         }
@@ -304,12 +292,12 @@ UserMenuItem *UserMenuTree::readXmlSubmenu(const QDomElement &element)
 {
     UserMenuItem *submenuitem = new UserMenuItem(UserMenuData::Submenu, QString()) ;
 
-    QString title;
     if ( element.hasChildNodes() ) {
         QDomElement e = element.firstChildElement();
         while ( !e.isNull()) {
-            UserMenuItem *item = Q_NULLPTR;
+            UserMenuItem *item = nullptr;
 
+            QString title;
             QString tag = e.tagName();
             if ( tag == "title" ) {
                 title = e.text();
@@ -345,21 +333,21 @@ UserMenuItem *UserMenuTree::readXmlMenuentry(const QDomElement &element)
 
     UserMenuItem *menuentryitem = new UserMenuItem(menutype, QString()) ;
 
-    // default values
-    QString title;
-    QString plaintext;
-    QString filename;
-    QString parameter;
-    QString icon;
-    QString shortcut;
-    bool needsSelection = false;
-    bool useContextMenu = false;
-    bool replaceSelection = false;
-    bool selectInsertion = false;
-    bool insertOutput = false;
-
-    // read values
     if ( element.hasChildNodes() ) {
+        // default values
+        QString title;
+        QString plaintext;
+        QString filename;
+        QString parameter;
+        QString icon;
+        QString shortcut;
+        bool needsSelection = false;
+        bool useContextMenu = false;
+        bool replaceSelection = false;
+        bool selectInsertion = false;
+        bool insertOutput = false;
+
+        // read values
         QDomElement e = element.firstChildElement();
         while ( !e.isNull()) {
             QString tag = e.tagName();
@@ -735,7 +723,7 @@ bool UserMenuTree::insertSeparator(QTreeWidgetItem *current, bool below)
 
 void UserMenuTree::insertMenuItemAbove(QTreeWidgetItem *current, UserMenuData::MenuType type, const QString &menulabel)
 {
-    QTreeWidgetItem *parent = ( current ) ? current->parent() : Q_NULLPTR;
+    QTreeWidgetItem *parent = ( current ) ? current->parent() : nullptr;
     int index = itemIndex(parent,current);
 
     UserMenuItem *item = new UserMenuItem(type,menulabel);
@@ -748,7 +736,7 @@ void UserMenuTree::insertMenuItemAbove(QTreeWidgetItem *current, UserMenuData::M
 void UserMenuTree::insertMenuItemBelow(QTreeWidgetItem *current, UserMenuData::MenuType type, const QString &menulabel)
 {
     UserMenuItem *item;
-    QTreeWidgetItem *parent = ( current ) ? current->parent() : Q_NULLPTR;
+    QTreeWidgetItem *parent = ( current ) ? current->parent() : nullptr;
 
     if(!parent) {
         item = new UserMenuItem(this,current,type,menulabel);
@@ -792,7 +780,7 @@ void UserMenuTree::itemDelete(QTreeWidgetItem *current)
             selectitem = topLevelItem(index-1);
         }
         else {
-            selectitem = Q_NULLPTR;
+            selectitem = nullptr;
         }
 
         item = takeTopLevelItem(index);
@@ -921,7 +909,9 @@ void UserMenuTree::itemDown()
 // delete the whole menutree
 void  UserMenuTree::deleteMenuTree()
 {
-    if ( KMessageBox::questionYesNo(this, i18n("Do you really want to clear the complete menutree?") ) == KMessageBox::Yes ) {
+    if ( KMessageBox::questionTwoActions(this, i18n("Do you really want to clear the complete menutree?"),
+                                         i18n("Clear menutree"),
+                                         KStandardGuiItem::clear(), KStandardGuiItem::cancel()) == KMessageBox::PrimaryAction) {
         blockSignals(true);
         clear();
         blockSignals(false);
@@ -966,7 +956,7 @@ void  UserMenuTree::itemInfo(UserMenuItem *item)
     }
     else {
         msg += "<ul>";
-        foreach ( const QString &s, list ) {
+        for(const QString &s: std::as_const(list)) {
             msg += "<li>&nbsp;" + s + "</li>";
         }
         msg += "</ul></p>";

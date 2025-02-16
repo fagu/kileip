@@ -53,7 +53,7 @@
 KileProjectDialogBase::KileProjectDialogBase(const QString &caption, KileDocument::Extensions *extensions, QWidget *parent, const char *name)
     : QDialog(parent)
     , m_extmanager(extensions)
-    , m_project(Q_NULLPTR)
+    , m_project(nullptr)
     , m_projectGroup(new QGroupBox(i18n("Project"), this))
     , m_extensionGroup(new QGroupBox(i18n("Extensions"), this))
 {
@@ -89,7 +89,7 @@ KileProjectDialogBase::KileProjectDialogBase(const QString &caption, KileDocumen
     m_defaultGraphicsExtensionCombo = new QComboBox(this);
     KileDocument::Extensions extManager;
     QStringList imageExtensions = extManager.images().split(' ');
-    foreach (const QString &extension, imageExtensions) {
+    for(const QString &extension: std::as_const(imageExtensions)) {
         const QString extName = extension.mid(1); // all characters right of "."
         m_defaultGraphicsExtensionCombo->addItem(extension, extName);
     }
@@ -100,8 +100,8 @@ KileProjectDialogBase::KileProjectDialogBase(const QString &caption, KileDocumen
     // extension settings groupbox
     m_userFileExtensions = new QLineEdit(this);
     m_userFileExtensions->setWhatsThis(whatsthisExt);
-    QRegExp reg("[\\. a-zA-Z0-9]+");
-    QRegExpValidator *extValidator = new QRegExpValidator(reg, m_extensionGroup);
+    QRegularExpression reg("[\\. a-zA-Z0-9]+");
+    auto extValidator = new QRegularExpressionValidator(reg, m_extensionGroup);
     m_userFileExtensions->setValidator(extValidator);
 
     m_defaultLatexFileExtensionsCombo = new KComboBox(false, this);
@@ -323,7 +323,7 @@ void KileNewProjectDialog::clickedCreateNewFileCb()
 
 QString KileNewProjectDialog::cleanProjectFile()
 {
-    return projectTitle().toLower().trimmed().remove(QRegExp("\\s*")) + ".kilepr";
+    return projectTitle().toLower().trimmed().remove(QRegularExpression("\\s*")) + ".kilepr";
 }
 
 void KileNewProjectDialog::handleOKButtonClicked()
@@ -333,8 +333,10 @@ void KileNewProjectDialog::handleOKButtonClicked()
     }
 
     if (projectTitle().trimmed().isEmpty()) {
-        if (KMessageBox::warningYesNo(this, i18n("You have not entered a project name. If you decide to proceed, the project name will be set to \"Untitled\".\n"
-                                      "Do you want to create the project nevertheless?"), i18n("No Project Name Given")) == KMessageBox::Yes) {
+        if (KMessageBox::warningTwoActions(this, i18n("You have not entered a project name. If you decide to proceed, the project name will be set to \"Untitled\".\n"
+                                           "Do you want to create the project nevertheless?"), i18n("No Project Name Given"),
+                                           KStandardGuiItem::ok(), KStandardGuiItem::cancel()
+                                           ) == KMessageBox::PrimaryAction) {
             m_title->setText(i18n("Untitled"));
         }
         else {
@@ -368,13 +370,13 @@ void KileNewProjectDialog::handleOKButtonClicked()
     testDirectoryIsUsable(projectDir);
     testDirectoryIsUsable(guiFileDir);
 
-    if (QFileInfo(projectFilePath).exists()) { // this can only happen when the project dir existed already
+    if (QFileInfo::exists(projectFilePath)) { // this can only happen when the project dir existed already
         KMessageBox::error(this, i18n("The project file exists already. Please choose another name."), i18n("Project File Already Exists"));
         return;
     }
 
     const QString guiProjectFilePath = KileProject::getPathForGUISettingsProjectFile(projectFilePath);
-    if (QFileInfo(guiProjectFilePath).exists()) { // this can only happen when the project dir existed already
+    if (QFileInfo::exists(guiProjectFilePath)) { // this can only happen when the project dir existed already
         KMessageBox::error(this, i18n("The GUI settings file exists already. Please choose another project name."), i18n("Project File Already Exists"));
         return;
     }
@@ -389,8 +391,9 @@ void KileNewProjectDialog::handleOKButtonClicked()
             m_file->setText(validURL.fileName());
         }
 
-        if(QFileInfo(projectDir.filePath(fileString)).exists()) {
-            if (KMessageBox::warningYesNo(this, i18n("The file \"%1\" already exists, overwrite it?", fileString), i18n("File Already Exists")) == KMessageBox::No) {
+        if(QFileInfo::exists(projectDir.filePath(fileString))) {
+            if (KMessageBox::warningTwoActions(this, i18n("The file \"%1\" already exists, overwrite it?", fileString), i18n("File Already Exists"),
+                                               KStandardGuiItem::overwrite(), KStandardGuiItem::cancel()) == KMessageBox::SecondaryAction) {
                 return;
             }
         }

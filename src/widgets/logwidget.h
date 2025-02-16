@@ -34,7 +34,7 @@ class LogWidgetItemDelegate : public QItemDelegate
     Q_OBJECT
 
 public:
-    explicit LogWidgetItemDelegate(QObject* parent = Q_NULLPTR);
+    explicit LogWidgetItemDelegate(QObject* parent = nullptr);
 
     virtual QSize sizeHint(const QStyleOptionViewItem& option,
                            const QModelIndex& index) const override;
@@ -60,7 +60,7 @@ public:
 
     enum PopupType { AllPopupActions = 0, NoHideActions = 1};
 
-    explicit LogWidget(PopupType popupType = AllPopupActions, QWidget *parent = Q_NULLPTR, const char *name = Q_NULLPTR);
+    explicit LogWidget(PopupType popupType = AllPopupActions, QWidget *parent = nullptr, const char *name = nullptr);
     ~LogWidget();
 
     bool isShowingOutput() const;
@@ -69,7 +69,7 @@ public Q_SLOTS:
     void highlight(const OutputInfo& info, bool startFromBottom = false);
 
     void printMessage(const QString& message);
-    void printMessage(int type, const QString& message, const QString &tool = "Kile",
+    void printMessage(int type, const QString& message, const QString &tool = QStringLiteral("Kile"),
                       const OutputInfo& outputInfo = OutputInfo(), bool allowSelection = false,
                       bool scroll = true);
     void printProblem(int type, const QString& problem, const OutputInfo& outputInfo = OutputInfo());
@@ -87,7 +87,7 @@ Q_SIGNALS:
     void outputInfoSelected(const OutputInfo&);
 
 protected:
-    virtual void enterEvent(QEvent *event) override;
+    virtual void enterEvent(QEnterEvent *event) override;
     virtual void leaveEvent(QEvent *event) override;
     virtual void mouseMoveEvent(QMouseEvent* event) override;
 
@@ -96,7 +96,7 @@ protected:
 
     virtual void contextMenuEvent(QContextMenuEvent *event) override;
 
-    void printMessageLine(int type, const QString& message, const QString &tool = "Kile",
+    void printMessageLine(int type, const QString& message, const QString &tool = QStringLiteral("Kile"),
                           const OutputInfo& outputInfo = OutputInfo(), bool allowSelection = false,
                           bool scroll = true);
 

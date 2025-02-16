@@ -17,11 +17,13 @@
 #include "kiledebug.h"
 
 #include <KConfigGroup>
+#include <KIO/ApplicationLauncherJob>
+#include <KIO/JobUiDelegateFactory>
 #include <KLocalizedString>
+#include <KJobUiDelegate>
 #include <KMessageBox>
 #include <KApplicationTrader>
 #include <KProcess>
-#include <KRun>
 #include <KService>
 
 #include <QBoxLayout>
@@ -39,7 +41,6 @@
 #include <QMimeDatabase>
 #include <QMimeType>
 #include <QPushButton>
-#include <QRegExp>
 #include <QTemporaryFile>
 #include <QTreeWidget>
 #include <QUrl>
@@ -51,8 +52,8 @@ namespace KileDialog
 TexDocDialog::TexDocDialog(QWidget *parent)
     : QDialog(parent)
     , m_buttonBox(new QDialogButtonBox(QDialogButtonBox::RestoreDefaults|QDialogButtonBox::Close))
-    , m_tempfile(Q_NULLPTR)
-    , m_proc(Q_NULLPTR)
+    , m_tempfile(nullptr)
+    , m_proc(nullptr)
 {
     setWindowTitle(i18n("Documentation Browser"));
     setModal(true);
@@ -176,9 +177,9 @@ void TexDocDialog::readToc()
 
 void TexDocDialog::showToc(const QString &caption, const QStringList &doclist, bool toc)
 {
-    QString section, textline;
+    QString section;
     QStringList keylist;
-    QTreeWidgetItem *itemsection = Q_NULLPTR;
+    QTreeWidgetItem *itemsection = nullptr;
 
     setUpdatesEnabled(false);
     m_texdocs->setHeaderLabel(caption);
@@ -190,10 +191,7 @@ void TexDocDialog::showToc(const QString &caption, const QStringList &doclist, b
         }
         else {
             keylist = doclist[i].split(';', Qt::KeepEmptyParts);
-            if (keylist.size() < 4) {
-                continue;
-            }
-            if (itemsection) {
+            if((keylist.size() >= 4) && itemsection) {
                 QTreeWidgetItem *item = new QTreeWidgetItem(itemsection, QStringList() << keylist[1] << keylist[0]);
                 item->setIcon(0, QIcon::fromTheme(getIconName(keylist[2])));
 
@@ -224,7 +222,7 @@ bool TexDocDialog::eventFilter(QObject *o, QEvent *e)
 {
     // catch KeyPress events
     if (e->type() == QEvent::KeyPress) {
-        QKeyEvent *kev = (QKeyEvent*) e;
+        QKeyEvent *kev = static_cast<QKeyEvent*>(e);
 
         // ListView:
         //  - space:  enable start of viewer
@@ -302,7 +300,11 @@ void TexDocDialog::showFile(const QString &filename)
         }
         QList<QUrl> lst;
         lst.append(url);
-        KRun::runService(*(offers.first()), lst, this, true);
+        auto *job = new KIO::ApplicationLauncherJob(offers.first());
+        job->setUrls(lst);
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate(KJobUiDelegate::AutoHandlingEnabled, this));
+        job->setRunFlags(KIO::ApplicationLauncherJob::DeleteTemporaryFiles);
+        job->start();
     }
 }
 
@@ -425,7 +427,7 @@ void TexDocDialog::slotProcessExited(int exitCode, QProcess::ExitStatus exitStat
 
     if (exitStatus == QProcess::NormalExit) {
         //showFile(m_filename);
-        emit(processFinished());
+        Q_EMIT(processFinished());
     }
     else {
         KMessageBox::error(this, i18n("<center>") + i18n("Could not determine the search paths of TexLive/teTeX or file 'texdoctk.dat'.<br/>"
@@ -510,7 +512,7 @@ QString TexDocDialog::getIconName(const QString &filename)
         icon = "application-pdf";
     }
     else if( ext == "txt") {
-        ext = "text-plain";
+        icon = "text-plain";
     }
     else if(ext == "ps") {
         icon = "application-postscript";

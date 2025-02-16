@@ -63,14 +63,17 @@
 #include <QHeaderView>
 #include <QMimeDatabase>
 #include <QMimeType>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QScrollBar>
 #include <QUrl>
 
 #include <KApplicationTrader>
+#include <KIO/ApplicationLauncherJob>
+#include <KIO/JobUiDelegateFactory>
+#include <KIO/OpenUrlJob>
+#include <KJobUiDelegate>
 #include <KLocalizedString>
 #include <KMessageBox>
-#include <KRun>
 
 #include "documentinfo.h"
 #include "errorhandler.h"
@@ -169,10 +172,10 @@ void StructureView::init()
 
     m_parent[0]=m_parent[1]=m_parent[2]=m_parent[3]=m_parent[4]=m_parent[5]=m_parent[6]=m_root;
     m_lastType = KileStruct::None;
-    m_lastSectioning = Q_NULLPTR;
-    m_lastFloat = Q_NULLPTR;
-    m_lastFrame = Q_NULLPTR;
-    m_lastFrameEnv = Q_NULLPTR;
+    m_lastSectioning = nullptr;
+    m_lastFloat = nullptr;
+    m_lastFrame = nullptr;
+    m_lastFrameEnv = nullptr;
     m_stop = false;
 
     m_folders.clear();
@@ -235,7 +238,7 @@ void StructureView::saveState()
     m_openByFolders.clear();
 
     QTreeWidgetItemIterator it(this);
-    StructureViewItem *item = Q_NULLPTR;
+    StructureViewItem *item = nullptr;
     while(*it) {
         item = dynamic_cast<StructureViewItem*>(*it);
         if(item && item->child(0)) {
@@ -369,7 +372,7 @@ void StructureView::activate()
 
 StructureViewItem *StructureView::parentFor(int lev, const QString & fldr)
 {
-    StructureViewItem *par = Q_NULLPTR;
+    StructureViewItem *par = nullptr;
 
     if(fldr == "root") {
         switch(lev) {
@@ -409,7 +412,7 @@ StructureViewItem *StructureView::parentFor(int lev, const QString & fldr)
 	      the floating environment is closed, it is inserted into the title of this item.
 	      If a \label command follows, it is assigned to this float item.
 	- KileStruct::EndFloat
-	      Reset m_lastFloat to Q_NULLPTR to close this environment. No more \caption or \label
+	      Reset m_lastFloat to nullptr to close this environment. No more \caption or \label
 	      commands are assigned to this float after this.
 	- KileStruct::Caption
 	      If a float environment is opened, the caption is assigned to the float item.
@@ -425,7 +428,7 @@ StructureViewItem *StructureView::parentFor(int lev, const QString & fldr)
 	      the frame environment is closed, it is inserted into the title of this item.
 	      If a \label command follows, it is assigned to this float item.
 	- KileStruct::BeamerEndFrame
-	      Reset m_lastFloatEnv to Q_NULLPTR to close this environment. No more \frametitle
+	      Reset m_lastFloatEnv to nullptr to close this environment. No more \frametitle
 	      or \label commands are assigned to this frame after this.
 	- KileStruct::BeamerBeginBlock
 	      Inside a beamer frame this environment is taken as child of this frame
@@ -454,7 +457,7 @@ void StructureView::addItem(const QString &title, uint line, uint column, int ty
         }
     }
     else if(type == KileStruct::EndFloat) {
-        m_lastFloat = Q_NULLPTR;
+        m_lastFloat = nullptr;
     }
     else if(type == KileStruct::BeamerFrametitle) {
         if(m_lastFrameEnv) {
@@ -465,9 +468,9 @@ void StructureView::addItem(const QString &title, uint line, uint column, int ty
         }
     }
     else if(type == KileStruct::BeamerEndFrame) {
-        m_lastFrameEnv = Q_NULLPTR;
+        m_lastFrameEnv = nullptr;
     }
-    m_lastFrame = Q_NULLPTR;
+    m_lastFrame = nullptr;
 
     // that's all for hidden types: we must immediately return
     if(lev == KileStruct::Hidden) {
@@ -527,7 +530,7 @@ void StructureView::addItem(const QString &title, uint line, uint column, int ty
         }
     }
     else if(lev == 0) {
-        m_lastSectioning = Q_NULLPTR;
+        m_lastSectioning = nullptr;
         for(int l = 0; l < 7; ++l) {
             m_parent[l] = m_root;
         }
@@ -588,8 +591,8 @@ void StructureView::showReferences(KileInfo *ki)
 StructureWidget::StructureWidget(KileInfo *ki, QWidget * parent, const char* name) :
     QStackedWidget(parent),
     m_ki(ki),
-    m_docinfo(Q_NULLPTR),
-    m_showingContextMenu(Q_NULLPTR)
+    m_docinfo(nullptr),
+    m_showingContextMenu(nullptr)
 {
     setObjectName(name);
     KILE_DEBUG_MAIN << "==KileWidget::StructureWidget::StructureWidget()===========";
@@ -598,7 +601,7 @@ StructureWidget::StructureWidget(KileInfo *ki, QWidget * parent, const char* nam
     setContentsMargins(0, 0, 0, 0);
     setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
 
-    m_default = new StructureView(this, Q_NULLPTR);
+    m_default = new StructureView(this, nullptr);
     m_default->activate();
 
     connect(m_ki->parserManager(), SIGNAL(documentParsingStarted()), this, SLOT(handleDocumentParsingStarted()));
@@ -632,10 +635,10 @@ void StructureWidget::slotClicked(QTreeWidgetItem * itm)
     }
 
     if(!(item->type() & KileStruct::None)) {
-        emit(setCursor(item->url(), item->line()-1, item->column()));
+        Q_EMIT(setCursor(item->url(), item->line()-1, item->column()));
     }
     else if(!item->parent()) { //root item
-        emit(setCursor(item->url(), 0, 0));
+        Q_EMIT(setCursor(item->url(), 0, 0));
     }
 }
 
@@ -643,7 +646,7 @@ void StructureWidget::slotDoubleClicked(QTreeWidgetItem * itm)
 {
     KILE_DEBUG_MAIN << "\tStructureWidget::slotDoubleClicked";
     StructureViewItem *item = dynamic_cast<StructureViewItem*>(itm);
-    static QRegExp suffix("\\.[\\d\\w]*$");
+    static QRegularExpression suffix("\\.[\\d\\w]*$");
 
     if (!item) {
         return;
@@ -655,8 +658,9 @@ void StructureWidget::slotDoubleClicked(QTreeWidgetItem * itm)
         QString fname = item->title();
 
 
-        if(fname.indexOf(suffix) != -1) { // check if we have a suffix, if not add standard suffixes
-            KILE_DEBUG_MAIN << "Suffix found: " << suffix.cap(0);
+        QRegularExpressionMatch match;
+        if(fname.indexOf(suffix, 0, &match) != -1) { // check if we have a suffix, if not add standard suffixes
+            KILE_DEBUG_MAIN << "Suffix found: " << match.captured(0);
         }
         else {
             // filename in structureview entry has no extension: this shouldn't happen anymore,
@@ -709,10 +713,12 @@ void StructureWidget::slotDoubleClicked(QTreeWidgetItem * itm)
             if(item->type() == KileStruct::Graphics) {
                 QMimeDatabase db;
                 QMimeType pMime = db.mimeTypeForUrl(url);
-                KRun::runUrl(url, pMime.name(), this, KRun::RunFlags());
+                auto *job = new KIO::OpenUrlJob(url, pMime.name());
+                job->setUiDelegate(KIO::createDefaultJobUiDelegate(KJobUiDelegate::AutoHandlingEnabled, this));
+                job->start();
             }
             else {
-                emit(fileOpen(url, QString()));
+                Q_EMIT(fileOpen(url, QString()));
             }
         }
         else {
@@ -728,12 +734,16 @@ void StructureWidget::slotDoubleClicked(QTreeWidgetItem * itm)
             fi.setFile(otherFilename);
 
             if(fi.isReadable()) {
-                emit(fileOpen(QUrl::fromLocalFile(otherFilename), QString()));
+                Q_EMIT(fileOpen(QUrl::fromLocalFile(otherFilename), QString()));
             }
             else {
-                if(KMessageBox::warningYesNo(this, i18n("Cannot find the included file. The file does not exist, is not readable or Kile is unable to determine the correct path to it. The filename causing this error was: %1.\nDo you want to create this file?", fname), i18n("Cannot Find File"))
-                        == KMessageBox::Yes) {
-                    emit(fileNew(QUrl::fromLocalFile(fname)));
+                if(KMessageBox::warningTwoActions(this,
+                                                  i18n("Cannot find the included file. The file does not exist, is not readable or Kile is unable to determine the correct path to it. The filename causing this error was: %1.\nDo you want to create this file?", fname),
+                                                  i18n("Cannot Find File"),
+                                                  KStandardGuiItem::ok(),
+                                                  KStandardGuiItem::cancel())
+                        == KMessageBox::PrimaryAction) {
+                    Q_EMIT(fileNew(QUrl::fromLocalFile(fname)));
                 }
             }
         }
@@ -749,7 +759,7 @@ void StructureWidget::viewContextMenuEvent(StructureView *view, QContextMenuEven
     KILE_DEBUG_MAIN << "\tcalled";
 
     QMenu popup;
-    m_showingContextMenu = Q_NULLPTR;
+    m_showingContextMenu = nullptr;
 
     m_popupItem = dynamic_cast<StructureViewItem*>(view->itemAt(event->pos()));
     if(!m_popupItem) {
@@ -800,9 +810,9 @@ void StructureWidget::viewContextMenuEvent(StructureView *view, QContextMenuEven
 
     if(hasLabel) {
         popup.addSection(i18n("Insert Label"));
-        popup.addAction(i18n("As &reference"), this, [this] { emit(sendText("\\ref{" + m_popupItem->label() + '}')); });
-        popup.addAction(i18n("As &page reference"), this, [this] { emit(sendText("\\pageref{" + m_popupItem->label() + '}')); });
-        popup.addAction(i18n("Only the &label"), this, [this] { emit(sendText(m_popupItem->label())); });
+        popup.addAction(i18n("As &reference"), this, [this] { Q_EMIT(sendText("\\ref{" + m_popupItem->label() + '}')); });
+        popup.addAction(i18n("As &page reference"), this, [this] { Q_EMIT(sendText("\\pageref{" + m_popupItem->label() + '}')); });
+        popup.addAction(i18n("Only the &label"), this, [this] { Q_EMIT(sendText(m_popupItem->label())); });
         popup.addSeparator();
         popup.addSection(i18n("Copy Label to Clipboard"));
         popup.addAction(i18n("As reference"), this, [this] { QApplication::clipboard()->setText("\\ref{" + m_popupItem->label() + '}'); });
@@ -813,7 +823,7 @@ void StructureWidget::viewContextMenuEvent(StructureView *view, QContextMenuEven
     if(!popup.isEmpty()) {
         m_showingContextMenu = &popup;
         popup.exec(event->globalPos());
-        m_showingContextMenu = Q_NULLPTR;
+        m_showingContextMenu = nullptr;
     }
 }
 
@@ -822,7 +832,7 @@ void StructureWidget::slotPopupSectioning(int id)
 {
     KILE_DEBUG_MAIN << "\tStructureWidget::slotPopupSectioning (" << id << ")"<< Qt::endl;
     if(m_popupItem->level() >= 1 && m_popupItem->level() <= 7) {
-        emit(sectioningPopup(m_popupItem, id));
+        Q_EMIT(sectioningPopup(m_popupItem, id));
     }
 }
 
@@ -835,17 +845,24 @@ void StructureWidget::slotPopupGraphics(int id)
     url.setPath(m_popupInfo);
 
     if(id == SectioningGraphicsOther) {
-        KRun::displayOpenWithDialog(QList<QUrl>() << url, this);
+        // open with dialog
+        auto *job = new KIO::ApplicationLauncherJob();
+        job->setUrls(QList<QUrl>() << url);
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate(KJobUiDelegate::AutoHandlingEnabled, this));
+        job->start();
     }
     else {
-        KRun::runService(*m_offerList[id-SectioningGraphicsOfferlist], QList<QUrl>() << url, this);
+        auto *job = new KIO::ApplicationLauncherJob(m_offerList[id-SectioningGraphicsOfferlist]);
+        job->setUrls(QList<QUrl>() << url);
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate(KJobUiDelegate::AutoHandlingEnabled, this));
+        job->start();
     }
 }
 
 StructureView* StructureWidget::viewFor(KileDocument::Info *info)
 {
     if(!info) {
-        return Q_NULLPTR;
+        return nullptr;
     }
 
     if(!viewExistsFor(info)) {
@@ -867,7 +884,7 @@ bool StructureWidget::viewExistsFor(KileDocument::Info *info)
 
 void StructureWidget::closeDocumentInfo(KileDocument::Info *docinfo)
 {
-    m_docinfo = Q_NULLPTR;
+    m_docinfo = nullptr;
     if(m_map.contains(docinfo)) {
         StructureView *data = m_map[docinfo];
         m_map.remove(docinfo);
@@ -890,7 +907,7 @@ void StructureWidget::clear()
     }
 
     m_map.clear();
-    m_docinfo = Q_NULLPTR;
+    m_docinfo = nullptr;
 
     m_default->activate();
 }
@@ -985,7 +1002,7 @@ bool StructureWidget::findSectioning(StructureViewItem *refItem, KTextEditor::Do
         return false;
     }
 
-    if( checkLevel && !refItem ) { // only allow a refItem == Q_NULLPTR if checkLevel is false
+    if( checkLevel && !refItem ) { // only allow a refItem == nullptr if checkLevel is false
         return false;
     }
 

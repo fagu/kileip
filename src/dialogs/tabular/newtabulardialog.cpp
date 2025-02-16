@@ -208,7 +208,7 @@ NewTabularDialog::NewTabularDialog(const QString &environment, KileDocument::Lat
     connect(m_Table, &KileDialog::TabularTable::itemSelectionChanged, this, &NewTabularDialog::slotItemSelectionChanged);
     connect(m_Table, &KileDialog::TabularTable::rowAppended, this, &NewTabularDialog::slotRowAppended);
     connect(m_Table, &KileDialog::TabularTable::colAppended, this, &NewTabularDialog::slotColAppended);
-    connect(m_cmbName, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::activated), this, &NewTabularDialog::slotEnvironmentChanged);
+    connect(m_cmbName, static_cast<void (QComboBox::*)(const QString&)>(&QComboBox::textActivated), this, &NewTabularDialog::slotEnvironmentChanged);
     connect(m_sbCols, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &NewTabularDialog::updateColsAndRows);
     connect(m_sbRows, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), this, &NewTabularDialog::updateColsAndRows);
     connect(m_Table->horizontalHeader(), &QHeaderView::customContextMenuRequested, this, &NewTabularDialog::slotHeaderCustomContextMenuRequested);
@@ -233,7 +233,6 @@ void NewTabularDialog::initEnvironments()
 {
     /* read all tabular environments and insert them into the combobox */
     QStringList list;
-    QStringList::ConstIterator it;
     m_latexCommands->commandList(list, KileDocument::CmdAttrTabular, false);
     m_cmbName->addItems(list);
 
@@ -270,7 +269,8 @@ void NewTabularDialog::alignItems(int alignment)
 {
     QList<int> checkColumns;
 
-    foreach(QTableWidgetItem *item, m_Table->selectedItems()) {
+    const QList<QTableWidgetItem*> selectedItems = m_Table->selectedItems();
+    for(QTableWidgetItem *item : selectedItems) {
         item->setTextAlignment(alignment | Qt::AlignVCenter);
 
         int column = item->column();
@@ -279,7 +279,7 @@ void NewTabularDialog::alignItems(int alignment)
         }
     }
 
-    foreach(int column, checkColumns) {
+    for(int column : std::as_const(checkColumns)) {
         if(checkForColumnAlignment(column)) {
             static_cast<TabularHeaderItem*>(m_Table->horizontalHeaderItem(column))->setAlignment(alignment);
         }
@@ -449,8 +449,7 @@ void NewTabularDialog::slotAccepted()
     }
 
     /* environment */
-    QString environment = m_cmbName->currentText();
-    QString environmentFormatted = environment;
+    QString environmentFormatted = m_cmbName->currentText();
     QString tableWidth;
     if(m_cbStarred->isEnabled() && m_cbStarred->isChecked()) {
         environmentFormatted += '*';
@@ -544,11 +543,7 @@ void NewTabularDialog::slotAccepted()
     }
 
     m_td.tagBegin += QString("\\begin{%1}%2%3%4%5\n")
-                     .arg(environmentFormatted)
-                     .arg(tableWidth)
-                     .arg(tableParameter)
-                     .arg(tableAlignment)
-                     .arg(topBorderStr);
+                     .arg(environmentFormatted, tableWidth, tableParameter, tableAlignment, topBorderStr);
 
     /* required packages */
     m_requiredPackages.clear();
@@ -656,7 +651,8 @@ void NewTabularDialog::updateColsAndRows()
         }
 
         if(hasContent) {
-            if(KMessageBox::questionYesNo(m_Table, i18n("Setting the new size for the table will delete content. Are you sure to set the new size?"), i18n("Resizing table")) == KMessageBox::No) {
+            if(KMessageBox::questionTwoActions(m_Table, i18n("Setting the new size for the table will delete content. Are you sure to set the new size?"), i18n("Resizing table"),
+                                               KStandardGuiItem::ok(), KStandardGuiItem::cancel()) == KMessageBox::SecondaryAction) {
                 m_sbCols->setValue(m_Table->columnCount());
                 return;
             }
@@ -677,7 +673,8 @@ void NewTabularDialog::updateColsAndRows()
         }
 
         if(hasContent) {
-            if(KMessageBox::questionYesNo(m_Table, i18n("Setting the new size for the table will delete content. Are you sure to set the new size?"), i18n("Resizing table")) == KMessageBox::No) {
+            if(KMessageBox::questionTwoActions(m_Table, i18n("Setting the new size for the table will delete content. Are you sure to set the new size?"), i18n("Resizing table"),
+                                               KStandardGuiItem::ok(), KStandardGuiItem::cancel()) == KMessageBox::SecondaryAction) {
                 m_sbRows->setValue(m_Table->rowCount());
                 return;
             }
@@ -794,7 +791,7 @@ void NewTabularDialog::slotItemSelectionChanged()
     bool unsetBold = false;
     bool unsetItalic = false;
     bool unsetUnderline = false;
-    foreach(QTableWidgetItem *item, selectedItems) {
+    for(QTableWidgetItem *item: std::as_const(selectedItems)) {
         if(!unsetBold && !item->font().bold()) {
             m_acBold->setChecked(false);
             unsetBold = true;
@@ -861,7 +858,8 @@ void NewTabularDialog::slotAlignRight()
 
 void NewTabularDialog::slotBold()
 {
-    foreach(QTableWidgetItem *item, m_Table->selectedItems()) {
+    const QList<QTableWidgetItem*> selectedItems = m_Table->selectedItems();
+    for(QTableWidgetItem *item : selectedItems) {
         QFont font = item->font();
         font.setBold(!font.bold());
         item->setFont(font);
@@ -871,7 +869,8 @@ void NewTabularDialog::slotBold()
 
 void NewTabularDialog::slotItalic()
 {
-    foreach(QTableWidgetItem *item, m_Table->selectedItems()) {
+    const QList<QTableWidgetItem*> selectedItems = m_Table->selectedItems();
+    for(QTableWidgetItem *item : selectedItems) {
         QFont font = item->font();
         font.setItalic(!font.italic());
         item->setFont(font);
@@ -881,7 +880,8 @@ void NewTabularDialog::slotItalic()
 
 void NewTabularDialog::slotUnderline()
 {
-    foreach(QTableWidgetItem *item, m_Table->selectedItems()) {
+    const QList<QTableWidgetItem*> selectedItems = m_Table->selectedItems();
+    for(QTableWidgetItem *item : selectedItems) {
         QFont font = item->font();
         font.setUnderline(!font.underline());
         item->setFont(font);
@@ -905,7 +905,7 @@ void NewTabularDialog::slotJoinCells()
     int newColumnSpan = columns.size();
 
     /* check for already joined cells in range */
-    foreach(int column, columns) {
+    for(int column : std::as_const(columns)) {
         int thisColumnSpan = m_Table->columnSpan(row, column);
         if(thisColumnSpan > 1) {
             newColumnSpan = qMax(newColumnSpan, thisColumnSpan + column - columns.first());
@@ -935,7 +935,8 @@ void NewTabularDialog::slotSplitCells()
 
 void NewTabularDialog::slotFrame(int border)
 {
-    foreach(QTableWidgetItem *item, m_Table->selectedItems()) {
+    const QList<QTableWidgetItem*> selectedItems = m_Table->selectedItems();
+    for(QTableWidgetItem *item : selectedItems) {
         static_cast<TabularCell*>(item)->setBorder(border);
     }
 }
@@ -943,7 +944,8 @@ void NewTabularDialog::slotFrame(int border)
 void NewTabularDialog::slotBackground(const QColor &color)
 {
     m_clCurrentBackground = color;
-    foreach(QTableWidgetItem *item, m_Table->selectedItems()) {
+    const QList<QTableWidgetItem*> selectedItems = m_Table->selectedItems();
+    for(QTableWidgetItem *item : selectedItems) {
         item->setBackground(color);
     }
     m_acBackground->setIcon(generateColorIcon(true));
@@ -953,7 +955,8 @@ void NewTabularDialog::slotBackground(const QColor &color)
 void NewTabularDialog::slotForeground(const QColor &color)
 {
     m_clCurrentForeground = color;
-    foreach(QTableWidgetItem *item, m_Table->selectedItems()) {
+    const QList<QTableWidgetItem*> selectedItems = m_Table->selectedItems();
+    for(QTableWidgetItem *item : selectedItems) {
         item->setForeground(color);
     }
     m_acBackground->setIcon(generateColorIcon(true));
@@ -972,14 +975,16 @@ void NewTabularDialog::slotCurrentForeground()
 
 void NewTabularDialog::slotClearText()
 {
-    foreach(QTableWidgetItem *item, m_Table->selectedItems()) {
+    const QList<QTableWidgetItem*> selectedItems = m_Table->selectedItems();
+    for(QTableWidgetItem *item : selectedItems) {
         item->setText(QString());
     }
 }
 
 void NewTabularDialog::slotClearAttributes()
 {
-    foreach(QTableWidgetItem *item, m_Table->selectedItems()) {
+    const QList<QTableWidgetItem*> selectedItems = m_Table->selectedItems();
+    for(QTableWidgetItem *item : selectedItems) {
         item->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         QFont font = item->font();
         font.setBold(false);

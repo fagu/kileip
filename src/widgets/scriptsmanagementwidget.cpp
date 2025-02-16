@@ -64,6 +64,7 @@ ScriptsManagement::ScriptsManagement(KileInfo *kileInfo, QWidget *parent, const 
     setObjectName(name);
     QVBoxLayout *baseLayout = new QVBoxLayout(this);
     baseLayout->setContentsMargins(0, 0, 0, 0);
+    baseLayout->setSpacing(0);
     setLayout(baseLayout);
 
     m_toolBar = new KToolBar("scriptControlToolBar", this);
@@ -111,6 +112,7 @@ ScriptsManagement::ScriptsManagement(KileInfo *kileInfo, QWidget *parent, const 
     m_treeWidget->setSortingEnabled(true);
     m_treeWidget->setColumnCount(2);
     m_treeWidget->sortByColumn(0, Qt::AscendingOrder);
+    m_treeWidget->setProperty("_breeze_borders_sides", QVariant::fromValue(QFlags{Qt::TopEdge}));
     QStringList headerLabels;
     headerLabels.push_back(i18n("Script Name"));
     headerLabels.push_back(i18n("Sequence"));
@@ -218,15 +220,15 @@ void ScriptsManagement::configureSelectedKeySequence() {
                 QString description = (!action) ? QString() : action->getDescription();
                 switch(pair.first) {
                 case 1:
-                    KMessageBox::sorry(m_kileInfo->mainWindow(), i18n("The sequence \"%1\" is already assigned to the action \"%2\"", newSequence, description),
+                    KMessageBox::error(m_kileInfo->mainWindow(), i18n("The sequence \"%1\" is already assigned to the action \"%2\"", newSequence, description),
                                                                 i18n("Sequence Already Assigned"));
                     return;
                 case 2:
-                    KMessageBox::sorry(m_kileInfo->mainWindow(), i18n("The sequence \"%1\" is a subsequence of \"%2\", which is already assigned to the action \"%3\"", newSequence, pair.second, description),
+                    KMessageBox::error(m_kileInfo->mainWindow(), i18n("The sequence \"%1\" is a subsequence of \"%2\", which is already assigned to the action \"%3\"", newSequence, pair.second, description),
                                                                 i18n("Sequence Already Assigned"));
                     return;
                 case 3:
-                    KMessageBox::sorry(m_kileInfo->mainWindow(), i18n("The shorter sequence \"%1\" is already assigned to the action \"%2\"", pair.second, description),
+                    KMessageBox::error(m_kileInfo->mainWindow(), i18n("The shorter sequence \"%1\" is already assigned to the action \"%2\"", pair.second, description),
                                                                 i18n("Sequence Already Assigned"));
                     return;
                 }

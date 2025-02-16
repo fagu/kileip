@@ -18,7 +18,6 @@
 #include <QHash>
 #include <QLabel>
 #include <QMenu>
-#include <QRegExp>
 #include <QTabWidget>
 #include <QToolBar>
 #include <QToolButton>
@@ -41,7 +40,7 @@
 #include "widgets/sidebar.h"
 
 KileErrorHandler::KileErrorHandler(QObject *parent, KileInfo *info, KActionCollection *ac)
-    : QObject(parent), m_ki(info), m_errorHanderToolBar(Q_NULLPTR), m_currentLaTeXOutputHandler(Q_NULLPTR)
+    : QObject(parent), m_ki(info), m_errorHanderToolBar(nullptr), m_currentLaTeXOutputHandler(nullptr)
 {
     setObjectName("ErrorHandler");
 
@@ -74,6 +73,7 @@ KileErrorHandler::KileErrorHandler(QObject *parent, KileInfo *info, KActionColle
     m_outputTabWidget = new QTabWidget();
     m_outputTabWidget->setTabPosition(QTabWidget::South);
     m_outputTabWidget->setTabsClosable(false);
+    m_outputTabWidget->setDocumentMode(true);
     m_outputTabWidget->addTab(m_mainLogWidget, i18n("Messages"));
     m_outputTabWidget->addTab(m_errorLogWidget, i18n("Errors"));
     m_outputTabWidget->addTab(m_warningLogWidget, i18n("Warnings"));
@@ -99,7 +99,7 @@ void KileErrorHandler::createActions(KActionCollection *ac)
 {
     m_viewLogAction = ac->addAction("ViewLog", this, SLOT(ViewLog()));
     m_viewLogAction->setText(i18n("View Log File"));
-    ac->setDefaultShortcut(m_viewLogAction, QKeySequence(Qt::ALT + Qt::Key_0));
+    ac->setDefaultShortcut(m_viewLogAction, QKeySequence(Qt::ALT | Qt::Key_0));
     m_viewLogAction->setIcon(QIcon::fromTheme("viewlog"));
 
     m_previousErrorAction = ac->addAction("PreviousError", this, SLOT(PreviousError()));
@@ -277,7 +277,7 @@ void KileErrorHandler::handleSpawnedChildTool(KileTool::Base *parent, KileTool::
 
 void KileErrorHandler::updateCurrentLaTeXOutputHandler()
 {
-    LaTeXOutputHandler *h = Q_NULLPTR;
+    LaTeXOutputHandler *h = nullptr;
     m_ki->getCompileName(false, &h);
     if(h == m_currentLaTeXOutputHandler) {
         return;
@@ -292,7 +292,7 @@ void KileErrorHandler::updateCurrentLaTeXOutputHandler()
         setOutputActionsEnabled(true);
         updateForCompilationResult();
     }
-    emit(currentLaTeXOutputHandlerChanged(m_currentLaTeXOutputHandler));
+    Q_EMIT(currentLaTeXOutputHandlerChanged(m_currentLaTeXOutputHandler));
 }
 
 void KileErrorHandler::updateForCompilationResult()

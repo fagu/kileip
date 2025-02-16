@@ -24,7 +24,7 @@ namespace KileParser {
 class BibTeXParserInput : public ParserInput
 {
 public:
-    BibTeXParserInput(const QUrl &url, QStringList textLines);
+    BibTeXParserInput(const QUrl &url, const QStringList &textLines);
 
     QStringList textLines;
 };
@@ -32,7 +32,7 @@ public:
 class BibTeXParserOutput : public ParserOutput {
 public:
     BibTeXParserOutput();
-    virtual ~BibTeXParserOutput();
+    virtual ~BibTeXParserOutput() override;
 
     QStringList bibItems;
 };
@@ -43,8 +43,8 @@ class BibTeXParser : public Parser
     Q_OBJECT
 
 public:
-    BibTeXParser(ParserThread *parserThread, BibTeXParserInput *input, QObject *parent = Q_NULLPTR);
-    virtual ~BibTeXParser();
+    BibTeXParser(ParserThread *parserThread, BibTeXParserInput *input, QObject *parent = nullptr);
+    virtual ~BibTeXParser() override;
 
     ParserOutput* parse() override;
 

@@ -18,13 +18,12 @@
 #include <QClipboard>
 
 #include <QApplication>
-#include <KTextEditor/CodeCompletionInterface>
 #include <KTextEditor/Document>
 #include <KTextEditor/View>
 #include <KTextEditor/Range>
 #include <KTextEditor/Cursor>
 #include <KLocalizedString>
-
+#include <qregularexpression.h>
 
 #include "errorhandler.h"
 #include "codecompletion.h"
@@ -353,7 +352,7 @@ void EditorExtension::closeAllEnvironments(KTextEditor::View *view)
         return;
     }
 
-    QStringList envlist = findOpenedEnvironmentList(view, true);
+    const QStringList envlist = findOpenedEnvironmentList(view, true);
     if(envlist.count() == 0) {
         return;
     }
@@ -372,8 +371,8 @@ void EditorExtension::closeAllEnvironments(KTextEditor::View *view)
     }
 
     bool ok1,ok2;
-    for(QStringList::Iterator it = envlist.begin(); it != envlist.end(); ++it) {
-        QStringList entry = (*it).split(',');
+    for(const QString& envEntry : envlist) {
+        QStringList entry = envEntry.split(',');
         if(entry[0] == "document") {
             break;
         }
@@ -486,9 +485,9 @@ bool EditorExtension::getMathgroup(KTextEditor::View *view, int &row1, int &col1
     QString textline = getTextLineReal(doc,row);
 
     // check for '\ensuremath{...}'
-    QString word;
+    QString currentWord;
     int x1, x2;
-    if(getCurrentWord(doc, row, col, smTex, word, x1, x2) && word == "\\ensuremath") {
+    if(getCurrentWord(doc, row, col, smTex, currentWord, x1, x2) && currentWord == "\\ensuremath") {
         view->setCursorPosition(KTextEditor::Cursor(row, x2));
     }
 
@@ -510,10 +509,10 @@ bool EditorExtension::getMathgroup(KTextEditor::View *view, int &row1, int &col1
 
     // '$' is difficult, because it is used as opening and closing tag
     int mode = 0;
-    if(textline[col] == '$') {
+    if(col < textline.length() && textline[col] == '$') {
         mode = 1;
     }
-    else if(col > 0 && textline[col - 1] == '$') {
+    else if((col - 1 < textline.length()) && col > 0 && textline[col - 1] == '$') {
         mode = 2;
     }
 
@@ -740,10 +739,8 @@ bool EditorExtension::findOpenMathTag(KTextEditor::Document *doc, int row, int c
                     mathdata.numdollar = 0;
                     return true;
                 }
-                else {
-                    //KILE_DEBUG_MAIN << "error: dollar not allowed in \\[ or \\( mode";
-                    return false;
-                }
+                //KILE_DEBUG_MAIN << "error: dollar not allowed in \\[ or \\( mode";
+                return false;
             }
             else if(mathname=="\\]" || mathname=="\\)") {
                 continueSearch = false;
@@ -824,7 +821,6 @@ bool EditorExtension::findOpenMathTag(KTextEditor::Document *doc, int row, int c
             col = textline.length();
         }
         else if(column == -1) {
-            continueSearch = false;
             break;
         }
     }
@@ -848,14 +844,6 @@ bool EditorExtension::findCloseMathTag(KTextEditor::Document *doc, int row, int 
                                  "|\\\\\\[|\\\\\\]"
                                  "|\\\\\\(|\\\\\\)";
 
-// +       int rowFound, colFound;
-// +       QRegExp reg(regExpString);
-// +       reg.setCaseSensitivity(Qt::CaseInsensitive);
-// +       int lastMatch = 0;
-
-    int rowFound, colFound;
-    QRegExp reg(regExpString);
-
     KTextEditor::Range searchRange = KTextEditor::Range(KTextEditor::Cursor(row, col), doc->documentEnd());
 
     while(true) {
@@ -875,8 +863,8 @@ bool EditorExtension::findCloseMathTag(KTextEditor::Document *doc, int row, int 
             break;
         }
 
-        rowFound = range.start().line();
-        colFound = range.start().column();
+        int rowFound = range.start().line();
+        int colFound = range.start().column();
         QString textFound = doc->text(range);
 
         // should be better called 'isValidChar()', because it checks for comments
@@ -1049,9 +1037,7 @@ bool EditorExtension::findOpenedEnvironment(int &row, int &col, QString &envname
         envname = env.name;
         return true;
     }
-    else {
-        return false;
-    }
+    return false;
 }
 
 QStringList EditorExtension::findOpenedEnvironmentList(KTextEditor::View *view, bool position)
@@ -1460,7 +1446,7 @@ bool EditorExtension::isEnvironmentPosition(KTextEditor::Document *doc, int row,
     // get real textline without comments, quoted characters and pairs of backslashes
     QString textline = getTextLineReal(doc, row);
 
-    if(col > textline.length()) {
+    if(col >= textline.length()) {
         return false;
     }
 
@@ -1472,8 +1458,9 @@ bool EditorExtension::isEnvironmentPosition(KTextEditor::Document *doc, int row,
     int startcol = (textline[col] == '\\') ? col - 1 : col;
     if(startcol >= 1) {
         //KILE_DEBUG_MAIN << "search to the left ";
-        int pos = textline.lastIndexOf(m_reg, startcol);
-        env.len = m_reg.matchedLength();
+        QRegularExpressionMatch match;
+        int pos = textline.lastIndexOf(m_reg, startcol, &match);
+        env.len = match.capturedLength(0);
         if(pos != -1 && pos < col && col <= pos + env.len) {
             //KILE_DEBUG_MAIN << "search to the left: found";
             env.row = row;
@@ -1481,11 +1468,11 @@ bool EditorExtension::isEnvironmentPosition(KTextEditor::Document *doc, int row,
             QChar ch = textline.at(pos + 1);
             if(ch=='b' || ch=='e') {
                 env.tag = (ch == 'b') ? EnvBegin : EnvEnd;
-                env.name = m_reg.cap(3);
+                env.name = match.captured(3);
             }
             else {
                 env.tag = (ch == '[') ? EnvBegin : EnvEnd;
-                env.name = m_reg.cap(4);
+                env.name = match.captured(4);
             }
 
             if ( !m_overwritemode || (m_overwritemode && col<pos+env.len) ) {
@@ -1502,19 +1489,20 @@ bool EditorExtension::isEnvironmentPosition(KTextEditor::Document *doc, int row,
 
     // check if there is a match in this line from the current position to the right
     //KILE_DEBUG_MAIN << "search to the right " ;
-    if (textline[col] == '\\' && col == textline.indexOf(m_reg, col)) {
+    QRegularExpressionMatch match;
+    if (textline[col] == '\\' && col == textline.indexOf(m_reg, col, &match)) {
         //KILE_DEBUG_MAIN << "search to the right: found";
         env.row = row;
         env.col = col;
-        env.len = m_reg.matchedLength();
+        env.len = match.capturedLength(0);
         QChar ch = textline.at(col+1);
         if(ch == 'b' || ch == 'e') { // found "\begin" or "\end"
             env.tag = ( ch == 'b' ) ? EnvBegin : EnvEnd;
-            env.name = m_reg.cap(3);
+            env.name = match.captured(3);
         }
         else { // found "\[" or "\\]"
             env.tag = (ch == '[') ? EnvBegin : EnvEnd;
-            env.name = m_reg.cap(4);
+            env.name = match.captured(4);
         }
         //KILE_DEBUG_MAIN << "search to the right: stop";
         return true;
@@ -2002,8 +1990,8 @@ bool EditorExtension::isBracketPosition(KTextEditor::Document *doc, int row, int
     bracket.col = col;
 
     QString textline = getTextLineReal(doc, row);
-    QChar right = textline[col];
-    QChar left  = (col > 0) ? textline[col-1] : QChar(' ');
+    QChar right = col < textline.length() ? textline[col] : QLatin1Char(' ');
+    QChar left  = ((col - 1 < textline.length()) && col > 0) ? textline[col - 1] : QLatin1Char(' ');
 
     if (m_overwritemode) {
         if(right == '{') {
@@ -2073,7 +2061,10 @@ bool EditorExtension::findOpenBracketTag(KTextEditor::Document *doc, int row, in
     uint brackets = 0;
     for(int line = row; line >= 0; --line) {
         QString textline = getTextLineReal(doc, line);
-        int start = (line == row) ? col : textline.length() - 1;
+        if(textline.length() == 0) {
+            continue;
+        }
+        int start = (line == row && col < textline.length()) ? col : textline.length() - 1;
         for (int i = start; i >= 0; --i) {
             //KILE_DEBUG_MAIN << "findOpenBracketTag: (" << line << "," << i << ") = " << textline[i].toLatin1();
             if(textline[i] == '{') {
@@ -2170,7 +2161,7 @@ bool EditorExtension::getCurrentWord(KTextEditor::Document *doc, int row, int co
         return false;
     }
 
-    QRegExp reg;
+    QRegularExpression reg;
     QString pattern1, pattern2;
     switch(mode) {
     case smLetter:
@@ -2213,9 +2204,10 @@ bool EditorExtension::getCurrentWord(KTextEditor::Document *doc, int row, int co
 
     // search at the current position
     reg.setPattern(pattern2);
-    pos = textline.indexOf(reg, col);
+    QRegularExpressionMatch match;
+    pos = textline.indexOf(reg, col, &match);
     if(pos != -1 && pos == col) {
-        x2 = pos + reg.matchedLength();
+        x2 = pos + match.capturedLength(0);
     }
 
     // get all characters
@@ -2223,9 +2215,7 @@ bool EditorExtension::getCurrentWord(KTextEditor::Document *doc, int row, int co
         word = textline.mid(x1, x2 - x1);
         return true;
     }
-    else {
-        return false;
-    }
+    return false;
 }
 
 KTextEditor::Range EditorExtension::wordRange(const KTextEditor::Cursor &cursor, bool latexCommand, KTextEditor::View *view)
@@ -2236,11 +2226,11 @@ KTextEditor::Range EditorExtension::wordRange(const KTextEditor::Cursor &cursor,
     }
 
     int col1, col2;
-    QString word;
+    QString currentWord;
     EditorExtension::SelectMode mode = ( latexCommand ) ? EditorExtension::smTex : EditorExtension::smLetter;
     int line = cursor.line();
 
-    return (getCurrentWord(view->document(), line, cursor.column(), mode, word, col1, col2))
+    return (getCurrentWord(view->document(), line, cursor.column(), mode, currentWord, col1, col2))
            ? KTextEditor::Range(line,col1,line,col2)
            : KTextEditor::Range::invalid();
 }
@@ -2367,11 +2357,11 @@ bool EditorExtension::findCurrentTexParagraph(int& startline, int& startcolumn, 
     }
 
     // find the next empty line
-    for(int line = row + 1; line < doc->lines(); ++line) {
-        if(doc->line(line).trimmed().isEmpty()) {
+    for(int lineBelow = row + 1; lineBelow < doc->lines(); ++lineBelow) {
+        if(doc->line(lineBelow).trimmed().isEmpty()) {
             break;
         }
-        endline = line;
+        endline = lineBelow;
     }
 
     // it is guaranteed that 'endline.trimmed()' won't be empty
@@ -2396,14 +2386,14 @@ void EditorExtension::gotoNextParagraph(KTextEditor::View *view)
     }
 
     bool found;
-    int startline, endline;
     KTextEditor::Document *doc = view->document();
 
-    endline = view->cursorPosition().line();
+    int endline = view->cursorPosition().line();
     if(doc->line(endline).trimmed().isEmpty()) {
         found = true;
     }
     else {
+        int startline;
         found = findCurrentTexParagraph(startline, endline, view);
     }
 
@@ -2427,7 +2417,7 @@ void EditorExtension::gotoPrevParagraph(KTextEditor::View *view)
     }
 
     bool found;
-    int startline,endline;
+    int startline;
     KTextEditor::Document *doc = view->document();
 
     startline = view->cursorPosition().line();
@@ -2436,6 +2426,7 @@ void EditorExtension::gotoPrevParagraph(KTextEditor::View *view)
         found = true;
     }
     else {
+        int endline;
         found = findCurrentTexParagraph(startline,endline,view);
     }
     // we are in an empty line or in the first line of a paragraph
@@ -2510,11 +2501,9 @@ void EditorExtension::selectLine(KTextEditor::View *view)
     }
 
     // get current position
-    int row;
-    QString word;
     KTextEditor::Document *doc = view->document();
     KTextEditor::Cursor cursor = view->cursorPosition();
-    row = cursor.line();
+    int row = cursor.line();
 
     if(doc->lineLength(row) > 0) {
         view->setSelection(KTextEditor::Range(row, 0, row + 1, 0));
@@ -3308,15 +3297,14 @@ bool EditorExtension::eventInsertEnvironment(KTextEditor::View *view)
 
     // don't complete environment, if we are
     // still working inside the completion box
-    KTextEditor::CodeCompletionInterface *codeCompletionInterface
-        = qobject_cast<KTextEditor::CodeCompletionInterface*>(view);
-    if(codeCompletionInterface && codeCompletionInterface->isCompletionActive()) {
+    if(view->isCompletionActive()) {
         return false;
     }
 
     int row = view->cursorPosition().line();
-    int col = view->cursorPositionVirtual().column();
+    int col = view->cursorPosition().column();
     QString line = view->document()->line(row).left(col);
+    int lineLength = view->document()->line(row).length();
 
     int pos = m_regexpEnter.indexIn(line);
     if (pos != -1) {
@@ -3330,11 +3318,16 @@ bool EditorExtension::eventInsertEnvironment(KTextEditor::View *view)
         QString envname, endenv;
         if(m_regexpEnter.cap(2) == "\\[") {
             envname = m_regexpEnter.cap(2);
-            endenv = "\\]\n";
+            endenv = "\\]";
         }
         else {
             envname = m_regexpEnter.cap(4);
-            endenv = m_regexpEnter.cap(2).replace("\\begin","\\end") + '\n';
+            endenv = m_regexpEnter.cap(2).replace("\\begin","\\end");
+        }
+
+        if (col < lineLength) {
+            //If the cursor was not at the end of the line when the user pressed enter, insert a newline after \end{env}
+            endenv = endenv + '\n' + line;
         }
 
         if(shouldCompleteEnv(envname, view)) {
@@ -3350,7 +3343,7 @@ bool EditorExtension::eventInsertEnvironment(KTextEditor::View *view)
 bool EditorExtension::shouldCompleteEnv(const QString &env, KTextEditor::View *view)
 {
     KILE_DEBUG_MAIN << "===EditorExtension::shouldCompleteEnv( " << env << " )===";
-    QRegExp reTestBegin,reTestEnd;
+    QRegularExpression reTestBegin,reTestEnd;
     if(env == "\\[") {
         KILE_DEBUG_MAIN << "display style";
         reTestBegin.setPattern("(?:[^\\\\]|^)\\\\\\[");
@@ -3359,8 +3352,8 @@ bool EditorExtension::shouldCompleteEnv(const QString &env, KTextEditor::View *v
         reTestEnd.setPattern("(?:[^\\\\]|^)\\\\\\]");
     }
     else {
-        reTestBegin.setPattern("(?:[^\\\\]|^)\\\\begin\\s*\\{" + QRegExp::escape(env) + "\\}");
-        reTestEnd.setPattern("(?:[^\\\\]|^)\\\\end\\s*\\{" + QRegExp::escape(env) + "\\}");
+        reTestBegin.setPattern("(?:[^\\\\]|^)\\\\begin\\s*\\{" + QRegularExpression::escape(env) + "\\}");
+        reTestEnd.setPattern("(?:[^\\\\]|^)\\\\end\\s*\\{" + QRegularExpression::escape(env) + "\\}");
     }
 
     int num = view->document()->lines();
@@ -3430,13 +3423,14 @@ bool EditorExtension::insideVerb(KTextEditor::View *view)
 
     int startpos = 0;
     QString textline = getTextLineReal(view->document(),row);
-    QRegExp reg("\\\\verb(\\*?)(.)");
+    QRegularExpression reg("\\\\verb(\\*?)(.)");
     while(true) {
-        int pos = textline.indexOf(reg,startpos);
-        if(pos < 0 || col < pos + 6 + reg.cap(1).length()) {
+        auto match = reg.match(textline, startpos);
+        int pos = textline.indexOf(reg, startpos);
+        if(pos < 0 || col < pos + 6 + match.captured(1).length()) {
             return false;
         }
-        pos = textline.indexOf(reg.cap(2), pos + 6 + reg.cap(1).length());
+        pos = textline.indexOf(match.captured(2), pos + 6 + match.capturedLength(1));
         if(pos < 0 || col <= pos) {
             return true;
         }
@@ -3468,7 +3462,7 @@ void EditorExtension::gotoSectioning(bool backwards, KTextEditor::View *view)
     if( view && view->document()->isModified() ) { // after saving, the document structure is the current one, so in this case we don't need to update it
         m_ki->viewManager()->updateStructure(true);
     }
-    if(m_ki->structureWidget()->findSectioning(Q_NULLPTR,view->document(), view->cursorPosition().line(), view->cursorPosition().column(), backwards, false, rowFound, colFound)) {
+    if(m_ki->structureWidget()->findSectioning(nullptr,view->document(), view->cursorPosition().line(), view->cursorPosition().column(), backwards, false, rowFound, colFound)) {
         view->setCursorPosition(KTextEditor::Cursor(rowFound, colFound));
     }
 }
@@ -3477,7 +3471,7 @@ void EditorExtension::gotoSectioning(bool backwards, KTextEditor::View *view)
 
 void EditorExtension::sectioningCommand(KileWidget::StructureViewItem *item, int id)
 {
-    KTextEditor::View *view = determineView(Q_NULLPTR);
+    KTextEditor::View *view = determineView(nullptr);
     if(!view) {
         return;
     }

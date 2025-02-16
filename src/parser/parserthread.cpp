@@ -22,20 +22,6 @@
 
 namespace KileParser {
 
-DocumentParserInput::DocumentParserInput(const QUrl &url, QStringList lines,
-        ParserType parserType,
-        const QMap<QString, KileStructData>* dictStructLevel,
-        bool showSectioningLabels,
-        bool showStructureTodo)
-    : ParserInput(url),
-      lines(lines),
-      parserType(parserType),
-      dictStructLevel(dictStructLevel),
-      showSectioningLabels(showSectioningLabels),
-      showStructureTodo(showStructureTodo)
-{
-}
-
 ParserThread::ParserThread(KileInfo *info, QObject *parent) :
     QThread(parent),
     m_ki(info),
@@ -165,7 +151,7 @@ void ParserThread::run()
         // thread is woken up only after it has been removed again.
         while(m_parserQueue.size() == 0 && m_keepParserThreadAlive) {
             qCDebug(LOG_KILE_PARSER) << "going to sleep...";
-            emit(parsingQueueEmpty());
+            Q_EMIT(parsingQueueEmpty());
             m_queueEmptyWaitCondition.wait(&m_parserMutex);
             qCDebug(LOG_KILE_PARSER) << "woken up...";
         }
@@ -183,12 +169,12 @@ void ParserThread::run()
 
         m_keepParsingDocument = true;
         m_currentlyParsedUrl = currentParsedItem->url;
-        emit(parsingStarted());
+        Q_EMIT(parsingStarted());
         m_parserMutex.unlock();
 
         Parser *parser = createParser(currentParsedItem);
 
-        ParserOutput *parserOutput = Q_NULLPTR;
+        ParserOutput *parserOutput = nullptr;
         if(parser) {
             parserOutput = parser->parse();
         }
@@ -196,10 +182,10 @@ void ParserThread::run()
         delete currentParsedItem;
         delete parser;
 
-        // we also emit when 'parserOutput == Q_NULLPTR' as this will be used to indicate
+        // we also emit when 'parserOutput == nullptr' as this will be used to indicate
         // that some error has occurred;
         // as this call will be blocking, one has to make sure that no mutex is held
-        emit(parsingComplete(m_currentlyParsedUrl, parserOutput));
+        Q_EMIT(parsingComplete(m_currentlyParsedUrl, parserOutput));
     }
     qCDebug(LOG_KILE_PARSER) << "leaving...";
     // remaining queue elements are deleted in the destructor
@@ -223,7 +209,7 @@ Parser* DocumentParserThread::createParser(ParserInput *input)
         return new BibTeXParser(this, dynamic_cast<BibTeXParserInput*>(input));
     }
 
-    return Q_NULLPTR;
+    return nullptr;
 }
 
 void DocumentParserThread::addDocument(KileDocument::TextInfo *textInfo)
@@ -234,7 +220,7 @@ void DocumentParserThread::addDocument(KileDocument::TextInfo *textInfo)
         return;     // we can't do anything as not even the results of the parsing can be displayed
     }
 
-    ParserInput* newItem = Q_NULLPTR;
+    ParserInput* newItem = nullptr;
     if(dynamic_cast<KileDocument::BibInfo*>(textInfo)) {
         newItem = new BibTeXParserInput(url, textInfo->documentContents());
     }
@@ -282,7 +268,7 @@ Parser* OutputParserThread::createParser(ParserInput *input)
     if(dynamic_cast<LaTeXOutputParserInput*>(input)) {
         return new LaTeXOutputParser(this, dynamic_cast<LaTeXOutputParserInput*>(input));
     }
-    return Q_NULLPTR;
+    return nullptr;
 }
 
 void OutputParserThread::addLaTeXLogFile(const QString& logFile, const QString& sourceFile,

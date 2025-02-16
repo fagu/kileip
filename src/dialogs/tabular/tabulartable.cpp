@@ -35,7 +35,7 @@ namespace KileDialog {
 
 TabularTable::TabularTable(QWidget *parent)
     : QTableWidget(parent), m_ManualBorderPosition(QPoint(-1, -1)),
-      m_ManualBorderStart(QPoint(-1, -1)),m_LastItem(Q_NULLPTR) {
+      m_ManualBorderStart(QPoint(-1, -1)),m_LastItem(nullptr) {
     setItemDelegate(new TabularCellDelegate(this));
     setShowGrid(false);
     setAttribute(Qt::WA_Hover, true);
@@ -60,7 +60,7 @@ bool TabularTable::eventFilter(QObject *obj, QEvent *event)
                     setCurrentItem(item(row, column + 1));
                 } else {
                     if(row == (rowCount() - 1)) {
-                        emit rowAppended();
+                        Q_EMIT rowAppended();
                     }
                     selectedItem->setSelected(false);
                     item(row + 1, 0)->setSelected(true);
@@ -74,7 +74,7 @@ bool TabularTable::eventFilter(QObject *obj, QEvent *event)
         }
         else if(event->type() == QEvent::HoverMove) {
             QHoverEvent *hoverEvent = static_cast<QHoverEvent*>(event);
-            QPoint pos = viewport()->mapFromGlobal(mapToGlobal(hoverEvent->pos()));
+            QPoint pos = viewport()->mapFromGlobal(mapToGlobal(hoverEvent->position().toPoint()));
             QTableWidgetItem *itemAtPos = itemAt(pos);
 
             if(itemAtPos) {
@@ -223,7 +223,7 @@ void KileDialog::TabularTable::paste()
     if(!selectedText.endsWith('\n')) {
         selectedText += '\n';
     }
-    QStringList cells = selectedText.split(QRegExp(QLatin1String("\\n|\\t")));
+    QStringList cells = selectedText.split(QRegularExpression(QLatin1String("\\n|\\t")));
     while(!cells.empty() && cells.back().size() == 0) {
         cells.pop_back(); // strip empty trailing tokens
     }
@@ -235,11 +235,11 @@ void KileDialog::TabularTable::paste()
     int cell = 0;
     for(int row = 0; row < rows; ++row) {
         if(selectedRow + row > (rowCount() - 1)) {
-            emit rowAppended();
+            Q_EMIT rowAppended();
         }
         for(int col = 0; col < cols; ++col, ++cell) {
             if(selectedCol + col > (columnCount() - 1)) {
-                emit colAppended();
+                Q_EMIT colAppended();
             }
             item(selectedRow + row, selectedCol + col)->setText(cells[cell]);
         }

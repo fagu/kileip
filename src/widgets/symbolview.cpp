@@ -36,7 +36,6 @@ tbraun 2007-06-13
 #include <QMouseEvent>
 #include <QPixmap>
 #include <QPainter>
-#include <QRegExp>
 #include <QStringList>
 #include <QTextDocument>
 
@@ -97,7 +96,7 @@ void SymbolView::extract(const QString& key, int& refCnt)
 
 void SymbolView::extractPackageString(const QString&string, QList<Package> &packages)
 {
-    QRegExp rePkgs("(?:\\[(.*)\\])?\\{(.*)\\}");
+    QRegularExpression rePkgs("^(?:\\[(.*)\\])?\\{(.*)\\}$$");
     QStringList args,pkgs;
     Package pkg;
 
@@ -107,13 +106,13 @@ void SymbolView::extractPackageString(const QString&string, QList<Package> &pack
 
     packages.clear();
 
-    if(rePkgs.exactMatch(string)) {
-        args = rePkgs.cap(1).split(',');
-        pkgs = rePkgs.cap(2).split(',');
-    }
-    else {
+    QRegularExpressionMatch match;
+    if(!string.contains(rePkgs, &match)) {
         return;
     }
+
+    args = match.captured(1).split(',');
+    pkgs = match.captured(2).split(',');
 
     for(int i = 0 ; i < pkgs.count() && i < args.count() ; i++) {
         const QString packageName = pkgs.at(i);
@@ -133,7 +132,6 @@ void SymbolView::extract(const QString& key, Command &cmd)
         return;
     }
     QStringList contents = key.split('%');
-    QString packages;
 
     cmd.referenceCount = contents.at(0).toInt();
     cmd.latexCommand = contents.at(1);
@@ -248,15 +246,15 @@ QString SymbolView::getToolTip(const QString &key)
 void SymbolView::mousePressEvent(QMouseEvent *event)
 {
     Command cmd;
-    QString code_symbol;
-    QList<Package> packages;
-    QListWidgetItem *item = Q_NULLPTR;
+    QListWidgetItem *item = nullptr;
     bool math = false, bracket = false;
 
     if(event->button() == Qt::LeftButton && (item = itemAt(event->pos()))) {
         bracket = event->modifiers() & Qt::ControlModifier;
         math = event->modifiers() & Qt::ShiftModifier;
 
+        QString code_symbol;
+        QList<Package> packages;
         extract(item->data(Qt::UserRole).toString(), cmd);
         if(KileConfig::symbolViewUTF8()) {
             code_symbol = cmd.unicodeCommand;
@@ -278,8 +276,8 @@ void SymbolView::mousePressEvent(QMouseEvent *event)
                 code_symbol = '{' + code_symbol + '}';
             }
         }
-        emit(insertText(code_symbol, packages));
-        emit(addToList(item));
+        Q_EMIT(insertText(code_symbol, packages));
+        Q_EMIT(addToList(item));
         m_ki->focusEditor();
     }
 
@@ -293,16 +291,12 @@ QString convertLatin1StringtoUTF8(const QString &string)
     }
 
     QVector<uint> stringAsIntVector;
-    QStringList stringList = string.split(',', Qt::SkipEmptyParts);
+    const QStringList stringList = string.split(',', Qt::SkipEmptyParts);
 
-    QStringList::const_iterator it;
-    QString str;
-    bool ok;
-    int stringAsInt;
-    for(it = stringList.constBegin(); it != stringList.constEnd(); it++) {
-        str = *it;
+    for (QString str : stringList) {
         str.remove("U+");
-        stringAsInt = str.toInt(&ok);
+        bool ok;
+        int stringAsInt = str.toInt(&ok);
         if(!ok) {
             return QString();
         }
@@ -317,7 +311,7 @@ void SymbolView::fillWidget(const QString& prefix)
     KILE_DEBUG_MAIN << "===SymbolView::fillWidget(const QString& " << prefix <<  " )===";
     QImage image;
     QListWidgetItem* item;
-    QStringList refCnts, paths, unicodeValues;
+    QStringList refCnts, paths;
     QString key;
 
     // find paths
@@ -389,9 +383,6 @@ void SymbolView::fillWidget(const QString& prefix)
 
 void SymbolView::writeConfig()
 {
-    QListWidgetItem *item;
-    QStringList paths;
-    QList<int> refCnts;
     Command cmd;
 
     KConfigGroup grp = KSharedConfig::openConfig()->group(MFUS_GROUP);
@@ -401,8 +392,10 @@ void SymbolView::writeConfig()
         grp.deleteEntry("counts");
     }
     else {
+        QStringList paths;
+        QList<int> refCnts;
         for(int i = 0; i < count(); ++i) {
-            item = this->item(i);
+            QListWidgetItem *item = this->item(i);
             extract(item->data(Qt::UserRole).toString(),cmd);
             refCnts.append(cmd.referenceCount);
             paths.append(cmd.path);
@@ -419,9 +412,9 @@ void SymbolView::slotAddToList(const QListWidgetItem *item)
         return;
     }
 
-    QListWidgetItem *tmpItem = Q_NULLPTR;
+    QListWidgetItem *tmpItem = nullptr;
     bool found = false;
-    const QRegExp reCnt("^\\d+");
+    const QRegularExpression reCnt("^\\d+");
 
     KILE_DEBUG_MAIN << "===void SymbolView::slotAddToList(const QIconViewItem *" << item << " )===";
 
@@ -436,7 +429,7 @@ void SymbolView::slotAddToList(const QListWidgetItem *item)
     if(!found
             && static_cast<unsigned int>(this->count() + 1) > KileConfig::numSymbolsMFUS()) {   // we check before adding the symbol
         int refCnt, minRefCnt = 10000;
-        QListWidgetItem *unpopularItem = Q_NULLPTR;
+        QListWidgetItem *unpopularItem = nullptr;
 
         KILE_DEBUG_MAIN << "Removing most unpopular item";
 

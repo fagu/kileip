@@ -32,7 +32,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QSocketNotifier>
-#include <QRegExp>
+#include <QRegularExpression>
 
 #include <KLocalizedString>
 
@@ -148,7 +148,7 @@ bool KileLyxServer::openPipes()
 
         if(!pipeInfo.exists()) {
             //create the dir first
-            if(!QFileInfo(pipeInfo.absolutePath()).exists()) {
+            if(!QFileInfo::exists(pipeInfo.absolutePath())) {
                 if(mkdir(QFile::encodeName( pipeInfo.path() ), m_perms | S_IXUSR) == -1) {
                     qCritical() << "Could not create directory for pipe";
                     continue;
@@ -182,7 +182,6 @@ bool KileLyxServer::openPipes()
                 qCritical() << "The file " << pipeInfo.absoluteFilePath() <<  "we just created is not a pipe!";
                 file->close();
                 delete file;
-                continue;
             }
             else {
                 m_pipeIn.append(file);
@@ -232,18 +231,24 @@ void KileLyxServer::processLine(const QString &line)
 {
     KILE_DEBUG_MAIN << "===void KileLyxServer::processLine(const QString " << line << ")===";
 
-    QRegExp reCite(":citation-insert:(.*)$");
-    QRegExp reBibtexdbadd(":bibtex-database-add:(.*)$");
-    QRegExp rePaste(":paste:(.*)$");
+    static QRegularExpression reCite(":citation-insert:(.*)$");
+    static QRegularExpression reBibtexdbadd(":bibtex-database-add:(.*)$");
+    static QRegularExpression rePaste(":paste:(.*)$");
 
-    if(line.indexOf(reCite) != -1) {
-        emit(insert(KileAction::TagData(i18n("Cite"), "\\cite{"+reCite.cap(1)+'}')));
+    auto match = reCite.match(line);
+    if(match.hasMatch()) {
+        Q_EMIT(insert(KileAction::TagData(i18n("Cite"), "\\cite{"+match.captured(1)+'}')));
+        return;
     }
-    else if(line.indexOf(reBibtexdbadd) != -1) {
-        emit(insert(KileAction::TagData(i18n("Add BibTeX database"), "\\bibliography{"+ reBibtexdbadd.cap(1) + '}')));
+
+    match = reBibtexdbadd.match(line);
+    if(match.hasMatch()) {
+        Q_EMIT(insert(KileAction::TagData(i18n("Add BibTeX database"), "\\bibliography{"+ match.captured(1) + '}')));
     }
-    else if(line.indexOf(rePaste) != -1) {
-        emit(insert(KileAction::TagData(i18n("Paste"), rePaste.cap(1))));
+
+    match = rePaste.match(line);
+    if (match.hasMatch()) {
+        Q_EMIT(insert(KileAction::TagData(i18n("Paste"), match.captured(1))));
     }
 }
 

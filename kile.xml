@@ -8,10 +8,13 @@
     <comment xml:lang="de">Kile-Projekt</comment>
     <comment xml:lang="el">Το έργο Kile</comment>
     <comment xml:lang="en_GB">Kile project</comment>
+    <comment xml:lang="eo">Kile-projekto</comment>
     <comment xml:lang="es">Proyecto de Kile</comment>
     <comment xml:lang="eu">Kile-ko proiektua</comment>
     <comment xml:lang="fi">Kile-projekti</comment>
     <comment xml:lang="fr">Projet Kile</comment>
+    <comment xml:lang="gl">Proxecto de Kile</comment>
+    <comment xml:lang="he">מיזם Kile</comment>
     <comment xml:lang="ia">Projecto de Kile</comment>
     <comment xml:lang="ie">Projecte de Kile</comment>
     <comment xml:lang="it">Progetto di Kile</comment>
@@ -23,12 +26,15 @@
     <comment xml:lang="pl">Projekt Kile</comment>
     <comment xml:lang="pt">Projecto do Kile</comment>
     <comment xml:lang="pt_BR">Projeto do Kile</comment>
+    <comment xml:lang="sa">किले परियोजना</comment>
     <comment xml:lang="sk">Projekt Kile</comment>
     <comment xml:lang="sl">Projekt Kile</comment>
     <comment xml:lang="sv">Kile projekt</comment>
+    <comment xml:lang="ta">கைல் திட்டப்பணி</comment>
     <comment xml:lang="tr">Kile projesi</comment>
     <comment xml:lang="uk">проєкт Kile</comment>
     <comment xml:lang="zh_CN">Kile 工程</comment>
+    <comment xml:lang="zh_TW">Kile 專案</comment>
     <glob pattern="*.kilepr"/>
   </mime-type>
 </mime-info>

@@ -121,7 +121,7 @@ static const char* const no_border_xpm[] = {
 class TabularFrameWidget : public QFrame
 {
 public:
-    TabularFrameWidget(QWidget* parent = Q_NULLPTR);
+    explicit TabularFrameWidget(QWidget* parent = nullptr);
     void setBorder(int value);
     int border() const {
         return m_border;
@@ -222,8 +222,8 @@ void TabularFrameWidget::mousePressEvent(QMouseEvent *event)
     if (event->button() != Qt::LeftButton)
         return;
 
-    int x = event->x();
-    int y = event->y();
+    int x = event->position().x();
+    int y = event->position().y();
 
     int state = 0;
     if(m_left.contains(x, y))
@@ -301,7 +301,7 @@ SelectFrameAction::SelectFrameAction(const QString &text, QToolBar *parent)
 
     QWidgetAction *widgetAction = new QWidgetAction(this);
     widgetAction->setDefaultWidget(page);
-    menu()->addAction(widgetAction);
+    popupMenu()->addAction(widgetAction);
 
     connect(this, SIGNAL(triggered(bool)),
             this, SLOT(slotTriggered()));
@@ -341,7 +341,7 @@ QIcon SelectFrameAction::generateIcon()
 
 void SelectFrameAction::slotTriggered()
 {
-    emit borderSelected(m_CurrentBorder);
+    Q_EMIT borderSelected(m_CurrentBorder);
 }
 
 void SelectFrameAction::slotNoneClicked()
@@ -371,8 +371,8 @@ void SelectFrameAction::slotDoneClicked()
         m_CurrentBorder = newBorder;
         setIcon(generateIcon());
     }
-    emit borderSelected(newBorder);
-    menu()->hide();
+    Q_EMIT borderSelected(newBorder);
+    popupMenu()->hide();
 }
 
 }

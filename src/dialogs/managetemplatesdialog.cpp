@@ -30,7 +30,7 @@
 #include <KConfigGroup>
 #include <KIconDialog>
 #include <KIconLoader>
-#include <KIO/Job>
+#include <KIO/StatJob>
 #include <KJobWidgets>
 #include <KLocalizedString>
 #include <KMessageBox>
@@ -152,7 +152,7 @@ ManageTemplatesDialog::ManageTemplatesDialog(KileTemplate::Manager *templateMana
     : QDialog(parent)
     , m_templateManager(templateManager)
     , m_templateType(KileDocument::Undefined)
-    , m_showAllTypesCheckBox(Q_NULLPTR)
+    , m_showAllTypesCheckBox(nullptr)
 {
     setObjectName(name);
     setWindowTitle(caption);
@@ -203,15 +203,14 @@ void ManageTemplatesDialog::populateTemplateListView(KileDocument::Type type)
 {
     m_templateManager->scanForTemplates();
     KileTemplate::TemplateList templateList = m_templateManager->getTemplates(type);
-    QString mode;
-    QTreeWidgetItem* previousItem = Q_NULLPTR;
+    QTreeWidgetItem* previousItem = nullptr;
 
     m_templateList->clear();
     for (KileTemplate::TemplateListIterator i = templateList.begin(); i != templateList.end(); ++i)
     {
         KileTemplate::Info info = *i;
         QFileInfo iconFileInfo(info.icon);
-        mode = (QFileInfo(info.path).isWritable() && (!iconFileInfo.exists() || iconFileInfo.isWritable())) ? " " : "*";
+        QString mode = (QFileInfo(info.path).isWritable() && (!iconFileInfo.exists() || iconFileInfo.isWritable())) ? " " : "*";
         if ((type == KileDocument::Undefined) || (info.type == type)) {
             previousItem = new TemplateListViewItem(m_templateList, previousItem, mode, info);
         }
@@ -259,7 +258,7 @@ void ManageTemplatesDialog::addTemplate()
         return;
     }
 
-    KIO::StatJob* statJob = KIO::statDetails(iconURL, KIO::StatJob::SourceSide, KIO::StatNoDetails);
+    KIO::StatJob* statJob = KIO::stat(iconURL, KIO::StatJob::SourceSide, KIO::StatNoDetails);
     KJobWidgets::setWindow(statJob, this);
     statJob->exec();
     if (statJob->error()) {
@@ -267,7 +266,7 @@ void ManageTemplatesDialog::addTemplate()
         return;
     }
 
-    statJob = KIO::statDetails(m_sourceURL, KIO::StatJob::SourceSide, KIO::StatNoDetails);
+    statJob = KIO::stat(m_sourceURL, KIO::StatJob::SourceSide, KIO::StatNoDetails);
     KJobWidgets::setWindow(statJob, this);
     statJob->exec();
     if (statJob->error()) {
@@ -287,7 +286,9 @@ void ManageTemplatesDialog::addTemplate()
         TemplateListViewItem *templateItem = dynamic_cast<TemplateListViewItem*>(item);
         Q_ASSERT(templateItem);
         KileTemplate::Info templateInfo = templateItem->getTemplateInfo();
-        if (KMessageBox::warningYesNo(this, i18n("You are about to replace the template \"%1\"; are you sure?", templateInfo.name)) == KMessageBox::No) {
+        if (KMessageBox::warningTwoActions(this, i18n("You are about to replace the template \"%1\"; are you sure?", templateInfo.name),
+                                           i18n("Replace template"),
+                                           KStandardGuiItem::ok(), KStandardGuiItem::cancel()) == KMessageBox::SecondaryAction) {
             reject();
             return;
         }
@@ -315,7 +316,9 @@ bool ManageTemplatesDialog::removeTemplate()
 
     KileTemplate::Info templateInfo = templateItem->getTemplateInfo();
 
-    if (KMessageBox::warningYesNo(this, i18n("You are about to remove the template \"%1\"; are you sure?", templateInfo.name)) == KMessageBox::No) {
+    if (KMessageBox::warningTwoActions(this, i18n("You are about to remove the template \"%1\"; are you sure?", templateInfo.name),
+                                       i18n("Replace template"),
+                                       KStandardGuiItem::remove(), KStandardGuiItem::cancel()) == KMessageBox::SecondaryAction) {
         return false;
     }
 

@@ -34,17 +34,19 @@ from Kate (C) 2001 by Matt Newell
 #include <KLocalizedString>
 #include <KToolBar>
 #include <KConfig>
-#include <kio_version.h>
+#include <QFrame>
 
 #include "kileconfig.h"
 #include "kiledebug.h"
+
+using namespace Qt::Literals::StringLiterals;
 
 namespace KileWidget {
 
 FileBrowserWidget::FileBrowserWidget(KileDocument::Extensions *extensions, QWidget *parent)
     : QWidget(parent), m_extensions(extensions)
 {
-    m_configGroup = KConfigGroup(KSharedConfig::openConfig(),"FileBrowserWidget");
+    m_configGroup = KConfigGroup(KSharedConfig::openConfig(), u"FileBrowserWidget"_s);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
@@ -62,18 +64,21 @@ FileBrowserWidget::FileBrowserWidget(KileDocument::Extensions *extensions, QWidg
     layout->addWidget(m_urlNavigator);
     connect(m_urlNavigator, SIGNAL(urlChanged(QUrl)), SLOT(setDir(QUrl)));
 
+    auto separator = new QFrame(this);
+    separator->setFrameShape(QFrame::HLine);
+    separator->setMaximumHeight(1);
+    layout->addWidget(separator);
+
     m_dirOperator = new KDirOperator(QUrl(), this);
     m_dirOperator->setViewConfig(m_configGroup);
     m_dirOperator->readConfig(m_configGroup);
-    m_dirOperator->setView(KFile::Tree);
+    m_dirOperator->setViewMode(KFile::Tree);
     m_dirOperator->setMode(KFile::Files);
     setFocusProxy(m_dirOperator);
 
     connect(m_urlNavigator, SIGNAL(urlChanged(QUrl)), m_dirOperator, SLOT(setFocus()));
     connect(m_dirOperator, SIGNAL(fileSelected(KFileItem)), this, SIGNAL(fileSelected(KFileItem)));
     connect(m_dirOperator, SIGNAL(urlEntered(QUrl)), this, SLOT(dirUrlEntered(QUrl)));
-
-
 
     setupToolbar();
 
@@ -110,14 +115,8 @@ void FileBrowserWidget::writeConfig()
 
 void FileBrowserWidget::setupToolbar()
 {
-#if KIO_VERSION < QT_VERSION_CHECK(5, 100, 0)
-    KActionCollection *coll = m_dirOperator->actionCollection();
-    m_toolbar->addAction(coll->action("back"));
-    m_toolbar->addAction(coll->action("forward"));
-#else
     m_toolbar->addAction(m_dirOperator->action(KDirOperator::Back));
     m_toolbar->addAction(m_dirOperator->action(KDirOperator::Forward));
-#endif
 
     QAction *action = new QAction(this);
     action->setIcon(QIcon::fromTheme("document-open"));
@@ -134,24 +133,13 @@ void FileBrowserWidget::setupToolbar()
     // section for settings menu
     KActionMenu *optionsMenu = new KActionMenu(QIcon::fromTheme("configure"), i18n("Options"), this);
     optionsMenu->setPopupMode(QToolButton::InstantPopup);
-#if KIO_VERSION < QT_VERSION_CHECK(5, 100, 0)
-    optionsMenu->addAction(m_dirOperator->actionCollection()->action("short view"));
-    optionsMenu->addAction(m_dirOperator->actionCollection()->action("detailed view"));
-    optionsMenu->addAction(m_dirOperator->actionCollection()->action("tree view"));
-    optionsMenu->addAction(m_dirOperator->actionCollection()->action("detailed tree view"));
-#else
     optionsMenu->addAction(m_dirOperator->action(KDirOperator::ShortView));
     optionsMenu->addAction(m_dirOperator->action(KDirOperator::DetailedView));
     optionsMenu->addAction(m_dirOperator->action(KDirOperator::TreeView));
     optionsMenu->addAction(m_dirOperator->action(KDirOperator::DetailedTreeView));
-#endif
     optionsMenu->addSeparator();
     optionsMenu->addAction(showOnlyLaTexFilesAction);
-#if KIO_VERSION < QT_VERSION_CHECK(5, 100, 0)
-    optionsMenu->addAction(m_dirOperator->actionCollection()->action("show hidden"));
-#else
     optionsMenu->addAction(m_dirOperator->action(KDirOperator::ShowHiddenFiles));
-#endif
 
     m_toolbar->addSeparator();
     m_toolbar->addAction(optionsMenu);
@@ -195,7 +183,7 @@ void FileBrowserWidget::emitFileSelectedSignal()
 {
     KFileItemList itemList = m_dirOperator->selectedItems();
     for(KFileItemList::iterator it = itemList.begin(); it != itemList.end(); ++it) {
-        emit(fileSelected(*it));
+        Q_EMIT(fileSelected(*it));
     }
 
     m_dirOperator->view()->clearSelection();

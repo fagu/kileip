@@ -181,8 +181,8 @@ set(kile_SRCS ${kile_SRCS} ${kile_UI_SRCS})
 
 ki18n_wrap_ui(kile_SRCS ${kile_UI})
 
-set(kile_SRCS ${kile_SRCS} net.sourceforge.kile.main.xml)
-QT5_ADD_DBUS_ADAPTOR(kile_SRCS net.sourceforge.kile.main.xml kile.h Kile)
+set(kile_SRCS ${kile_SRCS} org.kde.kile.main.xml)
+qt_add_dbus_adaptor(kile_SRCS org.kde.kile.main.xml kile.h Kile)
 
 set(kile_KCFG_SRCS kileconfig.kcfgc)
 
@@ -191,8 +191,8 @@ kconfig_add_kcfg_files(kile_SRCS ${kile_KCFG_SRCS})
 set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/kileconfig.h" PROPERTIES SKIP_AUTOMOC ON)   # otherwise we get a warning about
 set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/kileconfig.cpp" PROPERTIES SKIP_AUTOMOC ON) # the CMP0071 policy (with CMake 3.11)
 
-ecm_add_app_icon(kile_SRCS
-	ICONS
+set(ICON_FILES
+	${CMAKE_CURRENT_SOURCE_DIR}/data/icons/sc-apps-kile.svg
 	${CMAKE_CURRENT_SOURCE_DIR}/data/icons/16-apps-kile.png
 	${CMAKE_CURRENT_SOURCE_DIR}/data/icons/22-apps-kile.png
 	${CMAKE_CURRENT_SOURCE_DIR}/data/icons/32-apps-kile.png
@@ -200,13 +200,20 @@ ecm_add_app_icon(kile_SRCS
 	${CMAKE_CURRENT_SOURCE_DIR}/data/icons/64-apps-kile.png
 	${CMAKE_CURRENT_SOURCE_DIR}/data/icons/128-apps-kile.png
 )
+ecm_add_app_icon(ICONS_SOURCES ICONS ${ICON_FILES})
 
 # add the resource file containing the ui files
-qt5_add_resources(kile_SRCS kile.qrc)
+qt_add_resources(kile_SRCS kile.qrc)
 
 add_executable(kile ${kile_SRCS})
+target_sources(kile PRIVATE ${ICONS_SOURCES})
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") # for Mac OS X
+qt_add_resources(kile "icons"
+    BASE ${CMAKE_CURRENT_SOURCE_DIR}/data/icons/
+    PREFIX "/icons"
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/data/icons/sc-apps-kile.svg)
+
+if(APPLE)
     # extract the last copyright year from "kileversion.h"
     file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/kileversion.h" LAST_COPYRIGHT_YEAR_LINE REGEX "KILE_LAST_COPYRIGHT_YEAR (.*)")
     string(REGEX MATCH "KILE_LAST_COPYRIGHT_YEAR \"([0-9]+)\"" TMP_MATCH ${LAST_COPYRIGHT_YEAR_LINE})
@@ -219,34 +226,35 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin") # for Mac OS X
         MACOSX_BUNDLE_DISPLAY_NAME      "Kile"
         MACOSX_BUNDLE_INFO_STRING       "Kile, an KDE Integrated LaTeX Environment"
         MACOSX_BUNDLE_COPYRIGHT         "the Kile Team (2003 - ${LAST_COPYRIGHT_YEAR})")
-    if(KILE_VERSION)
-        set_target_properties(kile PROPERTIES
-            MACOSX_BUNDLE_LONG_VERSION_STRING "Kile ${KILE_VERSION}"
-            MACOSX_BUNDLE_SHORT_VERSION_STRING "${KILE_VERSION}"
-            MACOSX_BUNDLE_BUNDLE_VERSION "${KILE_VERSION}")
-    endif()
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set_target_properties(kile PROPERTIES
+        MACOSX_BUNDLE_LONG_VERSION_STRING "Kile ${KILE_VERSION}"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${KILE_VERSION}"
+        MACOSX_BUNDLE_BUNDLE_VERSION "${KILE_VERSION}")
+endif()
 
 target_link_libraries(kile
 PUBLIC
-    Qt5::Script
-    KF5::CoreAddons
-    KF5::Crash
-    KF5::DBusAddons
-    KF5::GuiAddons
-    KF5::I18n
-    KF5::IconThemes
-    KF5::KIOCore
-    KF5::KIOFileWidgets
-    KF5::TextEditor
-    KF5::WindowSystem
+    KF6::Codecs
+    KF6::CoreAddons
+    KF6::Crash
+    KF6::DBusAddons
+    KF6::GuiAddons
+    KF6::I18n
+    KF6::IconThemes
+    KF6::KIOCore
+    KF6::KIOFileWidgets
+    KF6::TextEditor
+    KF6::TextWidgets
+    KF6::WindowSystem
 )
+
+target_link_libraries(kile PUBLIC Qt6::Qml Qt6::Core5Compat KF6::IconWidgets)
 # optional dependencies
-if(Poppler_Qt5_FOUND)
-	target_link_libraries(kile PUBLIC Poppler::Qt5)
+if(TARGET Poppler::Qt6)
+	target_link_libraries(kile PUBLIC Poppler::Qt6)
 endif()
 
-if(Okular5_FOUND)
+if(TARGET Okular::Core)
   # We don't need to link to okular since it gets loaded dynamically at runtime.
   # All we need are the include directories which we can get with this generator expression:
   target_include_directories(kile PRIVATE $<TARGET_PROPERTY:Okular::Core,INTERFACE_INCLUDE_DIRECTORIES>)
@@ -256,12 +264,12 @@ install(TARGETS kile ${KDE_INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### install files ###############
 
-install(FILES net.sourceforge.kile.main.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-install(PROGRAMS org.kde.kile.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
-install(FILES kile.kcfg DESTINATION ${KCFG_INSTALL_DIR})
+install(FILES org.kde.kile.main.xml DESTINATION ${KDE_INSTALL_DBUSINTERFACEDIR})
+install(FILES org.kde.kile.desktop DESTINATION ${KDE_INSTALL_APPDIR})
+install(FILES kile.kcfg DESTINATION ${KDE_INSTALL_KCFGDIR})
 install(FILES data/bibtexentries.rc data/biblatexentries.rc DESTINATION ${KDE_INSTALL_DATAROOTDIR}/kile)
-install(FILES data/kile.categories DESTINATION ${KDE_INSTALL_CONFDIR})
-install(FILES data/org.kde.kile.appdata.xml DESTINATION ${CMAKE_INSTALL_METAINFODIR})
+install(FILES data/kile.categories DESTINATION ${KDE_INSTALL_LOGGINGCATEGORIESDIR})
+install(FILES data/org.kde.kile.appdata.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
 
 if(CMAKE_SYSTEM_NAME MATCHES "Windows")
 	install(FILES data/kilestdtools-win.rc

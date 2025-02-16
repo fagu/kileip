@@ -17,6 +17,8 @@
 #include <QFileInfo>
 #include <QTextStream>
 
+#include <KIO/OpenUrlJob>
+
 #include "editorextension.h"
 #include "errorhandler.h"
 #include "kiledebug.h"
@@ -31,13 +33,12 @@
 namespace KileHelp
 {
 
-Help::Help(KileDocument::EditorExtension *edit, QWidget *mainWindow) : m_mainWindow(mainWindow), m_edit(edit), m_userhelp(Q_NULLPTR)
+Help::Help(KileDocument::EditorExtension *edit, QWidget *mainWindow) : m_mainWindow(mainWindow), m_edit(edit), m_userhelp(nullptr)
 {
     m_helpDir = KileUtilities::locate(QStandardPaths::AppDataLocation, QLatin1String("help/"), QStandardPaths::LocateDirectory); // this must end in '/'
     KILE_DEBUG_MAIN << "help dir: " << m_helpDir;
 
     m_kileReference = m_helpDir + "latexhelp.html";
-    m_latex2eReference =  m_helpDir + QLatin1String("unofficial-latex2e-reference-manual/");
 
     m_contextHelpType = contextHelpType();
     initContextHelp();
@@ -52,7 +53,7 @@ void Help::initContextHelp()
 {
     // read a list with keywords for context help
     if(m_contextHelpType == HelpKileRefs) {
-        readHelpList("latex-kile.lst");
+        readHelpList("latex-kile.index");
     }
     else if(m_contextHelpType == HelpLatex2eRefs) {
         readHelpList("unofficial-latex2e-reference-manual.index");
@@ -123,18 +124,20 @@ void Help::helpDocBrowser()
 
 void Help::helpLatex(HelpType type)
 {
-    switch(type) {
-        case HelpLatexIndex:
-            showHelpFile(m_latex2eReference + QLatin1String("index.html"));
-            break;
-        case HelpLatexCommand:
-            showHelpFile(m_latex2eReference + QLatin1String("IndexDocument.html#Index_cp_symbol-8"));
-            break;
-        case HelpLatexEnvironment:
-            showHelpFile(m_latex2eReference + QLatin1String("Environments.html#Environments"));
-            break;
-        default:
-            return;
+    if(type == HelpLatexIndex) {
+        QUrl url("https://latexref.xyz/");
+        auto *openUrlJob = new KIO::OpenUrlJob(url);
+        openUrlJob->start();
+    }
+    else if(type == HelpLatexCommand) {
+        QUrl url("https://latexref.xyz/Index.html#Index_cp_symbol-10");
+        auto *openUrlJob = new KIO::OpenUrlJob(url);
+        openUrlJob->start();
+    }
+    else if(type == HelpLatexEnvironment) {
+        QUrl url("https://latexref.xyz/Environments.html");
+        auto *openUrlJob = new KIO::OpenUrlJob(url);
+        openUrlJob->start();
     }
 }
 
@@ -150,7 +153,9 @@ void Help::helpKeyword(KTextEditor::View *view)
         KILE_DEBUG_MAIN << "about to show help for '" << word << "' (section " << m_dictHelpTex[word] << " )";
 
         if(m_contextHelpType == HelpLatex2eRefs) {
-            showHelpFile(m_latex2eReference + m_dictHelpTex[word]);
+            QUrl url("https://latexref.xyz/" + m_dictHelpTex[word]);
+            auto *openUrlJob = new KIO::OpenUrlJob(url);
+            openUrlJob->start();
         }
         else if ( m_contextHelpType == HelpKileRefs ) {
             showHelpFile(m_kileReference + '#' + m_dictHelpTex[word]);
@@ -219,7 +224,7 @@ void Help::readHelpList(const QString &filename)
     }
 
     KILE_DEBUG_MAIN << "read keyword file: " << file;
-    QRegExp reg("\\s*(\\S+)\\s*\\t\\s*(\\S+)");
+    QRegularExpression reg("\\s*(\\S+)\\s*\\t\\s*(\\S+)");
 
     QFile f(file);
     if(f.open(QIODevice::ReadOnly)) { // file opened successfully
@@ -227,9 +232,10 @@ void Help::readHelpList(const QString &filename)
         while(!t.atEnd()) { // until end of file...
             QString s = t.readLine().trimmed();       // line of text excluding '\n'
             if(!(s.isEmpty() || s.at(0)=='#')) {
-                int pos = reg.indexIn(s);
+                QRegularExpressionMatch match;
+                const int pos = s.indexOf(reg);
                 if(pos != -1) {
-                    m_dictHelpTex[reg.cap(1)] = reg.cap(2);
+                    m_dictHelpTex[match.captured(1)] = match.captured(2);
                 }
             }
         }

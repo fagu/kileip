@@ -39,7 +39,7 @@ namespace KileMenu {
 #define CHOOSABLE_MENUTYPES   3
 
 UserMenuDialog::UserMenuDialog(KConfig *config, KileInfo *ki, KileMenu::UserMenu *userMenu, const QString &xmlfile, QWidget *parent)
-    : KileDialog::Wizard(config, parent, Q_NULLPTR, i18n("Edit User Menu"))
+    : KileDialog::Wizard(config, parent, nullptr, i18n("Edit User Menu"))
     , m_ki(ki)
     , m_userMenu(userMenu)
 {
@@ -61,7 +61,8 @@ UserMenuDialog::UserMenuDialog(KConfig *config, KileInfo *ki, KileMenu::UserMenu
 
     // search for all action collections (needed for shortcut conflicts)
     QList<KActionCollection *> allCollections;
-    foreach (KXMLGUIClient *client, m_ki->mainWindow()->guiFactory()->clients()) {
+    const QList<KXMLGUIClient*> clients = m_ki->mainWindow()->guiFactory()->clients();
+    for(KXMLGUIClient *client : clients) {
         KILE_DEBUG_MAIN << "collection count: " << client->actionCollection()->count() ;
         allCollections += client->actionCollection();
     }
@@ -257,7 +258,9 @@ void UserMenuDialog::slotNewClicked()
     KILE_DEBUG_MAIN << "start new menutree ... ";
 
     if (!m_menutree->isEmpty() && m_modified) {
-        if (KMessageBox::questionYesNo(this, i18n("Current menu tree was modified, but not saved.\nDiscard this tree?")) == KMessageBox::No) {
+        if (KMessageBox::questionTwoActions(this, i18n("Current menu tree was modified, but not saved.\nDiscard this tree?"),
+                                            i18n("Discard tree"),
+                                            KStandardGuiItem::discard(), KStandardGuiItem::cancel()) == KMessageBox::SecondaryAction) {
             return;
         }
     }
@@ -275,7 +278,9 @@ void UserMenuDialog::slotLoadClicked()
     KILE_DEBUG_MAIN << "load xml file ";
 
     if (!m_menutree->isEmpty() && m_modified) {
-        if (KMessageBox::questionYesNo(this, i18n("Current menu tree was modified, but not saved.\nDiscard this tree?")) == KMessageBox::No) {
+        if (KMessageBox::questionTwoActions(this, i18n("Current menu tree was modified, but not saved.\nDiscard this tree?"),
+                                            i18n("Discard tree"),
+                                            KStandardGuiItem::discard(), KStandardGuiItem::cancel()) == KMessageBox::SecondaryAction) {
             return;
         }
     }
@@ -390,7 +395,9 @@ QString UserMenuDialog::saveAsClicked()
     }
 
     if (QFile::exists(filename)) {
-        if (KMessageBox::questionYesNo(this, i18n("File '%1' does already exist.\nOverwrite this file?", filename)) == KMessageBox::No) {
+        if (KMessageBox::questionTwoActions(this, i18n("File '%1' does already exist.\nOverwrite this file?", filename),
+                                            i18n("Overwrite file"),
+                                            KStandardGuiItem::overwrite(), KStandardGuiItem::cancel()) == KMessageBox::SecondaryAction) {
             return QString();
         }
     }
@@ -403,7 +410,9 @@ QString UserMenuDialog::saveAsClicked()
 bool UserMenuDialog::saveCheck()
 {
     if (m_menutree->errorCheck() == false) {
-        if (KMessageBox::questionYesNo(this, i18n("The menu tree contains some errors and installing this file may lead to unpredictable results.\nDo you really want to save this file?")) == KMessageBox::No) {
+        if (KMessageBox::questionTwoActions(this, i18n("The menu tree contains some errors and installing this file may lead to unpredictable results.\nDo you really want to save this file?"),
+                                            i18n("Menu tree errors"),
+                                            KStandardGuiItem::save(), KStandardGuiItem::cancel()) == KMessageBox::SecondaryAction) {
             return false;
         }
     }
@@ -822,13 +831,13 @@ void UserMenuDialog::setSubmenuEntry(UserMenuItem *item)
 {
     setMenuentryText(item, true);
     setMenuentryType(item, true, false);
-    setMenuentryFileChooser(Q_NULLPTR, false);
-    setMenuentryFileParameter(Q_NULLPTR, false);
-    setMenuentryTextEdit(Q_NULLPTR, false);
-    setMenuentryIcon(Q_NULLPTR, false);
-    setMenuentryShortcut(Q_NULLPTR, false);
+    setMenuentryFileChooser(nullptr, false);
+    setMenuentryFileParameter(nullptr, false);
+    setMenuentryTextEdit(nullptr, false);
+    setMenuentryIcon(nullptr, false);
+    setMenuentryShortcut(nullptr, false);
     setParameterGroupbox(false);
-    setMenuentryCheckboxes(Q_NULLPTR, false);
+    setMenuentryCheckboxes(nullptr, false);
 }
 
 ////////////////////////////// update data widgets//////////////////////////////
@@ -981,15 +990,15 @@ void UserMenuDialog::clearMenuEntryData()
 
 void UserMenuDialog::disableMenuEntryData()
 {
-    setMenuentryText(Q_NULLPTR, false);
-    setMenuentryType(Q_NULLPTR, false, false);
-    setMenuentryFileChooser(Q_NULLPTR, false);
-    setMenuentryFileParameter(Q_NULLPTR, false);
-    setMenuentryTextEdit(Q_NULLPTR, false);
-    setMenuentryIcon(Q_NULLPTR, false);
-    setMenuentryShortcut(Q_NULLPTR, false);
+    setMenuentryText(nullptr, false);
+    setMenuentryType(nullptr, false, false);
+    setMenuentryFileChooser(nullptr, false);
+    setMenuentryFileParameter(nullptr, false);
+    setMenuentryTextEdit(nullptr, false);
+    setMenuentryIcon(nullptr, false);
+    setMenuentryShortcut(nullptr, false);
     setParameterGroupbox(false);
-    setMenuentryCheckboxes(Q_NULLPTR, false);
+    setMenuentryCheckboxes(nullptr, false);
 }
 
 }

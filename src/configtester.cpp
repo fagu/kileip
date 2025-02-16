@@ -1,6 +1,6 @@
 /*************************************************************************************
   Copyright (C) 2004 by Jeroen Wijnhout (Jeroen.Wijnhout@kdemail.net)
-                2012-2022 by Michel Ludwig (michel.ludwig@kdemail.net)
+                2012-2024 by Michel Ludwig (michel.ludwig@kdemail.net)
  *************************************************************************************/
 
 /***************************************************************************
@@ -24,9 +24,9 @@
 #include <KJob>
 #include <KLocalizedString>
 #include <KPluginFactory>
-#include <KPluginLoader>
 #include <KProcess>
 
+#include <QPluginLoader>
 #include <QTemporaryDir>
 
 #include "documentinfo.h"
@@ -111,7 +111,7 @@ void ConfigTest::setName(const QString& name)
 Tester::Tester(KileInfo *kileInfo, QObject *parent)
     : QObject(parent),
       m_ki(kileInfo),
-      m_tempDir(Q_NULLPTR),
+      m_tempDir(nullptr),
       m_testsDone(0)
 {
     m_tempDir = new QTemporaryDir();
@@ -132,19 +132,19 @@ void Tester::runTests()
     const QString& destinationDirectory = m_tempDir->path();
     const QString& testDirectory =
 #ifdef Q_OS_WIN
-        KileUtilities::locate(QStandardPaths::AppDataLocation, "kile/test", QStandardPaths::LocateDirectory);
+        KileUtilities::locate(QStandardPaths::AppDataLocation, QLatin1String("kile/test"), QStandardPaths::LocateDirectory);
 #else
-        KileUtilities::locate(QStandardPaths::AppDataLocation, "test", QStandardPaths::LocateDirectory);
+        KileUtilities::locate(QStandardPaths::AppDataLocation, QLatin1String("test"), QStandardPaths::LocateDirectory);
 #endif
     KIO::CopyJob *copyJob = KIO::copyAs(QUrl::fromLocalFile(testDirectory), QUrl::fromLocalFile(destinationDirectory), KIO::HideProgressInfo | KIO::Overwrite);
     connect(copyJob, SIGNAL(result(KJob*)), this, SLOT(handleFileCopyResult(KJob*)));
-    emit(percentageDone(0));
+    Q_EMIT(percentageDone(0));
 }
 
 void Tester::handleFileCopyResult(KJob* job)
 {
     if(job->error()) {
-        emit(finished(false));
+        Q_EMIT(finished(false));
     }
     else {
         startNextTest();
@@ -200,8 +200,8 @@ void Tester::startNextTest()
         m_currentTest->call();
     }
     else {
-        emit(percentageDone(100));
-        emit(finished(true));
+        Q_EMIT(percentageDone(100));
+        Q_EMIT(finished(true));
     }
 }
 
@@ -212,7 +212,7 @@ void Tester::handleTestComplete(ConfigTest *test)
         addResult(test->testGroup(), test);
     }
     ++m_testsDone;
-    emit(percentageDone((m_testsDone / (float) m_testList.size()) * 100.0));
+    Q_EMIT(percentageDone((m_testsDone / (float) m_testList.size()) * 100.0));
     startNextTest();
 }
 
@@ -248,13 +248,13 @@ void TestToolInKileTest::call()
                             "Kile is not configured correctly. Go to Settings->Configure Kile->Tools "
                             "and either fix the problem or change to the default settings."
                            );
-        emit(testComplete(this));
+        Q_EMIT(testComplete(this));
         return;
     }
     // We don't want the tool to spawn subtools (especially, for LaTeX-style tools).
     // If we did, we might come into the situation that a subtool is launched before the
     // parsing is complete, which could trigger a "root document not found" error message.
-    tool->setEntry("autoRun", "no");
+    tool->setEntry(QLatin1String("autoRun"), QLatin1String("no"));
     connect(tool, SIGNAL(done(KileTool::Base*,int,bool)), this, SLOT(handleToolExit(KileTool::Base*,int,bool)), Qt::UniqueConnection);
     connect(tool, SIGNAL(failedToRun(KileTool::Base*,int)), this, SLOT(reportFailure()));
     m_ki->toolManager()->run(tool);
@@ -267,7 +267,7 @@ void TestToolInKileTest::reportSuccess()
 
     m_status = Success;
     m_resultText = i18n("Passed");
-    emit(testComplete(this));
+    Q_EMIT(testComplete(this));
 }
 
 void TestToolInKileTest::reportFailure()
@@ -277,7 +277,7 @@ void TestToolInKileTest::reportFailure()
 
     m_status = Failure;
     m_resultText = i18n("Failed");
-    emit(testComplete(this));
+    Q_EMIT(testComplete(this));
 }
 
 
@@ -305,15 +305,15 @@ OkularVersionTest::~OkularVersionTest()
 
 void OkularVersionTest::call()
 {
-    KPluginLoader pluginLoader(OKULAR_LIBRARY_NAME);
-    KPluginFactory *factory = pluginLoader.factory();
+    QPluginLoader pluginLoader(QStringLiteral(OKULAR_LIBRARY_NAME));
+    KPluginFactory *factory = qobject_cast<KPluginFactory *>(pluginLoader.instance());
 
     if (!factory) {
         m_status = Failure;
     }
     else {
         KParts::ReadOnlyPart *part = factory->create<KParts::ReadOnlyPart>();
-        Okular::ViewerInterface *viewerInterface = dynamic_cast<Okular::ViewerInterface*>(part);
+        Okular::ViewerInterface *viewerInterface = qobject_cast<Okular::ViewerInterface*>(part);
 
         if(!viewerInterface) {
             // OkularPart doesn't provide the ViewerInterface
@@ -327,9 +327,9 @@ void OkularVersionTest::call()
         delete part;
     }
 
-    delete factory;
+    pluginLoader.unload();
 
-    emit(testComplete(this));
+    Q_EMIT(testComplete(this));
 }
 
 
@@ -354,7 +354,7 @@ void FindProgramTest::call()
     bool thisIsWindowsConvertExe = false;
 #ifdef Q_OS_WIN
     QFileInfo execPathInfo(execPath);
-    thisIsWindowsConvertExe = (m_programName == "convert") && (execPathInfo.dir().dirName() == "system32");
+    thisIsWindowsConvertExe = (m_programName == QLatin1String("convert")) && (execPathInfo.dir().dirName() == QLatin1String("system32"));
 #endif
     if(execPath.isEmpty() || thisIsWindowsConvertExe) {
         m_status = Failure;
@@ -381,7 +381,7 @@ void FindProgramTest::call()
         m_status = Success;
         m_resultText = i18nc("executable => path", "Found (%1 => %2)", m_programName, execPath);
     }
-    emit(testComplete(this));
+    Q_EMIT(testComplete(this));
 }
 
 void FindProgramTest::setAdditionalFailureMessage(const QString& s)
@@ -395,7 +395,7 @@ ProgramTest::ProgramTest(const QString& testGroup, const QString& programName, c
                          const QString& arg2,
                          bool isCritical)
     : ConfigTest(testGroup, i18n("Simple Test"), isCritical),
-      m_testProcess(Q_NULLPTR),
+      m_testProcess(nullptr),
       m_programName(programName),
       m_workingDir(workingDir),
       m_arg0(arg0),
@@ -425,19 +425,17 @@ void ProgramTest::call()
     }
     m_testProcess->setProgram(m_programName, argList);
     if (!KileConfig::teXPaths().isEmpty()) {
-        m_testProcess->setEnv("TEXINPUTS", KileInfo::expandEnvironmentVars(KileConfig::teXPaths() + ":$TEXINPUTS"));
+        m_testProcess->setEnv(QLatin1String("TEXINPUTS"), KileInfo::expandEnvironmentVars(KileConfig::teXPaths() + QLatin1String(":$TEXINPUTS")));
     }
-    connect(m_testProcess, SIGNAL(finished(int,QProcess::ExitStatus)),
-            this, SLOT(handleTestProcessFinished(int,QProcess::ExitStatus)));
-    connect(m_testProcess, SIGNAL(error(QProcess::ProcessError)),
-            this, SLOT(handleTestProcessError(QProcess::ProcessError)));
+    connect(m_testProcess, &KProcess::finished, this, &ProgramTest::handleTestProcessFinished);
+    connect(m_testProcess, &KProcess::errorOccurred, this, &ProgramTest::handleTestProcessError);
     m_testProcess->start();
 }
 
 void ProgramTest::handleTestProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     m_testProcess->deleteLater();
-    m_testProcess = Q_NULLPTR;
+    m_testProcess = nullptr;
 
     if(exitStatus == QProcess::NormalExit && exitCode == 0) {
         processFinishedSuccessfully();
@@ -457,7 +455,7 @@ void ProgramTest::handleTestProcessError(QProcess::ProcessError error)
     Q_UNUSED(error);
 
     m_testProcess->deleteLater();
-    m_testProcess = Q_NULLPTR;
+    m_testProcess = nullptr;
     reportFailure();
 }
 
@@ -465,7 +463,7 @@ void ProgramTest::reportSuccess()
 {
     m_resultText = i18n("Passed");
     m_status = Success;
-    emit(testComplete(this));
+    Q_EMIT(testComplete(this));
 }
 
 void ProgramTest::reportFailure()
@@ -477,13 +475,13 @@ void ProgramTest::reportFailure()
         m_resultText = i18n("Failed");
     }
     m_status = Failure;
-    emit(testComplete(this));
+    Q_EMIT(testComplete(this));
 }
 
 
 LaTeXSrcSpecialsSupportTest::LaTeXSrcSpecialsSupportTest(const QString& testGroup, const QString& workingDir,
         const QString& fileBaseName)
-    : ProgramTest(testGroup, "latex", workingDir, "-src-specials", "--interaction=nonstopmode", fileBaseName + ".tex", false),
+    : ProgramTest(testGroup, QLatin1String("latex"), workingDir, QLatin1String("-src-specials"), QLatin1String("--interaction=nonstopmode"), fileBaseName + QLatin1String(".tex"), false),
       m_fileBaseName(fileBaseName)
 {
     setName(i18n("Source Specials Switch"));
@@ -501,7 +499,7 @@ void LaTeXSrcSpecialsSupportTest::processFinishedSuccessfully()
     // information (LaTeX doesn't report unknown command line flags as
     // errors). Hence, we now check whether the created file contains
     // the string 'src:'.
-    QFile file(m_workingDir + '/' + m_fileBaseName + ".dvi");
+    QFile file(m_workingDir + QLatin1Char('/') + m_fileBaseName + QLatin1String(".dvi"));
     if (!file.open(QIODevice::ReadOnly)) {
         reportFailure();
         return;
@@ -520,20 +518,20 @@ void LaTeXSrcSpecialsSupportTest::reportSuccess()
 {
     m_resultText = i18n("Supported, use the 'Modern' configuration for (La)TeX to auto-enable inverse and forward search capabilities.");
     m_status = Success;
-    emit(testComplete(this));
+    Q_EMIT(testComplete(this));
 }
 
 void LaTeXSrcSpecialsSupportTest::reportFailure()
 {
     m_resultText = i18n("Not supported, use the srcltx package to enable the inverse and forward search capabilities.");
     m_status = Failure;
-    emit(testComplete(this));
+    Q_EMIT(testComplete(this));
 }
 
 
 SyncTeXSupportTest::SyncTeXSupportTest(const QString& testGroup, const QString& toolName, const QString& workingDir,
                                        const QString& fileBaseName)
-    : ProgramTest(testGroup, toolName, workingDir, "-synctex=1", "--interaction=nonstopmode", fileBaseName + ".tex", false),
+    : ProgramTest(testGroup, toolName, workingDir, QLatin1String("-synctex=1"), QLatin1String("--interaction=nonstopmode"), fileBaseName + QLatin1String(".tex"), false),
       m_fileBaseName(fileBaseName)
 {
     setName(i18n("SyncTeX Support"));
@@ -547,21 +545,21 @@ void SyncTeXSupportTest::reportSuccess()
 {
     m_resultText = i18n("Supported, use the 'Modern' configuration for PDFLaTeX and XeLaTeX to auto-enable inverse and forward search capabilities.");
     m_status = Success;
-    emit(testComplete(this));
+    Q_EMIT(testComplete(this));
 }
 
 void SyncTeXSupportTest::reportFailure()
 {
     m_resultText = i18n("Not supported");
     m_status = Failure;
-    emit(testComplete(this));
+    Q_EMIT(testComplete(this));
 }
 
 void SyncTeXSupportTest::processFinishedSuccessfully()
 {
     // before we can report success, we still have to check
     // whether a .synctex.gz file has been generated
-    QFile file(m_workingDir + '/' + m_fileBaseName + ".synctex.gz");
+    QFile file(m_workingDir + QLatin1Char('/') + m_fileBaseName + QLatin1String(".synctex.gz"));
     if (!file.exists()) {
         reportFailure();
         return;
@@ -611,9 +609,9 @@ void Tester::setupTests()
     performKileTest kile "run TeX"
     */
     installConsecutivelyDependentTests(
-        new FindProgramTest("TeX", "tex", true),
-        new ProgramTest("TeX", "tex", m_tempDir->path(), "--interaction=nonstopmode",  "test_plain.tex", "", true),
-        new TestToolInKileTest("TeX", m_ki, "TeX", m_tempDir->path() + '/' + "test_plain.tex", true));
+        new FindProgramTest(QLatin1String("TeX"), QLatin1String("tex"), true),
+        new ProgramTest(QLatin1String("TeX"), QLatin1String("tex"), m_tempDir->path(), QLatin1String("--interaction=nonstopmode"),  QLatin1String("test_plain.tex"), QString(), true),
+        new TestToolInKileTest(QLatin1String("TeX"), m_ki, QLatin1String("TeX"), m_tempDir->path() + QLatin1Char('/') + QLatin1String("test_plain.tex"), true));
     /*
     echo "starting test: PDFTeX"
     setTool PDFTeX
@@ -626,9 +624,9 @@ void Tester::setupTests()
     $closeDoc
     */
     installConsecutivelyDependentTests(
-        new FindProgramTest("PDFTeX", "pdftex", false),
-        new ProgramTest("PDFTeX", "pdftex", m_tempDir->path(), "--interaction=nonstopmode",  "test_plain.tex", "", false),
-        new TestToolInKileTest("PDFTeX", m_ki, "PDFTeX", m_tempDir->path() + '/' + "test_plain.tex", false));
+        new FindProgramTest(QLatin1String("PDFTeX"), QLatin1String("pdftex"), false),
+        new ProgramTest(QLatin1String("PDFTeX"), QLatin1String("pdftex"), m_tempDir->path(), QLatin1String("--interaction=nonstopmode"), QLatin1String("test_plain.tex"), QString(), false),
+        new TestToolInKileTest(QLatin1String("PDFTeX"), m_ki, QLatin1String("PDFTeX"), m_tempDir->path() + QLatin1Char('/') + QLatin1String("test_plain.tex"), false));
     /*
     testFileBase="test"
     testFile=$testFileBase.tex
@@ -644,12 +642,12 @@ void Tester::setupTests()
     performKileTest kile "run LaTeX"
     performTest src "$tool -src $testFile"
     */
-    ProgramTest *latexProgramTest = new ProgramTest("LaTeX", "latex", m_tempDir->path(), "--interaction=nonstopmode",  "test.tex", "", true);
-    m_laTeXSrcSpecialsSupportTest = new LaTeXSrcSpecialsSupportTest("LaTeX", m_tempDir->path(), "test");
+    ProgramTest *latexProgramTest = new ProgramTest(QLatin1String("LaTeX"), QLatin1String("latex"), m_tempDir->path(), QLatin1String("--interaction=nonstopmode"),  QLatin1String("test.tex"), QString(), true);
+    m_laTeXSrcSpecialsSupportTest = new LaTeXSrcSpecialsSupportTest(QLatin1String("LaTeX"), m_tempDir->path(), QLatin1String("test"));
     installConsecutivelyDependentTests(
-        new FindProgramTest("LaTeX", "latex", true),
+        new FindProgramTest(QLatin1String("LaTeX"), QLatin1String("latex"), true),
         latexProgramTest,
-        new TestToolInKileTest("LaTeX", m_ki, "LaTeX", m_tempDir->path() + '/' + "test.tex", true),
+        new TestToolInKileTest(QLatin1String("LaTeX"), m_ki, QLatin1String("LaTeX"), m_tempDir->path() + QLatin1Char('/') + QLatin1String("test.tex"), true),
         m_laTeXSrcSpecialsSupportTest);
     /*
     echo "starting test: PDFLaTeX"
@@ -660,11 +658,11 @@ void Tester::setupTests()
     performTest basic "pdflatex $testFile"
     performKileTest kile "run PDFLaTeX"
     */
-    m_pdfLaTeXSyncTeXSupportTest = new SyncTeXSupportTest("PDFLaTeX", "pdflatex", m_tempDir->path(), "test");
+    m_pdfLaTeXSyncTeXSupportTest = new SyncTeXSupportTest(QLatin1String("PDFLaTeX"), QLatin1String("pdflatex"), m_tempDir->path(), QLatin1String("test"));
     installConsecutivelyDependentTests(
-        new FindProgramTest("PDFLaTeX", "pdflatex", false),
-        new ProgramTest("PDFLaTeX", "pdflatex", m_tempDir->path(), "--interaction=nonstopmode",  "test.tex", "", false),
-        new TestToolInKileTest("PDFLaTeX", m_ki, "PDFLaTeX", m_tempDir->path() + '/' + "test.tex", false),
+        new FindProgramTest(QLatin1String("PDFLaTeX"), QLatin1String("pdflatex"), false),
+        new ProgramTest(QLatin1String("PDFLaTeX"), QLatin1String("pdflatex"), m_tempDir->path(), QLatin1String("--interaction=nonstopmode"),  QLatin1String("test.tex"), QString(), false),
+        new TestToolInKileTest(QLatin1String("PDFLaTeX"), m_ki, QLatin1String("PDFLaTeX"), m_tempDir->path() + QLatin1Char('/') + QLatin1String("test.tex"), false),
         m_pdfLaTeXSyncTeXSupportTest);
     /*
     echo "starting test: DVItoPS"
@@ -674,10 +672,10 @@ void Tester::setupTests()
     setKey where `which dvips`
     if [ -r $testFileBase.dvi ]; then performKileTest kile "run DVItoPS"; fi
     */
-    TestToolInKileTest *dvipsKileTest = new TestToolInKileTest("DVItoPS", m_ki, "DVItoPS", m_tempDir->path() + '/' + "test.tex", false);
+    TestToolInKileTest *dvipsKileTest = new TestToolInKileTest(QLatin1String("DVItoPS"), m_ki, QLatin1String("DVItoPS"), m_tempDir->path() + QLatin1Char('/') + QLatin1String("test.tex"), false);
     dvipsKileTest->addDependency(latexProgramTest);
     installConsecutivelyDependentTests(
-        new FindProgramTest("DVItoPS", "dvips", false),
+        new FindProgramTest(QLatin1String("DVItoPS"), QLatin1String("dvips"), false),
         dvipsKileTest);
     /*
     echo "starting test: DVItoPDF"
@@ -687,10 +685,10 @@ void Tester::setupTests()
     setKey where `which dvipdfmx`
     if [ -r $testFileBase.dvi ]; then performKileTest kile "run DVItoPDF"; fi
     */
-    TestToolInKileTest *dvipdfmxKileTest = new TestToolInKileTest("DVItoPDF", m_ki, "DVItoPDF", m_tempDir->path() + '/' + "test.tex", false);
+    TestToolInKileTest *dvipdfmxKileTest = new TestToolInKileTest(QLatin1String("DVItoPDF"), m_ki, QLatin1String("DVItoPDF"), m_tempDir->path() + QLatin1Char('/') + QLatin1String("test.tex"), false);
     dvipdfmxKileTest->addDependency(latexProgramTest);
     installConsecutivelyDependentTests(
-        new FindProgramTest("DVItoPDF", "dvipdfmx", false),
+        new FindProgramTest(QLatin1String("DVItoPDF"), QLatin1String("dvipdfmx"), false),
         dvipdfmxKileTest);
     /*
     echo "starting test: PStoPDF"
@@ -701,10 +699,10 @@ void Tester::setupTests()
     if [ -r $testFileBase.ps ]; then performKileTest kile "run PStoPDF"; fi
     $closeDoc
     */
-    TestToolInKileTest *ps2pdfKileTest = new TestToolInKileTest("PStoPDF", m_ki, "PStoPDF", m_tempDir->path() + '/' + "test.tex", false);
+    TestToolInKileTest *ps2pdfKileTest = new TestToolInKileTest(QLatin1String("PStoPDF"), m_ki, QLatin1String("PStoPDF"), m_tempDir->path() + QLatin1Char('/') + QLatin1String("test.tex"), false);
     ps2pdfKileTest->addDependency(dvipsKileTest);
     installConsecutivelyDependentTests(
-        new FindProgramTest("PStoPDF", "ps2pdf", false),
+        new FindProgramTest(QLatin1String("PStoPDF"), QLatin1String("ps2pdf"), false),
         ps2pdfKileTest);
     /*
     echo "starting test: BibTeX"
@@ -723,15 +721,15 @@ void Tester::setupTests()
     	$closeDoc
     fi
     */
-    TestToolInKileTest *latexForBibTeX = new TestToolInKileTest("BibTeX", m_ki, "LaTeX", m_tempDir->path() + '/' + "test_bib.tex", false);
+    TestToolInKileTest *latexForBibTeX = new TestToolInKileTest(QLatin1String("BibTeX"), m_ki, QLatin1String("LaTeX"), m_tempDir->path() + QLatin1Char('/') + QLatin1String("test_bib.tex"), false);
     latexForBibTeX->addDependency(latexProgramTest);
     latexForBibTeX->setSilent(true);
-    ProgramTest *bibtexProgramTest = new ProgramTest("BibTeX", "bibtex", m_tempDir->path(), "test_bib",  "", "", false);
+    ProgramTest *bibtexProgramTest = new ProgramTest(QLatin1String("BibTeX"), QLatin1String("bibtex"), m_tempDir->path(), QLatin1String("test_bib"),  QString(), QString(), false);
     bibtexProgramTest->addDependency(latexForBibTeX);
-    TestToolInKileTest *bibtexKileTest = new TestToolInKileTest("BibTeX", m_ki, "BibTeX", m_tempDir->path() + '/' + "test_bib.tex", false);
+    TestToolInKileTest *bibtexKileTest = new TestToolInKileTest(QLatin1String("BibTeX"), m_ki, QLatin1String("BibTeX"), m_tempDir->path() + QLatin1Char('/') + QLatin1String("test_bib.tex"), false);
     bibtexKileTest->addDependency(latexProgramTest);
     installConsecutivelyDependentTests(
-        new FindProgramTest("BibTeX", "bibtex", false),
+        new FindProgramTest(QLatin1String("BibTeX"), QLatin1String("bibtex"), false),
         latexForBibTeX,
         bibtexProgramTest,
         bibtexKileTest);
@@ -753,15 +751,15 @@ void Tester::setupTests()
     	$closeDoc
     fi
     */
-    TestToolInKileTest *latexForMakeIndex = new TestToolInKileTest("MakeIndex", m_ki, "LaTeX", m_tempDir->path() + '/' + "test_index.tex", false);
+    TestToolInKileTest *latexForMakeIndex = new TestToolInKileTest(QLatin1String("MakeIndex"), m_ki, QLatin1String("LaTeX"), m_tempDir->path() + QLatin1Char('/') + QLatin1String("test_index.tex"), false);
     latexForMakeIndex->addDependency(latexProgramTest);
     latexForMakeIndex->setSilent(true);
-    ProgramTest *makeIndexProgramTest = new ProgramTest("MakeIndex", "makeindex", m_tempDir->path(), "test_index",  "", "", false);
+    ProgramTest *makeIndexProgramTest = new ProgramTest(QLatin1String("MakeIndex"), QLatin1String("makeindex"), m_tempDir->path(), QLatin1String("test_index"),  QString(), QString(), false);
     makeIndexProgramTest->addDependency(latexProgramTest);
-    TestToolInKileTest *makeindexKileTest = new TestToolInKileTest("MakeIndex", m_ki, "MakeIndex", m_tempDir->path() + '/' + "test_index.tex", false);
+    TestToolInKileTest *makeindexKileTest = new TestToolInKileTest(QLatin1String("MakeIndex"), m_ki, QLatin1String("MakeIndex"), m_tempDir->path() + QLatin1Char('/') + QLatin1String("test_index.tex"), false);
     makeindexKileTest->addDependency(latexProgramTest);
     installConsecutivelyDependentTests(
-        new FindProgramTest("MakeIndex", "makeindex", false),
+        new FindProgramTest(QLatin1String("MakeIndex"), QLatin1String("makeindex"), false),
         latexForMakeIndex,
         makeIndexProgramTest,
         makeindexKileTest);
@@ -774,9 +772,9 @@ void Tester::setupTests()
     performTest okular "isTheOkularVersionRecentEnough"
     setKey where `which okular`
     */
-    m_okularVersionTest = new OkularVersionTest("Okular", false);
+    m_okularVersionTest = new OkularVersionTest(QLatin1String("Okular"), false);
     installConsecutivelyDependentTests(
-        new FindProgramTest("Okular", "okular", false),
+        new FindProgramTest(QLatin1String("Okular"), QLatin1String("okular"), false),
         m_okularVersionTest);
     /*
     echo "starting test: Acroread"
@@ -793,7 +791,7 @@ void Tester::setupTests()
     setKey executable dvipng
     setKey where `which dvipng`
     */
-    FindProgramTest *dvipngProgramTest = new FindProgramTest("DVItoPNG", "dvipng", false);
+    FindProgramTest *dvipngProgramTest = new FindProgramTest(QLatin1String("DVItoPNG"), QLatin1String("dvipng"), false);
     dvipngProgramTest->setAdditionalFailureMessage(i18n("PNG previews cannot be used for mathgroups in the bottom preview pane"));
     m_testList.push_back(dvipngProgramTest);
     /*
@@ -803,7 +801,7 @@ void Tester::setupTests()
     setKey executable convert
     setKey where `which convert`
     */
-    FindProgramTest *convertProgramTest = new FindProgramTest("Convert", "convert", false);
+    FindProgramTest *convertProgramTest = new FindProgramTest(QLatin1String("Convert"), QLatin1String("convert"), false);
     convertProgramTest->setAdditionalFailureMessage(i18n("PNG previews cannot be used with conversions 'dvi->ps->png' and 'pdf->png' in the bottom preview pane"));
     m_testList.push_back(convertProgramTest);
 }

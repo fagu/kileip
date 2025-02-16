@@ -30,7 +30,7 @@ public:
     LaTeXOutputParserInput(const QUrl &url, KileDocument::Extensions *extensions,
                            const QString& sourceFile,
                            // for QuickPreview
-                           const QString &texfilename = "", int selrow = -1, int docrow = -1);
+                           const QString &texfilename = QString(), int selrow = -1, int docrow = -1);
 
     KileDocument::Extensions *extensions;
     QString sourceFile;
@@ -42,7 +42,7 @@ public:
 class LaTeXOutputParserOutput : public ParserOutput {
 public:
     LaTeXOutputParserOutput();
-    virtual ~LaTeXOutputParserOutput();
+    virtual ~LaTeXOutputParserOutput() override;
 
     QString problem;
     QString logFile;
@@ -81,8 +81,8 @@ class LaTeXOutputParser : public Parser
     Q_OBJECT
 
 public:
-    LaTeXOutputParser(ParserThread *parserThread, LaTeXOutputParserInput *input, QObject *parent = Q_NULLPTR);
-    virtual ~LaTeXOutputParser();
+    LaTeXOutputParser(ParserThread *parserThread, LaTeXOutputParserInput *input, QObject *parent = nullptr);
+    virtual ~LaTeXOutputParser() override;
 
     ParserOutput* parse() override;
 

@@ -16,7 +16,7 @@
 #include "latexparser.h"
 
 #include <QFileInfo>
-#include <QRegExp>
+#include <QRegularExpression>
 
 #include <KLocalizedString>
 
@@ -25,7 +25,7 @@
 
 namespace KileParser {
 
-LaTeXParserInput::LaTeXParserInput(const QUrl &url, QStringList textLines,
+LaTeXParserInput::LaTeXParserInput(const QUrl &url, const QStringList &textLines,
                                    KileDocument::Extensions *extensions,
                                    const QMap<QString, KileStructData>& dictStructLevel,
                                    bool showSectioningLabels,
@@ -74,9 +74,9 @@ BracketResult LaTeXParser::matchBracket(const QStringList& textLines, int &l, in
 
     if((getTextLine(textLines, l))[pos] == '[') {
         result.option = Parser::matchBracket(textLines, '[', l, pos);
-        int p = 0;
         while(l < textLines.size()) {
-            if((p = processTextline(getTextLine(textLines, l), todo).indexOf('{', pos)) != -1) {
+        int p = processTextline(getTextLine(textLines, l), todo).indexOf('{', pos);
+            if(p != -1) {
                 pos = p;
                 break;
             }
@@ -112,35 +112,33 @@ ParserOutput* LaTeXParser::parse()
     qCDebug(LOG_KILE_PARSER) << m_textLines;
 
     QMap<QString,KileStructData>::const_iterator it;
-    static QRegExp reCommand("(\\\\[a-zA-Z]+)\\s*\\*?\\s*(\\{|\\[)");
-    static QRegExp reRoot("\\\\documentclass|\\\\documentstyle");
-    static QRegExp reBD("\\\\begin\\s*\\{\\s*document\\s*\\}");
-    static QRegExp reReNewCommand("\\\\renewcommand.*$");
-    static QRegExp reNumOfParams("\\s*\\[([1-9]+)\\]");
-    static QRegExp reNumOfOptParams("\\s*\\[([1-9]+)\\]\\s*\\[([^\\{]*)\\]"); // the quantifier * isn't used by mistake, because also emtpy optional brackets are correct.
+    static QRegularExpression reCommand("(\\\\[a-zA-Z]+)\\s*\\*?\\s*(\\{|\\[)");
+    static QRegularExpression reRoot("\\\\documentclass|\\\\documentstyle");
+    static QRegularExpression reBD("\\\\begin\\s*\\{\\s*document\\s*\\}");
+    static QRegularExpression reReNewCommand("\\\\renewcommand.*$");
+    static QRegularExpression reNumOfParams("\\s*\\[([1-9]+)\\]");
+    static QRegularExpression reNumOfOptParams("\\s*\\[([1-9]+)\\]\\s*\\[([^\\{]*)\\]"); // the quantifier * isn't used by mistake, because also emtpy optional brackets are correct.
 
-    int tagStart, bd = 0;
-    int tagEnd, tagLine = 0, tagCol = 0;
+    int bd = 0, tagLine = 0, tagCol = 0;
     int tagStartLine = 0, tagStartCol = 0;
     BracketResult result;
     QString m, s, shorthand;
     bool foundBD = false; // found \begin { document }
-    bool fire = true; //whether or not we should emit a foundItem signal
     bool fireSuspended; // found an item, but it should not be fired (this time)
     TodoResult todo;
 
-// 	emit(parsingStarted(m_doc->lines()));
+// 	Q_EMIT(parsingStarted(m_doc->lines()));
     for(int i = 0; i < m_textLines.size(); ++i) {
         if(!m_parserThread->shouldContinueDocumentParsing()) {
             qCDebug(LOG_KILE_PARSER) << "stopping...";
             delete(parserOutput);
-            return Q_NULLPTR;
+            return nullptr;
         }
 
-//		emit(parsingUpdate(i));
+//		Q_EMIT(parsingUpdate(i));
 
-        tagStart = tagEnd = 0;
-        fire = true;
+        int tagStart = 0, tagEnd = 0;
+        bool fire = true; //whether or not we should emit a foundItem signal
         s = processTextline(getTextLine(m_textLines, i), todo);
         if(todo.type != -1 && m_showStructureTodo) {
             QString folder = (todo.type == KileStruct::ToDo) ? "todo" : "fixme";
@@ -179,21 +177,25 @@ ParserOutput* LaTeXParser::parse()
                 }
             }
 
-            if((!foundBD) && (s.indexOf(reRoot, tagEnd) != -1)) {
-                qCDebug(LOG_KILE_PARSER) << "\tsetting m_bIsRoot to true";
-                tagEnd += reRoot.cap(0).length();
-                parserOutput->bIsRoot = true;
+            if (!foundBD) {
+                auto match = reRoot.match(s, tagEnd);
+                if (match.hasMatch()) {
+                    qCDebug(LOG_KILE_PARSER) << "\tsetting m_bIsRoot to true";
+                    tagEnd += match.captured(0).length();
+                    parserOutput->bIsRoot = true;
+                }
             }
 
-            tagStart = reCommand.indexIn(s, tagEnd);
+            auto commandMatch = reCommand.match(s, tagEnd);
+            tagStart = commandMatch.capturedStart(0);
             m.clear();
             shorthand.clear();
 
             if(tagStart != -1) {
-                tagEnd = tagStart + reCommand.cap(0).length()-1;
+                tagEnd = tagStart + commandMatch.capturedLength(0) - 1;
 
                 //look up the command in the dictionary
-                it = m_dictStructLevel.constFind(reCommand.cap(1));
+                it = m_dictStructLevel.constFind(commandMatch.captured(1));
 
                 //if it is was a structure element, find the title (or label)
                 if(it != m_dictStructLevel.constEnd()) {
@@ -202,7 +204,7 @@ ParserOutput* LaTeXParser::parse()
                     tagStartLine = tagLine;
                     tagStartCol = tagStart+1;
 
-                    if(reCommand.cap(1) != "\\frame") {
+                    if(commandMatch.capturedView(1) != QLatin1String("\\frame")) {
                         result = matchBracket(m_textLines, i, tagEnd);
                         m = result.value.trimmed();
                         shorthand = result.option.trimmed();
@@ -341,10 +343,8 @@ ParserOutput* LaTeXParser::parse()
                         qCDebug(LOG_KILE_PARSER) << "===TeXInfo::updateStruct()===appending Bibiliograph file(s) " << m;
 
                         const QStringList bibs = m.split(',');
-                        QString biblio;
 
                         // assure that all files have an extension
-                        const QString bibtexExtension = m_extensions->bibtexDefault();
                         for(QString biblio : bibs) {
                             biblio = biblio.trimmed();
                             {
@@ -372,33 +372,33 @@ ParserOutput* LaTeXParser::parse()
                     // update the package list
                     else if((*it).type == KileStruct::Package) {
                         QStringList pckgs = m.split(',');
-                        uint cumlen = 0;
                         for(int p = 0; p < pckgs.count(); ++p) {
                             QString package = pckgs[p].trimmed();
                             if(!package.isEmpty()) {
                                 parserOutput->packages.append(package);
-                                // hidden, so emit is useless
-                                // emit( foundItem(package, tagLine, tagCol+cumlen, (*it).type, (*it).level, tagStartLine, tagStartCol, (*it).pix, (*it).folder) );
-                                cumlen += package.length() + 1;
                             }
                         }
                         fire = false;
                     }
 
                     // newcommand found, add it to the newCommands list
-                    else if((*it).type & (KileStruct::NewCommand | KileStruct::NewEnvironment)) {
-                        QString optArg, mandArgs;
+                    else if(it->type & (KileStruct::NewCommand | KileStruct::NewEnvironment)) {
+                        QString mandArgs;
+
+                        auto match = reNumOfParams.match(s, tagEnd + 1);
 
                         //find how many parameters this command takes
-                        if(s.indexOf(reNumOfParams, tagEnd + 1) != -1) {
+                        if(match.hasMatch()) {
+                            QString optArg;
                             bool ok;
-                            int noo = reNumOfParams.cap(1).toInt(&ok);
+                            int noo = match.captured(1).toInt(&ok);
 
                             if(ok) {
-                                if(s.indexOf(reNumOfOptParams, tagEnd + 1) != -1) {
-                                    qCDebug(LOG_KILE_PARSER) << "Opt param is " << reNumOfOptParams.cap(2) << "%EOL";
+                                match = reNumOfOptParams.match(s, tagEnd + 1);
+                                if (match.hasMatch()) {
+                                    qCDebug(LOG_KILE_PARSER) << "Opt param is " << match.captured(2) << "%EOL";
                                     noo--; // if we have an opt argument, we have one mandatory argument less, and noo=0 can't occur because then latex complains (and we don't macht them with reNumOfParams either)
-                                    optArg = '[' + reNumOfOptParams.cap(2) + ']';
+                                    optArg = '[' + match.captured(2) + ']';
                                 }
 
                                 for(int noo_index = 0; noo_index < noo; ++noo_index) {
@@ -408,7 +408,7 @@ ParserOutput* LaTeXParser::parse()
                             }
                             if(!optArg.isEmpty()) {
                                 if((*it).type == KileStruct::NewEnvironment) {
-                                    parserOutput->newCommands.append(QString("\\begin{%1}%2%3").arg(m).arg(optArg).arg(mandArgs));
+                                    parserOutput->newCommands.append(QString("\\begin{%1}%2%3").arg(m, optArg, mandArgs));
                                 }
                                 else {
                                     parserOutput->newCommands.append(m + optArg + mandArgs);
@@ -416,7 +416,7 @@ ParserOutput* LaTeXParser::parse()
                             }
                         }
                         if((*it).type == KileStruct::NewEnvironment) {
-                            parserOutput->newCommands.append(QString("\\begin{%1}%3").arg(m).arg(mandArgs));
+                            parserOutput->newCommands.append(QString("\\begin{%1}%3").arg(m, mandArgs));
                             parserOutput->newCommands.append(QString("\\end{%1}").arg(m));
                         }
                         else {

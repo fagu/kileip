@@ -15,13 +15,15 @@
 
 #include <QApplication>
 #include <QDateTime>
-#include <QDesktopWidget>
 #include <QDir>
 #include <QFileInfo>
 #include <QStyle>
 #include <QTimer>
+#include <QWidget>
 
-#include <KRun>
+#include <KIO/ApplicationLauncherJob>
+#include <KIO/JobUiDelegateFactory>
+#include <KJobUiDelegate>
 
 #include "kiledebug.h"
 
@@ -49,10 +51,17 @@ ServiceRunAction::~ServiceRunAction()
 
 void ServiceRunAction::runService()
 {
-    KRun::runService(m_service, m_urlList, m_window,
-                     m_tempFiles,
-                     m_suggestedFileName,
-                     m_asn);
+    KService kservice(m_service);
+    KService::Ptr servicePointer = KService::Ptr(&kservice);
+    auto *job = new KIO::ApplicationLauncherJob(servicePointer);
+    job->setUrls(m_urlList);
+    job->setUiDelegate(KIO::createDefaultJobUiDelegate(KJobUiDelegate::AutoHandlingEnabled, m_window));
+    if (m_tempFiles) {
+        job->setRunFlags(KIO::ApplicationLauncherJob::DeleteTemporaryFiles);
+    }
+    job->setSuggestedFileName(m_suggestedFileName);
+    job->setStartupId(m_asn);
+    job->start();
 }
 
 QString KileUtilities::lastModifiedFile(const QStringList& files, const QString& baseDir)
@@ -69,15 +78,15 @@ QString KileUtilities::lastModifiedFile(const QStringList& files, const QString&
     }
     else {
         QDir basePath(baseDir);
-        Q_FOREACH(const QString& file, files) {
+        for(const QString& file : files) {
             absoluteFileNames.append(basePath.absoluteFilePath(file));
         }
     }
 
     QDateTime lastModifiedTime;
-    const QString* lastModifiedFile = Q_NULLPTR;
+    const QString* lastModifiedFile = nullptr;
 
-    Q_FOREACH(const QString& file, absoluteFileNames) {
+    for(const QString& file : std::as_const(absoluteFileNames)) {
         QFileInfo fileInfo(file);
         if(!fileInfo.exists()) {
             KILE_DEBUG_MAIN << "file does not exist:" << file << "files:" << files;
@@ -93,9 +102,7 @@ QString KileUtilities::lastModifiedFile(const QStringList& files, const QString&
     if(lastModifiedFile) {
         return *lastModifiedFile;
     }
-    else {
-        return QString();
-    }
+    return QString();
 }
 
 void centerWidgetRelativeToParentRect(QWidget *widget, const QRect& parentRect)
@@ -107,10 +114,7 @@ void centerWidgetRelativeToParentRect(QWidget *widget, const QRect& parentRect)
 void KileUtilities::centerWidgetRelativeToParent(QWidget *widget)
 {
     QWidget *parentWidget = widget->parentWidget();
-    if(!parentWidget) {
-        centerWidgetRelativeToParentRect(widget, QApplication::desktop()->availableGeometry(widget));
-    }
-    else {
+    if(parentWidget) {
         QRect parentRect(parentWidget->mapToGlobal(QPoint(0, 0)), parentWidget->size());
         centerWidgetRelativeToParentRect(widget, parentRect);
     }
@@ -155,7 +159,7 @@ QString KileUtilities::findExecutable(const QString &executableName, const QStri
 QString KileUtilities::locate(QStandardPaths::StandardLocation type, const QString &fileName,
                                                       QStandardPaths::LocateOptions options)
 {
-    if(type == QStandardPaths::AppDataLocation || type == QStandardPaths::DataLocation) {
+    if(type == QStandardPaths::AppDataLocation || type == QStandardPaths::AppLocalDataLocation) {
 	const QString candidate = getRelativeSharePath() + fileName;
 	if((options == QStandardPaths::LocateFile) && QFileInfo::exists(candidate)) {
             return candidate;
@@ -172,7 +176,7 @@ QStringList KileUtilities::locateAll(QStandardPaths::StandardLocation type, cons
                                                              QStandardPaths::LocateOptions options)
 {
     QStringList toReturn;
-    if(type == QStandardPaths::AppDataLocation || type == QStandardPaths::DataLocation) {
+    if(type == QStandardPaths::AppDataLocation || type == QStandardPaths::AppLocalDataLocation) {
 	const QString candidate = getRelativeSharePath() + fileName;
 	if((options == QStandardPaths::LocateFile) && QFileInfo::exists(candidate)) {
             toReturn << candidate;
@@ -189,7 +193,7 @@ QStringList KileUtilities::locateAll(QStandardPaths::StandardLocation type, cons
 QStringList KileUtilities::standardLocations(QStandardPaths::StandardLocation type)
 {
     QStringList toReturn;
-    if(type == QStandardPaths::AppDataLocation || type == QStandardPaths::DataLocation) {
+    if(type == QStandardPaths::AppDataLocation || type == QStandardPaths::AppLocalDataLocation) {
         toReturn << getRelativeSharePath();
     }
     toReturn << QStandardPaths::standardLocations(type);

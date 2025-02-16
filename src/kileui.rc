@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<kpartgui name="kile" version="49">
+<kpartgui name="kile" version="51">
 <Menu name="ktexteditor_popup" noMerge="1">
     <DefineGroup name="popup_operations" />
     <Action name="popup_pasteaslatex"/>
@@ -42,6 +42,8 @@
         <Action name="file_export_cp1252"/>
     </Menu>
     <Action name="Statistics"/>
+    <Separator/>
+    <Action name="open_containing_folder"/>
     <Separator/>
     <Action name="file_close"/>
     <Action name="file_close_all"/>
@@ -293,6 +295,7 @@
     <Separator/>
     <Menu name="menu_math"><text>&amp;Math Commands</text>
         <Action name="tag_mathmode"/>
+        <Action name="tag_mathmode_latex"/>
         <Action name="tag_equation"/>
         <Separator/>
         <Action name="tag_subscript"/>
@@ -374,6 +377,7 @@
         </Menu>
     </Menu>
     <Menu name="menu_mathenv"><text>Standard Math &amp;Environments</text>
+        <Action name="tag_env_math"/>
         <Action name="tag_env_displaymath"/>
         <Separator/>
         <Action name="tag_env_equation"/>
@@ -419,6 +423,16 @@
         </Menu>
         <Separator/>
         <Action name="tag_env_cases"/>
+    </Menu>
+    <Menu name="menu_mathbreqnenv"><text>breqn Math Environments</text>
+        <Action name="tag_env_dmath"/>
+        <Action name="tag_env_dmath*"/>
+        <Separator/>
+        <Action name="tag_env_dseries"/>
+        <Action name="tag_env_dseries*"/>
+        <Separator/>
+        <Action name="tag_env_dgroup"/>
+        <Action name="tag_env_dgroup*"/>
     </Menu>
     <Separator/>
     <Action name="menu_bibliography"/>

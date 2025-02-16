@@ -56,7 +56,7 @@
 #include <QListWidget>
 #include <QObject>
 #include <QPushButton>
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QVBoxLayout>
 
 #include <KProcess>
@@ -81,7 +81,7 @@ FindFilesDialog::FindFilesDialog(QWidget *parent, KileInfo *ki, KileGrep::Mode m
     : QDialog(parent)
     , m_ki(ki)
     , m_mode(mode)
-    , m_proc(Q_NULLPTR)
+    , m_proc(nullptr)
     , m_grepJobs(0)
 {
     setObjectName(name);
@@ -453,23 +453,22 @@ void FindFilesDialog::slotItemSelected(const QString& item)
 {
     KILE_DEBUG_MAIN << "\tgrep: start item selected";
     int pos;
-    QString filename, linenumber;
 
     QString str = item;
     if((pos = str.indexOf(':')) != -1) {
-        filename = str.left(pos);
+        QString filename = str.left(pos);
         str = str.right(str.length() - 1 - pos);
         if((pos = str.indexOf(':')) != -1) {
-            linenumber = str.left(pos);
+            QString linenumber = str.left(pos);
             QFileInfo fileInfo(filename);
             if(fileInfo.isAbsolute()) {
-                emit itemSelected(filename, linenumber.toInt());
+                Q_EMIT itemSelected(filename, linenumber.toInt());
             }
             else if(m_mode == KileGrep::Project) {
-                emit itemSelected(m_projectdir + QDir::separator() + filename, linenumber.toInt());
+                Q_EMIT itemSelected(m_projectdir + QDir::separator() + filename, linenumber.toInt());
             }
             else {
-                emit itemSelected(dir_combo->comboBox()->itemText(0) + QDir::separator() + filename, linenumber.toInt());
+                Q_EMIT itemSelected(dir_combo->comboBox()->itemText(0) + QDir::separator() + filename, linenumber.toInt());
             }
         }
     }
@@ -568,7 +567,7 @@ void FindFilesDialog::finish()
         m_proc->kill();
         m_proc->disconnect();
         m_proc->deleteLater();
-        m_proc = Q_NULLPTR;
+        m_proc = nullptr;
     }
     m_buf += '\n';
     // we process all the remaining output
@@ -686,7 +685,7 @@ void FindFilesDialog::slotSearch()
     }
 
     KILE_DEBUG_MAIN << "\tgrep: start new search";
-    QRegExp re(getPattern());
+    QRegularExpression re(getPattern());
     if(!re.isValid()) {
         KMessageBox::error(m_ki->mainWindow(), i18n("Invalid regular expression: %1", re.errorString()), i18n("Grep Tool Error"));
         return;

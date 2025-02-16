@@ -24,7 +24,7 @@
 #include <QSet>
 #include <QGuiApplication>
 #include <QScreen>
-#include <poppler-qt5.h>
+#include <poppler-qt6.h>
 
 // 2: keep all
 // 1: keep failed
@@ -181,15 +181,15 @@ void PreviewThread::binaryCreatePreviews(const QString &preamble, const std::vec
         fout << preamble;
         
         // Create preview preamble
-        fout << "\\usepackage[active,delayed,tightpage,showlabels,pdftex]{preview}" << endl;
-        fout << "\\begin{document}" << endl;
+        fout << "\\usepackage[active,delayed,tightpage,showlabels,pdftex]{preview}" << Qt::endl;
+        fout << "\\begin{document}" << Qt::endl;
         
         for (int i = start; i <= end; i++) {
             // FIXME Double dollar signs do not work! Without the preview environment they do!
-            fout << "\n\\begin{preview}\n" << mathenvs[i] << "\n\\end{preview}\n" << endl << endl;
+            fout << "\n\\begin{preview}\n" << mathenvs[i] << "\n\\end{preview}\n" << Qt::endl << Qt::endl;
         }
         
-        fout << "\\end{document}" << endl;
+        fout << "\\end{document}" << Qt::endl;
     }
     latex_file.close();
     
@@ -203,7 +203,7 @@ void PreviewThread::binaryCreatePreviews(const QString &preamble, const std::vec
     proc.setProcessEnvironment(env);
     {
         QMutexLocker proc_lock(&m_queue_mutex);
-        proc.start("pdflatex -interaction=batchmode inpreview.tex");
+        proc.startCommand("pdflatex -interaction=batchmode inpreview.tex");
         m_process = &proc;
     }
     proc.waitForFinished(15000);

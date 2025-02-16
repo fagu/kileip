@@ -36,7 +36,8 @@
 #include <KDirWatch>
 #include <KLocalizedString>
 #include <KMessageBox>
-#include <KRun>
+#include <KIO/OpenUrlJob>
+#include <KIO/JobUiDelegateFactory>
 
 #include "kiledebug.h"
 #include "codecompletion.h"
@@ -199,17 +200,17 @@ ManageCompletionFilesDialog::~ManageCompletionFilesDialog()
 void ManageCompletionFilesDialog::fillTreeView() {
     // we want to keep selected items still selected after refreshing
     QSet<QString> previouslySelectedItems = selected();
-    QStringList list = KileCodeCompletion::Manager::getAllCwlFiles(m_localCompletionDirectory, m_globalCompletionDirectory).uniqueKeys();
+    QStringList list = KileCodeCompletion::Manager::getAllCwlFiles(m_localCompletionDirectory, m_globalCompletionDirectory).values();
     std::sort(list.begin(), list.end());
     m_listView->clear();
-    foreach(QString filename, list) {
+    for(const QString &filename: std::as_const(list)) {
         QString expectedLocalPath = m_localCompletionDirectory + '/' + filename;
         QString expectedGlobalPath = m_globalCompletionDirectory + '/' + filename;
-        if (QFileInfo(expectedLocalPath).exists() && QFileInfo(expectedLocalPath).isReadable()) {
+        if (QFileInfo::exists(expectedLocalPath) && QFileInfo(expectedLocalPath).isReadable()) {
             QTreeWidgetItem* item = new QTreeWidgetItem(m_listView, QStringList() << filename << i18n("yes"));
             item->setCheckState(2, previouslySelectedItems.contains(filename) ? Qt::Checked : Qt::Unchecked);
         }
-        else if (QFileInfo(expectedGlobalPath).exists() && QFileInfo(expectedGlobalPath).isReadable()) {
+        else if (QFileInfo::exists(expectedGlobalPath) && QFileInfo(expectedGlobalPath).isReadable()) {
             QTreeWidgetItem* item = new QTreeWidgetItem(m_listView, QStringList() << filename << i18n("no"));
             item->setCheckState(2, previouslySelectedItems.contains(filename) ? Qt::Checked : Qt::Unchecked);
         }
@@ -231,15 +232,14 @@ void ManageCompletionFilesDialog::addCustomCompletionFiles()
     if (files.isEmpty()) {
         return;
     }
-    QDir workPath(m_localCompletionDirectory);
 
-    foreach (QString file, files) {
+    for(const QString &file: std::as_const(files)) {
         QFileInfo fileInf(file);
         QFileInfo localFile(m_localCompletionDirectory + '/' + fileInf.fileName());
         if (localFile.exists()) {
             const QString dialog_text = i18n("A local completion file with the name \"%1\" already exists.\nDo you want to replace this file?", localFile.fileName());
             const QString dialog_caption = i18n("Replace Local File?");
-            if (KMessageBox::questionYesNo(this, dialog_text, dialog_caption) == KMessageBox::Yes) {
+            if (KMessageBox::questionTwoActions(this, dialog_text, dialog_caption, KStandardGuiItem::ok(), KStandardGuiItem::cancel()) == KMessageBox::PrimaryAction) {
                 if (!QFile::remove(localFile.absoluteFilePath())) {
                     KMessageBox::error(this, i18n("An error occurred while removing the file \"%1\".\nPlease check the file permissions.",
                                        localFile.fileName()), i18n("Remove Error"));
@@ -284,7 +284,9 @@ void ManageCompletionFilesDialog::addCustomCompletionFiles()
 
 void ManageCompletionFilesDialog::openLocalCompletionDirectoryInFileManager()
 {
-    new KRun(QUrl::fromLocalFile(m_localCompletionDirectory), QApplication::activeWindow());
+    auto job = new KIO::OpenUrlJob(QUrl::fromLocalFile(m_localCompletionDirectory), QApplication::activeWindow());
+    job->setUiDelegate(KIO::createDefaultJobUiDelegate(KJobUiDelegate::AutoHandlingEnabled, this));
+    job->start();
 }
 
 const QSet<QString> ManageCompletionFilesDialog::selected() const

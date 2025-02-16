@@ -62,8 +62,8 @@ PdfDialog::PdfDialog(QWidget *parent,
     , m_manager(manager)
     , m_errorHandler(errorHandler)
     , m_output(output)
-    , m_tempdir(Q_NULLPTR)
-    , m_proc(Q_NULLPTR)
+    , m_tempdir(nullptr)
+    , m_proc(nullptr)
     , m_rearrangeButton(new QPushButton)
     , m_buttonBox(new QDialogButtonBox(QDialogButtonBox::Help|QDialogButtonBox::Close))
 {
@@ -81,7 +81,7 @@ PdfDialog::PdfDialog(QWidget *parent,
         for (QStringList::Iterator it = extlist.begin(); it != extlist.end(); ++it) {
             if (texfilename.indexOf((*it), -(*it).length()) >= 0) {
                 pdffilename = texfilename.left(texfilename.length() - (*it).length()) + ".pdf";
-                if (!QFileInfo(pdffilename).exists())
+                if (!QFileInfo::exists(pdffilename))
                     pdffilename.clear();
                 break;
             }
@@ -99,13 +99,14 @@ PdfDialog::PdfDialog(QWidget *parent,
 
     // insert KileWidget::CategoryComboBox
     m_cbTask = new KileWidget::CategoryComboBox(m_PdfDialog.m_gbParameter);
-    QGridLayout *paramLayout = (QGridLayout *)m_PdfDialog.m_gbParameter->layout();
+    QGridLayout *paramLayout = static_cast<QGridLayout*>(m_PdfDialog.m_gbParameter->layout());
     paramLayout->addWidget(m_cbTask, 4, 1);
 
     // setup filenames
-    m_PdfDialog.m_edInfile->setFilter(i18n("*.pdf|PDF Files"));
+    const QStringList pdfMimeType = {QStringLiteral("application/pdf")};
+    m_PdfDialog.m_edInfile->setMimeTypeFilters(pdfMimeType);
     m_PdfDialog.m_edInfile->lineEdit()->setText(pdffilename);
-    m_PdfDialog.m_edOutfile->setFilter(i18n("*.pdf|PDF Files"));
+    m_PdfDialog.m_edOutfile->setMimeTypeFilters(pdfMimeType);
     m_PdfDialog.m_edOutfile->setMode(KFile::File | KFile::LocalOnly );
     m_PdfDialog.m_edOutfile->lineEdit()->setText( getOutfileName(pdffilename) );
 
@@ -270,7 +271,7 @@ void PdfDialog::initUtilities()
 void PdfDialog::pdfParser(const QString &filename)
 {
 #if LIBPOPPLER_AVAILABLE
-    Poppler::Document *doc = Poppler::Document::load(filename);
+    auto doc = Poppler::Document::load(filename);
     if ( !doc || doc->isLocked() ) {
         KILE_DEBUG_MAIN << "Error: could not open pdf document '" << filename << "'";
         return;
@@ -293,9 +294,8 @@ void PdfDialog::pdfParser(const QString &filename)
     m_PdfDialog.m_lbModDate->setText(QLocale().toString(doc->date("ModDate")));
 
     // read PDF version
-    int major,minor;
-    doc->getPdfVersion(&major,&minor);
-    m_PdfDialog.m_lbFormat->setText( QString("PDF version %1.%2").arg(major).arg(minor) );
+    Poppler::Document::PdfVersion pdfVersion = doc->getPdfVersion();
+    m_PdfDialog.m_lbFormat->setText( QString("PDF version %1.%2").arg(pdfVersion.major).arg(pdfVersion.minor) );
 
     // read permissions
     for (int i=0; i<m_pdfPermissionKeys.size(); ++i) {
@@ -312,8 +312,6 @@ void PdfDialog::pdfParser(const QString &filename)
 
     // look if all pages have the same size
     m_pagesize = allPagesSize(doc);
-
-    delete doc;
 #else
     /* libpoppler pdf library is not available:
      * - we use a brute force method to determine, if this file is encrypted
@@ -340,7 +338,7 @@ void PdfDialog::pdfParser(const QString &filename)
 }
 
 #if LIBPOPPLER_AVAILABLE
-bool PdfDialog::isAllowed(Poppler::Document *doc, PDF_Permission permission) const
+bool PdfDialog::isAllowed(const std::unique_ptr<Poppler::Document> &doc, PDF_Permission permission) const
 {
     bool b = true;
     switch ( permission )
@@ -366,27 +364,23 @@ bool PdfDialog::isAllowed(Poppler::Document *doc, PDF_Permission permission) con
     return b;
 }
 
-QSize PdfDialog::allPagesSize(Poppler::Document *doc)
+QSize PdfDialog::allPagesSize(const std::unique_ptr<Poppler::Document> &doc)
 {
     QSize commonsize = QSize(0,0);
 
     // Access all pages of the PDF file (m_numpages is known)
     for ( int i=0; i<m_numpages; ++i ) {
-        Poppler::Page *pdfpage = doc->page(i);
+        auto pdfpage = doc->page(i);
         if ( pdfpage == 0 ) {
             KILE_DEBUG_MAIN << "Cannot parse all pages of the PDF file";
-            delete pdfpage;
             return QSize(0,0);
         }
 
         if ( i == 0 ) {
             commonsize = pdfpage->pageSize();
         } else if ( commonsize != pdfpage->pageSize() ) {
-            delete pdfpage;
             return QSize(0,0);
         }
-        // documentation says: after the usage, the page must be deleted
-        delete pdfpage;
     }
 
     return commonsize;
@@ -400,11 +394,11 @@ void PdfDialog::setNumberOfPages(int numpages)
         // show all, if the number of pages is known
         m_PdfDialog.tabWidget->widget(0)->setEnabled(true);
 
-        QString pages;
         if ( m_encrypted )
             m_PdfDialog.m_lbPages->setText(i18nc("%1 is the number of pages", "%1 (encrypted)", QString::number(m_numpages)));
-        else
-            m_PdfDialog.m_lbPages->setText(pages.setNum(m_numpages));
+        else {
+            m_PdfDialog.m_lbPages->setText(QString::number(m_numpages));
+        }
     }
     else {
         // hide all, if the number of pages can't be determined
@@ -458,7 +452,6 @@ void PdfDialog::readNumberOfPages(int scriptmode, const QString &output)
     if ( scriptmode == PDF_SCRIPTMODE_NUMPAGES_PDFTK ) {
         KILE_DEBUG_MAIN << "pdftk output for NumberOfPages: " << output;
         if ( output.contains("OWNER PASSWORD REQUIRED") ) {
-            QString filename = m_PdfDialog.m_edInfile->lineEdit()->text().trimmed();
             determineNumberOfPages(m_PdfDialog.m_edInfile->lineEdit()->text().trimmed(),true);
             return;
         } else {
@@ -790,8 +783,8 @@ void PdfDialog::slotTaskChanged(int)
         if ( taskindex==PDF_SELECT || taskindex==PDF_DELETE ) {
             labeltext = i18n("Pages:");
             s = i18n("Comma separated page list: 1,4-7,9");
-            QRegExp re("((\\d+(-\\d+)?),)*\\d+(-\\d+)?");
-            m_PdfDialog.m_edParameter->setValidator(new QRegExpValidator(re, m_PdfDialog.m_edParameter));
+            QRegularExpression re("((\\d+(-\\d+)?),)*\\d+(-\\d+)?");
+            m_PdfDialog.m_edParameter->setValidator(new QRegularExpressionValidator(re, m_PdfDialog.m_edParameter));
         }
         else if (taskindex==PDF_PDFTK_FREE) {
             labeltext = i18n("Parameter:");
@@ -945,7 +938,7 @@ void PdfDialog::executeAction()
                 + i18n("***** command:     ") + command + '\n'
                 + i18n("***** viewer:      ") + ((m_PdfDialog.m_cbView->isChecked()) ? i18n("yes") : i18n("no")) + '\n'
                 + "*****\n";
-    emit( output(s) );
+    Q_EMIT( output(s) );
 
     // run Process
     executeScript(command, m_tempdir->path(), PDF_SCRIPTMODE_ACTION);
@@ -1054,7 +1047,7 @@ void PdfDialog::showLogs(const QString &title, const QString &inputfile, const Q
                 + i18n("***** input file:  ") + input.fileName()+ '\n'
                 + i18n("***** param:       ") + param + '\n'
                 + "*****\n";
-    emit( output(s) );
+    Q_EMIT( output(s) );
 }
 
 void PdfDialog::executeScript(const QString &command, const QString &dir, int scriptmode)
@@ -1132,7 +1125,7 @@ void PdfDialog::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
 void PdfDialog::finishPdfAction(bool state)
 {
     // output window
-    emit( output(m_outputtext) );
+    Q_EMIT( output(m_outputtext) );
 
     // log window
     QString program = (m_scriptmode==PDF_SCRIPTMODE_ACTION && m_execLatex) ? "LaTeX with 'pdfpages' package" : "pdftk";
@@ -1555,7 +1548,7 @@ QString PdfDialog::buildDeletePageList()
     bool ok;
     QBitArray arr(m_numpages + 1,false);
     QStringList pagelist = param.split(',');
-    foreach (const QString &s, pagelist) {
+    for(const QString &s: std::as_const(pagelist)) {
         if ( s.contains('-') && re.indexIn(s) >= 0 ) {
             int from = re.cap(1).toInt(&ok);
             int to = re.cap(2).toInt(&ok);
@@ -1631,7 +1624,7 @@ bool PdfDialog::checkParameter()
         // analyze page list
         bool ok;
         QStringList pagelist = param.split(',');
-        foreach (const QString &s, pagelist) {
+        for(const QString &s: std::as_const(pagelist)) {
             if ( s.contains('-') && re.indexIn(s)>=0 ) {
                 int from = re.cap(1).toInt(&ok);
                 int to = re.cap(2).toInt(&ok);
@@ -1700,9 +1693,11 @@ bool PdfDialog::checkParameter()
     // check, if this output file already exists
     if ( fo.exists() ) {
         QString s = i18n("A file named \"%1\" already exists. Are you sure you want to overwrite it?", fo.fileName());
-        if (KMessageBox::questionYesNo(this,
-                                       "<center>" + s + "</center>",
-                                       i18n("PDF Tools")) == KMessageBox::No) {
+        if (KMessageBox::questionTwoActions(this,
+                                            "<center>" + s + "</center>",
+                                            i18n("PDF Tools"),
+                                            KStandardGuiItem::overwrite(), KStandardGuiItem::cancel()
+                                            ) == KMessageBox::SecondaryAction) {
             return false;
         }
     }

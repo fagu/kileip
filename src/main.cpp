@@ -17,9 +17,10 @@
 #include <QApplication>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
+#include <QDBusConnectionInterface>
+#include <QDBusInterface>
 #include <QDir>
 #include <QFile>
-#include <QtDBus>
 #include <QFileInfo>
 #include <QTextCodec>
 #include <QUrl>
@@ -30,7 +31,6 @@
 #include <KEncodingProber>
 #include <KLocalizedString>
 #include <KMessageBox>
-#include <KStartupInfo>
 
 #include "kile.h"
 #include "kileversion.h"
@@ -52,7 +52,6 @@ QString readDataFromStdin()
 
     QByteArray fileData;
     QFile qstdin;
-    QTextCodec *codec = Q_NULLPTR;
 
     qstdin.open( stdin, QIODevice::ReadOnly );
     fileData = qstdin.readAll();
@@ -75,9 +74,9 @@ QString readDataFromStdin()
     KILE_DEBUG_MAIN << "KEncodingProber::prober.confidence() " << prober.confidence();
     KILE_DEBUG_MAIN << "KEncodingProber::encoding " << prober.encoding();
 
-    codec = QTextCodec::codecForName(prober.encoding());
-    if(codec) {
-        stream.setCodec(codec);
+    auto encoding = QStringEncoder::encodingForName(prober.encoding());
+    if(encoding) {
+        stream.setEncoding(*encoding);
     }
 
     stream << fileData;
@@ -92,10 +91,6 @@ inline void initQtResources() {
 
 int main(int argc, char **argv)
 {
-    // enable high dpi support
-    QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps, true);
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
-
     QApplication app(argc, argv);
 
     initQtResources();
@@ -103,7 +98,7 @@ int main(int argc, char **argv)
     app.setApplicationName(QStringLiteral("kile"));
     KLocalizedString::setApplicationDomain("kile");
 
-    KAboutData aboutData("kile", i18n("Kile"), kileFullVersion.toLatin1(),
+    KAboutData aboutData("kile", i18n("Kile"), QLatin1StringView(KILE_VERSION_STRING),
                          i18n("KDE Integrated LaTeX Environment"),
                          KAboutLicense::GPL,
                          i18nc("the parameter is the last copyright year", "by the Kile Team (2003 - %1)", KILE_LAST_COPYRIGHT_YEAR),
@@ -128,13 +123,13 @@ int main(int argc, char **argv)
 
     aboutData.setProductName(QByteArray("kile"));
 
+    aboutData.setProgramLogo(QIcon(QStringLiteral(":/icons/sc-apps-kile.svg")));
+
     KAboutData::setApplicationData(aboutData);
 
-    KCrash::initialize();
+    QApplication::setWindowIcon(QIcon(QStringLiteral(":/icons/sc-apps-kile.svg")));
 
-    app.setApplicationDisplayName(aboutData.displayName());
-    app.setOrganizationDomain(aboutData.organizationDomain());
-    app.setApplicationVersion(aboutData.version());
+    KCrash::initialize();
 
     QCommandLineParser parser;
     aboutData.setupCommandLine(&parser);
@@ -155,7 +150,7 @@ int main(int argc, char **argv)
         QDBusConnectionInterface *interface = QDBusConnection::sessionBus().interface();
 
         if(interface) {
-            running = interface->isServiceRegistered("net.sourceforge.kile");
+            running = interface->isServiceRegistered("org.kde.kile");
         }
         else {
             KILE_WARNING_MAIN << "no DBUS interface found!";
@@ -173,13 +168,14 @@ int main(int argc, char **argv)
 
             KILE_DEBUG_MAIN << "couldn't find a recent version of the Okular library";
 
-            KMessageBox::sorry(Q_NULLPTR, i18n("Kile cannot start as a recent version the Okular library could not be found.\n\n"
+            KMessageBox::error(nullptr, i18n("Kile cannot start as a recent version the Okular library could not be found.\n\n"
                                                "Please install the Okular library before running Kile."),
                                           i18n("Okular library not found"));
             return EXIT_FAILURE;
         }
 
-        Q_FOREACH(QString argument, parser.positionalArguments()) {
+        const QList<QString> argumentList = parser.positionalArguments();
+        for(const QString& argument : argumentList) {
             if(argument == "-") {
                 kile->openDocument(readDataFromStdin());
             }
@@ -203,10 +199,11 @@ int main(int argc, char **argv)
         return app.exec();
     }
     else {
-        QDBusInterface *interface = new QDBusInterface("net.sourceforge.kile","/main","net.sourceforge.kile.main");
+        auto interface = std::make_unique<QDBusInterface>("org.kde.kile", "/main", "org.kde.kile.main");
 
-        Q_FOREACH(QString argument, parser.positionalArguments()) {
-            if(argument == "-") {
+        const QList<QString> arguments = parser.positionalArguments();
+        for (const QString &argument : arguments) {
+            if(argument == QLatin1Char('-')) {
                 interface->call("openDocument", readDataFromStdin());
             }
             else {
@@ -226,9 +223,7 @@ int main(int argc, char **argv)
             interface->call("setLine", line);
         }
 
-        KStartupInfo::appStarted();
         interface->call("setActive");
-        delete interface;
     }
 
     return EXIT_SUCCESS;

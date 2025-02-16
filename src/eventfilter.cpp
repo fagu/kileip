@@ -25,12 +25,22 @@
 #include <KModifierKeyInfo>
 #include <KTextEditor/Document>
 #include <KTextEditor/View>
+#include <qfileinfo.h>
 
-#include "kiledebug.h"
 #include "editorextension.h"
 #include "kileconfig.h"
+#include "kiledebug.h"
+#include "kiletoolmanager.h"
+#include "kileviewmanager.h"
+#include "livepreview.h"
 
-LaTeXEventFilter::LaTeXEventFilter(KTextEditor::View *view, KileDocument::EditorExtension *edit) : QObject(view), m_view(view), m_edit(edit)
+LaTeXEventFilter::LaTeXEventFilter(
+    KTextEditor::View *view, KileDocument::EditorExtension *edit,
+    KileView::Manager *viewManager,
+    KileTool::LivePreviewManager *livePreviewManager,
+    KileTool::Manager *toolManager)
+    : QObject(view), m_view(view), m_edit(edit), m_viewManager(viewManager),
+      m_previewManager(livePreviewManager), m_toolManager(toolManager)
 {
     m_modifierKeyInfo = new KModifierKeyInfo(this);
     readConfig();
@@ -96,7 +106,11 @@ bool LaTeXEventFilter::eventFilter(QObject* /* o */, QEvent *e)
             return m_edit->insertSpecialCharacter("^\\circ", m_view);
         case Qt::Key_plusminus:
             return m_edit->insertSpecialCharacter("\\pm", m_view);
+#if QT_VERSION < QT_VERSION_CHECK(6, 7, 0)
         case Qt::Key_mu:
+#else
+        case Qt::Key_micro:
+#endif
             return m_edit->insertSpecialCharacter("\\mu", m_view);
         case Qt::Key_paragraph:
             return m_edit->insertSpecialCharacter("\\P", m_view);
@@ -258,21 +272,84 @@ bool LaTeXEventFilter::eventFilter(QObject* /* o */, QEvent *e)
             break;
         }
 
-        if(m_bCompleteEnvironment && ke->key() == Qt::Key_Return && ke->modifiers() == 0) {
+        if (m_bCompleteEnvironment && ke->key() == Qt::Key_Return && ke->modifiers() == 0) {
             return m_edit->eventInsertEnvironment(m_view);
         }
     }
 
     else if(e->type() == QEvent::MouseButtonDblClick) {
-        QMouseEvent *me = static_cast<QMouseEvent*>(e);
-        if(me->button() == Qt::LeftButton && me->modifiers() & Qt::ControlModifier) {
+        QMouseEvent* me = static_cast<QMouseEvent*>(e);
+        if(me->button() == Qt::LeftButton && (me->modifiers() & Qt::ControlModifier)) {
             m_edit->selectWord(KileDocument::EditorExtension::smTex, m_view);
             return true;
         }
     }
 
-    //pass this event on
+    else if(e->type() == QEvent::MouseButtonPress) {
+        QMouseEvent* me = static_cast<QMouseEvent*>(e);
+        if(me->button() == Qt::LeftButton && (me->modifiers() & KileConfig::envEventSelectModifier())) { // select from cursor
+            me->setModifiers(Qt::ShiftModifier);
+            return false; // Pass Shift-click on to KatePart / KTextEditor
+        }
+        else if(me->button() == Qt::LeftButton && (me->modifiers() & KileConfig::envEventSearchModifier())) { // forward search
+            return doForwardSearch(me->globalPosition().toPoint());
+        }
+    }
+
+    // pass this event on
     return false;
 }
 
+// Do a forward search in the viewer based upon editor position
+bool LaTeXEventFilter::doForwardSearch(const QPoint& point)
+{
+    // change the cursor position first
+    // use global coordinates to correctly handle possible icon borders, line
+    // numbers, ...
+    m_view->setCursorPosition(m_view->coordinatesToCursor(m_view->mapFromGlobal(point)));
+    // live preview
+    if(m_previewManager->isLivePreviewEnabledForCurrentDocument()) {
+        m_previewManager->showCursorPositionInDocumentViewer();
+        return true;
+    }
+    // generated PDF or DVI file
+    KileTool::Base* forwardPdfTool = m_toolManager->createTool(QLatin1String("ForwardPDF"));
+    if(!forwardPdfTool) { // just to be avoid crashing as this shouldn't
+                           // happen
+        return false;
+    }
+    forwardPdfTool->prepareToRun();
+    QFile pdfFile(forwardPdfTool->targetDir() + QLatin1Char('/') + forwardPdfTool->target());
 
+    KileTool::Base* forwardDviTool = m_toolManager->createTool(QLatin1String("ForwardDVI"));
+    if(!forwardDviTool) { // just to be avoid crashing as this shouldn't
+                           // happen
+        return false;
+    }
+    forwardDviTool->prepareToRun();
+    QFile dviFile(forwardDviTool->targetDir() + QLatin1Char('/') + forwardDviTool->target());
+
+    if(QFileInfo(pdfFile).exists() && QFileInfo(dviFile).exists()) {
+        if(QFileInfo(pdfFile).lastModified() > QFileInfo(dviFile).lastModified()) {
+            delete forwardDviTool;
+            m_toolManager->run(forwardPdfTool);
+            return true;
+        }
+        else {
+            delete forwardPdfTool;
+            m_toolManager->run(forwardDviTool);
+            return true;
+        }
+    }
+    else if(QFileInfo(pdfFile).exists()) {
+        delete forwardDviTool;
+        m_toolManager->run(forwardPdfTool);
+        return true;
+    }
+    else if(QFileInfo(dviFile).exists()) {
+        delete forwardPdfTool;
+        m_toolManager->run(forwardDviTool);
+        return true;
+    }
+    return false;
+}

@@ -98,27 +98,26 @@ Manager::Manager(KileInfo *ki, KConfig *config, KileWidget::OutputView *output, 
     m_config(config),
     m_output(output),
     m_stack(stack),
-    m_stopAction(Q_NULLPTR),
+    m_stopAction(nullptr),
     m_bClear(true),
     m_nLastResult(Success),
     m_nTimeout(to),
-    m_bibliographyBackendSelectAction(Q_NULLPTR)
+    m_bibliographyBackendSelectAction(nullptr)
 {
-    connect(m_ki->parserManager(), SIGNAL(documentParsingComplete()), this, SLOT(handleDocumentParsingComplete()));
+    connect(m_ki->parserManager(), &KileParser::Manager::documentParsingComplete, this, &Manager::handleDocumentParsingComplete);
 
-    connect(this, SIGNAL(childToolSpawned(KileTool::Base*,KileTool::Base*)),
-            m_ki->errorHandler(), SLOT(handleSpawnedChildTool(KileTool::Base*,KileTool::Base*)));
+    connect(this, &Manager::childToolSpawned, m_ki->errorHandler(), &KileErrorHandler::handleSpawnedChildTool);
 
     m_timer = new QTimer(this);
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(enableClear()));
+    connect(m_timer, &QTimer::timeout, this, &Manager::enableClear);
 
-    connect(m_ki->errorHandler(), SIGNAL(currentLaTeXOutputHandlerChanged(LaTeXOutputHandler*)), SLOT(currentLaTeXOutputHandlerChanged(LaTeXOutputHandler*)));
+    connect(m_ki->errorHandler(), &KileErrorHandler::currentLaTeXOutputHandlerChanged, this, &Manager::currentLaTeXOutputHandlerChanged);
 
     //create actions must be invoked before buildBibliographyBackendSelection()!
     createActions(ac);
     buildBibliographyBackendSelection();
 
-    connect(m_ki->configurationManager(), SIGNAL(configChanged()), SLOT(buildBibliographyBackendSelection()));
+    connect(m_ki->configurationManager(), &KileConfiguration::Manager::configChanged, this, &Manager::buildBibliographyBackendSelection);
 }
 
 Manager::~Manager()
@@ -155,7 +154,7 @@ void Manager::enableClear()
 
 bool Manager::queryContinue(const QString & question, const QString & caption /*= QString()*/)
 {
-    return (KMessageBox::warningContinueCancel(m_stack, question, caption, KStandardGuiItem::cont(), KStandardGuiItem::no(), "showNotALaTeXRootDocumentWarning") == KMessageBox::Continue);
+    return (KMessageBox::warningContinueCancel(m_stack, question, caption, KStandardGuiItem::cont(), KStandardGuiItem::cancel(), "showNotALaTeXRootDocumentWarning") == KMessageBox::Continue);
 }
 
 void Manager::run(Base *tool)
@@ -167,8 +166,8 @@ void Manager::run(Base *tool)
         runImmediately(tool);
         return;
     }
-    connect(tool, SIGNAL(aboutToBeDestroyed(KileTool::Base*)),
-            this, SLOT(toolScheduledAfterParsingDestroyed(KileTool::Base*)), Qt::UniqueConnection);
+    connect(tool, &Base::aboutToBeDestroyed,
+            this, &Manager::toolScheduledAfterParsingDestroyed, Qt::UniqueConnection);
     if(!m_toolsScheduledAfterParsingList.contains(tool)) {
         m_toolsScheduledAfterParsingList.push_back(tool);
     }
@@ -181,15 +180,15 @@ void Manager::toolScheduledAfterParsingDestroyed(KileTool::Base *tool)
 
 void Manager::handleDocumentParsingComplete()
 {
-    Q_FOREACH(Base *tool, m_toolsScheduledAfterParsingList) {
-        disconnect(tool, SIGNAL(aboutToBeDestroyed(KileTool::Base*)),
-                   this, SLOT(toolScheduledAfterParsingDestroyed(KileTool::Base*)));
+    for(Base *tool : std::as_const(m_toolsScheduledAfterParsingList)) {
+        disconnect(tool, &Base::aboutToBeDestroyed,
+                   this, &Manager::toolScheduledAfterParsingDestroyed);
         runImmediately(tool);
     }
     m_toolsScheduledAfterParsingList.clear();
 }
 
-int Manager::runImmediately(Base *tool, bool insertNext /*= false*/, bool block /*= false*/, Base *parent /*= Q_NULLPTR*/)
+int Manager::runImmediately(Base *tool, bool insertNext /*= false*/, bool block /*= false*/, Base *parent /*= nullptr*/)
 {
     KILE_DEBUG_MAIN << "==KileTool::Manager::runImmediately(Base *)============" << Qt::endl;
     if(m_bClear && (m_queue.count() == 0)) {
@@ -198,8 +197,8 @@ int Manager::runImmediately(Base *tool, bool insertNext /*= false*/, bool block 
     }
 
     if(dynamic_cast<KileTool::LaTeX*>(tool)) {
-        connect(tool, SIGNAL(done(KileTool::Base*,int,bool)),
-                m_ki->errorHandler(), SLOT(handleLaTeXToolDone(KileTool::Base*,int,bool)));
+        connect(tool, &KileTool::LaTeX::done,
+                m_ki->errorHandler(), &KileErrorHandler::handleLaTeXToolDone);
     }
 
     if(tool->needsToBePrepared()) {
@@ -219,7 +218,7 @@ int Manager::runImmediately(Base *tool, bool insertNext /*= false*/, bool block 
     }
 
     if(parent) {
-        emit(childToolSpawned(parent,tool));
+        Q_EMIT(childToolSpawned(parent,tool));
     }
 
     KILE_DEBUG_MAIN << "\tin queue: " << m_queue.count() << Qt::endl;
@@ -265,7 +264,7 @@ int Manager::runNextInQueue()
         }
 
         m_ki->errorHandler()->startToolLogOutput();
-        emit(toolStarted());
+        Q_EMIT(toolStarted());
 
         return Running;
     }
@@ -277,13 +276,13 @@ Base* Manager::createTool(const QString& name, const QString &cfg, bool prepare)
 {
     if(!m_factory) {
         m_ki->errorHandler()->printMessage(Error, i18n("No factory installed, contact the author of Kile."));
-        return Q_NULLPTR;
+        return nullptr;
     }
 
     Base* pTool = m_factory->create(name, cfg, prepare);
     if(!pTool) {
         m_ki->errorHandler()->printMessage(Error, i18n("Unknown tool %1.", name));
-        return Q_NULLPTR;
+        return nullptr;
     }
     initTool(pTool);
     return pTool;
@@ -339,7 +338,7 @@ void Manager::stopLivePreview()
 
 void Manager::stopActionDestroyed()
 {
-    m_stopAction = Q_NULLPTR;
+    m_stopAction = nullptr;
 }
 
 void Manager::done(KileTool::Base *tool, int result)
@@ -495,7 +494,7 @@ bool Manager::configure(Base *tool, const QString& cfg /* = QString() */)
 void Manager::wantGUIState(const QString & state)
 {
     KILE_DEBUG_MAIN << "REQUESTED state: " << state << Qt::endl;
-    emit(requestGUIState(state));
+    Q_EMIT(requestGUIState(state));
 }
 
 KileView::Manager* Manager::viewManager()
@@ -523,18 +522,14 @@ QStringList toolList(KConfig *config, bool menuOnly)
     QRegExp re = QRegExp("Tool/(.+)/.+");
     QString name;
 
-    for(auto group : groups) {
-        if(!config->hasGroup(group)) { // 'group' might have been deleted
-            continue;                // work around bug 384039
-        }
-        if(re.exactMatch(group)) {
+    for (const auto& group : groups) {
+        if(config->hasGroup(group) // 'group' might have been deleted
+           && re.exactMatch(group)) {
             name = configName(re.cap(1), config);
 
-            if(name.isEmpty() || !group.endsWith(name)) {
-                continue;
-            }
-
-            if((!menuOnly) || (menuFor(re.cap(1), config) != "none")) {
+            if(!name.isEmpty()
+               && group.endsWith(name)
+               && ((!menuOnly) || (menuFor(re.cap(1), config) != "none"))) {
                 tools.append(re.cap(1));
             }
         }
@@ -549,25 +544,19 @@ QStringList toolList(KConfig *config, bool menuOnly)
 QList<ToolConfigPair> toolsWithConfigurationsBasedOnClass(KConfig *config, const QString& className)
 {
     const QStringList groups = config->groupList();
-    QStringList tools;
 
     QRegExp re = QRegExp("Tool/(.+)/(.+)");
     QList<ToolConfigPair> toReturn;
 
-    for(auto group : groups) {
-        if(!config->hasGroup(group)) { // 'group' might have been deleted
-            continue;                // work around bug 384039
-        }
-        if(re.exactMatch(group)) {
+    for (const auto& group : groups) {
+        if(config->hasGroup(group) // 'group' might have been deleted
+           && re.exactMatch(group)) {
             const QString toolName = re.cap(1);
-            const QString configName = re.cap(2);
+            const QString groupConfigName = re.cap(2);
 
-            if(toolName.isEmpty()) {
-                continue;
-            }
-
-            if(config->group(group).readEntry("class", "") == className) {
-                toReturn.push_back(ToolConfigPair(toolName, configName));
+            if(!toolName.isEmpty()
+               && (config->group(group).readEntry("class", "") == className)) {
+                toReturn.push_back(ToolConfigPair(toolName, groupConfigName));
             }
         }
     }
@@ -635,11 +624,9 @@ QStringList configNames(const QString &tool, KConfig *config)
 
     QRegExp re = QRegExp("Tool/"+ tool +"/(.+)");
 
-    for(auto group : groups) {
-        if(!config->hasGroup(group)) { // 'group' might have been deleted
-            continue;                // work around bug 384039
-        }
-        if(re.exactMatch(group)) {
+    for (const auto& group : groups) {
+        if(config->hasGroup(group) // 'group' might have been deleted
+           && re.exactMatch(group)) {
             configs.append(re.cap(1));
         }
     }
@@ -699,9 +686,9 @@ bool KileTool::Manager::containsBibliographyTool(const ToolConfigPair& p) const
 KileTool::ToolConfigPair KileTool::Manager::findFirstBibliographyToolForCommand(const QString& command) const
 {
     // for now we will just select the first suitable tool
-    Q_FOREACH(const KileTool::ToolConfigPair& tool, m_bibliographyToolsList) {
-        const QString toolCommand = commandFor(tool, m_config);
-        if (QString::compare(command, toolCommand, Qt::CaseInsensitive) == 0) {
+    for(const KileTool::ToolConfigPair& tool : m_bibliographyToolsList) {
+        const QFileInfo toolCommand(commandFor(tool, m_config));
+        if (QString::compare(command, toolCommand.baseName(), Qt::CaseInsensitive) == 0) {
             return tool;
         }
     }
@@ -724,7 +711,7 @@ void KileTool::Manager::buildBibliographyBackendSelection()
     m_bibliographyToolsList = toolsWithConfigurationsBasedOnClass(m_config, BibliographyCompile::ToolClass);
     std::sort(m_bibliographyToolsList.begin(), m_bibliographyToolsList.end()); // necessary for the user-visible actions in the menu bar
 
-    Q_FOREACH(const ToolConfigPair& tool, m_bibliographyToolsList) {
+    for(const ToolConfigPair& tool : std::as_const(m_bibliographyToolsList)) {
         // create an action for backend selection
         QAction * action = m_bibliographyBackendSelectAction->addAction(tool.userStringRepresentation());
         action->setData(QVariant::fromValue(tool));
@@ -759,10 +746,14 @@ void KileTool::Manager::createActions(KActionCollection *ac)
     m_bibliographyBackendResetAutodetectedAction = new QAction(i18n("Reset Auto-Detected Back End"), this);
     m_bibliographyBackendResetAutodetectedAction->setEnabled(false);
 
-    connect(m_bibliographyBackendSelectAction, SIGNAL(triggered(QAction*)), SLOT(bibliographyBackendSelectedByUser()));
-    connect(m_bibliographyBackendResetAutodetectedAction, SIGNAL(triggered(bool)), SLOT(resetAutodetectedBibliographyBackend()));
-    connect(m_bibliographyBackendAutodetectAction, SIGNAL(toggled(bool)),
-            m_bibliographyBackendResetAutodetectedAction, SLOT(setEnabled(bool)));
+    connect(m_bibliographyBackendSelectAction, &QAction::triggered, this, [this]() {
+        bibliographyBackendSelectedByUser();
+    });
+    connect(m_bibliographyBackendResetAutodetectedAction, &QAction::triggered, this, [this] {
+        resetAutodetectedBibliographyBackend();
+    });
+    connect(m_bibliographyBackendAutodetectAction, &QAction::toggled,
+            m_bibliographyBackendResetAutodetectedAction, &QAction::setEnabled);
 }
 
 

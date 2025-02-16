@@ -120,7 +120,7 @@ void Tag::init(const QObject *receiver, const char *slot)
 
 void Tag::emitData()
 {
-    emit(triggered(m_data));
+    Q_EMIT(triggered(m_data));
 }
 
 ////////////////
@@ -211,7 +211,7 @@ void InputTag::emitData()
         }
 
         // insert tag
-        emit(triggered(td));
+        Q_EMIT(triggered(td));
         // refresh document structure and project tree when a file was inserted
         if(dlg->useAddProjectFile()) {
             m_ki->docManager()->projectAddFile(QFileInfo(m_ki->getCompileName()).absolutePath() + '/' + dlg->tag());
@@ -329,18 +329,18 @@ InputDialog::InputDialog(const QString &caption, uint options, const QStringList
         gbox->addWidget(m_checkbox, 2, 0, 1, 3);
     }
 
-    m_edLabel = Q_NULLPTR;
+    m_edLabel = nullptr;
     m_useLabel = (options & KileAction::ShowLabel);
     if(m_useLabel) {
         // Label
-        QLabel *label = new QLabel(i18n("&Label:"),this);
-        mainLayout->addWidget(label);
+        QLabel *uiLabel = new QLabel(i18n("&Label:"),this);
+        mainLayout->addWidget(uiLabel);
         m_edLabel = new QLineEdit(this);
         mainLayout->addWidget(m_edLabel);
         m_edLabel->setMinimumWidth(300);
         m_edLabel->setText(m_labelprefix);
-        label->setBuddy(m_edLabel);
-        gbox->addWidget(label, 3, 0, 1, 3);
+        uiLabel->setBuddy(m_edLabel);
+        gbox->addWidget(uiLabel, 3, 0, 1, 3);
         gbox->addWidget(m_edLabel, 4, 0, 1, 3);
     }
 
@@ -385,7 +385,7 @@ void InputDialog::slotBrowse()
         }
 
         setTag(path);
-        emit(setInput(path));
+        Q_EMIT(setInput(path));
     }
 }
 
@@ -402,9 +402,9 @@ void InputDialog::setTag(const QString &tag)
 QString InputDialog::label()
 {
     if(m_edLabel) {
-        QString label = m_edLabel->text().trimmed();
-        if(!label.isEmpty() && label != m_labelprefix) {
-            return "\\label{" + label + "}\n";
+        QString labelString = m_edLabel->text().trimmed();
+        if(!labelString.isEmpty() && labelString != m_labelprefix) {
+            return "\\label{" + labelString + "}\n";
         }
     }
 
@@ -443,14 +443,14 @@ VariantSelection::VariantSelection(const QString &text, const QVariant& value, Q
 
 void VariantSelection::slotTriggered()
 {
-    emit(triggered(m_variant));
+    Q_EMIT(triggered(m_variant));
 
     if(m_variant.canConvert<QUrl>()) {
-        emit(triggered(m_variant.value<QUrl>()));
+        Q_EMIT(triggered(m_variant.value<QUrl>()));
     }
 
     if(m_variant.canConvert<QString>()) {
-        emit(triggered(m_variant.value<QString>()));
+        Q_EMIT(triggered(m_variant.value<QString>()));
     }
 }
 
@@ -471,7 +471,7 @@ void VariantSelection::slotTriggered()
 
 ToolbarSelectAction::ToolbarSelectAction(const QString& text, QObject* parent,
         bool changeMainActionOnTriggering /*= true */)
-    : QWidgetAction(parent), m_currentItem(-1), m_mainText(text), m_savedCurrentAction(Q_NULLPTR)
+    : QWidgetAction(parent), m_currentItem(-1), m_mainText(text), m_savedCurrentAction(nullptr)
 {
     setText(text);
     if(changeMainActionOnTriggering) {
@@ -506,7 +506,7 @@ QAction* ToolbarSelectAction::action(int i)
 {
     QList<QAction*> actionList = menu()->actions();
     if(i < 0 || i >= actionList.size()) {
-        return Q_NULLPTR;
+        return nullptr;
     }
     return actionList.at(i);
 }
@@ -566,25 +566,25 @@ void ToolbarSelectAction::slotTriggered(QAction* action) {
 
 void ToolbarSelectAction::slotMainActionTriggered()
 {
-    QAction *action = currentAction();
-    if(action) {
-        action->trigger();
+    QAction *curAction = currentAction();
+    if (curAction) {
+        curAction->trigger();
     }
 }
 
 void ToolbarSelectAction::slotMainButtonPressed()
 {
-    QAction *action = currentAction();
-    if(!action) {
-        emit(mainButtonWithNoActionPressed());
+    const QAction *curAction = currentAction();
+    if (!curAction) {
+        Q_EMIT(mainButtonWithNoActionPressed());
     }
 }
 
 QMenu* ToolbarSelectAction::menu()
 {
     if(!QAction::menu()) {
-        QMenu *menu = new QMenu();
-        setMenu(menu);
+        QMenu *uiMenu = new QMenu();
+        setMenu(uiMenu);
     }
 
     return qobject_cast<QMenu*>(QAction::menu());
@@ -624,6 +624,6 @@ void ToolbarSelectAction::restoreCurrentAction()
         return;
     }
     setCurrentAction(m_savedCurrentAction);
-    m_savedCurrentAction = Q_NULLPTR;
+    m_savedCurrentAction = nullptr;
 }
 

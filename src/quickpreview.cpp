@@ -37,7 +37,7 @@
 namespace KileTool
 {
 
-QuickPreview::QuickPreview(KileInfo *ki) : m_ki(ki), m_running(0), m_tempDir(Q_NULLPTR)
+QuickPreview::QuickPreview(KileInfo *ki) : m_ki(ki), m_running(0), m_tempDir(nullptr)
 {
     m_taskList << i18n("LaTeX ---> DVI (Okular)")
                << i18n("LaTeX ---> DVI (Document Viewer)")
@@ -230,18 +230,18 @@ bool QuickPreview::run(const QString &text,const QString &textfilename,int start
         return false;
     }
 
-    KileTool::Base *dvips = Q_NULLPTR;
+    KileTool::Base *dvips = nullptr;
     if(!previewlist[1].isEmpty()) {
-        QString dvipstool = previewlist[pvDvips] + " (" + previewlist[pvDvipsCfg] + ')';
         KILE_DEBUG_MAIN << "\tcreate dvips tool for QuickPreview: "  << previewlist[pvDvips] << Qt::endl;
         dvips = m_ki->toolManager()->createTool(previewlist[pvDvips], previewlist[pvDvipsCfg]);
         if(!dvips) {
+            QString dvipstool = previewlist[pvDvips] + " (" + previewlist[pvDvipsCfg] + ')';
             showError(i18n("Could not run '%1' for QuickPreview.",dvipstool));
             return false;
         }
     }
 
-    KileTool::Base *viewer = Q_NULLPTR;
+    KileTool::Base *viewer = nullptr;
     if(!previewlist[pvViewer].isEmpty()) {
         QString viewertool = previewlist[pvViewer] + " (" + previewlist[pvViewerCfg] + ')';
         KILE_DEBUG_MAIN << "\tcreate viewer for QuickPreview: "  << viewertool << Qt::endl;
@@ -343,17 +343,16 @@ int QuickPreview::createTempfile(const QString &text)
 
     // set the encoding according to the original file (tbraun)
     if(m_ki->activeTextDocument()) {
-        QTextCodec *codec = QTextCodec::codecForName(m_ki->activeTextDocument()->encoding().toLatin1());
-        if(codec) {
-            stream.setCodec(codec);
+        auto encoding = QStringConverter::encodingForName(m_ki->activeTextDocument()->encoding().toLatin1());
+        if(encoding) {
+            stream.setEncoding(*encoding);
         }
     }
     // write the whole preamble into this temporary file
-    QString textline;
     int preamblelines = 0;
     bool begindocumentFound = false;
     while(!preamble.atEnd()) {
-        textline = preamble.readLine();
+        QString textline = preamble.readLine();
         if (textline.indexOf("\\begin{document}") >= 0) {
             begindocumentFound = true;
             break;

@@ -98,7 +98,7 @@ void AbbreviationView::slotItemClicked(QTreeWidgetItem *item, int /* column */)
     if(item) {
         QString s = item->text(AbbreviationView::ALVexpansion);
         s.replace("%n","\n");
-        emit( sendText(s) );
+        Q_EMIT( sendText(s) );
     }
 }
 
@@ -133,7 +133,7 @@ void AbbreviationView::slotCustomContextMenuRequested(const QPoint& p)
 
 void AbbreviationView::slotAddAbbreviation()
 {
-    KileDialog::AbbreviationInputDialog dialog(this, Q_NULLPTR, ALVadd);
+    KileDialog::AbbreviationInputDialog dialog(this, nullptr, ALVadd);
     if(dialog.exec() == QDialog::Accepted) {
         QString abbrev, expansion;
         dialog.abbreviation(abbrev, expansion);
@@ -149,7 +149,6 @@ void AbbreviationView::slotChangeAbbreviation()
     }
     QTreeWidgetItem *selectedItem = selectedList.first();
     QString oldAbbreviationText = selectedItem->text(ALVabbrev);
-    QString oldAbbreviationExpansion = selectedItem->text(ALVexpansion);
     KileDialog::AbbreviationInputDialog dialog(this, selectedItem, ALVedit);
     if(dialog.exec() == QDialog::Accepted) {
         QString abbrev, expansion;
@@ -169,14 +168,14 @@ void AbbreviationView::slotDeleteAbbreviation()
     }
     QTreeWidgetItem *item = selectedList.first();
     QString abbreviationText = item->text(ALVabbrev);
-    QString abbreviationExpansion = item->text(ALVexpansion);
     QString message = i18n("Delete the abbreviation '%1'?", abbreviationText);
-    if(KMessageBox::questionYesNo(this,
+    if(KMessageBox::questionTwoActions(this,
                                   "<center>" + message + "</center>",
-                                  i18n("Delete Abbreviation") ) == KMessageBox::Yes) {
-        QString s = abbreviationText + '=' + abbreviationExpansion;
+                                  i18n("Delete Abbreviation"),
+                                  KStandardGuiItem::del(),
+                                  KStandardGuiItem::cancel()) == KMessageBox::PrimaryAction) {
+        m_abbreviationManager->removeLocalAbbreviation(abbreviationText);
     }
-    m_abbreviationManager->removeLocalAbbreviation(abbreviationText);
 }
 
 

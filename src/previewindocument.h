@@ -23,7 +23,6 @@
 #include <ktexteditor/movingrangefeedback.h>
 #include <ktexteditor/movingcursor.h>
 #include <ktexteditor/movingrange.h>
-#include <ktexteditor/movinginterface.h>
 #include "documentinfo.h"
 #include "previewthread.h"
 #include "previewpreparer.h"

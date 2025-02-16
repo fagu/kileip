@@ -15,7 +15,6 @@
 #include "usermenu/usermenu.h"
 
 #include <QFile>
-#include <QRegExp>
 
 #include <QTemporaryFile>
 #include <KXMLGUIFactory>
@@ -52,7 +51,7 @@ namespace KileMenu {
 //  - a menu is defined in an xml file, which is placed in KileUtilities::locate(QStandardPaths::AppDataLocation, "usermenu", QStandardPaths::LocateDirectory)
 
 UserMenu::UserMenu(KileInfo *ki, QObject *receiver)
-    : m_ki(ki), m_receiver(receiver), m_proc(Q_NULLPTR)
+    : m_ki(ki), m_receiver(receiver), m_proc(nullptr)
 {
     KXmlGuiWindow *mainwindow = m_ki->mainWindow();
     m_actioncollection = mainwindow->actionCollection();
@@ -167,7 +166,7 @@ void UserMenu::clear()
     m_menudata.clear();
 
     // remove all actions from actioncollection
-    for(QAction *action : m_actionlist) {
+    for(QAction *action : std::as_const(m_actionlist)) {
         m_actioncollection->removeAction(action);
     }
 
@@ -253,7 +252,8 @@ void UserMenu::removeActionProperties()
     // search for all actions of the user-defined UserMenu
     KILE_DEBUG_MAIN << "QDomElement actionPropertiesElement found ";
     bool changed = false;
-    QRegExp re("useraction-(\\d+)$");
+    QRegularExpression re("useraction-(\\d+)$");
+    QRegularExpressionMatch match;
     QDomElement e = actionPropElement.firstChildElement();
     while(!e.isNull()) {
         QString tag = e.tagName();
@@ -265,8 +265,8 @@ void UserMenu::removeActionProperties()
         QString name = e.attribute("name");
 
         QDomElement removeElement;
-        if ( re.indexIn(name) == 0) {
-            int index = re.cap(1).toInt();
+        if ( name.indexOf(re, 0, &match) == 0) {
+            int index = match.captured(1).toInt();
             KILE_DEBUG_MAIN << "action property was changed: old=" << m_menudata[index].shortcut << " new=" << name << " actionIndex=" << index;
             removeElement = e;
             changed = true;
@@ -295,10 +295,11 @@ void UserMenu::refreshActionProperties()
 {
     KILE_DEBUG_MAIN << "refresh action properties";
 
-    QRegExp re("useraction-(\\d+)$");
-    foreach ( QAction *action, m_actionlist ) {
-        if ( re.indexIn(action->objectName()) == 0 ) {
-            int actionIndex = re.cap(1).toInt();
+    QRegularExpression re("useraction-(\\d+)$");
+    QRegularExpressionMatch match;
+    for (QAction *action : std::as_const(m_actionlist)) {
+        if (action->objectName().indexOf(re, 0, &match) == 0 ) {
+            int actionIndex = match.captured(1).toInt();
             if ( !m_menudata[actionIndex].icon.isEmpty() ) {
                 action->setIcon( QIcon::fromTheme(m_menudata[actionIndex].icon) );
             }
@@ -314,7 +315,7 @@ void UserMenu::refreshActionProperties()
 // will be refreshed again, when the dialog is finished
 void UserMenu::removeShortcuts()
 {
-    foreach ( QAction *action, m_actionlist ) {
+    for(QAction *action: std::as_const(m_actionlist)) {
         action->setShortcut( QKeySequence() );
     }
 }
@@ -366,7 +367,7 @@ void UserMenu::installXmlFile(const QString &filename)
             }
         }
         KileConfig::setUserMenuFile(xmlfile);
-        emit (updateStatus());
+        Q_EMIT (updateStatus());
 
         // add changed context menu to all existing views
         KileView::Manager* viewManager = m_ki->viewManager();
@@ -385,7 +386,7 @@ void UserMenu::removeXmlFile()
     m_currentXmlFile.clear();
 
     KileConfig::setUserMenuFile(m_currentXmlFile);
-    emit (updateStatus());
+    Q_EMIT (updateStatus());
 }
 
 ///////////////////////////// install usermenu from XML //////////////////////////////
@@ -437,7 +438,7 @@ bool UserMenu::installXml(const QString &filename)
 
             // try to get some structure into to the context menu
             if ( m_actionsContextMenu > 0 ) {
-                m_actionlistContextMenu.append(Q_NULLPTR);
+                m_actionlistContextMenu.append(nullptr);
                 m_actionsContextMenu = 0;
             }
         }
@@ -457,14 +458,13 @@ void UserMenu::installXmlSubmenu(const QDomElement &element, QMenu *parentmenu, 
 {
     QMenu *submenu = parentmenu->addMenu(QString());
 
-    QString title;
     if ( element.hasChildNodes() ) {
         QDomElement e = element.firstChildElement();
         while ( !e.isNull()) {
 
             QString tag = e.tagName();
             if ( tag == "title" ) {
-                title = e.text();
+                QString title = e.text();
                 submenu->setTitle(title);
             }
             else if ( tag == "submenu" ) {
@@ -726,14 +726,15 @@ void UserMenu::slotUserMenuAction()
     QString actionName = action->objectName();
     KILE_DEBUG_MAIN << "action name: " << actionName << "classname=" << action->metaObject()->className();
 
-    QRegExp re("useraction-(\\d+)$");
-    if ( re.indexIn(actionName) != 0) {
+    QRegularExpression re("useraction-(\\d+)$");
+    QRegularExpressionMatch match;
+    if (actionName.indexOf(re, 0, &match) != 0) {
         KILE_DEBUG_MAIN << "STOP: found wrong action name: " << actionName;
         return;
     }
 
     bool ok;
-    int actionIndex = re.cap(1).toInt(&ok);
+    int actionIndex = match.captured(1).toInt(&ok);
     if ( actionIndex < 0 || actionIndex >= m_menudata.size() ) {
         KILE_DEBUG_MAIN << "STOP: invalid action (range error): " << actionIndex << "  list size: " << m_menudata.size();
         return;
@@ -807,7 +808,7 @@ void UserMenu::execActionProgramOutput(KTextEditor::View *view, const UserMenuDa
     // delete old process
     if (m_proc) {
         delete m_proc;
-        m_proc = Q_NULLPTR;
+        m_proc = nullptr;
     }
 
     // build commandline
@@ -948,7 +949,7 @@ void UserMenu::insertText(KTextEditor::View *view, const QString &text, bool rep
 
     // insert new text
     KTextEditor::Cursor cursor1 = view->cursorPosition();
-    emit( sendText(ins) );
+    Q_EMIT( sendText(ins) );
 
     // select inserted text
     if(selectInsertion) {

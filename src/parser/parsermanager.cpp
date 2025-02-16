@@ -96,7 +96,7 @@ void Manager::handleOutputParsingComplete(const QUrl &url, KileParser::ParserOut
 
     LaTeXOutputParserOutput *latexOutput = dynamic_cast<LaTeXOutputParserOutput*>(output);
     if(!latexOutput) {
-        qCDebug(LOG_KILE_PARSER) << "Q_NULLPTR output given";
+        qCDebug(LOG_KILE_PARSER) << "nullptr output given";
         return;
     }
     if(toolList.isEmpty()) { // no tool was found, which means that all the tools for 'url'
@@ -109,7 +109,7 @@ void Manager::handleOutputParsingComplete(const QUrl &url, KileParser::ParserOut
     // use the returned list as the new global error information list
     m_ki->errorHandler()->setMostRecentLogInformation(latexOutput->logFile, latexOutput->infoList);
     // finally, inform the tools waiting for the error information
-    Q_FOREACH(KileTool::Base *tool, toolList) {
+    for(KileTool::Base *tool : std::as_const(toolList)) {
         tool->installLaTeXOutputParserResult(latexOutput->nErrors, latexOutput->nWarnings,
                                              latexOutput->nBadBoxes,
                                              latexOutput->infoList,

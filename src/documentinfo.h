@@ -26,6 +26,7 @@
 
 #include "kileconstants.h"
 #include "kileextensions.h"
+#include "kiletoolmanager.h"
 #include "livepreview_utils.h"
 #include "outputinfo.h"
 
@@ -96,7 +97,8 @@ enum
 class KileStructData
 {
 public:
-    explicit KileStructData(int lvl = 0, int tp = KileStruct::None, QString px = QString(), QString fldr = "root" )  : level(lvl), type(tp), pix(px), folder(fldr) {}
+    explicit KileStructData(int lvl = 0, int tp = KileStruct::None, const QString &px = QString(), const QString &fldr = QStringLiteral("root"))
+        : level(lvl), type(tp), pix(px), folder(fldr) {}
     /** At which level the element should be visible **/
     int                level;
     /** The type of element (see @ref KileStruct) **/
@@ -207,7 +209,7 @@ public:
     /**
      * Returns a file filter suitable for loading and saving files of this class' type.
      **/
-    virtual std::list<Extensions::ExtensionType> getFileFilter() const;
+    virtual std::vector<Extensions::ExtensionType> getFileFilter() const;
 
     virtual bool isDocumentTypePromotionAllowed();
     void setDocumentTypePromotionAllowed(bool b);
@@ -314,7 +316,7 @@ public:
      * The array is filled as follows: [0] = #c in words, [1] = #c in latex commands and environments,
        [2] = #c whitespace, [3] = #words, [4] = # latex_commands, [5] = latex_environments **/
 
-    virtual const long* getStatistics(KTextEditor::View *view = Q_NULLPTR);
+    virtual const long* getStatistics(KTextEditor::View *view = nullptr);
 
     /**
      * @returns the URL of the KTextEditor::Document if not null, an empty QUrl otherwise
@@ -336,9 +338,9 @@ public:
      * method. It also installs signal connections by using the "installSignalConnections"
      * method.
      * @warning Only this method should be used to create new views for text documents !
-     * @return Q_NULLPTR if no document is set (m_doc == NULL)
+     * @return nullptr if no document is set (m_doc == NULL)
      **/
-    KTextEditor::View* createView(QWidget *parent, const char *name = Q_NULLPTR);
+    KTextEditor::View* createView(QWidget *parent, const char *name = nullptr);
 
     void startAbbreviationCompletion(KTextEditor::View *view);
 
@@ -482,13 +484,13 @@ public:
               KileTool::LivePreviewManager *livePreviewManager,
               KileView::Manager *viewManager,
               KileParser::Manager *parserManager,
-              KileDocument::Manager *documentManager);
+              KileTool::Manager *toolManager);
 
-    virtual ~LaTeXInfo();
+    virtual ~LaTeXInfo() override;
 
     virtual Type getType() override;
 
-    virtual std::list<Extensions::ExtensionType> getFileFilter() const override;
+    virtual std::vector<Extensions::ExtensionType> getFileFilter() const override;
 
     void startLaTeXCompletion(KTextEditor::View *view);
 
@@ -513,7 +515,7 @@ protected:
     KileCodeCompletion::LaTeXCompletionModel *m_latexCompletionModel;
     KileTool::LivePreviewManager *m_livePreviewManager;
     KileView::Manager *m_viewManager;
-    KileDocument::Manager *m_documentManager;
+    KileTool::Manager *m_toolManager;
 
     bool m_inlinePreview;
 
@@ -546,13 +548,13 @@ public:
              KileAbbreviation::Manager *abbreviationManager,
              KileParser::Manager *parserManager,
              LatexCommands* commands);
-    virtual ~BibInfo();
+    virtual ~BibInfo() override;
 
     virtual bool isLaTeXRoot() override;
 
     virtual Type getType() override;
 
-    virtual std::list<Extensions::ExtensionType> getFileFilter() const override;
+    virtual std::vector<Extensions::ExtensionType> getFileFilter() const override;
 
     virtual void installParserOutput(KileParser::ParserOutput *parserOutput) override;
 
@@ -569,13 +571,13 @@ public:
                KileAbbreviation::Manager *abbreviationManager,
                KileParser::Manager *parserManager);
 
-    virtual ~ScriptInfo();
+    virtual ~ScriptInfo() override;
 
     virtual bool isLaTeXRoot() override;
 
     virtual Type getType() override;
 
-    virtual std::list<Extensions::ExtensionType> getFileFilter() const override;
+    virtual std::vector<Extensions::ExtensionType> getFileFilter() const override;
 };
 
 }

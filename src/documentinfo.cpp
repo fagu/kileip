@@ -66,7 +66,7 @@
 #include <QDateTime>
 #include <QFileInfo>
 #include <QInputDialog>
-#include <QRegExp>
+#include <QRegularExpression>
 
 #include <KConfig>
 #include <KJobWidgets>
@@ -125,7 +125,7 @@ QUrl Info::renameIfExist(const QUrl &url, QWidget* mainWidget)
 {
     QUrl ret(url);
 
-    auto statJob = KIO::statDetails(url, KIO::StatJob::SourceSide, KIO::StatNoDetails);
+    auto statJob = KIO::stat(url, KIO::StatJob::SourceSide, KIO::StatNoDetails);
     KJobWidgets::setWindow(statJob, mainWidget);
     while (statJob->exec()) { // check for writing possibility
         bool isOK;
@@ -154,12 +154,12 @@ QUrl Info::repairExtension(const QUrl &url, QWidget *mainWidget, bool checkForFi
     if(filename.contains(".") && filename[0] != '.') // There already is an extension
         return ret;
 
-    if(KMessageBox::Yes == KMessageBox::questionYesNo(Q_NULLPTR,
+    if(KMessageBox::questionTwoActions(nullptr,
             i18n("The given filename has no extension; do you want one to be automatically added?"),
             i18n("Missing Extension"),
-            KStandardGuiItem::yes(),
-            KStandardGuiItem::no(),
-            "AutomaticallyAddExtension"))
+            KStandardGuiItem::add(),
+            KStandardGuiItem::cancel(),
+            "AutomaticallyAddExtension") == KMessageBox::PrimaryAction)
     {
         ret = ret.adjusted(QUrl::RemoveFilename);
         ret.setPath(ret.path() + filename + ".tex");
@@ -237,7 +237,7 @@ Type Info::getType()
     return Undefined;
 }
 
-std::list<Extensions::ExtensionType> Info::getFileFilter() const
+std::vector<Extensions::ExtensionType> Info::getFileFilter() const
 {
     return {};
 }
@@ -395,14 +395,14 @@ void Info::updateBibItems()
 void Info::slotCompleted()
 {
     setDirty(true);
-    emit completed(this);
+    Q_EMIT completed(this);
 }
 
 TextInfo::TextInfo(Extensions* extensions,
                    KileAbbreviation::Manager* abbreviationManager,
                    KileParser::Manager* parserManager,
                    const QString& defaultMode)
-    : m_doc(Q_NULLPTR),
+    : m_doc(nullptr),
       m_defaultMode(defaultMode),
       m_abbreviationManager(abbreviationManager),
       m_parserManager(parserManager)
@@ -415,7 +415,7 @@ TextInfo::TextInfo(Extensions* extensions,
 
 TextInfo::~TextInfo()
 {
-    emit(aboutToBeDestroyed(this));
+    Q_EMIT(aboutToBeDestroyed(this));
     detach();
     delete [] m_arStatistics;
 }
@@ -477,9 +477,9 @@ void TextInfo::detach()
         removeInstalledEventFilters();
         removeSignalConnections();
         unregisterCodeCompletionModels();
-        emit(documentDetached(m_doc));
+        Q_EMIT(documentDetached(m_doc));
     }
-    m_doc = Q_NULLPTR;
+    m_doc = nullptr;
 }
 
 void TextInfo::makeDirtyIfModified()
@@ -535,7 +535,7 @@ bool TextInfo::isTextDocument()
 
 void TextInfo::setMode(const QString &mode)
 {
-    KILE_DEBUG_MAIN << "==Kile::setMode(" << m_doc->url() << "," << mode << " )==================";
+    KILE_DEBUG_MAIN << "==Kile::setMode(" << (m_doc ? m_doc->url().toString() : "<null doc>") << "," << mode << ")==================";
 
     if (m_doc && !mode.isEmpty()) {
         m_doc->setMode(mode);
@@ -544,7 +544,7 @@ void TextInfo::setMode(const QString &mode)
 
 void TextInfo::setHighlightingMode(const QString& highlight)
 {
-    KILE_DEBUG_MAIN << "==Kile::setHighlightingMode(" << m_doc->url() << "," << highlight << " )==================";
+    KILE_DEBUG_MAIN << "==Kile::setHighlightingMode(" << (m_doc ? m_doc->url().toString() : "<null doc>") << "," << highlight << " )==================";
 
     if (m_doc && !highlight.isEmpty()) {
         m_doc->setHighlightingMode(highlight);
@@ -572,13 +572,13 @@ QString TextInfo::matchBracket(QChar obracket, int &l, int &pos)
     }
 
     QString line, grab = "";
-    int count=0, len;
+    int count=0;
     ++pos;
 
     TodoResult todo;
     while(l <= m_doc->lines()) {
         line = getTextline(l,todo);
-        len = line.length();
+        int len = line.length();
         for (int i=pos; i < len; ++i) {
             if(line[i] == '\\' && (line[i+1] == obracket || line[i+1] == cbracket)) {
                 ++i;
@@ -605,7 +605,7 @@ QString TextInfo::matchBracket(QChar obracket, int &l, int &pos)
 
 QString TextInfo::getTextline(uint line, TodoResult &todo)
 {
-    static QRegExp reComments("[^\\\\](%.*$)");
+    static QRegularExpression reComments("[^\\\\](%.*$)");
 
     todo.type = -1;
     QString s = m_doc->line(line);
@@ -620,10 +620,11 @@ QString TextInfo::getTextline(uint line, TodoResult &todo)
             s.replace("\\\\", "  ");
 
             //remove comments
-            int pos = s.indexOf(reComments);
+            QRegularExpressionMatch match;
+            int pos = s.indexOf(reComments, 0, &match);
             if(pos != -1) {
                 searchTodoComment(s, pos,todo);
-                s = s.left(reComments.pos(1));
+                s = s.left(match.capturedStart(1));
             }
         }
     }
@@ -632,20 +633,21 @@ QString TextInfo::getTextline(uint line, TodoResult &todo)
 
 void TextInfo::searchTodoComment(const QString &s, uint startpos, TodoResult &todo)
 {
-    static QRegExp reTodoComment("\\b(TODO|FIXME)\\b(:|\\s)?\\s*(.*)");
+    static QRegularExpression reTodoComment("\\b(TODO|FIXME)\\b(:|\\s)?\\s*(.*)");
+    QRegularExpressionMatch todoCommentMatch;
 
-    if(s.indexOf(reTodoComment, startpos) != -1) {
-        todo.type = (reTodoComment.cap(1) == "TODO") ? KileStruct::ToDo : KileStruct::FixMe;
-        todo.colTag = reTodoComment.pos(1);
-        todo.colComment = reTodoComment.pos(3);
-        todo.comment = reTodoComment.cap(3).trimmed();
+    if(s.indexOf(reTodoComment, startpos, &todoCommentMatch) != -1) {
+        todo.type = (todoCommentMatch.capturedView(1) == QLatin1String("TODO")) ? KileStruct::ToDo : KileStruct::FixMe;
+        todo.colTag = todoCommentMatch.capturedStart(1);
+        todo.colComment = todoCommentMatch.capturedStart(3);
+        todo.comment = todoCommentMatch.capturedView(3).trimmed().toString();
     }
 }
 
 KTextEditor::View* TextInfo::createView(QWidget *parent, const char* /* name */)
 {
     if(!m_doc) {
-        return Q_NULLPTR;
+        return nullptr;
     }
     KTextEditor::View *view = m_doc->createView(parent);
     installEventFilters(view);
@@ -658,20 +660,16 @@ KTextEditor::View* TextInfo::createView(QWidget *parent, const char* /* name */)
 
 void TextInfo::startAbbreviationCompletion(KTextEditor::View *view)
 {
-    KTextEditor::CodeCompletionInterface* completionInterface = qobject_cast<KTextEditor::CodeCompletionInterface*>(view);
-    if(!completionInterface) {
-        return;
-    }
     KTextEditor::Range range = m_abbreviationCodeCompletionModel->completionRange(view, view->cursorPosition());
     if(!range.isValid()) {
         range = KTextEditor::Range(view->cursorPosition(), view->cursorPosition());
     }
-    completionInterface->startCompletion(range, m_abbreviationCodeCompletionModel);
+    view->startCompletion(range, m_abbreviationCodeCompletionModel);
 }
 
 void TextInfo::slotFileNameChanged()
 {
-    emit urlChanged(this, url());
+    Q_EMIT urlChanged(this, url());
 }
 
 void TextInfo::installEventFilters(KTextEditor::View *view)
@@ -765,21 +763,13 @@ void TextInfo::removeSignalConnections()
 
 void TextInfo::registerCodeCompletionModels(KTextEditor::View *view)
 {
-    KTextEditor::CodeCompletionInterface* completionInterface = qobject_cast<KTextEditor::CodeCompletionInterface*>(view);
-    if(!completionInterface) {
-        return;
-    }
-    completionInterface->registerCompletionModel(m_abbreviationCodeCompletionModel);
-    completionInterface->setAutomaticInvocationEnabled(true);
+    view->registerCompletionModel(m_abbreviationCodeCompletionModel);
+    view->setAutomaticInvocationEnabled(true);
 }
 
 void TextInfo::unregisterCodeCompletionModels(KTextEditor::View *view)
 {
-    KTextEditor::CodeCompletionInterface* completionInterface = qobject_cast<KTextEditor::CodeCompletionInterface*>(view);
-    if(!completionInterface) {
-        return;
-    }
-    completionInterface->unregisterCompletionModel(m_abbreviationCodeCompletionModel);
+    view->unregisterCompletionModel(m_abbreviationCodeCompletionModel);
 }
 
 void TextInfo::registerCodeCompletionModels()
@@ -842,24 +832,24 @@ void TextInfo::setDocumentContents(const QStringList& contents)
     m_documentContents = contents;
 }
 
-LaTeXInfo::LaTeXInfo(Extensions* extensions,
-                     KileAbbreviation::Manager* abbreviationManager,
-                     LatexCommands* commands,
-                     EditorExtension* editorExtension,
-                     KileConfiguration::Manager* manager,
-                     KileCodeCompletion::Manager* codeCompletionManager,
-                     KileTool::LivePreviewManager* livePreviewManager,
+LaTeXInfo::LaTeXInfo(Extensions *extensions,
+                     KileAbbreviation::Manager *abbreviationManager,
+                     LatexCommands *commands, 
+                     EditorExtension *editorExtension,
+                     KileConfiguration::Manager *manager,
+                     KileCodeCompletion::Manager *codeCompletionManager,
+                     KileTool::LivePreviewManager *livePreviewManager,
                      KileView::Manager *viewManager,
-                     KileParser::Manager* parserManager,
-                     KileDocument::Manager* documentManager)
+                     KileParser::Manager *parserManager,
+                     KileTool::Manager *toolManager)
     : TextInfo(extensions, abbreviationManager, parserManager, "LaTeX"),
       m_commands(commands),
       m_editorExtension(editorExtension),
       m_configurationManager(manager),
-      m_eventFilter(Q_NULLPTR),
+      m_eventFilter(nullptr),
       m_livePreviewManager(livePreviewManager),
       m_viewManager(viewManager),
-      m_documentManager(documentManager)
+      m_toolManager(toolManager)
 {
     m_inlinePreview = true;
     documentTypePromotionAllowed = false;
@@ -878,22 +868,18 @@ Type LaTeXInfo::getType()
     return LaTeX;
 }
 
-std::list<Extensions::ExtensionType> LaTeXInfo::getFileFilter() const
+std::vector<Extensions::ExtensionType> LaTeXInfo::getFileFilter() const
 {
     return {Extensions::TEX, Extensions::PACKAGES};
 }
 
 void LaTeXInfo::startLaTeXCompletion(KTextEditor::View *view)
 {
-    KTextEditor::CodeCompletionInterface* completionInterface = qobject_cast<KTextEditor::CodeCompletionInterface*>(view);
-    if(!completionInterface) {
-        return;
-    }
     KTextEditor::Range range = m_latexCompletionModel->completionRange(view, view->cursorPosition());
     if(!range.isValid()) {
         range = KTextEditor::Range(view->cursorPosition(), view->cursorPosition());
     }
-    completionInterface->startCompletion(range, m_latexCompletionModel);
+    view->startCompletion(range, m_latexCompletionModel);
 }
 
 void LaTeXInfo::updateStructLevelInfo() {
@@ -994,7 +980,7 @@ void LaTeXInfo::updateStructLevelInfo() {
 QList<QObject*> LaTeXInfo::createEventFilters(KTextEditor::View *view)
 {
     QList<QObject*> toReturn;
-    QObject *eventFilter = new LaTeXEventFilter(view, m_editorExtension);
+    QObject *eventFilter = new LaTeXEventFilter(view, m_editorExtension, m_viewManager, m_livePreviewManager, m_toolManager);
     connect(m_configurationManager, SIGNAL(configChanged()), eventFilter, SLOT(readConfig()));
     toReturn << eventFilter;
     return toReturn;
@@ -1022,22 +1008,14 @@ void LaTeXInfo::removeSignalConnections(KTextEditor::View *view)
 
 void LaTeXInfo::registerCodeCompletionModels(KTextEditor::View *view)
 {
-    KTextEditor::CodeCompletionInterface* completionInterface = qobject_cast<KTextEditor::CodeCompletionInterface*>(view);
-    if(!completionInterface) {
-        return;
-    }
-    completionInterface->registerCompletionModel(m_latexCompletionModel);
-    completionInterface->setAutomaticInvocationEnabled(true);
+    view->registerCompletionModel(m_latexCompletionModel);
+    view->setAutomaticInvocationEnabled(true);
     TextInfo::registerCodeCompletionModels(view);
 }
 
 void LaTeXInfo::unregisterCodeCompletionModels(KTextEditor::View *view)
 {
-    KTextEditor::CodeCompletionInterface* completionInterface = qobject_cast<KTextEditor::CodeCompletionInterface*>(view);
-    if(!completionInterface) {
-        return;
-    }
-    completionInterface->unregisterCompletionModel(m_latexCompletionModel);
+    view->unregisterCompletionModel(m_latexCompletionModel);
     TextInfo::unregisterCodeCompletionModels(view);
 }
 
@@ -1048,9 +1026,9 @@ BracketResult LaTeXInfo::matchBracket(int &l, int &pos)
 
     if(m_doc->line(l)[pos] == '[') {
         result.option = TextInfo::matchBracket('[', l, pos);
-        int p = 0;
         while(l < m_doc->lines()) {
-            if((p = getTextline(l, todo).indexOf('{', pos)) != -1) {
+            int p = getTextline(l, todo).indexOf('{', pos);
+            if(p != -1) {
                 pos = p;
                 break;
             }
@@ -1081,7 +1059,7 @@ void LaTeXInfo::checkChangedDeps()
 {
     if(m_depsPrev != m_deps) {
         KILE_DEBUG_MAIN << "===void LaTeXInfo::checkChangedDeps()===, deps have changed"<< Qt::endl;
-        emit(depChanged());
+        Q_EMIT(depChanged());
         m_depsPrev = m_deps;
     }
 }
@@ -1107,24 +1085,24 @@ void LaTeXInfo::installParserOutput(KileParser::ParserOutput *parserOutput)
     m_bIsRoot = latexParserOutput->bIsRoot;
 
     checkChangedDeps();
-    emit(isrootChanged(isLaTeXRoot()));
+    Q_EMIT(isrootChanged(isLaTeXRoot()));
     setDirty(false);
-    emit(parsingComplete());
+    Q_EMIT(parsingComplete());
 }
 
 void LaTeXInfo::setDocument(KTextEditor::Document *doc) {
-	TextInfo::setDocument(doc);
+    TextInfo::setDocument(doc);
 }
 
 bool LaTeXInfo::isInlinePreview() {
-	return m_inlinePreview;
+    return m_inlinePreview;
 }
 
 void LaTeXInfo::setInlinePreview(bool on) {
-	if (m_inlinePreview != on) {
-		m_inlinePreview = on;
-		emit inlinePreviewChanged(on);
-	}
+    if (m_inlinePreview != on) {
+        m_inlinePreview = on;
+        emit inlinePreviewChanged(on);
+    }
 }
 
 BibInfo::BibInfo(Extensions* extensions,
@@ -1163,7 +1141,7 @@ void BibInfo::installParserOutput(KileParser::ParserOutput *parserOutput)
     m_bibItems = bibtexParserOutput->bibItems;
 
     setDirty(false);
-    emit(parsingComplete());
+    Q_EMIT(parsingComplete());
 }
 
 Type BibInfo::getType()
@@ -1171,7 +1149,7 @@ Type BibInfo::getType()
     return BibTeX;
 }
 
-std::list<Extensions::ExtensionType> BibInfo::getFileFilter() const
+std::vector<Extensions::ExtensionType> BibInfo::getFileFilter() const
 {
     return {Extensions::BIB};
 }
@@ -1198,7 +1176,7 @@ Type ScriptInfo::getType()
     return Script;
 }
 
-std::list<Extensions::ExtensionType> ScriptInfo::getFileFilter() const
+std::vector<Extensions::ExtensionType> ScriptInfo::getFileFilter() const
 {
     return {Extensions::JS};
 }

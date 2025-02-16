@@ -2,7 +2,7 @@
     begin                : Sat Apr 26 2003
     copyright            : (C) 2003 by Jeroen Wijnhout (wijnhout@science.uva.nl)
                                2005 by Holger Danielsson (holger.danielsson@t-online.de)
-                               2007-2019 by Michel Ludwig (michel.ludwig@kdemail.net)
+                               2007-2024 by Michel Ludwig (michel.ludwig@kdemail.net)
  *******************************************************************************************/
 
 /***************************************************************************
@@ -24,7 +24,8 @@
 #include <KMessageBox>
 #include <KProcess>
 #include <KShell>
-#include <KIO/Job>
+#include <KIO/FileCopyJob>
+#include <KIO/SimpleJob>
 #include <KJobWidgets>
 #include <QTemporaryFile>
 
@@ -49,7 +50,7 @@ Info::Info() : type(KileDocument::Undefined)
 {
 }
 
-bool Info::operator==(const Info ti) const
+bool Info::operator==(const Info &ti) const
 {
     return name==ti.name;
 }
@@ -90,7 +91,7 @@ bool Manager::copyAppData(const QUrl &src, const QString& subdir, const QString&
         return copyJob->exec();
     }
     else {
-        KMessageBox::error(Q_NULLPTR, i18n("Could not find a folder to save %1 to.\nCheck whether you have a folder named \".kde\" with write permissions in your home folder.", fileName));
+        KMessageBox::error(nullptr, i18n("Could not find a folder to save %1 to.\nCheck whether you have a folder named \".kde\" with write permissions in your home folder.", fileName));
         return false;
     }
 }
@@ -138,7 +139,7 @@ void Manager::scanForTemplates() {
     QStringList dirs = KileUtilities::locateAll(QStandardPaths::AppDataLocation, "templates", QStandardPaths::LocateDirectory);
     QDir templates;
     KileTemplate::Info ti;
-    KileDocument::Extensions *extensions = m_kileInfo->extensions();
+    const KileDocument::Extensions *extensions = m_kileInfo->extensions();
 
     m_TemplateList.clear();
     for(QStringList::iterator i = dirs.begin(); i != dirs.end(); ++i) {
@@ -221,7 +222,7 @@ bool TemplateItem::operator<(const QListWidgetItem &other) const
 ////////////////////// TemplateIconView //////////////////////
 
 TemplateIconView::TemplateIconView(QWidget *parent)
-    : QListWidget(parent), m_templateManager(Q_NULLPTR), m_proc(Q_NULLPTR) {
+    : QListWidget(parent), m_templateManager(nullptr), m_proc(nullptr) {
     setViewMode(QListView::IconMode);
     setMovement(QListView::Static);
     setResizeMode(QListView::Adjust);
@@ -273,7 +274,7 @@ void TemplateIconView::searchLaTeXClassFiles()
 
     connect(m_proc, SIGNAL(readyReadStandardOutput()), this, SLOT(slotProcessOutput()));
     connect(m_proc, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(slotProcessExited(int,QProcess::ExitStatus)));
-    connect(m_proc, SIGNAL(error(QProcess::ProcessError)), this, SLOT(slotProcessError()));
+    connect(m_proc, &KProcess::errorOccurred, this, &TemplateIconView::slotProcessError);
     KILE_DEBUG_MAIN << "=== NewFileWidget::searchClassFiles() ====================";
     KILE_DEBUG_MAIN << "\texecute: " << command;
     m_proc->start();
@@ -288,7 +289,7 @@ void TemplateIconView::slotProcessOutput()
 void TemplateIconView::slotProcessError()
 {
     addTemplateIcons(KileDocument::LaTeX);
-    emit classFileSearchFinished();
+    Q_EMIT classFileSearchFinished();
 }
 
 void TemplateIconView::slotProcessExited(int /*exitCode*/, QProcess::ExitStatus exitStatus)
@@ -298,7 +299,7 @@ void TemplateIconView::slotProcessExited(int /*exitCode*/, QProcess::ExitStatus 
     }
 
     addTemplateIcons(KileDocument::LaTeX);
-    emit classFileSearchFinished();
+    Q_EMIT classFileSearchFinished();
 }
 
 void TemplateIconView::addTemplateIcons(KileDocument::Type type)

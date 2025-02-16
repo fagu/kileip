@@ -25,6 +25,7 @@
 #include <QAction>
 #include <KLocalizedString>
 #include <KColorScheme>
+#include <KStatefulBrush>
 #include <KStandardAction>
 #include <QUrl>
 
@@ -150,10 +151,10 @@ void LogWidget::slotItemClicked(QListWidgetItem *item)
 
     OutputInfo info = variant.value<OutputInfo>();
 
-    emit(outputInfoSelected(info));
+    Q_EMIT(outputInfoSelected(info));
 }
 
-void LogWidget::enterEvent(QEvent *)
+void LogWidget::enterEvent(QEnterEvent *)
 {
     adaptMouseCursor(mapFromGlobal(QCursor::pos()));
 }
@@ -193,10 +194,8 @@ void LogWidget::keyPressEvent(QKeyEvent *event)
 
 void LogWidget::deselectAllItems()
 {
-    QList<QListWidgetItem*> items = selectedItems();
-    for(QList<QListWidgetItem*>::iterator i = items.begin();
-            i != items.end(); ++i) {
-        QListWidgetItem *item = *i;
+    const QList<QListWidgetItem*> items = selectedItems();
+    for(QListWidgetItem *item : items) {
         item->setSelected(false);
     }
 }
@@ -223,7 +222,7 @@ void LogWidget::printMessageLine(int type, const QString& message, const QString
 {
     if(type == KileTool::Error) {
         KILE_DEBUG_MAIN << "showing error message emitted";
-        emit showingErrorMessage(this);
+        Q_EMIT showingErrorMessage(this);
     }
 
     QString myMsg = message.toHtmlEscaped();
@@ -231,17 +230,17 @@ void LogWidget::printMessageLine(int type, const QString& message, const QString
 
     switch(type) {
     case KileTool::Warning :
-        fontColor = "<font color='" + KStatefulBrush(KColorScheme::View, KColorScheme::NeutralText).brush(this).color().name() + "'>";
+        fontColor = "<font color='" + KStatefulBrush(KColorScheme::View, KColorScheme::NeutralText).brush(this->palette()).color().name() + "'>";
         break;
     case KileTool::ProblemWarning :
         if(KileConfig::hideProblemWarning()) {
             return;
         }
-        fontColor = "<font color='" + KStatefulBrush(KColorScheme::View, KColorScheme::NeutralText).brush(this).color().name() + "'>";
+        fontColor = "<font color='" + KStatefulBrush(KColorScheme::View, KColorScheme::NeutralText).brush(this->palette()).color().name() + "'>";
         break;
     case KileTool::Error: // fall through
     case KileTool::ProblemError:
-        fontColor = "<font color='" + KStatefulBrush(KColorScheme::View, KColorScheme::NegativeText).brush(this).color().name() + "'>";
+        fontColor = "<font color='" + KStatefulBrush(KColorScheme::View, KColorScheme::NegativeText).brush(this->palette()).color().name() + "'>";
         break;
     case KileTool::ProblemBadBox:
         if (KileConfig::hideProblemBadBox()) {
@@ -249,14 +248,14 @@ void LogWidget::printMessageLine(int type, const QString& message, const QString
         }
         {
             // 'KColorScheme::scheme' doesn't take the background colour into account, so we have to do it manually
-            const QColor color = (KStatefulBrush(KColorScheme::View, KColorScheme::NormalBackground).brush(this).color().lightnessF() > 0.5)
-                                 ? KColorScheme::shade(KStatefulBrush(KColorScheme::View, KColorScheme::NeutralText).brush(this).color(), KColorScheme::DarkShade)
-                                 : KColorScheme::shade(KStatefulBrush(KColorScheme::View, KColorScheme::NeutralText).brush(this).color(), KColorScheme::LightShade);
+            const QColor color = (KStatefulBrush(KColorScheme::View, KColorScheme::NormalBackground).brush(this->palette()).color().lightnessF() > 0.5)
+                                 ? KColorScheme::shade(KStatefulBrush(KColorScheme::View, KColorScheme::NeutralText).brush(this->palette()).color(), KColorScheme::DarkShade)
+                                 : KColorScheme::shade(KStatefulBrush(KColorScheme::View, KColorScheme::NeutralText).brush(this->palette()).color(), KColorScheme::LightShade);
             fontColor = "<font color='" + color.name() + "'>";
         }
         break;
     default:
-        fontColor = "<font color='" + KStatefulBrush(KColorScheme::View, KColorScheme::NormalText).brush(this).color().name() + "'>";
+        fontColor = "<font color='" + KStatefulBrush(KColorScheme::View, KColorScheme::NormalText).brush(this->palette()).color().name() + "'>";
         break;
     }
 
@@ -297,8 +296,8 @@ void LogWidget::printProblem(int type, const QString& problem, const OutputInfo&
 void LogWidget::printProblems(const QList<KileWidget::LogWidget::ProblemInformation>& list)
 {
     setUpdatesEnabled(false);
-    for(QList<ProblemInformation>::const_iterator i = list.begin(); i != list.end(); ++i) {
-        printMessage((*i).type, (*i).message, QString(), (*i).outputInfo, false, false);
+    for(const ProblemInformation& i : list) {
+        printMessage(i.type, i.message, QString(), i.outputInfo, false, false);
     }
     setUpdatesEnabled(true);
     scrollToBottom();

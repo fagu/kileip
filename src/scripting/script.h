@@ -15,8 +15,7 @@
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
-#include <QScriptEngine>
-#include <QScriptContext>
+#include <QJSEngine>
 #include <QMap>
 
 #include <QAction>
@@ -132,24 +131,12 @@ protected:
     KileScriptDocument *m_scriptDocument;
     KileScriptObject *m_kileScriptObject;
 
-    QScriptEngine *m_engine;
+    QJSEngine *m_engine;
     QString m_enginePluginCode;
 
     void scriptError(const QString &name);
 
 };
-
-////////////////////////////// ScriptHelpers //////////////////////////////
-
-QScriptValue debug(QScriptContext *context, QScriptEngine *engine);
-
 }
-
-// metatype registration only necessary until KF5 5.9
-#include <ktexteditor_version.h>
-#if KTEXTEDITOR_VERSION < QT_VERSION_CHECK(5, 10, 0)
-Q_DECLARE_METATYPE(KTextEditor::Cursor)
-Q_DECLARE_METATYPE(KTextEditor::Range)
-#endif
 
 #endif

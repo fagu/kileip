@@ -41,25 +41,6 @@ class ParserOutput;
 
 enum ParserType { LaTeX = 0, BibTeX };
 
-// NOTE: we cannot store pointer to TextInfo objects in the queue
-//       as this would cause too many problems when they are deleted
-//       and their content is still being parsed
-class DocumentParserInput : public ParserInput
-{
-public:
-    DocumentParserInput(const QUrl &url, QStringList lines,
-                        ParserType parserType,
-                        const QMap<QString, KileStructData>* dictStructLevel,
-                        bool showSectioningLabels,
-                        bool showStructureTodo);
-
-    QStringList lines;
-    ParserType parserType;
-    const QMap<QString, KileStructData>* dictStructLevel;
-    bool showSectioningLabels;
-    bool showStructureTodo;
-};
-
 class ParserThread : public QThread
 {
     Q_OBJECT
@@ -109,8 +90,8 @@ class DocumentParserThread : public ParserThread
     Q_OBJECT
 
 public:
-    explicit DocumentParserThread(KileInfo *info, QObject *parent = Q_NULLPTR);
-    virtual ~DocumentParserThread();
+    explicit DocumentParserThread(KileInfo *info, QObject *parent = nullptr);
+    virtual ~DocumentParserThread() override;
 
 public Q_SLOTS:
     void addDocument(KileDocument::TextInfo *textInfo);
@@ -128,13 +109,13 @@ class OutputParserThread: public ParserThread
     Q_OBJECT
 
 public:
-    explicit OutputParserThread(KileInfo *info, QObject *parent = Q_NULLPTR);
-    virtual ~OutputParserThread();
+    explicit OutputParserThread(KileInfo *info, QObject *parent = nullptr);
+    virtual ~OutputParserThread() override;
 
 public Q_SLOTS:
     void addLaTeXLogFile(const QString& logFile, const QString& sourceFile,
                          // for QuickPreview
-                         const QString& texFileName = "", int selrow = -1, int docrow = -1);
+                         const QString& texFileName = QString(), int selrow = -1, int docrow = -1);
     void removeFile(const QString& fileName);
 
 protected:

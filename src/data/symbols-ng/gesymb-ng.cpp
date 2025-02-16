@@ -39,7 +39,6 @@
 void readImageComments(const QString &fileName)
 {
     QImage image;
-    QString output;
 
     if(image.load(fileName)) {
         qDebug() << QString("Image %1 has Command _%2_").arg(fileName).arg(image.text("Command"));
@@ -55,10 +54,9 @@ void readImageComments(const QString &fileName)
 
 QString convertUTF8toLatin1String(const QString &string) {
 
-    QVector<uint> stringAsInt;
     QString stringAsLatin1;
 
-    Q_FOREACH(uint i, string.toUcs4()) {
+    for(uint i : string.toUcs4()) {
         stringAsLatin1 += QString("U+%1,").arg(i);
     }
     return stringAsLatin1;
@@ -81,7 +79,7 @@ void writeImageComments(const Command &cmd, const QString &fileName)
 
     QImage image;
     QString unicodeCommandAsLatin1, commentAsLatin1;
-    QString packagesarg, packages;
+    QString packagesarg;
 
     if(!cmd.unicodeCommand.isEmpty()) {
         unicodeCommandAsLatin1 = convertUTF8toLatin1String(cmd.unicodeCommand);
@@ -119,7 +117,7 @@ void writeImageComments(const Command &cmd, const QString &fileName)
 
 }
 
-QString generatePNG(QString latexFile, int index, QString symbolGroupName) {
+QString generatePNG(const QString &latexFile, int index, QString symbolGroupName) {
 
     QString texfile, texfileWithoutSuffix,pngfile;
     int latexret, dvipngret;
@@ -220,13 +218,12 @@ QList<Package> getAllPackages(const QDomElement &e) {
     return packages;
 }
 
-Command getCommandDefinition(const QDomElement &e, QList<Package> unicodePackages)
+Command getCommandDefinition(const QDomElement &e, const QList<Package> &unicodePackages)
 {
     if(e.isNull()) {
         return Command();
     }
 
-    Package pkg;
     Command cmd;
 
     cmd.unicodePackages = unicodePackages;
@@ -236,6 +233,7 @@ Command getCommandDefinition(const QDomElement &e, QList<Package> unicodePackage
     cmd.latexCommand = e.firstChildElement("latexCommand").text();
     cmd.unicodeCommand = e.firstChildElement("unicodeCommand").text();
     cmd.ImageCommand = e.firstChildElement("imageCommand").text();
+    cmd.referenceCount = 0;
 
     qDebug() << QString("cmd: latexCommand=%1, unicodeCommand=%2, imageCommand=%3, comment=%4, mathmode=%5").arg(cmd.latexCommand).arg(cmd.unicodeCommand).arg(cmd.ImageCommand).arg(cmd.comment).arg(cmd.mathMode);
 
@@ -338,11 +336,10 @@ int main(int argc, char** argv)
         n = n.nextSibling();
     }
 
-    QString content,pngfile;
     for(int i=0; i < commands.count(); i++) {
-        content = generateLatexFile(preamble,commands[i]);
+        QString content = generateLatexFile(preamble,commands[i]);
         qDebug() << content;
-        pngfile = generatePNG(content,i+1,symbolGroupName);
+        QString pngfile = generatePNG(content,i+1,symbolGroupName);
         writeImageComments(commands[i],pngfile);
         readImageComments(pngfile);
     }

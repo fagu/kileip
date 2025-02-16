@@ -57,19 +57,28 @@ CommandViewToolBox::CommandViewToolBox(KileInfo *ki, QWidget *parent)
     m_latexCompletionModel = new KileCodeCompletion::LaTeXCompletionModel(this,
             m_ki->codeCompletionManager(),
             m_ki->editorExtension());
+    auto wrapperLayout = new QVBoxLayout;
+    wrapperLayout->setContentsMargins(
+        style()->pixelMetric(QStyle::PM_LayoutLeftMargin),
+        style()->pixelMetric(QStyle::PM_LayoutTopMargin),
+        style()->pixelMetric(QStyle::PM_LayoutRightMargin),
+        style()->pixelMetric(QStyle::PM_LayoutBottomMargin)
+    );
     m_cwlFilesComboBox = new QComboBox(this);
+    wrapperLayout->addWidget(m_cwlFilesComboBox);
     connect(m_cwlFilesComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged),
     [=](int index) {
         populateCommands(m_cwlFilesComboBox->itemData(index).toString());
     });
 
     m_commandView = new CommandView(this);
+    m_commandView->setProperty("_breeze_borders_sides", QVariant::fromValue(QFlags{Qt::TopEdge}));
 
-    QVBoxLayout *layout = new QVBoxLayout();
-    layout->addWidget(m_cwlFilesComboBox);
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->setSpacing(0);
+    layout->setContentsMargins({});
+    layout->addLayout(wrapperLayout);
     layout->addWidget(m_commandView);
-
-    setLayout(layout);
 
     clearItems();
 }
@@ -86,7 +95,8 @@ void CommandViewToolBox::readCommandViewFiles()
 
     QStringList validCwlFiles;
 
-    for(QString file : KileConfig::completeTex()) {
+    const QStringList files = KileConfig::completeTex();
+    for (const QString& file : files) {
         // check, if the wordlist has to be read
         const QString validCwlFile = manager->validCwlFile(file);
 
@@ -97,7 +107,7 @@ void CommandViewToolBox::readCommandViewFiles()
 
     std::sort(validCwlFiles.begin(), validCwlFiles.end());
 
-    for(QString cwlFile : qAsConst(validCwlFiles)) {
+    for(const QString &cwlFile : std::as_const(validCwlFiles)) {
         m_cwlFilesComboBox->addItem(cwlFile, cwlFile);
     }
 
@@ -116,7 +126,7 @@ void CommandViewToolBox::populateCommands(const QString& cwlFile)
 
     const QStringList wordlist = manager->readCWLFile("tex/" + cwlFile + ".cwl");
 
-    for(QString string : wordlist) {
+    for(const QString &string : wordlist) {
         m_commandView->addItem(string);
     }
 }
@@ -140,7 +150,7 @@ void CommandViewToolBox::slotItemActivated(QListWidgetItem *item)
         int xpos,ypos;
         QString text = m_latexCompletionModel->filterLatexCommand(item->text(),ypos,xpos);
         if(!text.isEmpty()) {
-            emit(sendText(text));
+            Q_EMIT(sendText(text));
 
             // place cursor
             if(KileConfig::completeCursor() && (xpos > 0 || ypos > 0) ) {

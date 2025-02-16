@@ -18,12 +18,14 @@
 
 #include <QFile>
 #include <QList>
+#include <QRegularExpression>
 #include <QRegExp>
 #include <QTimer>
 
 #include <KConfig>
 #include <KLocalizedString>
 #include <KTextEditor/Cursor>
+#include <qregularexpression.h>
 
 #include "kiledebug.h"
 #include "abbreviationmanager.h"
@@ -39,7 +41,7 @@ namespace KileCodeCompletion {
 
 LaTeXCompletionModel::LaTeXCompletionModel(QObject *parent, KileCodeCompletion::Manager *manager,
         KileDocument::EditorExtension *editorExtension)
-    : KTextEditor::CodeCompletionModel(parent), m_codeCompletionManager(manager), m_editorExtension(editorExtension), m_currentView(Q_NULLPTR)
+    : KTextEditor::CodeCompletionModel(parent), m_codeCompletionManager(manager), m_editorExtension(editorExtension), m_currentView(nullptr)
 {
     setHasGroups(false);
 }
@@ -76,7 +78,11 @@ KTextEditor::Range LaTeXCompletionModel::updateCompletionRange(KTextEditor::View
 }
 
 static inline bool isSpecialLaTeXCommandCharacter(const QChar& c) {
-    return (c == '{' || c == '[' || c == '*' || c == ']' || c == '}');
+    return (c == QLatin1Char('{')
+         || c == QLatin1Char('[')
+         || c == QLatin1Char('*')
+         || c == QLatin1Char(']')
+         || c == QLatin1Char('}'));
 }
 
 static inline int specialLaTeXCommandCharacterOrdering(const QChar& c)
@@ -114,9 +120,7 @@ static bool laTeXCommandLessThan(const QString& s1, const QString& s2)
             if(isSpecialLaTeXCommandCharacter(c2)) {
                 return false;
             }
-            else {
-                return (c1 < c2);
-            }
+            return (c1 < c2);
         }
         else if(isSpecialLaTeXCommandCharacter(c1)) {
             if(isSpecialLaTeXCommandCharacter(c2)) {
@@ -126,9 +130,7 @@ static bool laTeXCommandLessThan(const QString& s1, const QString& s2)
             else if(c2.isLetterOrNumber()) {
                 return true;
             }
-            else {
-                return (c1 < c2);
-            }
+            return (c1 < c2);
         }
     }
     return true;
@@ -140,7 +142,7 @@ void LaTeXCompletionModel::buildModel(KTextEditor::View *view, const KTextEditor
     KILE_DEBUG_CODECOMPLETION << "Text in completion range: " << completionString;
     m_completionList.clear();
 
-    if(completionString.startsWith('\\')) {
+    if(completionString.startsWith(QLatin1Char('\\'))) {
         m_completionList = m_codeCompletionManager->getLaTeXCommands();
         m_completionList += m_codeCompletionManager->getLocallyDefinedLaTeXCommands(view);
     }
@@ -178,11 +180,11 @@ KTextEditor::Cursor LaTeXCompletionModel::determineLaTeXCommandStart(KTextEditor
 // 	QRegExp completionStartRegExp("(\\\\\\w*)[^\\\\]*$");
 
     // TeX allows '.' characters inside citation labels (bug 266670)
-    QRegExp completionStartRegExp("(\\\\([\\s\\{\\}\\[\\]\\w,.=\"'~:]|(\\&)|(\\$)|(\\%)(\\#)(\\_)|(\\{)|(\\})|(\\backslash)|(\\^)|(\\[)|(\\]))*)$");
-    completionStartRegExp.setMinimal(true);
+    QRegularExpression completionStartRegExp(QLatin1String("(\\\\([\\s\\{\\}\\[\\]\\w,.=\"'~:]|(\\&)|(\\$)|(\\%)(\\#)(\\_)|(\\{)|(\\})|(\\backslash)|(\\^)|(\\[)|(\\]))*)$"));
+    completionStartRegExp.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
     QString leftSubstring = line.left(position.column());
     KILE_DEBUG_CODECOMPLETION << "leftSubstring: " << leftSubstring;
-    int startPos = completionStartRegExp.lastIndexIn(leftSubstring);
+    int startPos = leftSubstring.lastIndexOf(completionStartRegExp);
     if(startPos >= 0) {
         return KTextEditor::Cursor(position.line(), startPos);
     }
@@ -195,14 +197,14 @@ bool LaTeXCompletionModel::isWithinLaTeXCommand(KTextEditor::Document *doc, cons
         const KTextEditor::Cursor& cursorPosition) const
 {
     QString commandText = doc->text(KTextEditor::Range(commandStart, cursorPosition));
-    int numOpenSquareBrackets = commandText.count(QRegExp("[^\\\\]\\["));
-    int numClosedSquareBrackets = commandText.count(QRegExp("[^\\\\]\\]"));
-    int numOpenCurlyBrackets = commandText.count(QRegExp("[^\\\\]\\{"));
-    int numClosedCurlyBrackets = commandText.count(QRegExp("[^\\\\]\\}"));
+    int numOpenSquareBrackets = commandText.count(QRegularExpression(QLatin1String("[^\\\\]\\[")));
+    int numClosedSquareBrackets = commandText.count(QRegularExpression(QLatin1String("[^\\\\]\\]")));
+    int numOpenCurlyBrackets = commandText.count(QRegularExpression(QLatin1String("[^\\\\]\\{")));
+    int numClosedCurlyBrackets = commandText.count(QRegularExpression(QLatin1String("[^\\\\]\\}")));
     if(numOpenSquareBrackets != numClosedSquareBrackets || numOpenCurlyBrackets != numClosedCurlyBrackets) {
         return true;
     }
-    if(numOpenSquareBrackets == 0 && numOpenCurlyBrackets == 0 && commandText.count(' ') == 0) {
+    if(numOpenSquareBrackets == 0 && numOpenCurlyBrackets == 0 && commandText.count(QLatin1Char(' ')) == 0) {
         return true;
     }
     return false;
@@ -215,7 +217,7 @@ KTextEditor::Range LaTeXCompletionModel::completionRange(KTextEditor::View *view
     KTextEditor::Cursor startCursor = position;
     KTextEditor::Cursor endCursor = position;
 
-    QRegExp completionEndRegExp("\\W|\\b|\\\\");
+    QRegularExpression completionEndRegExp(QStringLiteral("\\W|\\b|\\\\"));
 
     int cursorPos = position.column();
 
@@ -231,17 +233,17 @@ KTextEditor::Range LaTeXCompletionModel::completionRange(KTextEditor::View *view
     if(completionString.indexOf(m_codeCompletionManager->m_citeRegExp) != -1
             || completionString.indexOf(m_codeCompletionManager->m_referencesRegExp) != -1) {
         KILE_DEBUG_CODECOMPLETION << "found citation or reference!";
-        int openBracketIndex = completionString.indexOf('{');
+        int openBracketIndex = completionString.indexOf(QLatin1Char('{'));
         if(openBracketIndex != -1) {
             // TeX allows '.' characters inside citation labels (bug 266670)
-            QRegExp labelListRegExp("\\s*(([:.\\w]+)|([:.\\w]+(\\s*,\\s*[:.\\w]*)+))");
+            QRegExp labelListRegExp(QLatin1String("\\s*(([:.\\w]+)|([:.\\w]+(\\s*,\\s*[:.\\w]*)+))"));
             labelListRegExp.setMinimal(false);
             int column = openBracketIndex + 1;
             KILE_DEBUG_CODECOMPLETION << "open bracket column + 1: " << column;
             KILE_DEBUG_CODECOMPLETION << labelListRegExp.indexIn(completionString, openBracketIndex + 1);
             if(labelListRegExp.indexIn(completionString, openBracketIndex + 1) == openBracketIndex + 1
                     && labelListRegExp.matchedLength() + openBracketIndex + 1 == completionString.length()) {
-                QRegExp lastCommaRegExp(",\\s*");
+                QRegExp lastCommaRegExp(QLatin1String(",\\s*"));
                 int lastCommaIndex = lastCommaRegExp.lastIndexIn(completionString);
                 if(lastCommaIndex >= 0) {
                     KILE_DEBUG_CODECOMPLETION << "last comma found at: " << lastCommaIndex;
@@ -289,12 +291,11 @@ bool LaTeXCompletionModel::shouldStartCompletion(KTextEditor::View *view, const 
         return false;
     }
 
-    if(insertedText.endsWith('{')) {
+    if(insertedText.endsWith(QLatin1Char('{'))) {
         return true;
     }
-    else {
-        return CodeCompletionModelControllerInterface::shouldStartCompletion(view, insertedText, userInsertion, position);
-    }
+
+    return CodeCompletionModelControllerInterface::shouldStartCompletion(view, insertedText, userInsertion, position);
 }
 
 bool LaTeXCompletionModel::shouldAbortCompletion(KTextEditor::View *view, const KTextEditor::Range &range,
@@ -314,9 +315,9 @@ QString LaTeXCompletionModel::filterString(KTextEditor::View *view, const KTextE
     Q_UNUSED(position);
     KILE_DEBUG_CODECOMPLETION << "range: " << range;
     KILE_DEBUG_CODECOMPLETION << "text: " << (range.isValid() ? view->document()->text(range)
-                              : "(invalid range)");
+                              : QStringLiteral("(invalid range)"));
 
-    return "";
+    return QString();
 }
 
 QVariant LaTeXCompletionModel::data(const QModelIndex& index, int role) const
@@ -367,14 +368,14 @@ void LaTeXCompletionModel::executeCompletionItem(KTextEditor::View *view,
 {
     KTextEditor::Document *document = view->document();
     KTextEditor::Cursor startCursor = word.start();
-    const static QRegExp reEnv = QRegExp("^\\\\(begin|end)[^a-zA-Z]+");
+    const static QRegExp reEnv = QRegExp(QStringLiteral("^\\\\(begin|end)[^a-zA-Z]+"));
 
     int cursorXPos = -1, cursorYPos = -1;
     QString completionText = data(index.sibling(index.row(), Name), Qt::DisplayRole).toString();
 
     QString textToInsert;
     int envIndex = reEnv.indexIn(completionText);
-    if(completionText != "\\begin{}" && envIndex != -1) { // we are completing an environment
+    if(completionText != QStringLiteral("\\begin{}") && envIndex != -1) { // we are completing an environment
         QString prefix;
         prefix = document->text(KTextEditor::Range(startCursor.line(), 0,
                                 startCursor.line(), word.start().column()));
@@ -387,12 +388,12 @@ void LaTeXCompletionModel::executeCompletionItem(KTextEditor::View *view,
     // if there are brackets present immediately after 'word' (for example, due to auto-bracketing of
     // the editor), we still have to remove them
     QString replaceText = document->text(word);
-    const int numberOfOpenSimpleBrackets = replaceText.count('(');
-    const int numberOfOpenSquareBrackets = replaceText.count('[');
-    const int numberOfOpenCurlyBrackets = replaceText.count('{');
-    const int numberOfClosedSimpleBrackets = replaceText.count(')');
-    const int numberOfClosedSquareBrackets = replaceText.count(']');
-    const int numberOfClosedCurlyBrackets = replaceText.count('}');
+    const int numberOfOpenSimpleBrackets = replaceText.count(QLatin1Char('('));
+    const int numberOfOpenSquareBrackets = replaceText.count(QLatin1Char('['));
+    const int numberOfOpenCurlyBrackets = replaceText.count(QLatin1Char('{'));
+    const int numberOfClosedSimpleBrackets = replaceText.count(QLatin1Char(')'));
+    const int numberOfClosedSquareBrackets = replaceText.count(QLatin1Char(']'));
+    const int numberOfClosedCurlyBrackets = replaceText.count(QLatin1Char('}'));
     const int numberOfClosedBracketsLeft = (numberOfOpenSimpleBrackets - numberOfClosedSimpleBrackets)
                                            + (numberOfOpenSquareBrackets - numberOfClosedSquareBrackets)
                                            + (numberOfOpenCurlyBrackets - numberOfClosedCurlyBrackets);
@@ -403,9 +404,9 @@ void LaTeXCompletionModel::executeCompletionItem(KTextEditor::View *view,
         KTextEditor::Range bracketRange = KTextEditor::Range(word.end(), numberOfClosedBracketsLeft);
 
         QString bracketText = document->text(bracketRange);
-        if(bracketText.count(")") == (numberOfOpenSimpleBrackets - numberOfClosedSimpleBrackets)
-                && bracketText.count("]") == (numberOfOpenSquareBrackets - numberOfClosedSquareBrackets)
-                && bracketText.count("}") == (numberOfOpenCurlyBrackets - numberOfClosedCurlyBrackets)) {
+        if(bracketText.count(QLatin1Char(')')) == (numberOfOpenSimpleBrackets - numberOfClosedSimpleBrackets)
+                && bracketText.count(QLatin1Char(']')) == (numberOfOpenSquareBrackets - numberOfClosedSquareBrackets)
+                && bracketText.count(QLatin1Char('}')) == (numberOfOpenCurlyBrackets - numberOfClosedCurlyBrackets)) {
             document->removeText(bracketRange);
         }
     }
@@ -422,12 +423,12 @@ void LaTeXCompletionModel::executeCompletionItem(KTextEditor::View *view,
 
 QString LaTeXCompletionModel::filterLatexCommand(const QString &text, int &cursorYPos, int &cursorXPos)
 {
-    const static QRegExp reEnv = QRegExp("^\\\\(begin|end)[^a-zA-Z]+");
+    const static QRegExp reEnv = QRegExp(QStringLiteral("^\\\\(begin|end)[^a-zA-Z]+"));
 
     cursorXPos = -1, cursorYPos = -1;
     QString textToInsert;
     int envIndex = reEnv.indexIn(text);
-    if(text != "\\begin{}" && envIndex != -1) {
+    if(text != QStringLiteral("\\begin{}") && envIndex != -1) {
         textToInsert = buildEnvironmentCompletedText(text, QString(), cursorYPos, cursorXPos);
     }
     else {
@@ -491,7 +492,7 @@ QString LaTeXCompletionModel::buildRegularCompletedText(const QString &text, int
             s += c;
             if(cursorXPos < 0) {
                 // remember position after first brace
-                if(c == '[' && (i + 1) < text.length() &&  text[i + 1] == '<') {
+                if(c == QLatin1Char('[') && (i + 1) < text.length() &&  text[i + 1] == QLatin1Char('<')) {
                     cursorXPos = i + 2;
                     s += text[i + 1];
                     i++;
@@ -500,12 +501,12 @@ QString LaTeXCompletionModel::buildRegularCompletedText(const QString &text, int
                     cursorXPos = i + 1;
                 }
                 // insert bullet, if this is no cursorposition
-                if((!setCursor) && setBullets && !(c == '[' && (i + 1) < text.length() &&  text[i + 1] == '<')) {
+                if((!setCursor) && setBullets && !(c == QLatin1Char('[') && (i + 1) < text.length() &&  text[i + 1] == QLatin1Char('<'))) {
                     s += s_bullet;
                 }
             }
             // insert bullets after following braces
-            else if(setBullets && !(c == '[' && (i + 1) < text.length() &&  text[i + 1] == '<')) {
+            else if(setBullets && !(c == QLatin1Char('[') && (i + 1) < text.length() &&  text[i + 1] == QLatin1Char('<'))) {
                 s += s_bullet;
             }
             break;
@@ -524,14 +525,14 @@ QString LaTeXCompletionModel::buildRegularCompletedText(const QString &text, int
             break;
         case '.': // if the last character is a point of a range operator,
             // it will be replaced by a space or a bullet surrounded by spaces
-            if(checkGroup && (s.right(1) == ".")) {
+            if(checkGroup && (s.right(1) == QStringLiteral("."))) {
                 foundgroup = true;
                 s.truncate(s.length() - 1);
                 if(setBullets) {
-                    s += ' ' + s_bullet + ' ';
+                    s += QLatin1Char(' ') + s_bullet + QLatin1Char(' ');
                 }
                 else {
-                    s += ' ';
+                    s += QLatin1Char(' ');
                 }
             }
             else {
@@ -551,23 +552,23 @@ QString LaTeXCompletionModel::buildRegularCompletedText(const QString &text, int
         // search for braces, brackets and parens
         switch(s[1].unicode()) {
         case 'l':
-            if(s.left(6) == "\\left ") {
+            if(s.left(6) == QStringLiteral("\\left ")) {
                 pos = 5;
             }
             break;
         case 'b':
-            if(s.left(6) == "\\bigl ") {
+            if(s.left(6) == QStringLiteral("\\bigl ")) {
                 pos = 5;
             }
-            else if(s.left(7) == "\\biggl ") {
+            else if(s.left(7) == QStringLiteral("\\biggl ")) {
                 pos = 6;
             }
             break;
         case 'B' :
-            if(s.left(6) == "\\Bigl ") {
+            if(s.left(6) == QStringLiteral("\\Bigl ")) {
                 pos = 5;
             }
-            else if(s.left(7) == "\\Biggl ") {
+            else if(s.left(7) == QStringLiteral("\\Biggl ")) {
                 pos = 6;
             }
             break;
@@ -593,36 +594,37 @@ QString LaTeXCompletionModel::buildRegularCompletedText(const QString &text, int
 QString LaTeXCompletionModel::buildEnvironmentCompletedText(const QString &text, const QString &prefix,
         int &ypos, int &xpos) const
 {
-    static QRegExp reEnv = QRegExp("^\\\\(begin|end)\\{([^\\}]*)\\}([^\\\\]*)(.*)");
+    static QRegularExpression reEnv(QStringLiteral("^\\\\(begin|end)\\{([^\\}]*)\\}([^\\\\]*)(.*)"));
+    auto match = reEnv.match(text);
 
-    if(reEnv.indexIn(text) == -1) {
+    if(!match.hasMatch()) {
         return text;
     }
 
-    QString parameter = stripParameters(reEnv.cap(3));
-    QString start = reEnv.cap(1);
-    QString envname = reEnv.cap(2);
-    QString remainder = reEnv.cap(4);
-    QString whitespace = buildWhiteSpaceString(prefix);
-    QString envIndent = m_editorExtension->autoIndentEnvironment();
+    const QString start = match.captured(1);
+    const QString envname = match.captured(2);
+    const QString parameter = stripParameters(match.captured(3));
+    const QString remainder = match.captured(4);
+    const QString whitespace = buildWhiteSpaceString(prefix);
+    const QString envIndent = m_editorExtension->autoIndentEnvironment();
 
-    QString s = "\\" + start + "{" + envname + "}" + parameter + "\n";
+    QString s = QLatin1String("\\") + start + QLatin1Char('{') + envname + QLatin1Char('}') + parameter + QLatin1Char('\n');
 
     s += whitespace;
-    if(start != "end") {
+    if(start != QStringLiteral("end")) {
         s += envIndent;
     }
 
     if(!remainder.isEmpty()) {
-        s += remainder + ' ';
+        s += remainder + QLatin1Char(' ');
     }
 
     if(KileConfig::completeBullets() && !parameter.isEmpty()) {
         s += s_bullet;
     }
 
-    if(KileConfig::completeCloseEnv() && start != "end") {
-        s += '\n' + whitespace + "\\end{" + envname + "}\n";
+    if(KileConfig::completeCloseEnv() && start != QStringLiteral("end")) {
+        s += QLatin1Char('\n') + whitespace + QStringLiteral("\\end{") + envname + QStringLiteral("}\n");
     }
 
     if(parameter.isEmpty()) {
@@ -631,7 +633,7 @@ QString LaTeXCompletionModel::buildEnvironmentCompletedText(const QString &text,
     }
     else {
         ypos = 0;
-        if(parameter.left(2) == "[<") {
+        if(parameter.left(2) == QStringLiteral("[<")) {
             xpos = 10 + envname.length();
         }
         else {
@@ -647,7 +649,7 @@ QString LaTeXCompletionModel::buildWhiteSpaceString(const QString &s) const
     QString whitespace = s;
     for(int i = 0; i < whitespace.length(); ++i) {
         if(!whitespace[i].isSpace()) {
-            whitespace[i] = ' ';
+            whitespace[i] = QLatin1Char(' ');
         }
     }
     return whitespace;
@@ -700,12 +702,12 @@ bool AbbreviationCompletionModel::shouldStartCompletion(KTextEditor::View *view,
     Q_UNUSED(userInsertion);
     Q_UNUSED(position);
 
-    int len = insertedText.length();
-    QRegExp whitespace(" |\t");
-    whitespace.setMinimal(true);
-    int pos = insertedText.lastIndexOf(whitespace, -1);
+    const int len = insertedText.length();
+    QRegularExpression whitespace(QStringLiteral(" |\t"));
+    whitespace.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
+    const int pos = insertedText.lastIndexOf(whitespace, -1);
     // 'pos' is less than or equal to 'len - 1'
-    QString searchText = (pos >= 0 && pos < len) ? insertedText.right(len - pos - 1) : insertedText;
+    const QString searchText = (pos >= 0 && pos < len) ? insertedText.right(len - pos - 1) : insertedText;
 
     return (KileConfig::completeAutoAbbrev() && m_abbreviationManager->abbreviationStartsWith(searchText));
 }
@@ -757,15 +759,12 @@ KTextEditor::Range AbbreviationCompletionModel::completionRange(KTextEditor::Vie
         const KTextEditor::Cursor &position)
 {
     QString insertedText = view->document()->line(position.line()).left(position.column());
-    int len = insertedText.length();
 
-    QRegExp whitespace(" |\t");
-    whitespace.setMinimal(true);
-    int pos = insertedText.lastIndexOf(whitespace,-1);
-    QString searchText = (pos>=0 && pos<len-2) ? insertedText.right(len-pos-1) : insertedText;
-    pos++;
+    QRegularExpression whitespace(QStringLiteral(" |\t"));
+    whitespace.setPatternOptions(QRegularExpression::InvertedGreedinessOption);
+    int pos = insertedText.lastIndexOf(whitespace, -1);
 
-    return KTextEditor::Range( position.line(), pos, position.line(),position.column() );
+    return KTextEditor::Range(position.line(), pos + 1, position.line(), position.column());
 }
 
 QString AbbreviationCompletionModel::filterString(KTextEditor::View *view,
@@ -775,7 +774,7 @@ QString AbbreviationCompletionModel::filterString(KTextEditor::View *view,
     Q_UNUSED(view);
     Q_UNUSED(range);
     Q_UNUSED(position);
-    return "";
+    return QString();
 }
 
 void AbbreviationCompletionModel::executeCompletionItem(KTextEditor::View *view, const KTextEditor::Range& word,
@@ -783,14 +782,14 @@ void AbbreviationCompletionModel::executeCompletionItem(KTextEditor::View *view,
 {
     // replace abbreviation and take care of newlines
     QString completionText = data(index.sibling(index.row(), Name), Qt::DisplayRole).toString();
-    completionText.replace("%n","\n");
+    completionText.replace(QLatin1String("%n"), QLatin1String("\n"));
     KTextEditor::Document *document = view->document();
     document->replaceText(word, completionText);
 
     // look if there is a %C-wish to place the cursor
-    if (completionText.indexOf("%C") >= 0) {
+    if (completionText.indexOf(QStringLiteral("%C")) >= 0) {
         KTextEditor::Range searchrange = KTextEditor::Range(word.start(),document->lines()+1,0);
-        QVector<KTextEditor::Range> rangevec = document->searchText(searchrange,"%C");
+        QVector<KTextEditor::Range> rangevec = document->searchText(searchrange, QStringLiteral("%C"));
         if (rangevec.size() >= 1) {
             KTextEditor::Range range = rangevec.at(0);
             document->removeText(range);
@@ -865,12 +864,12 @@ void Manager::readConfig(KConfig *config)
         KILE_DEBUG_CODECOMPLETION << "   read wordlists...";
         // wordlists for Tex/Latex mode
         QStringList files = KileConfig::completeTex();
-        m_texWordList = readCWLFiles(files, "tex");
+        m_texWordList = readCWLFiles(files, QLatin1String("tex"));
         addUserDefinedLaTeXCommands(m_texWordList);
 
         // wordlist for dictionary mode
         files = KileConfig::completeDict();
-        m_dictWordList = readCWLFiles(files, "dictionary");
+        m_dictWordList = readCWLFiles(files, QLatin1String("dictionary"));
         m_dictWordList.sort();
 
         // remember changed lists
@@ -901,11 +900,11 @@ void Manager::startLaTeXCompletion(KTextEditor::View *view)
 void Manager::textInserted(KTextEditor::View* view, const KTextEditor::Cursor& /* position */, const QString& text)
 {
     // auto insert '$' if the user just typed a '$' character
-    if (KileConfig::autoInsertDollar() && text == "$") {
+    if (KileConfig::autoInsertDollar() && text == QLatin1String("$")) {
         // code completion seems to be never active, so there is no need to
         // check KTextEditor::CodeCompletionInterface::isCompletionActive()
         KTextEditor::Cursor currentCursorPos = view->cursorPosition();
-        view->document()->insertText(currentCursorPos, "$");
+        view->document()->insertText(currentCursorPos, QLatin1String("$"));
         view->setCursorPosition(currentCursorPos);
     }
 }
@@ -923,10 +922,10 @@ void Manager::startLaTeXEnvironment(KTextEditor::View *view)
     KTextEditor::Cursor cursor = view->cursorPosition();
     QString line = view->document()->line(cursor.line()).left(cursor.column());
 
-    QRegExp regexp("\\\\b|\\\\be|\\\\beg|\\\\begi|\\\\begin|\\\\begin\\{|\\\\begin\\{([a-zA-z]*)");
+    QRegExp regexp(QLatin1String("\\\\b|\\\\be|\\\\beg|\\\\begi|\\\\begin|\\\\begin\\{|\\\\begin\\{([a-zA-z]*)"));
     int pos = regexp.lastIndexIn(line);
     if(pos >= 0) {
-        view->document()->replaceText(KTextEditor::Range(cursor.line(), pos, cursor.line(), cursor.column()), "\\begin{"+regexp.cap(1));
+        view->document()->replaceText(KTextEditor::Range(cursor.line(), pos, cursor.line(), cursor.column()), QLatin1String("\\begin{") + regexp.cap(1));
     }
     else {
         // environment completion will start with "\begin{en" when the cursor is placed
@@ -941,13 +940,13 @@ void Manager::startLaTeXEnvironment(KTextEditor::View *view)
         // \en
         // it\en
         // \aen
-        QRegExp re("(^|[^\\\\A-Za-z])([a-zA-Z]+)$");
+        QRegExp re(QLatin1String("(^|[^\\\\A-Za-z])([a-zA-Z]+)$"));
         pos = re.indexIn(line);
         if(pos >= 0) {
-            view->document()->replaceText(KTextEditor::Range(cursor.line(), re.pos(2), cursor.line(), cursor.column()), "\\begin{" + re.cap(2));
+            view->document()->replaceText(KTextEditor::Range(cursor.line(), re.pos(2), cursor.line(), cursor.column()), QLatin1String("\\begin{") + re.cap(2));
         }
         else {
-            view->document()->insertText(cursor, "\\begin{");
+            view->document()->insertText(cursor, QLatin1String("\\begin{"));
         }
     }
 
@@ -974,21 +973,20 @@ void Manager::buildReferenceCitationRegularExpressions()
 {
     // build list of references
     QString references = getCommandsString(KileDocument::CmdAttrReference);
-    references.replace('*', "\\*");
-    m_referencesRegExp.setPattern("^\\\\(" + references + ")\\{");
-    m_referencesExtRegExp.setPattern("^\\\\(" + references + ")\\{[^\\{\\}\\\\]+,$");
+    references.replace(QLatin1Char('*'), QLatin1String("\\*"));
+    m_referencesRegExp.setPattern(QLatin1String("^\\\\(") + references + QLatin1String(")\\{"));
+    m_referencesExtRegExp.setPattern(QLatin1String("^\\\\(") + references + QLatin1String(")\\{[^\\{\\}\\\\]+,$"));
 
     // build list of citations
     QString citations = getCommandsString(KileDocument::CmdAttrCitations);
-    citations.replace('*',"\\*");
-    m_citeRegExp.setPattern("^\\\\(((c|C|noc)(ite|itep|itet|itealt|itealp|iteauthor|iteyear|iteyearpar|itetext))" + citations +  ")\\{");
-    m_citeExtRegExp.setPattern("^\\\\(((c|C|noc)(ite|itep|itet|itealt|itealp|iteauthor|iteyear|iteyearpar|itetext))" + citations + ")\\{[^\\{\\}\\\\]+,$");
+    citations.replace(QLatin1Char('*'), QLatin1String("\\*"));
+    m_citeRegExp.setPattern(QLatin1String("^\\\\(((c|C|noc)(ite|itep|itet|itealt|itealp|iteauthor|iteyear|iteyearpar|itetext))") + citations +  QLatin1String(")\\{"));
+    m_citeExtRegExp.setPattern(QLatin1String("^\\\\(((c|C|noc)(ite|itep|itet|itealt|itealp|iteauthor|iteyear|iteyearpar|itetext))") + citations + QLatin1String(")\\{[^\\{\\}\\\\]+,$"));
 }
 
 QString Manager::getCommandsString(KileDocument::CmdAttribute attrtype)
 {
     QStringList cmdlist;
-    QStringList::ConstIterator it;
 
     // get info about user-defined references
     KileDocument::LatexCommands *cmd = m_ki->latexCommands();
@@ -996,11 +994,11 @@ QString Manager::getCommandsString(KileDocument::CmdAttribute attrtype)
 
     // build list of references
     QString commands;
-    for(it = cmdlist.constBegin(); it != cmdlist.constEnd(); ++it) {
-        if(cmd->isStarredEnv(*it) ) {
-            commands += '|' + (*it).mid(1) + '*';
+    for(const QString& cmdEntry : std::as_const(cmdlist)) {
+        if(cmd->isStarredEnv(cmdEntry) ) {
+            commands += QLatin1Char('|') + cmdEntry.mid(1) + QLatin1Char('*');
         }
-        commands += '|' + (*it).mid(1);
+        commands += QLatin1Char('|') + cmdEntry.mid(1);
     }
     return commands;
 }
@@ -1008,7 +1006,6 @@ QString Manager::getCommandsString(KileDocument::CmdAttribute attrtype)
 void Manager::addUserDefinedLaTeXCommands(QStringList &wordlist)
 {
     QStringList cmdlist;
-    QStringList::ConstIterator it;
     KileDocument::LatexCmdAttributes attr;
 
     // get info about user-defined commands and environments
@@ -1016,40 +1013,38 @@ void Manager::addUserDefinedLaTeXCommands(QStringList &wordlist)
     cmd->commandList(cmdlist, KileDocument::CmdAttrNone, true);
 
     // add entries to wordlist
-    for(it = cmdlist.constBegin(); it != cmdlist.constEnd(); ++it) {
-        if(cmd->commandAttributes(*it, attr)) {
+    for(const QString& cmdEntry : std::as_const(cmdlist)) {
+        if(cmd->commandAttributes(cmdEntry, attr)) {
             QString command,eos;
             QStringList entrylist;
             if(attr.type < KileDocument::CmdAttrLabel) {         // environment
-                command = "\\begin{" + (*it);
-                eos = '}';
+                command = QLatin1String("\\begin{") + cmdEntry;
+                eos = QLatin1Char('}');
             }
             else {                                                   // command
-                command = (*it);
+                command = cmdEntry;
                 // eos.clear();
             }
 
             // get all possibilities into a stringlist
             entrylist.append(command + eos);
             if(!attr.option.isEmpty()) {
-                entrylist.append(command + eos + "[option]");
+                entrylist.append(command + eos + QLatin1String("[option]"));
             }
             if(attr.starred) {
-                entrylist.append(command + '*' + eos);
+                entrylist.append(command + QLatin1Char('*') + eos);
                 if (!attr.option.isEmpty()) {
-                    entrylist.append(command + '*' + eos + "[option]");
+                    entrylist.append(command + QLatin1Char('*') + eos + QLatin1String("[option]"));
                 }
             }
 
             // finally append entries to wordlist
-            QStringList::ConstIterator itentry;
-            for(itentry = entrylist.constBegin(); itentry != entrylist.constEnd(); ++itentry) {
-                QString entry = (*itentry);
+            for(QString entry : std::as_const(entrylist)) {
                 if(!attr.parameter.isEmpty()) {
-                    entry += "{param}";
+                    entry += QLatin1String("{param}");
                 }
                 if(attr.type == KileDocument::CmdAttrList) {
-                    entry += "\\item";
+                    entry += QLatin1String("\\item");
                 }
                 wordlist.append(entry);
             }
@@ -1060,7 +1055,7 @@ void Manager::addUserDefinedLaTeXCommands(QStringList &wordlist)
 QStringList Manager::readCWLFile(const QString &filename, bool fullPathGiven)
 {
     QStringList toReturn;
-    QString file = fullPathGiven ? filename : KileUtilities::locate(QStandardPaths::AppDataLocation, "complete/" + filename);
+    QString file = fullPathGiven ? filename : KileUtilities::locate(QStandardPaths::AppDataLocation, QLatin1String("complete/") + filename);
     if(file.isEmpty()) {
         return toReturn;
     }
@@ -1070,7 +1065,7 @@ QStringList Manager::readCWLFile(const QString &filename, bool fullPathGiven)
         QTextStream t(&f);         // use a text stream
         while(!t.atEnd()) {        // until end of file...
             QString s = t.readLine().trimmed();       // line of text excluding '\n'
-            if(!(s.isEmpty() || s.at(0) == '#')) {
+            if(!(s.isEmpty() || s.at(0) == QLatin1Char('#'))) {
                 toReturn.append(s);
             }
         }
@@ -1087,7 +1082,7 @@ QStringList Manager::readCWLFiles(const QStringList &files, const QString &dir)
     for(int i = 0; i < files.count(); ++i) {
         QString cwlfile = validCwlFile(files[i]);
         if( !cwlfile.isEmpty() ) {
-            wordlist += readCWLFile(dir + '/' + cwlfile + ".cwl");
+            wordlist += readCWLFile(dir + QLatin1Char('/') + cwlfile + QLatin1String(".cwl"));
         }
     }
     return wordlist;
@@ -1095,7 +1090,7 @@ QStringList Manager::readCWLFiles(const QStringList &files, const QString &dir)
 
 QString Manager::validCwlFile(const QString &filename)
 {
-    return (filename.at(0) == '1') ? filename.right( filename.length()-2 ) : QString();
+    return (filename.at(0) == QLatin1Char('1')) ? filename.right(filename.length() - 2) : QString();
 }
 
 
@@ -1105,11 +1100,11 @@ QString Manager::validCwlFile(const QString &filename)
 
 static void getCwlFiles(QMap<QString, QString> &map, const QString &dir)
 {
-    QStringList files = QDir(dir, "*.cwl").entryList();
-    for (QStringList::ConstIterator it = files.constBegin(); it != files.constEnd(); ++it) {
-        QString filename = QFileInfo(*it).fileName();
+    const QStringList files = QDir(dir, QLatin1String("*.cwl")).entryList();
+    for(const QString& file : files) {
+        QString filename = QFileInfo(file).fileName();
         if(!map.contains(filename)) {
-            map[filename] = dir + '/' + (*it);
+            map[filename] = dir + QLatin1Char('/') + file;
         }
     }
 }
@@ -1126,22 +1121,22 @@ QMap<QString, QString> Manager::getAllCwlFiles(const QString &localCwlPath, cons
 
 QPair<QString, QString> Manager::getCwlBaseDirs()
 {
-    QString localDir = KileUtilities::writableLocation(QStandardPaths::AppDataLocation) + QLatin1Char('/') + "complete";
+    QString localDir = KileUtilities::writableLocation(QStandardPaths::AppDataLocation) + QLatin1Char('/') + QLatin1String("complete");
     QString globalDir;
 
-    const QStringList dirs = KileUtilities::locateAll(QStandardPaths::AppDataLocation, "complete", QStandardPaths::LocateDirectory);
-    for(QStringList::ConstIterator it = dirs.constBegin(); it != dirs.constEnd(); ++it) {
-        if((*it) != localDir) {
-            globalDir = (*it);
+    const QStringList dirs = KileUtilities::locateAll(QStandardPaths::AppDataLocation, QLatin1String("complete"), QStandardPaths::LocateDirectory);
+    for(const QString& dir : dirs) {
+        if(dir != localDir) {
+            globalDir = dir;
             break;
         }
     }
     // we ensure that the directory strings end in '/'
-    if(!localDir.endsWith('/')) {
-        localDir += '/';
+    if(!localDir.endsWith(QLatin1Char('/'))) {
+        localDir += QLatin1Char('/');
     }
-    if(!globalDir.endsWith('/')) {
-        globalDir += '/';
+    if(!globalDir.endsWith(QLatin1Char('/'))) {
+        globalDir += QLatin1Char('/');
     }
     return QPair<QString, QString>(localDir, globalDir);
 }

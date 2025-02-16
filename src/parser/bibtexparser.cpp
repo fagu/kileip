@@ -16,8 +16,8 @@
 #include "bibtexparser.h"
 
 #include <QFileInfo>
-#include <QRegExp>
 #include <QDebug>
+#include <QRegularExpression>
 
 #include <KLocalizedString>
 
@@ -27,7 +27,7 @@
 
 namespace KileParser {
 
-BibTeXParserInput::BibTeXParserInput(const QUrl &url, QStringList textLines)
+BibTeXParserInput::BibTeXParserInput(const QUrl &url, const QStringList &textLines)
     : ParserInput(url),
       textLines(textLines)
 {
@@ -59,75 +59,84 @@ ParserOutput* BibTeXParser::parse()
 
     qCDebug(LOG_KILE_PARSER);
 
-    static QRegExp reItem("^(\\s*)@([a-zA-Z]+)");
-    static QRegExp reSpecial("string|preamble|comment");
+    static QRegularExpression reItem("^(\\s*)@([a-zA-Z]+)");
+    static QRegularExpression reSpecial("^string|preamble|comment$");
 
-    QString s, key;
+    QString key;
     int col = 0, startcol, startline = 0;
 
-// 	emit(parsingStarted(m_doc->lines()));
+// 	Q_EMIT(parsingStarted(m_doc->lines()));
     for(int i = 0; i < m_textLines.size(); ++i) {
         if(!m_parserThread->shouldContinueDocumentParsing()) {
             qCDebug(LOG_KILE_PARSER) << "stopping...";
             delete(parserOutput);
-            return Q_NULLPTR;
+            return nullptr;
         }
-// 		emit(parsingUpdate(i));
-        s = getTextLine(m_textLines, i);
-        if((s.indexOf(reItem) != -1) && !reSpecial.exactMatch(reItem.cap(2).toLower())) {
-            qCDebug(LOG_KILE_PARSER) << "found: " << reItem.cap(2);
-            //start looking for key
-            key = "";
-            bool keystarted = false;
-            int state = 0;
-            startcol = reItem.cap(1).length();
-            col  = startcol + reItem.cap(2).length();
+// 		Q_EMIT(parsingUpdate(i));
+        QString s = getTextLine(m_textLines, i);
+        auto match = reItem.match(s);
+        if (!match.hasMatch()) {
+            continue;
+        }
 
-            while(col < static_cast<int>(s.length())) {
-                ++col;
-                if(col == static_cast<int>(s.length())) {
-                    do {
-                        ++i;
-                        s = getTextLine(m_textLines, i);
-                    }
-                    while((s.length() == 0) && (i < m_textLines.size()));
+        auto specialMatch = reSpecial.match(match.captured(2).toLower());
 
-                    if(i == m_textLines.size()) {
-                        break;
-                    }
-                    col = 0;
+        if (specialMatch.hasMatch()) {
+            continue;
+        }
+
+        qCDebug(LOG_KILE_PARSER) << "found: " << match.captured(2);
+        //start looking for key
+        key = "";
+        bool keystarted = false;
+        int state = 0;
+        startcol = match.captured(1).length();
+        col  = startcol + match.captured(2).length();
+
+        while(col < static_cast<int>(s.length())) {
+            ++col;
+            if(col == static_cast<int>(s.length())) {
+                do {
+                    ++i;
+                    s = getTextLine(m_textLines, i);
                 }
+                while((s.length() == 0) && (i < m_textLines.size()));
 
-                if(state == 0) {
-                    if(s[col] == '{') {
-                        state = 1;
-                    }
-                    else if(!s[col].isSpace()) {
-                        break;
-                    }
+                if(i == m_textLines.size()) {
+                    break;
                 }
-                else if(state == 1) {
-                    if(s[col] == ',') {
-                        key = key.trimmed();
-                        qCDebug(LOG_KILE_PARSER) << "found: " << key;
-                        parserOutput->bibItems.append(key);
-                        parserOutput->structureViewItems.push_back(new StructureViewItem(key, startline+1, startcol, KileStruct::BibItem, 0, startline+1, startcol, "viewbib", reItem.cap(2).toLower()));
-                        break;
+                col = 0;
+            }
+
+            if(state == 0) {
+                if(s[col] == '{') {
+                    state = 1;
+                }
+                else if(!s[col].isSpace()) {
+                    break;
+                }
+            }
+            else if(state == 1) {
+                if(s[col] == ',') {
+                    key = key.trimmed();
+                    qCDebug(LOG_KILE_PARSER) << "found: " << key;
+                    parserOutput->bibItems.append(key);
+                    parserOutput->structureViewItems.push_back(new StructureViewItem(key, startline+1, startcol, KileStruct::BibItem, 0, startline+1, startcol, "viewbib", match.captured(2).toLower()));
+                    break;
+                }
+                else {
+                    key += s[col];
+                    if(!keystarted) {
+                        startcol = col;
+                        startline = i;
                     }
-                    else {
-                        key += s[col];
-                        if(!keystarted) {
-                            startcol = col;
-                            startline = i;
-                        }
-                        keystarted = true;
-                    }
+                    keystarted = true;
                 }
             }
         }
     }
 
-    return parserOutput;;
+    return parserOutput;
 }
 
 

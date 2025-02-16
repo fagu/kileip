@@ -19,7 +19,6 @@
 #include <QInputDialog>
 #include <QLabel>
 #include <QLayout>
-#include <QRegExp>
 #include <QSpinBox>
 #include <QStackedWidget>
 #include <QTabWidget>
@@ -27,12 +26,12 @@
 
 #include "kiledebug.h"
 #include <KLocalizedString>
-#include <kicondialog.h>
-#include <kiconloader.h>
-#include <kcombobox.h>
+#include <KIconDialog>
+#include <KIconLoader>
+#include <KComboBox>
 #include <QPushButton>
-#include <kconfig.h>
-#include <kmessagebox.h>
+#include <KConfig>
+#include <KMessageBox>
 #include <KConfigGroup>
 
 #include "kiletool_enums.h"
@@ -67,6 +66,8 @@ ToolConfig::ToolConfig(KileTool::Manager *mngr, QWidget *parent, const char *nam
     QListWidgetItem *item = m_configWidget->m_lstbTools->item(indexQuickBuild());
     if (item)
         m_configWidget->m_lstbTools->setCurrentItem(item);
+
+    connect(m_configWidget->m_cbShowAllTools, &QCheckBox::stateChanged, this, &ToolConfig::updateToollist);
 
     connect(m_configWidget->m_cbConfig, SIGNAL(activated(int)), this, SLOT(switchConfig(int)));
 
@@ -240,10 +241,19 @@ void ToolConfig::writeDefaults()
 
 void ToolConfig::updateToollist()
 {
+    QString last_current = m_current;
     //KILE_DEBUG_MAIN << "==ToolConfig::updateToollist()====================";
     m_configWidget->m_lstbTools->clear();
-    m_configWidget->m_lstbTools->addItems(KileTool::toolList(m_config, true));
+    m_configWidget->m_lstbTools->addItems(KileTool::toolList(m_config, m_configWidget->m_cbShowAllTools->checkState() == Qt::Unchecked));
     m_configWidget->m_lstbTools->sortItems();
+
+    QList<QListWidgetItem *> itemsList = m_configWidget->m_lstbTools->findItems(last_current, Qt::MatchExactly);
+    if(itemsList.isEmpty()) {
+        return;
+    }
+
+    m_configWidget->m_lstbTools->setCurrentItem(itemsList.first());
+    switchTo(last_current, false);
 }
 
 void ToolConfig::setMenu(int index)
@@ -303,6 +313,8 @@ void ToolConfig::switchTo(const QString & tool, bool save /* = true */)
     }
 
     m_current = tool;
+
+    m_configWidget->m_pshbRemoveTool->setEnabled(KileTool::menuFor(m_current, m_config) != QStringLiteral("none"));
 
     m_map.clear();
     if (!m_manager->retrieveEntryMap(m_current, m_map, false, false)) {
@@ -484,7 +496,7 @@ void ToolConfig::switchClass(const QString & cls)
 {
     if(m_map["class"] != cls) {
         setClass(cls);
-        emit(changed());
+        Q_EMIT(changed());
     }
 }
 
@@ -507,7 +519,7 @@ void ToolConfig::switchType(int index)
         m_map["type"] = "Process";
         break;
     }
-    emit(changed());
+    Q_EMIT(changed());
 }
 
 void ToolConfig::setCommand(const QString & command) {
