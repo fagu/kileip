@@ -297,7 +297,7 @@ void PreviewWidget::DisplayData::normalize() {
     region.translate(-pos);
     QList<QLine> oldborder = border;
     border.clear();
-    foreach (QLine line, oldborder)
+    for (QLine line : oldborder)
         border.push_back(line.translated(-pos));
     if (std::holds_alternative<Image>(image))
         std::get<Image>(image).rect.translate(-pos);
@@ -348,7 +348,7 @@ void PreviewWidget::paintEvent(QPaintEvent* ) {
     QPainter painter(this);
     // Draw the border
     painter.setPen(QColor(240,240,240)); // gray
-    foreach(QLine line, m_display_data->border)
+    for (QLine line : m_display_data->border)
         painter.drawLine(line);
     // Draw the image (if available)
     if (std::holds_alternative<Image>(m_display_data->image)) {

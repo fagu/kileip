@@ -87,7 +87,7 @@ void PreviewThread::run() {
         qDebug() << "Could not create temporary directory! Not creating previews.";
         return;
     }
-    forever {
+    while(true) {
         // Wait for dirty or abort
         QString preamble;
         std::vector<QString> todo;
@@ -231,7 +231,7 @@ void PreviewThread::binaryCreatePreviews(const QString &preamble, const std::vec
             qDebug() << "Failed code:" << mathenvs[start];
             std::vector<std::pair<QString,image_state> > upd;
             upd.emplace_back(mathenvs[start], image_error());
-            emit picturesAvailable(preamble, upd);
+            Q_EMIT(picturesAvailable(preamble, upd));
         }
     } else {
         qDebug() << "Succeeded:" << start << "--" << end << "(in" << tim.elapsed()*0.001 << "s)";
@@ -245,7 +245,7 @@ void PreviewThread::binaryCreatePreviews(const QString &preamble, const std::vec
             ipr++;
         }
         
-        emit picturesAvailable(preamble, upd);
+        Q_EMIT(picturesAvailable(preamble, upd));
     }
     
     if (keep_folders <= (int)success) {

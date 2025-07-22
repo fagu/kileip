@@ -1101,7 +1101,7 @@ bool LaTeXInfo::isInlinePreview() {
 void LaTeXInfo::setInlinePreview(bool on) {
     if (m_inlinePreview != on) {
         m_inlinePreview = on;
-        emit inlinePreviewChanged(on);
+        Q_EMIT(inlinePreviewChanged(on));
     }
 }
 
