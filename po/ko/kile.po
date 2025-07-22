@@ -1,13 +1,13 @@
 # Copyright (C) 2024 This file is copyright:
 # This file is distributed under the same license as the kile package.
-# SPDX-FileCopyrightText: 2019, 2020, 2021, 2022, 2023, 2024 Shinjo Park <kde@peremen.name>
+# SPDX-FileCopyrightText: 2019, 2020, 2021, 2022, 2023, 2024, 2025 Shinjo Park <kde@peremen.name>
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: kile\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
-"POT-Creation-Date: 2024-08-05 00:39+0000\n"
-"PO-Revision-Date: 2024-08-19 23:19+0200\n"
+"POT-Creation-Date: 2025-07-07 00:42+0000\n"
+"PO-Revision-Date: 2025-04-06 23:09+0200\n"
 "Last-Translator: Shinjo Park <kde@peremen.name>\n"
 "Language-Team: Korean <kde-kr@kde.org>\n"
 "Language: ko\n"
@@ -250,35 +250,41 @@ msgstr "시스템 검사 및 설정 마법사"
 msgid "Checking whether the system is set up correctly..."
 msgstr "시스템이 올바르게 설정되어 있는지 확인 중..."
 
-#: dialogs/configcheckerdialog.cpp:147
+#: dialogs/configcheckerdialog.cpp:134
+#, kde-format
+msgctxt "%p is the percent value, % is the percent sign"
+msgid "%p%"
+msgstr "%p%"
+
+#: dialogs/configcheckerdialog.cpp:148
 #, kde-format
 msgid "Configure the viewer tools to use the document viewer"
 msgstr "문서 뷰어로 사용하도록 뷰어 도구를 설정하는 중"
 
-#: dialogs/configcheckerdialog.cpp:149
+#: dialogs/configcheckerdialog.cpp:150
 #, kde-format
 msgid "Use the 'modern' configuration for the TeX, PDFTeX, and LaTeX tools"
 msgstr "TeX, PDFTeX, LaTeX 도구의 'Modern' 설정 사용"
 
-#: dialogs/configcheckerdialog.cpp:151
+#: dialogs/configcheckerdialog.cpp:152
 #, kde-format
 msgid ""
 "Use the 'modern' configuration for the PDFLaTeX, LuaLaTeX and XeLaTeX tools"
 msgstr "PDFLaTeX, LuaLaTeX, XeLaTeX 도구의 'Modern' 설정 사용"
 
-#: dialogs/configcheckerdialog.cpp:153
+#: dialogs/configcheckerdialog.cpp:154
 #, kde-format
 msgid ""
 "<br/>Please press 'Finish' now to accept the recommended configuration "
 "changes."
 msgstr "<br/>'완료'를 누르면 추천하는 설정 변경 사항을 적용합니다."
 
-#: dialogs/configcheckerdialog.cpp:156
+#: dialogs/configcheckerdialog.cpp:157
 #, kde-format
 msgid "Test Results"
 msgstr "검사 결과"
 
-#: dialogs/configcheckerdialog.cpp:231
+#: dialogs/configcheckerdialog.cpp:232
 #, kde-format
 msgid ""
 "The following <b>critical</b> tests did not succeed:<br/><br/>%1<br/><br/"
@@ -289,7 +295,7 @@ msgstr ""
 "올바르게 작동할 수 없습니다. 검사 결과를 참조하여<br/>프로그램 설정 상태를 수"
 "정하십시오."
 
-#: dialogs/configcheckerdialog.cpp:237
+#: dialogs/configcheckerdialog.cpp:238
 #, kde-format
 msgid ""
 "The following tests did not succeed:<br/><br/>%1<br/><br/>You will still be "
@@ -298,20 +304,20 @@ msgstr ""
 "다음 검사에 실패했습니다:<br/><br/>%1<br/><br/>Kile을 사용할 수는 있지만 모"
 "든 기능이 올바르게 작동하지는 않을 수도 있습니다."
 
-#: dialogs/configcheckerdialog.cpp:242
+#: dialogs/configcheckerdialog.cpp:243
 #, kde-format
 msgid ""
 "<b>No problems were detected. Kile will work correctly on your system.</b>"
 msgstr ""
 "<b>문제점을 발견하지 못했습니다. Kile이 시스템에서 올바르게 작동합니다.</b>"
 
-#: dialogs/configcheckerdialog.cpp:255
+#: dialogs/configcheckerdialog.cpp:256
 #, kde-format
 msgid ""
 "The embedded document viewer is available and live preview is supported."
 msgstr "내장된 문서 뷰어를 사용할 수 있으며 즉시 미리 보기를 지원합니다."
 
-#: dialogs/configcheckerdialog.cpp:258
+#: dialogs/configcheckerdialog.cpp:259
 #, kde-format
 msgid ""
 "The embedded document viewer is available, but the installed version of "
@@ -320,7 +326,7 @@ msgstr ""
 "내장된 문서 뷰어를 사용할 수 있으나 설치되어 있는 PDFLaTeX 버전이<br/> 즉시 "
 "미리 보기 기능과 <b>호환되지 않습니다</b>."
 
-#: dialogs/configcheckerdialog.cpp:266
+#: dialogs/configcheckerdialog.cpp:267
 #, kde-format
 msgid ""
 "The embedded document viewer is <b>not available</b> (as Okular is either "
@@ -330,7 +336,7 @@ msgstr ""
 "내장된 문서 뷰어를 <b>사용할 수 없습니다</b>. Okular를 사용할 수 없거나 설치"
 "된 버전이<br/>너무 오래되었습니다. 즉시 미리 보기를 지원하지 않습니다."
 
-#: dialogs/configcheckerdialog.cpp:290
+#: dialogs/configcheckerdialog.cpp:291
 #, kde-format
 msgid ""
 "<br/><font color=\"#FF0000\"><b>The tests could not be finished correctly. "
@@ -355,7 +361,7 @@ msgstr "Kile"
 
 #. i18n: ectx: property (windowTitle), widget (QWidget, KileWidgetLatexConfig)
 #. i18n: ectx: property (windowTitle), widget (QWidget, KileWidgetEnvironmentConfig)
-#: dialogs/configurationdialog.cpp:69 kile.cpp:696 kile.cpp:1076
+#: dialogs/configurationdialog.cpp:69 kile.cpp:696 kile.cpp:1084
 #: kileinfo.cpp:355 widgets/environmentconfigwidget.ui:20
 #: widgets/latexconfigwidget.ui:14
 #, kde-format
@@ -536,7 +542,7 @@ msgstr "명령[]"
 #. i18n: ectx: property (text), widget (QTreeWidget, environments)
 #: dialogs/findfilesdialog.cpp:144 dialogs/floatdialog_base.ui:29
 #: dialogs/latexcommanddialog_base.ui:69 dialogs/mathenvironmentdialog.cpp:56
-#: dialogs/tabular/newtabulardialog.cpp:123 kile.cpp:998
+#: dialogs/tabular/newtabulardialog.cpp:123 kile.cpp:1000
 #, kde-format
 msgid "Environment"
 msgstr "환경"
@@ -546,13 +552,13 @@ msgstr "환경"
 msgid "Image"
 msgstr "그림"
 
-#: dialogs/findfilesdialog.cpp:146 kilestdactions.cpp:128
-#: kilestdactions.cpp:129 usermenu/usermenu.cpp:909
+#: dialogs/findfilesdialog.cpp:146 kilestdactions.cpp:140
+#: kilestdactions.cpp:141 usermenu/usermenu.cpp:909
 #, kde-format
 msgid "Label"
 msgstr "이름표"
 
-#: dialogs/findfilesdialog.cpp:147 kilestdactions.cpp:134
+#: dialogs/findfilesdialog.cpp:147 kilestdactions.cpp:146
 #: usermenu/usermenu.cpp:914
 #, kde-format
 msgid "Reference"
@@ -1286,7 +1292,7 @@ msgstr "AMS 수식"
 #. i18n: ectx: ToolBar (mathToolBar)
 #. i18n: ectx: property (text), widget (QTreeWidget, environments)
 #: dialogs/latexcommanddialog.cpp:389 dialogs/latexcommanddialog_base.ui:84
-#: kile.cpp:1031 kilestdactions.cpp:452 kileui.rc:583
+#: kile.cpp:1039 kilestdactions.cpp:464 kileui.rc:583
 #, kde-format
 msgid "Math"
 msgstr "수식"
@@ -1296,7 +1302,7 @@ msgstr "수식"
 msgid "Lists"
 msgstr "목록"
 
-#: dialogs/latexcommanddialog.cpp:391 kile.cpp:1027 kilestdactions.cpp:80
+#: dialogs/latexcommanddialog.cpp:391 kile.cpp:1035 kilestdactions.cpp:80
 #, kde-format
 msgid "Tabular"
 msgstr "표"
@@ -1331,13 +1337,13 @@ msgstr "인용"
 msgid "Includes"
 msgstr "포함"
 
-#: dialogs/latexcommanddialog.cpp:623 kile.cpp:1078
+#: dialogs/latexcommanddialog.cpp:623 kile.cpp:1090
 #, kde-format
 msgid "LaTeX Environments"
 msgstr "LaTeX 환경"
 
 #: dialogs/latexcommanddialog.cpp:627 dialogs/latexcommanddialog.cpp:699
-#: kile.cpp:1077
+#: kile.cpp:1087
 #, kde-format
 msgid "LaTeX Commands"
 msgstr "LaTeX 명령"
@@ -1500,7 +1506,7 @@ msgstr[0] "항목 %1개를 찾았습니다."
 msgid "File Name"
 msgstr "파일 이름"
 
-#: dialogs/listselector.cpp:151 widgets/codecompletionconfigwidget.cpp:96
+#: dialogs/listselector.cpp:151 widgets/codecompletionconfigwidget.cpp:98
 #, kde-format
 msgid "Local File"
 msgstr "로컬 파일"
@@ -1543,8 +1549,8 @@ msgstr "파일 관리자에서 로컬 자동 완성 파일 관리"
 #: dialogs/listselector.cpp:210 dialogs/listselector.cpp:263
 #: dialogs/listselector.cpp:268 dialogs/pdf-wizard/pdfdialog.cpp:283
 #: dialogs/pdf-wizard/pdfdialog.cpp:939 dialogs/postscriptdialog.cpp:219
-#: widgets/codecompletionconfigwidget.cpp:196
-#: widgets/codecompletionconfigwidget.cpp:353
+#: widgets/codecompletionconfigwidget.cpp:198
+#: widgets/codecompletionconfigwidget.cpp:355
 #, kde-format
 msgid "yes"
 msgstr "예"
@@ -1553,8 +1559,8 @@ msgstr "예"
 #: dialogs/listselector.cpp:214 dialogs/pdf-wizard/pdfdialog.cpp:283
 #: dialogs/pdf-wizard/pdfdialog.cpp:939
 #: dialogs/pdf-wizard/pdfdialog_base.ui:518 dialogs/postscriptdialog.cpp:219
-#: widgets/codecompletionconfigwidget.cpp:200
-#: widgets/codecompletionconfigwidget.cpp:356
+#: widgets/codecompletionconfigwidget.cpp:202
+#: widgets/codecompletionconfigwidget.cpp:358
 #, kde-format
 msgid "no"
 msgstr "아니요"
@@ -2275,7 +2281,7 @@ msgstr ""
 "및 권한 설정, 변경, 삭제가 불가능합니다.</p>"
 
 #: dialogs/pdf-wizard/pdfdialog.cpp:910 dialogs/pdf-wizard/pdfdialog.cpp:1698
-#: dialogs/pdf-wizard/pdfdialog.cpp:1768 kile.cpp:1033
+#: dialogs/pdf-wizard/pdfdialog.cpp:1768 kile.cpp:1041
 #, kde-format
 msgid "PDF Tools"
 msgstr "PDF 도구"
@@ -2853,7 +2859,7 @@ msgstr "알 수 없는 파일 형식: '.ps' 파일만 출력 형식으로 사용
 msgid "Copies:"
 msgstr "복사 부수:"
 
-#: dialogs/postscriptdialog.cpp:517 kile.cpp:1032
+#: dialogs/postscriptdialog.cpp:517 kile.cpp:1040
 #, kde-format
 msgid "Postscript Tools"
 msgstr "포스트스크립트 도구"
@@ -4363,17 +4369,17 @@ msgstr "가운데 정렬"
 msgid "Align Right"
 msgstr "오른쪽 정렬"
 
-#: dialogs/tabular/newtabulardialog.cpp:85 kilestdactions.cpp:202
+#: dialogs/tabular/newtabulardialog.cpp:85 kilestdactions.cpp:214
 #, kde-format
 msgid "Bold"
 msgstr "굵게"
 
-#: dialogs/tabular/newtabulardialog.cpp:86 kilestdactions.cpp:205
+#: dialogs/tabular/newtabulardialog.cpp:86 kilestdactions.cpp:217
 #, kde-format
 msgid "Italic"
 msgstr "이탤릭"
 
-#: dialogs/tabular/newtabulardialog.cpp:87 kilestdactions.cpp:136
+#: dialogs/tabular/newtabulardialog.cpp:87 kilestdactions.cpp:148
 #, kde-format
 msgid "Underline"
 msgstr "밑줄"
@@ -4647,7 +4653,7 @@ msgstr "클립보드가 비어 있어서 표에 삽입할 내용이 없습니다
 msgid "Empty Clipboard"
 msgstr "빈 클립보드"
 
-#: dialogs/texdocumentationdialog.cpp:58 kile.cpp:1080
+#: dialogs/texdocumentationdialog.cpp:58 kile.cpp:1096
 #, kde-format
 msgid "Documentation Browser"
 msgstr "문서 탐색기"
@@ -4752,7 +4758,7 @@ msgid "Configure User Help"
 msgstr "사용자 도움말 설정"
 
 #. i18n: ectx: property (title), widget (QGroupBox, m_gbUserHelp)
-#: dialogs/userhelpdialog.cpp:57 dialogs/userhelpdialog.cpp:378 kile.cpp:1092
+#: dialogs/userhelpdialog.cpp:57 dialogs/userhelpdialog.cpp:378 kile.cpp:1110
 #: widgets/helpconfigwidget.ui:86
 #, kde-format
 msgid "User Help"
@@ -5860,7 +5866,7 @@ msgstr ""
 "<br/> 그림을 클릭하면 해당하는 명령을 삽입하고, \"Shift\" 키를 누르고 있으면 "
 "수식 모드로 삽입하고, \"Ctrl\" 키를 누르면 중괄호로 둘러쌉니다.</p>"
 
-#: kile.cpp:707 widgets/codecompletionconfigwidget.cpp:55
+#: kile.cpp:707 widgets/codecompletionconfigwidget.cpp:57
 #, kde-format
 msgid "Abbreviation"
 msgstr "축약형"
@@ -6066,7 +6072,7 @@ msgstr "모든 프로젝트 파일 열기(&P)"
 msgid "Find in &Project..."
 msgstr "프로젝트에서 찾기(&P)..."
 
-#: kile.cpp:911 kile.cpp:1009 kile.cpp:2150 kiledocmanager.cpp:1963
+#: kile.cpp:911 kile.cpp:1017 kile.cpp:2168 kiledocmanager.cpp:1963
 #: kiledocmanager.cpp:1973
 #, kde-format
 msgid "Clean"
@@ -6200,128 +6206,128 @@ msgstr "닫기"
 msgid "Selection"
 msgstr "선택"
 
-#: kile.cpp:999
+#: kile.cpp:1003
 #, kde-format
 msgid "Subdocument"
 msgstr "하위 문서"
 
-#: kile.cpp:1000
+#: kile.cpp:1006
 #, kde-format
 msgid "Mathgroup"
 msgstr "수식 그룹"
 
-#: kile.cpp:1005
+#: kile.cpp:1013
 #, kde-format
 msgid "&Bibliography"
 msgstr "서지 정보 목록(&B)"
 
 #. i18n: ectx: Menu (settings)
-#: kile.cpp:1011 kileui.rc:517
+#: kile.cpp:1019 kileui.rc:517
 #, kde-format
 msgid "&Settings"
 msgstr "설정(&S)"
 
-#: kile.cpp:1014
+#: kile.cpp:1022
 #, kde-format
 msgid "Settings for BibTeX"
 msgstr "BibTeX 설정"
 
-#: kile.cpp:1018
+#: kile.cpp:1026
 #, kde-format
 msgid "Settings for Biblatex"
 msgstr "Biblatex 설정"
 
-#: kile.cpp:1025 kile.cpp:2255
+#: kile.cpp:1033 kile.cpp:2273
 #, kde-format
 msgid "Quick Start"
 msgstr "빠른 시작"
 
-#: kile.cpp:1028 kilestdactions.cpp:385
+#: kile.cpp:1036 kilestdactions.cpp:397
 #, kde-format
 msgid "Array"
 msgstr "배열"
 
-#: kile.cpp:1029 kile.cpp:2307 kilestdactions.cpp:79
+#: kile.cpp:1037 kile.cpp:2325 kilestdactions.cpp:79
 #, kde-format
 msgid "Tabbing"
 msgstr "탭 지정"
 
-#: kile.cpp:1030
+#: kile.cpp:1038
 #, kde-format
 msgid "Floats"
 msgstr "플로트"
 
-#: kile.cpp:1035
+#: kile.cpp:1043
 #, kde-format
 msgid "Define Current Document as '&Master Document'"
 msgstr "현재 문서를 '마스터 문서'로 지정(&M)"
 
-#: kile.cpp:1040
+#: kile.cpp:1048
 #, kde-format
 msgid "Show Document Viewer"
 msgstr "문서 뷰어 표시"
 
-#: kile.cpp:1047
+#: kile.cpp:1055
 #, kde-format
 msgid "Show S&ide Bar"
 msgstr "사이드바 표시(&I)"
 
-#: kile.cpp:1053
+#: kile.cpp:1061
 #, kde-format
 msgid "Show Mess&ages Bar"
 msgstr "메시지 표시줄 표시(&A)"
 
-#: kile.cpp:1065
+#: kile.cpp:1073
 #, kde-format
 msgid "Watch File Mode"
 msgstr "파일 감시 모드"
 
-#: kile.cpp:1079
+#: kile.cpp:1093
 #, kde-format
 msgid "Context Help"
 msgstr "문맥 도움말"
 
-#: kile.cpp:1082
+#: kile.cpp:1100
 #, kde-format
 msgid "&About Editor Component"
 msgstr "편집기 구성 요소 정보(&A)"
 
-#: kile.cpp:1090
+#: kile.cpp:1108
 #, kde-format
 msgid "&System Check..."
 msgstr "시스템 검사(&S)..."
 
-#: kile.cpp:1108 kileinfo.cpp:357
+#: kile.cpp:1126 kileinfo.cpp:357
 #, kde-format
 msgid "BibTeX"
 msgstr "BibTeX"
 
-#: kile.cpp:1111
+#: kile.cpp:1129
 #, kde-format
 msgid "Biblatex"
 msgstr "BibLaTeX"
 
-#: kile.cpp:1256 widgets/toolconfigwidget.cpp:76
+#: kile.cpp:1274 widgets/toolconfigwidget.cpp:77
 #, kde-format
 msgid "Compile"
 msgstr "컴파일"
 
-#: kile.cpp:1257 widgets/toolconfigwidget.cpp:78
+#: kile.cpp:1275 widgets/toolconfigwidget.cpp:79
 #, kde-format
 msgid "View"
 msgstr "보기"
 
-#: kile.cpp:1258 widgets/toolconfigwidget.cpp:77
+#: kile.cpp:1276 widgets/toolconfigwidget.cpp:78
 #, kde-format
 msgid "Convert"
 msgstr "변환"
 
-#: kile.cpp:1259 widgets/toolconfigwidget.cpp:75
+#: kile.cpp:1277 widgets/toolconfigwidget.cpp:76
 #, kde-format
 msgid "Quick"
 msgstr "빠르게"
 
-#: kile.cpp:1438
+#: kile.cpp:1456
 #, kde-format
 msgid ""
 "It was impossible to create the \"Archive\" tool.\n"
@@ -6332,108 +6338,108 @@ msgstr ""
 "\n"
 "Kile 설치 상태를 확인하고 다시 설정하십시오."
 
-#: kile.cpp:1440
+#: kile.cpp:1458
 #, kde-format
 msgid "Unable to Create Archive Tool"
 msgstr "압축 파일 생성 도구를 만들 수 없음"
 
-#: kile.cpp:1505
+#: kile.cpp:1523
 #, kde-format
 msgid "Project: %1"
 msgstr "프로젝트: %1"
 
-#: kile.cpp:1508
+#: kile.cpp:1526
 #, kde-format
 msgid "Project: %1 (Master document: %2)"
 msgstr "프로젝트: %1(마스터 문서: %2)"
 
-#: kile.cpp:1513
+#: kile.cpp:1531
 #, kde-format
 msgid "Normal mode"
 msgstr "일반 모드"
 
-#: kile.cpp:1516
+#: kile.cpp:1534
 #, kde-format
 msgid "Master document: %1"
 msgstr "마스터 문서: %1"
 
-#: kile.cpp:1521 kile.cpp:2664
+#: kile.cpp:1539 kile.cpp:2682
 #, kde-format
 msgid "Define Current Document as 'Master Document'"
 msgstr "현재 문서를 '마스터 문서'로 지정"
 
-#: kile.cpp:1525 kile.cpp:2654
+#: kile.cpp:1543 kile.cpp:2672
 #, kde-format
 msgid "Normal mode (current master document: %1)"
 msgstr "일반 모드(현재 마스터 문서: %1)"
 
-#: kile.cpp:1765
+#: kile.cpp:1783
 #, kde-format
 msgctxt "Window caption in read-only mode: <file name> [Read-Only]"
 msgid "%1 [Read-Only]"
 msgstr "%1 [읽기 전용]"
 
-#: kile.cpp:2143
+#: kile.cpp:2161
 #, kde-format
 msgid "There is no active document or it is not saved."
 msgstr "활성화된 문서가 없거나 저장되지 않았습니다."
 
-#: kile.cpp:2226
+#: kile.cpp:2244
 #, kde-format
 msgid "You have to include the package %1."
 msgstr "%1 패키지를 포함해야 합니다."
 
-#: kile.cpp:2226 kile.cpp:2229
+#: kile.cpp:2244 kile.cpp:2247
 #, kde-format
 msgid "Insert text"
 msgstr "문자열 삽입"
 
-#: kile.cpp:2229
+#: kile.cpp:2247
 #, kde-format
 msgid "You have to include the packages %1."
 msgstr "%1 패키지를 포함해야 합니다."
 
-#: kile.cpp:2450
+#: kile.cpp:2468
 #, kde-format
 msgid "No Name"
 msgstr "이름 없음"
 
-#: kile.cpp:2486
+#: kile.cpp:2504
 #, kde-format
 msgid "no name"
 msgstr "이름 없음"
 
-#: kile.cpp:2682
+#: kile.cpp:2700
 #, kde-format
 msgid ""
 "In order to define the current document as a master document, it has to be "
 "saved first."
 msgstr "현재 문서를 마스터 문서로 지정하려면 먼저 저장해야 합니다."
 
-#: kile.cpp:3024
+#: kile.cpp:3042
 #, kde-format
 msgctxt "@info:status status bar label for block selection mode"
 msgid "BLOCK"
 msgstr "블록"
 
-#: kile.cpp:3025
+#: kile.cpp:3043
 #, kde-format
 msgctxt "@info:status status bar label for line selection mode"
 msgid "LINE"
 msgstr "줄"
 
-#: kile.cpp:3032
+#: kile.cpp:3050
 #, kde-format
 msgid "Refreshing structure..."
 msgstr "구조 새로 고치는 중..."
 
-#: kile.cpp:3050
+#: kile.cpp:3068
 #, kde-format
 msgid ""
 "This will hide the menu bar completely. You can show it again by typing %1."
 msgstr "메뉴 표시줄을 완전히 숨깁니다. %1 키를 눌러서 다시 볼 수 있습니다."
 
-#: kile.cpp:3053
+#: kile.cpp:3071
 #, kde-format
 msgid "Hide menu bar"
 msgstr "메뉴 표시줄 숨기기"
@@ -7700,17 +7706,17 @@ msgstr "문서 뷰어를 사용할 수 없음"
 msgid "Please disable the live preview before launching this tool"
 msgstr "이 도구를 실행하기 전에 즉시 미리 보기를 비활성화하십시오"
 
-#: kilelyxserver.cpp:240
+#: kilelyxserver.cpp:241
 #, kde-format
 msgid "Cite"
 msgstr "인용"
 
-#: kilelyxserver.cpp:246
+#: kilelyxserver.cpp:247
 #, kde-format
 msgid "Add BibTeX database"
 msgstr "BibTeX 데이터베이스 추가"
 
-#: kilelyxserver.cpp:251
+#: kilelyxserver.cpp:252
 #, kde-format
 msgid "Paste"
 msgstr "붙여넣기"
@@ -8141,7 +8147,7 @@ msgstr "\\textit{이탤릭 문자열}"
 msgid "Slanted - \\textsl{}"
 msgstr "기울임꼴 - \\textsl{}"
 
-#: kilestdactions.cpp:73 kilestdactions.cpp:206
+#: kilestdactions.cpp:73 kilestdactions.cpp:218
 #, kde-format
 msgid "Slanted"
 msgstr "기울임꼴"
@@ -8462,17 +8468,17 @@ msgstr "그림 삽입 - \\includegraphics{file}"
 msgid "Image Insertion"
 msgstr "그림 삽입"
 
-#: kilestdactions.cpp:95
+#: kilestdactions.cpp:97
 #, kde-format
 msgid "Customizable File Inclusion - \\include{file}"
 msgstr "사용자 정의 가능 파일 포함 - \\include{file}"
 
-#: kilestdactions.cpp:95
+#: kilestdactions.cpp:97
 #, kde-format
 msgid "Customizable File Inclusion"
 msgstr "사용자 정의 가능 파일 포함"
 
-#: kilestdactions.cpp:95
+#: kilestdactions.cpp:101
 #, kde-format
 msgid ""
 "\\include{file}\n"
@@ -8483,22 +8489,22 @@ msgstr ""
 "\\include 명령은 \\includeonly 명령과 함께 사용되어 파일을 선택적으로 포함시"
 "킬 수 있습니다."
 
-#: kilestdactions.cpp:95 kilestdactions.cpp:96
+#: kilestdactions.cpp:102 kilestdactions.cpp:108
 #, kde-format
 msgid "Type or select a filename: "
 msgstr "파일 이름을 입력하거나 선택:"
 
-#: kilestdactions.cpp:96
+#: kilestdactions.cpp:103
 #, kde-format
 msgid "File Inclusion - \\input{file}"
 msgstr "파일 포함 - \\input{file}"
 
-#: kilestdactions.cpp:96
+#: kilestdactions.cpp:103
 #, kde-format
 msgid "File Inclusion"
 msgstr "파일 포함"
 
-#: kilestdactions.cpp:96
+#: kilestdactions.cpp:107
 #, kde-format
 msgid ""
 "\\input{file}\n"
@@ -8510,12 +8516,12 @@ msgstr ""
 "\\input 명령을 사용하면 지정한 파일을 읽어서 파일의 내용이 해당 지점에 삽입"
 "된 것처럼 처리합니다."
 
-#: kilestdactions.cpp:98 widgets/structurewidget.cpp:774
+#: kilestdactions.cpp:110 widgets/structurewidget.cpp:774
 #, kde-format
 msgid "Sectioning"
 msgstr "장과 절 나누기"
 
-#: kilestdactions.cpp:100
+#: kilestdactions.cpp:112
 #, kde-format
 msgid ""
 "\\part{title}\n"
@@ -8525,19 +8531,19 @@ msgstr ""
 "\\part{title}\n"
 "\\part*{title}: 번호 매기기에 포함되지 않으며 목차에 표시되지 않음\n"
 
-#: kilestdactions.cpp:100
+#: kilestdactions.cpp:112
 #, kde-format
 msgid "&Part"
 msgstr "부분(&P)"
 
-#: kilestdactions.cpp:100 kilestdactions.cpp:102 kilestdactions.cpp:103
-#: kilestdactions.cpp:104 kilestdactions.cpp:105 kilestdactions.cpp:107
-#: kilestdactions.cpp:108
+#: kilestdactions.cpp:112 kilestdactions.cpp:114 kilestdactions.cpp:115
+#: kilestdactions.cpp:116 kilestdactions.cpp:117 kilestdactions.cpp:119
+#: kilestdactions.cpp:120
 #, kde-format
 msgid "No &numbering"
 msgstr "번호 없음(&N)"
 
-#: kilestdactions.cpp:102
+#: kilestdactions.cpp:114
 #, kde-format
 msgid ""
 "\\chapter{title}\n"
@@ -8549,12 +8555,12 @@ msgstr ""
 "\\chapter*{title}: 번호 매기기에 포함되지 않으며 목차에 표시되지 않음\n"
 "문서 클래스가 'report'나 'book'일 때에만 해당합니다."
 
-#: kilestdactions.cpp:102
+#: kilestdactions.cpp:114
 #, kde-format
 msgid "C&hapter"
 msgstr "장(&H)"
 
-#: kilestdactions.cpp:103
+#: kilestdactions.cpp:115
 #, kde-format
 msgid ""
 "\\section{title}\n"
@@ -8564,12 +8570,12 @@ msgstr ""
 "\\section{title}\n"
 "\\section*{title}: 번호 매기기에 포함되지 않으며 목차에 표시되지 않음"
 
-#: kilestdactions.cpp:103
+#: kilestdactions.cpp:115
 #, kde-format
 msgid "&Section"
 msgstr "절(&S)"
 
-#: kilestdactions.cpp:104
+#: kilestdactions.cpp:116
 #, kde-format
 msgid ""
 "\\subsection{title}\n"
@@ -8579,12 +8585,12 @@ msgstr ""
 "\\subsection{title}\n"
 "\\subsection*{title}: 번호 매기기에 포함되지 않으며 목차에 표시되지 않음"
 
-#: kilestdactions.cpp:104
+#: kilestdactions.cpp:116
 #, kde-format
 msgid "&Subsection"
 msgstr "하위 절(&S)"
 
-#: kilestdactions.cpp:105
+#: kilestdactions.cpp:117
 #, kde-format
 msgid ""
 "\\subsubsection{title}\n"
@@ -8594,12 +8600,12 @@ msgstr ""
 "\\subsubsection{title}\n"
 "\\subsubsection*{title}: 번호 매기기에 포함되지 않으며 목차에 표시되지 않음"
 
-#: kilestdactions.cpp:105
+#: kilestdactions.cpp:117
 #, kde-format
 msgid "&Subsubsection"
 msgstr "2단계 하위 절(&S)"
 
-#: kilestdactions.cpp:107
+#: kilestdactions.cpp:119
 #, kde-format
 msgid ""
 "\\paragraph{title}\n"
@@ -8609,12 +8615,12 @@ msgstr ""
 "\\paragraph{title}\n"
 "\\paragraph*{title}: 번호 매기기에 포함되지 않으며 목차에 표시되지 않음"
 
-#: kilestdactions.cpp:107
+#: kilestdactions.cpp:119
 #, kde-format
 msgid "&Paragraph"
 msgstr "문단(&P)"
 
-#: kilestdactions.cpp:108
+#: kilestdactions.cpp:120
 #, kde-format
 msgid ""
 "\\subparagraph{title}\n"
@@ -8624,88 +8630,88 @@ msgstr ""
 "\\subparagraph{title}\n"
 "\\subparagraph*{title}: 번호 매기기에 포함되지 않으며 목차에 표시되지 않음"
 
-#: kilestdactions.cpp:108
+#: kilestdactions.cpp:120
 #, kde-format
 msgid "&Subparagraph"
 msgstr "하위 문단(&S)"
 
-#: kilestdactions.cpp:110
+#: kilestdactions.cpp:122
 #, kde-format
 msgid "Size"
 msgstr "크기"
 
-#: kilestdactions.cpp:112
+#: kilestdactions.cpp:124
 #, kde-format
 msgid "tiny"
 msgstr "tiny"
 
-#: kilestdactions.cpp:113
+#: kilestdactions.cpp:125
 #, kde-format
 msgid "scriptsize"
 msgstr "scriptsize"
 
-#: kilestdactions.cpp:114
+#: kilestdactions.cpp:126
 #, kde-format
 msgid "footnotesize"
 msgstr "footnotesize"
 
-#: kilestdactions.cpp:115
+#: kilestdactions.cpp:127
 #, kde-format
 msgid "small"
 msgstr "small"
 
-#: kilestdactions.cpp:117
+#: kilestdactions.cpp:129
 #, kde-format
 msgid "normalsize"
 msgstr "normalsize"
 
-#: kilestdactions.cpp:119
+#: kilestdactions.cpp:131
 #, kde-format
 msgid "large"
 msgstr "large"
 
-#: kilestdactions.cpp:120
+#: kilestdactions.cpp:132
 #, kde-format
 msgid "Large"
 msgstr "Large"
 
-#: kilestdactions.cpp:121
+#: kilestdactions.cpp:133
 #, kde-format
 msgid "LARGE"
 msgstr "LARGE"
 
-#: kilestdactions.cpp:122
+#: kilestdactions.cpp:134
 #, kde-format
 msgid "huge"
 msgstr "huge"
 
-#: kilestdactions.cpp:123
+#: kilestdactions.cpp:135
 #, kde-format
 msgid "Huge"
 msgstr "Huge"
 
-#: kilestdactions.cpp:125 widgets/projectview.cpp:481
-#: widgets/toolconfigwidget.cpp:79
+#: kilestdactions.cpp:137 widgets/projectview.cpp:481
+#: widgets/toolconfigwidget.cpp:80
 #, kde-format
 msgid "Other"
 msgstr "기타"
 
-#: kilestdactions.cpp:127
+#: kilestdactions.cpp:139
 #, kde-format
 msgid "\\label{key}"
 msgstr "\\label{key}"
 
-#: kilestdactions.cpp:131
+#: kilestdactions.cpp:143
 #, kde-format
 msgid "\\index{word}"
 msgstr "\\index{word}"
 
-#: kilestdactions.cpp:132
+#: kilestdactions.cpp:144
 #, kde-format
 msgid "\\footnote{text}"
 msgstr "\\footnote{text}"
 
-#: kilestdactions.cpp:134
+#: kilestdactions.cpp:146
 #, kde-format
 msgid ""
 "This command generates an in-text citation to the reference associated with "
@@ -8716,27 +8722,27 @@ msgstr ""
 "다.\n"
 "Kile로 BIB 파일을 열어서 참조 항목을 볼 수 있습니다"
 
-#: kilestdactions.cpp:136
+#: kilestdactions.cpp:148
 #, kde-format
 msgid "Underline - \\underline{}"
 msgstr "밑줄 - \\underline{}"
 
-#: kilestdactions.cpp:139
+#: kilestdactions.cpp:151
 #, kde-format
 msgid "Smart Tabulator"
 msgstr "똑똑한 탭 구분자"
 
-#: kilestdactions.cpp:146
+#: kilestdactions.cpp:158
 #, kde-format
 msgid "Abstract - \\begin{abstract}"
 msgstr "초록 - \\begin{abstract}"
 
-#: kilestdactions.cpp:146
+#: kilestdactions.cpp:158
 #, kde-format
 msgid "Abstract"
 msgstr "초록"
 
-#: kilestdactions.cpp:146
+#: kilestdactions.cpp:158
 #, kde-format
 msgid ""
 "\\begin{abstract}\n"
@@ -8750,17 +8756,17 @@ msgstr ""
 "\\end{abstract}\n"
 "abstract 환경은 머리글이나 쪽 번호가 없는 제목 쪽을 만듭니다."
 
-#: kilestdactions.cpp:148
+#: kilestdactions.cpp:160
 #, kde-format
 msgid "Tabular* - \\begin{tabular*}"
 msgstr "Tabular* - \\begin{tabular*}"
 
-#: kilestdactions.cpp:148
+#: kilestdactions.cpp:160
 #, kde-format
 msgid "Tabular*"
 msgstr "Tabular*"
 
-#: kilestdactions.cpp:148
+#: kilestdactions.cpp:160
 #, kde-format
 msgid ""
 "\\begin{tabular*}{width}[pos]{cols}\n"
@@ -8778,17 +8784,17 @@ msgstr ""
 "tabular 환경의 확장된 버전으로 추가적인 너비 인자를 받습니다(선택). 열 사이"
 "에 전체 너비를 채울 수 있도록 확장 가능한 고무줄 공간이 있어야 합니다."
 
-#: kilestdactions.cpp:150
+#: kilestdactions.cpp:162
 #, kde-format
 msgid "Minipage - \\begin{minipage}"
 msgstr "Minipage - \\begin{minipage}"
 
-#: kilestdactions.cpp:150
+#: kilestdactions.cpp:162
 #, kde-format
 msgid "Minipage"
 msgstr "Minipage"
 
-#: kilestdactions.cpp:150
+#: kilestdactions.cpp:162
 #, kde-format
 msgid ""
 "The minipage environment is similar to a \\parbox command. It takes the same "
@@ -8799,92 +8805,92 @@ msgstr ""
 "치 인자를 받습니다. minipage 안에서 다른 문단을 만드는 환경을 사용할 수 있습"
 "니다."
 
-#: kilestdactions.cpp:153
+#: kilestdactions.cpp:165
 #, kde-format
 msgid "Table of Figures - \\listoffigures"
 msgstr "그림 목차 - \\listoffigures"
 
-#: kilestdactions.cpp:153
+#: kilestdactions.cpp:165
 #, kde-format
 msgid "Table of Figures"
 msgstr "그림 목차"
 
-#: kilestdactions.cpp:153
+#: kilestdactions.cpp:165
 #, kde-format
 msgid "Put this command where you want the list of figures to go."
 msgstr "그림 목차를 출력할 곳에 이 명령을 삽입하십시오."
 
-#: kilestdactions.cpp:155
+#: kilestdactions.cpp:167
 #, kde-format
 msgid "Table of Tables - \\listoftables"
 msgstr "표 목차 - \\listoftables"
 
-#: kilestdactions.cpp:155
+#: kilestdactions.cpp:167
 #, kde-format
 msgid "Table of Tables"
 msgstr "표 목차"
 
-#: kilestdactions.cpp:155
+#: kilestdactions.cpp:167
 #, kde-format
 msgid "Put this command where you want the list of tables to go."
 msgstr "표 목차를 출력할 곳에 이 명령을 삽입하십시오."
 
-#: kilestdactions.cpp:157
+#: kilestdactions.cpp:169
 #, kde-format
 msgid "Generate Index - \\makeindex"
 msgstr "색인 만들기 - \\makeindex"
 
-#: kilestdactions.cpp:157
+#: kilestdactions.cpp:169
 #, kde-format
 msgid "Generate Index"
 msgstr "색인 만들기"
 
-#: kilestdactions.cpp:157
+#: kilestdactions.cpp:169
 #, kde-format
 msgid "Put this command when you want to generate the raw index."
 msgstr "원시 색인을 생성하려면 이 명령을 삽입하십시오."
 
-#: kilestdactions.cpp:159
+#: kilestdactions.cpp:171
 #, kde-format
 msgid "Print Index - \\printindex"
 msgstr "색인 출력 - \\printindex"
 
-#: kilestdactions.cpp:159
+#: kilestdactions.cpp:171
 #, kde-format
 msgid "Print Index"
 msgstr "색인 출력"
 
-#: kilestdactions.cpp:159
+#: kilestdactions.cpp:171
 #, kde-format
 msgid "Put this command when you want to print the formatted index."
 msgstr "형식이 지정된 색인을 출력하려면 이 명령을 삽입하십시오."
 
-#: kilestdactions.cpp:161
+#: kilestdactions.cpp:173
 #, kde-format
 msgid "Glossary - \\makeglossary"
 msgstr "용어집 - \\makeglossary"
 
-#: kilestdactions.cpp:161
+#: kilestdactions.cpp:173
 #, kde-format
 msgid "Glossary"
 msgstr "용어집"
 
-#: kilestdactions.cpp:161
+#: kilestdactions.cpp:173
 #, kde-format
 msgid "Put this command when you want to print a glossary."
 msgstr "용어집을 출력하려면 이 명령을 삽입하십시오."
 
-#: kilestdactions.cpp:163
+#: kilestdactions.cpp:175
 #, kde-format
 msgid "Bibliography - \\begin{thebibliography}"
 msgstr "서지 정보 - \\begin{thebibliography}"
 
-#: kilestdactions.cpp:163 widgets/projectview.cpp:477
+#: kilestdactions.cpp:175 widgets/projectview.cpp:477
 #, kde-format
 msgid "Bibliography"
 msgstr "서지 정보"
 
-#: kilestdactions.cpp:163
+#: kilestdactions.cpp:175
 #, kde-format
 msgid ""
 "\\begin{thebibliography}{widest-label}\n"
@@ -8905,17 +8911,17 @@ msgstr ""
 "한 문자열입니다.\n"
 "\\bibitem: 서지 정보 항목을 지정합니다"
 
-#: kilestdactions.cpp:166
+#: kilestdactions.cpp:178
 #, kde-format
 msgid "Verbatim (show spaces) - \\begin{verbatim*}"
 msgstr "그대로 표시(공백 표시) - \\begin{verbatim*}"
 
-#: kilestdactions.cpp:166
+#: kilestdactions.cpp:178
 #, kde-format
 msgid "Verbatim (show spaces)"
 msgstr "그대로 표시(공백 표시)"
 
-#: kilestdactions.cpp:166
+#: kilestdactions.cpp:178
 #, kde-format
 msgid ""
 "Environment that gets LaTeX to print exactly what you type in. In this "
@@ -8924,67 +8930,67 @@ msgstr ""
 "LaTeX에서 입력한 대로 출력하는 환경입니다. 이 환경에서 공백 문자는 특별 취급"
 "을 받습니다."
 
-#: kilestdactions.cpp:168
+#: kilestdactions.cpp:180
 #, kde-format
 msgid "Embedded Code - \\verb||"
 msgstr "임베드된 코드 - \\verb||"
 
-#: kilestdactions.cpp:168
+#: kilestdactions.cpp:180
 #, kde-format
 msgid "Embedded Code"
 msgstr "임베드된 코드"
 
-#: kilestdactions.cpp:168
+#: kilestdactions.cpp:180
 #, kde-format
 msgid "Macro form of the verbatim environment."
 msgstr "verbatim 환경의 매크로 형태입니다."
 
-#: kilestdactions.cpp:170
+#: kilestdactions.cpp:182
 #, kde-format
 msgid "Embedded Code (show spaces) - \\verb*||"
 msgstr "임베드된 코드(공백 표시) - \\verb*||"
 
-#: kilestdactions.cpp:170
+#: kilestdactions.cpp:182
 #, kde-format
 msgid "Embedded Code (show spaces)"
 msgstr "임베드된 코드(공백 표시)"
 
-#: kilestdactions.cpp:170
+#: kilestdactions.cpp:182
 #, kde-format
 msgid "Macro form of the verbatim* environment."
 msgstr "verbatim* 환경의 매크로 형태입니다."
 
-#: kilestdactions.cpp:173
+#: kilestdactions.cpp:185
 #, kde-format
 msgid "\"Small\" Vertical Space - \\smallskip"
 msgstr "\"작은\" 수직 공백 - \\smallskip"
 
-#: kilestdactions.cpp:173
+#: kilestdactions.cpp:185
 #, kde-format
 msgid "\"Small\" Vertical Space"
 msgstr "\"작은\" 수직 공백"
 
-#: kilestdactions.cpp:173
+#: kilestdactions.cpp:185
 #, kde-format
 msgid "The \\smallskip command adds a 'small' vertical space."
 msgstr "\\smallskip 명령은 '작은' 수직 공백을 추가합니다."
 
-#: kilestdactions.cpp:175
+#: kilestdactions.cpp:187
 #, kde-format
 msgid "\\enskip"
 msgstr "\\enskip"
 
-#: kilestdactions.cpp:177
+#: kilestdactions.cpp:189
 #, kde-format
 msgid "Horizontal Variable Space - \\hfill"
 msgstr "수평 가변 공백 - \\hfill"
 
-#: kilestdactions.cpp:177
+#: kilestdactions.cpp:189
 #, kde-format
 msgid "Horizontal Variable Space"
 msgstr "수평 가변 공백"
 
-#: kilestdactions.cpp:177
+#: kilestdactions.cpp:189
 #, kde-format
 msgid ""
 "The \\hfill fill command produces a \"rubber length\" which can stretch or "
@@ -8993,17 +8999,17 @@ msgstr ""
 "\\hfill 채우기 명령은 수평으로 확장되거나 축소될 수 있는 \"고무줄 길이\"를 삽"
 "입합니다. 공백으로 채워집니다."
 
-#: kilestdactions.cpp:179
+#: kilestdactions.cpp:191
 #, kde-format
 msgid "Horizontal Dots - \\dotfill"
 msgstr "수평 점 - \\dotfill"
 
-#: kilestdactions.cpp:179
+#: kilestdactions.cpp:191
 #, kde-format
 msgid "Horizontal Dots"
 msgstr "수평 점"
 
-#: kilestdactions.cpp:179
+#: kilestdactions.cpp:191
 #, kde-format
 msgid ""
 "The \\dotfill command produces a \"rubber length\" that produces dots "
@@ -9011,17 +9017,17 @@ msgid ""
 msgstr ""
 "\\dotfill 명령은 공백 문자 대신 점으로 채우는 \"고무줄 길이\"를 삽입합니다."
 
-#: kilestdactions.cpp:181
+#: kilestdactions.cpp:193
 #, kde-format
 msgid "Horizontal Rule - \\hrulefill"
 msgstr "수평 규칙 - \\hrulefill"
 
-#: kilestdactions.cpp:181
+#: kilestdactions.cpp:193
 #, kde-format
 msgid "Horizontal Rule"
 msgstr "수평 규칙"
 
-#: kilestdactions.cpp:181
+#: kilestdactions.cpp:193
 #, kde-format
 msgid ""
 "The \\hrulefill fill command produces a \"rubber length\" which can stretch "
@@ -9030,17 +9036,17 @@ msgstr ""
 "\\hrulefill 채우기 명령은 수평으로 확장되거나 축소될 수 있는 \"고무줄 길이"
 "\"를 삽입합니다. 수평 규칙에 따라 채워집니다."
 
-#: kilestdactions.cpp:183
+#: kilestdactions.cpp:195
 #, kde-format
 msgid "Vertical Variable Space - \\vfill"
 msgstr "수직 가변 공백 - \\vfill"
 
-#: kilestdactions.cpp:183
+#: kilestdactions.cpp:195
 #, kde-format
 msgid "Vertical Variable Space"
 msgstr "수직 가변 공백"
 
-#: kilestdactions.cpp:183
+#: kilestdactions.cpp:195
 #, kde-format
 msgid ""
 "The \\vfill fill command produces a \"rubber length\" which can stretch or "
@@ -9049,17 +9055,17 @@ msgstr ""
 "\\vfill 채우기 명령은 수직으로 확장되거나 축소될 수 있는 \"고무줄 길이\"를 삽"
 "입합니다."
 
-#: kilestdactions.cpp:185
+#: kilestdactions.cpp:197
 #, kde-format
 msgid "Horizontal Space - \\hspace{}"
 msgstr "수평 공백 - \\hspace{}"
 
-#: kilestdactions.cpp:185
+#: kilestdactions.cpp:197
 #, kde-format
 msgid "Horizontal Space"
 msgstr "수평 공백"
 
-#: kilestdactions.cpp:185
+#: kilestdactions.cpp:197
 #, kde-format
 msgid ""
 "The \\hspace command adds horizontal space. The length of the space can be "
@@ -9072,17 +9078,17 @@ msgstr ""
 "및 음수 길이의 공백을 추가할 수 있습니다. 음수 길이의 공백을 추가하면 백스페"
 "이스와 같은 효과를 냅니다."
 
-#: kilestdactions.cpp:187
+#: kilestdactions.cpp:199
 #, kde-format
 msgid "Horizontal Space (forced) - \\hspace*{}"
 msgstr "수평 공백(강제) - \\hspace*{}"
 
-#: kilestdactions.cpp:187
+#: kilestdactions.cpp:199
 #, kde-format
 msgid "Horizontal Space (forced)"
 msgstr "수평 공백(강제)"
 
-#: kilestdactions.cpp:187
+#: kilestdactions.cpp:199
 #, kde-format
 msgid ""
 "The \\hspace* command adds horizontal space like the \\hspace command. LaTeX "
@@ -9094,17 +9100,17 @@ msgstr ""
 "있는 수평 공백을 삭제합니다. LaTeX에서 이 공백을 삭제하지 않도록 하려면 추가"
 "적인 * 인자를 붙이십시오. 해당 공백은 삭제되지 않습니다."
 
-#: kilestdactions.cpp:189
+#: kilestdactions.cpp:201
 #, kde-format
 msgid "Vertical Space - \\vspace{}"
 msgstr "수직 공백 - \\vspace{}"
 
-#: kilestdactions.cpp:189
+#: kilestdactions.cpp:201
 #, kde-format
 msgid "Vertical Space"
 msgstr "수직 공백"
 
-#: kilestdactions.cpp:189
+#: kilestdactions.cpp:201
 #, kde-format
 msgid ""
 "The \\vspace command adds vertical space. The length of the space can be "
@@ -9115,17 +9121,17 @@ msgstr ""
 "있는 단위인 포인트, 인치 등으로 지정할 수 있습니다. \\vspace 명령으로 양수 "
 "및 음수 길이의 공백을 추가할 수 있습니다."
 
-#: kilestdactions.cpp:191
+#: kilestdactions.cpp:203
 #, kde-format
 msgid "Vertical Space (forced) - \\vspace*{}"
 msgstr "수직 공백(강제) - \\vspace*{}"
 
-#: kilestdactions.cpp:191
+#: kilestdactions.cpp:203
 #, kde-format
 msgid "Vertical Space (forced)"
 msgstr "수직 공백(강제)"
 
-#: kilestdactions.cpp:191
+#: kilestdactions.cpp:203
 #, kde-format
 msgid ""
 "The \\vspace* command adds vertical space like the \\vspace command. LaTeX "
@@ -9137,122 +9143,122 @@ msgstr ""
 "에 있는 수직 공백을 삭제합니다. LaTeX에서 이 공백을 삭제하지 않도록 하려면 추"
 "가적인 * 인자를 붙이십시오. 해당 공백은 삭제되지 않습니다."
 
-#: kilestdactions.cpp:194
+#: kilestdactions.cpp:206
 #, kde-format
 msgid "Emphasized - \\emph{}"
 msgstr "강조 - \\emph{}"
 
-#: kilestdactions.cpp:194
+#: kilestdactions.cpp:206
 #, kde-format
 msgid "Emphasized"
 msgstr "강조"
 
-#: kilestdactions.cpp:194
+#: kilestdactions.cpp:206
 #, kde-format
 msgid "\\emph{emphasized text}"
 msgstr "\\emph{강조할 텍스트}"
 
-#: kilestdactions.cpp:195
+#: kilestdactions.cpp:207
 #, kde-format
 msgid "Strong - \\strong{}"
 msgstr "굵게 - \\strong{}"
 
-#: kilestdactions.cpp:195
+#: kilestdactions.cpp:207
 #, kde-format
 msgid "Strong"
 msgstr "굵게"
 
-#: kilestdactions.cpp:195
+#: kilestdactions.cpp:207
 #, kde-format
 msgid "\\strong{text}"
 msgstr "\\strong{text}"
 
-#: kilestdactions.cpp:197
+#: kilestdactions.cpp:209
 #, kde-format
 msgid "Roman - \\rmfamily"
 msgstr "로만 - \\rmfamily"
 
-#: kilestdactions.cpp:197
+#: kilestdactions.cpp:209
 #, kde-format
 msgid "Roman"
 msgstr "로만"
 
-#: kilestdactions.cpp:198
+#: kilestdactions.cpp:210
 #, kde-format
 msgid "Sans Serif - \\sffamily"
 msgstr "산세리프 - \\sffamily"
 
-#: kilestdactions.cpp:198
+#: kilestdactions.cpp:210
 #, kde-format
 msgid "Sans Serif"
 msgstr "산세리프"
 
-#: kilestdactions.cpp:199
+#: kilestdactions.cpp:211
 #, kde-format
 msgid "Monospace - \\ttfamily"
 msgstr "고정폭 글꼴 - \\ttfamily"
 
-#: kilestdactions.cpp:199
+#: kilestdactions.cpp:211
 #, kde-format
 msgid "Monospace"
 msgstr "고정폭 글꼴"
 
-#: kilestdactions.cpp:201
+#: kilestdactions.cpp:213
 #, kde-format
 msgid "Medium - \\mdseries"
 msgstr "중간 - \\mdseries"
 
-#: kilestdactions.cpp:201
+#: kilestdactions.cpp:213
 #, kde-format
 msgid "Medium"
 msgstr "중간"
 
-#: kilestdactions.cpp:202
+#: kilestdactions.cpp:214
 #, kde-format
 msgid "Bold - \\bfseries"
 msgstr "굵게 - \\bfseries"
 
-#: kilestdactions.cpp:204
+#: kilestdactions.cpp:216
 #, kde-format
 msgid "Upright - \\upshape"
 msgstr "일반형 - \\upshape"
 
-#: kilestdactions.cpp:204
+#: kilestdactions.cpp:216
 #, kde-format
 msgid "Upright"
 msgstr "일반형"
 
-#: kilestdactions.cpp:205
+#: kilestdactions.cpp:217
 #, kde-format
 msgid "Italic - \\itshape"
 msgstr "이탤릭 - \\itshape"
 
-#: kilestdactions.cpp:206
+#: kilestdactions.cpp:218
 #, kde-format
 msgid "Slanted - \\slshape"
 msgstr "기울임꼴 - \\slshape"
 
-#: kilestdactions.cpp:207
+#: kilestdactions.cpp:219
 #, kde-format
 msgid "Smallcaps - \\scshape"
 msgstr "작은 대문자 - \\scshape"
 
-#: kilestdactions.cpp:207
+#: kilestdactions.cpp:219
 #, kde-format
 msgid "Smallcaps"
 msgstr "작은 대문자"
 
-#: kilestdactions.cpp:219
+#: kilestdactions.cpp:231
 #, kde-format
 msgid "Bibliography Style Selection - \\bibliographystyle{}"
 msgstr "서지 정보 스타일 선택 - \\bibliographystyle{}"
 
-#: kilestdactions.cpp:219
+#: kilestdactions.cpp:231
 #, kde-format
 msgid "Bibliography Style Selection"
 msgstr "서지 정보 스타일 선택"
 
-#: kilestdactions.cpp:219
+#: kilestdactions.cpp:231
 #, kde-format
 msgid ""
 "The argument to \\bibliographystyle refers to a file style.bst, which "
@@ -9272,17 +9278,17 @@ msgstr ""
 "unsrt: plain과 비슷하지만 참조 이름표는 인용된 순서로 생성합니다.\n"
 "abbrv: plain과 비슷하지만 더 짧은 인용문을 사용합니다."
 
-#: kilestdactions.cpp:220 kilestdactions.cpp:228
+#: kilestdactions.cpp:232 kilestdactions.cpp:240
 #, kde-format
 msgid "Bibliography Generation - \\bibliography{}"
 msgstr "서지 정보 생성 - \\bibliography{}"
 
-#: kilestdactions.cpp:220 kilestdactions.cpp:228
+#: kilestdactions.cpp:232 kilestdactions.cpp:240
 #, kde-format
 msgid "Bibliography Generation"
 msgstr "서지 정보 생성"
 
-#: kilestdactions.cpp:220 kilestdactions.cpp:228
+#: kilestdactions.cpp:232 kilestdactions.cpp:240
 #, kde-format
 msgid ""
 "The argument to \\bibliography refers to the bib file (without extension)\n"
@@ -9293,287 +9299,287 @@ msgstr ""
 "해당 파일은 BibTeX 형식으로 서지 정보를 저장합니다.\n"
 "Kile에서는 자동으로 TeX 파일의 확장자 제외 이름을 삽입합니다"
 
-#: kilestdactions.cpp:227
+#: kilestdactions.cpp:239
 #, kde-format
 msgid "Load Biblatex Package - \\usepackage{biblatex}"
 msgstr "Biblatex 패키지 불러오기 - \\usepackage{biblatex}"
 
-#: kilestdactions.cpp:227
+#: kilestdactions.cpp:239
 #, kde-format
 msgid "Load Biblatex Package"
 msgstr "Biblatex 패키지 불러오기"
 
-#: kilestdactions.cpp:227
+#: kilestdactions.cpp:239
 #, kde-format
 msgid "This includes the package biblatex"
 msgstr "biblatex 패키지를 불러옵니다"
 
-#: kilestdactions.cpp:229
+#: kilestdactions.cpp:241
 #, kde-format
 msgid "Print Bibliography"
 msgstr "서지 정보 출력"
 
-#: kilestdactions.cpp:229
+#: kilestdactions.cpp:241
 #, kde-format
 msgid "Prints the complete bibliography"
 msgstr "전체 서지 정보 출력"
 
-#: kilestdactions.cpp:230
+#: kilestdactions.cpp:242
 #, kde-format
 msgid "Print Bibliography by Section"
 msgstr "절별 서지 정보 출력"
 
-#: kilestdactions.cpp:230
+#: kilestdactions.cpp:242
 #, kde-format
 msgid "Print the bibliography for each section"
 msgstr "각각 절별 서지 정보 출력"
 
-#: kilestdactions.cpp:231
+#: kilestdactions.cpp:243
 #, kde-format
 msgid "Print List of Shorthands"
 msgstr "축약어 목록 출력"
 
-#: kilestdactions.cpp:330
+#: kilestdactions.cpp:342
 #, kde-format
 msgid "ALT.... : you have the choice between these two fields\n"
 msgstr "ALT.... : 필드 두 개 중에서 선택\n"
 
-#: kilestdactions.cpp:331
+#: kilestdactions.cpp:343
 #, kde-format
 msgid "OPT.... : optional fields (use the 'Clean' command to remove them)"
 msgstr "OPT.... : 선택 사항 필드('비우기' 명령을 사용하여 삭제)"
 
-#: kilestdactions.cpp:332
+#: kilestdactions.cpp:344
 #, kde-format
 msgid "Bib fields - %1\n"
 msgstr "서지 정보 필드 - %1\n"
 
-#: kilestdactions.cpp:347
+#: kilestdactions.cpp:359
 #, kde-format
 msgid "\\mathrm{}"
 msgstr "\\mathrm{}"
 
-#: kilestdactions.cpp:348
+#: kilestdactions.cpp:360
 #, kde-format
 msgid "\\mathit{}"
 msgstr "\\mathit{}"
 
-#: kilestdactions.cpp:349
+#: kilestdactions.cpp:361
 #, kde-format
 msgid "\\mathbf{}"
 msgstr "\\mathbf{}"
 
-#: kilestdactions.cpp:350
+#: kilestdactions.cpp:362
 #, kde-format
 msgid "\\mathsf{}"
 msgstr "\\mathsf{}"
 
-#: kilestdactions.cpp:351
+#: kilestdactions.cpp:363
 #, kde-format
 msgid "\\mathtt{}"
 msgstr "\\mathtt{}"
 
-#: kilestdactions.cpp:352
+#: kilestdactions.cpp:364
 #, kde-format
 msgid "\\mathcal{}"
 msgstr "\\mathcal{}"
 
-#: kilestdactions.cpp:353
+#: kilestdactions.cpp:365
 #, kde-format
 msgid "\\mathbb{}"
 msgstr "\\mathbb{}"
 
-#: kilestdactions.cpp:354
+#: kilestdactions.cpp:366
 #, kde-format
 msgid "\\mathfrak{}"
 msgstr "\\mathfrak{}"
 
-#: kilestdactions.cpp:356
+#: kilestdactions.cpp:368
 #, kde-format
 msgid "\\acute{}"
 msgstr "\\acute{}"
 
-#: kilestdactions.cpp:357
+#: kilestdactions.cpp:369
 #, kde-format
 msgid "\\grave{}"
 msgstr "\\grave{}"
 
-#: kilestdactions.cpp:358
+#: kilestdactions.cpp:370
 #, kde-format
 msgid "\\tilde{}"
 msgstr "\\tilde{}"
 
-#: kilestdactions.cpp:359
+#: kilestdactions.cpp:371
 #, kde-format
 msgid "\\bar{}"
 msgstr "\\bar{}"
 
-#: kilestdactions.cpp:360
+#: kilestdactions.cpp:372
 #, kde-format
 msgid "\\vec{}"
 msgstr "\\vec{}"
 
-#: kilestdactions.cpp:361
+#: kilestdactions.cpp:373
 #, kde-format
 msgid "\\hat{}"
 msgstr "\\hat{}"
 
-#: kilestdactions.cpp:362
+#: kilestdactions.cpp:374
 #, kde-format
 msgid "\\check{}"
 msgstr "\\check{}"
 
-#: kilestdactions.cpp:363
+#: kilestdactions.cpp:375
 #, kde-format
 msgid "\\breve{}"
 msgstr "\\breve{}"
 
-#: kilestdactions.cpp:364
+#: kilestdactions.cpp:376
 #, kde-format
 msgid "\\dot{}"
 msgstr "\\dot{}"
 
-#: kilestdactions.cpp:365
+#: kilestdactions.cpp:377
 #, kde-format
 msgid "\\ddot{}"
 msgstr "\\ddot{}"
 
-#: kilestdactions.cpp:367
+#: kilestdactions.cpp:379
 #, kde-format
 msgid "Small Space"
 msgstr "작은 공간"
 
-#: kilestdactions.cpp:368
+#: kilestdactions.cpp:380
 #, kde-format
 msgid "Medium Space"
 msgstr "중간 공간"
 
-#: kilestdactions.cpp:369
+#: kilestdactions.cpp:381
 #, kde-format
 msgid "Large Space"
 msgstr "큰 공간"
 
-#: kilestdactions.cpp:370
+#: kilestdactions.cpp:382
 #, kde-format
 msgid "\\quad"
 msgstr "\\quad"
 
-#: kilestdactions.cpp:371
+#: kilestdactions.cpp:383
 #, kde-format
 msgid "\\qquad"
 msgstr "\\qquad"
 
-#: kilestdactions.cpp:373
+#: kilestdactions.cpp:385
 #, kde-format
 msgid "Math Mode - $...$"
 msgstr "수식 모드 - $...$"
 
-#: kilestdactions.cpp:373 kilestdactions.cpp:374
+#: kilestdactions.cpp:385 kilestdactions.cpp:386
 #, kde-format
 msgid "Math Mode"
 msgstr "수식 모드"
 
-#: kilestdactions.cpp:374
+#: kilestdactions.cpp:386
 #, kde-format
 msgid "Math Mode - \\(...\\)"
 msgstr "수식 모드 - \\(...\\)"
 
-#: kilestdactions.cpp:375
+#: kilestdactions.cpp:387
 #, kde-format
 msgid "Displaymath Mode - \\[...\\]"
 msgstr "Displaymath 모드 - \\[...\\]"
 
-#: kilestdactions.cpp:375
+#: kilestdactions.cpp:387
 #, kde-format
 msgid "Displaymath Mode"
 msgstr "Displaymath 모드"
 
-#: kilestdactions.cpp:376
+#: kilestdactions.cpp:388
 #, kde-format
 msgid "Equation - \\begin{equation}"
 msgstr "수식 - \\begin{equation}"
 
-#: kilestdactions.cpp:376
+#: kilestdactions.cpp:388
 #, kde-format
 msgid "Equation"
 msgstr "수식"
 
-#: kilestdactions.cpp:377
+#: kilestdactions.cpp:389
 #, kde-format
 msgid "Subscript - _{}"
 msgstr "아래 첨자 - _{}"
 
-#: kilestdactions.cpp:377
+#: kilestdactions.cpp:389
 #, kde-format
 msgid "Subscript"
 msgstr "아래 첨자"
 
-#: kilestdactions.cpp:378
+#: kilestdactions.cpp:390
 #, kde-format
 msgid "Superscript - ^{}"
 msgstr "위 첨자 - ^{}"
 
-#: kilestdactions.cpp:378
+#: kilestdactions.cpp:390
 #, kde-format
 msgid "Superscript"
 msgstr "위 첨자"
 
-#: kilestdactions.cpp:379
+#: kilestdactions.cpp:391
 #, kde-format
 msgid "Normal Fraction - \\frac{}{}"
 msgstr "일반 분수 - \\frac{}{}"
 
-#: kilestdactions.cpp:379
+#: kilestdactions.cpp:391
 #, kde-format
 msgid "Normal Fraction"
 msgstr "일반 분수"
 
-#: kilestdactions.cpp:380
+#: kilestdactions.cpp:392
 #, kde-format
 msgid "Displaystyle Fraction - \\dfrac{}{}"
 msgstr "디스플레이 스타일 분수 - \\dfrac{}{}"
 
-#: kilestdactions.cpp:380
+#: kilestdactions.cpp:392
 #, kde-format
 msgid "Displaystyle Fraction"
 msgstr "디스플레이 스타일 분수"
 
-#: kilestdactions.cpp:381
+#: kilestdactions.cpp:393
 #, kde-format
 msgid "Textstyle Fraction - \\tfrac{}{}"
 msgstr "텍스트 스타일 분수 - \\tfrac{}{}"
 
-#: kilestdactions.cpp:381
+#: kilestdactions.cpp:393
 #, kde-format
 msgid "Textstyle Fraction"
 msgstr "텍스트 스타일 분수"
 
-#: kilestdactions.cpp:382
+#: kilestdactions.cpp:394
 #, kde-format
 msgid "Square Root - \\sqrt{}"
 msgstr "제곱근 - \\sqrt{}"
 
-#: kilestdactions.cpp:382
+#: kilestdactions.cpp:394
 #, kde-format
 msgid "Square Root"
 msgstr "제곱근"
 
-#: kilestdactions.cpp:383
+#: kilestdactions.cpp:395
 #, kde-format
 msgid "\\left"
 msgstr "\\left"
 
-#: kilestdactions.cpp:384
+#: kilestdactions.cpp:396
 #, kde-format
 msgid "\\right"
 msgstr "\\right"
 
-#: kilestdactions.cpp:385
+#: kilestdactions.cpp:397
 #, kde-format
 msgid "Array - \\begin{array}"
 msgstr "Array - \\begin{array}"
 
-#: kilestdactions.cpp:386
+#: kilestdactions.cpp:398
 #, kde-format
 msgid ""
 "\\begin{array}{col1col2...coln}\n"
@@ -9596,577 +9602,577 @@ msgstr ""
 "     l -- 왼쪽 정렬 \n"
 "     r -- 오른쪽 정렬\n"
 
-#: kilestdactions.cpp:389
+#: kilestdactions.cpp:401
 #, kde-format
 msgid "Left Delimiter"
 msgstr "왼쪽 구분자"
 
-#: kilestdactions.cpp:391
+#: kilestdactions.cpp:403
 #, kde-format
 msgid "left ("
 msgstr "왼쪽 ("
 
-#: kilestdactions.cpp:392
+#: kilestdactions.cpp:404
 #, kde-format
 msgid "left ["
 msgstr "왼쪽 ["
 
-#: kilestdactions.cpp:393
+#: kilestdactions.cpp:405
 #, kde-format
 msgid "left {"
 msgstr "왼쪽 {"
 
-#: kilestdactions.cpp:394
+#: kilestdactions.cpp:406
 #, kde-format
 msgid "left &lt;"
 msgstr "왼쪽 &lt;"
 
-#: kilestdactions.cpp:396
+#: kilestdactions.cpp:408
 #, kde-format
 msgid "left )"
 msgstr "왼쪽 )"
 
-#: kilestdactions.cpp:397
+#: kilestdactions.cpp:409
 #, kde-format
 msgid "left ]"
 msgstr "왼쪽 ]"
 
-#: kilestdactions.cpp:398
+#: kilestdactions.cpp:410
 #, kde-format
 msgid "left }"
 msgstr "왼쪽 }"
 
-#: kilestdactions.cpp:399
+#: kilestdactions.cpp:411
 #, kde-format
 msgid "left &gt;"
 msgstr "왼쪽 &gt;"
 
-#: kilestdactions.cpp:401
+#: kilestdactions.cpp:413
 #, kde-format
 msgid "left ."
 msgstr "왼쪽 ."
 
-#: kilestdactions.cpp:403
+#: kilestdactions.cpp:415
 #, kde-format
 msgid "Right Delimiter"
 msgstr "오른쪽 구분자"
 
-#: kilestdactions.cpp:405
+#: kilestdactions.cpp:417
 #, kde-format
 msgid "right )"
 msgstr "오른쪽 )"
 
-#: kilestdactions.cpp:406
+#: kilestdactions.cpp:418
 #, kde-format
 msgid "right ]"
 msgstr "오른쪽 ]"
 
-#: kilestdactions.cpp:407
+#: kilestdactions.cpp:419
 #, kde-format
 msgid "right }"
 msgstr "오른쪽 }"
 
-#: kilestdactions.cpp:408
+#: kilestdactions.cpp:420
 #, kde-format
 msgid "right &gt;"
 msgstr "오른쪽 &gt;"
 
-#: kilestdactions.cpp:410
+#: kilestdactions.cpp:422
 #, kde-format
 msgid "right ("
 msgstr "오른쪽 ("
 
-#: kilestdactions.cpp:411
+#: kilestdactions.cpp:423
 #, kde-format
 msgid "right ["
 msgstr "오른쪽 ["
 
-#: kilestdactions.cpp:412
+#: kilestdactions.cpp:424
 #, kde-format
 msgid "right {"
 msgstr "오른쪽 {"
 
-#: kilestdactions.cpp:413
+#: kilestdactions.cpp:425
 #, kde-format
 msgid "right &lt;"
 msgstr "오른쪽 &lt;"
 
-#: kilestdactions.cpp:415
+#: kilestdactions.cpp:427
 #, kde-format
 msgid "right ."
 msgstr "오른쪽 ."
 
-#: kilestdactions.cpp:420
+#: kilestdactions.cpp:432
 #, kde-format
 msgid "Normal Binomial - \\binom{}{}"
 msgstr "일반 이항식 - \\binom{}{}"
 
-#: kilestdactions.cpp:420
+#: kilestdactions.cpp:432
 #, kde-format
 msgid "Normal Binomial"
 msgstr "일반 이항식"
 
-#: kilestdactions.cpp:422
+#: kilestdactions.cpp:434
 #, kde-format
 msgid "Displaystyle Binomial - \\dbinom{}{}"
 msgstr "디스플레이 스타일 이항식 - \\dbinom{}{}"
 
-#: kilestdactions.cpp:422
+#: kilestdactions.cpp:434
 #, kde-format
 msgid "Displaystyle Binomial"
 msgstr "디스플레이 스타일 이항식"
 
-#: kilestdactions.cpp:424
+#: kilestdactions.cpp:436
 #, kde-format
 msgid "Textstyle Binomial - \\tbinom{}{}"
 msgstr "텍스트 스타일 이항식 - \\tbinom{}{}"
 
-#: kilestdactions.cpp:424
+#: kilestdactions.cpp:436
 #, kde-format
 msgid "Textstyle Binomial"
 msgstr "텍스트 스타일 이항식"
 
-#: kilestdactions.cpp:426
+#: kilestdactions.cpp:438
 #, kde-format
 msgid "N-th Root - \\sqrt[]{}"
 msgstr "N차 제곱근 - \\sqrt[]{}"
 
-#: kilestdactions.cpp:426
+#: kilestdactions.cpp:438
 #, kde-format
 msgid "N-th Root"
 msgstr "N차 제곱근"
 
-#: kilestdactions.cpp:428
+#: kilestdactions.cpp:440
 #, kde-format
 msgid "Left-Right () - \\left(..\\right)"
 msgstr "왼쪽-오른쪽 () - \\left(..\\right)"
 
-#: kilestdactions.cpp:428
+#: kilestdactions.cpp:440
 #, kde-format
 msgid "Left-Right ()"
 msgstr "왼쪽-오른쪽 ()"
 
-#: kilestdactions.cpp:430
+#: kilestdactions.cpp:442
 #, kde-format
 msgid "Extendable Left Arrow - \\xleftarrow{}"
 msgstr "확장 가능한 왼쪽 화살표 - \\xleftarrow{}"
 
-#: kilestdactions.cpp:430
+#: kilestdactions.cpp:442
 #, kde-format
 msgid "Extendable Left Arrow"
 msgstr "확장 가능한 왼쪽 화살표"
 
-#: kilestdactions.cpp:432
+#: kilestdactions.cpp:444
 #, kde-format
 msgid "Extendable Right Arrow - \\xrightarrow{}"
 msgstr "확장 가능한 오른쪽 화살표 - \\xrightarrow{}"
 
-#: kilestdactions.cpp:432
+#: kilestdactions.cpp:444
 #, kde-format
 msgid "Extendable Right Arrow"
 msgstr "확장 가능한 오른쪽 화살표"
 
-#: kilestdactions.cpp:434
+#: kilestdactions.cpp:446
 #, kde-format
 msgid "Boxed Formula - \\boxed{}"
 msgstr "상자로 둘러싼 수식 - \\boxed{}"
 
-#: kilestdactions.cpp:434
+#: kilestdactions.cpp:446
 #, kde-format
 msgid "Boxed Formula"
 msgstr "상자로 둘러싼 수식"
 
-#: kilestdactions.cpp:436
+#: kilestdactions.cpp:448
 #, kde-format
 msgid "bigl - \\bigl"
 msgstr "bigl - \\bigl"
 
-#: kilestdactions.cpp:436
+#: kilestdactions.cpp:448
 #, kde-format
 msgid "bigl"
 msgstr "bigl"
 
-#: kilestdactions.cpp:437
+#: kilestdactions.cpp:449
 #, kde-format
 msgid "Bigl - \\Bigl"
 msgstr "Bigl - \\Bigl"
 
-#: kilestdactions.cpp:437
+#: kilestdactions.cpp:449
 #, kde-format
 msgid "Bigl"
 msgstr "Bigl"
 
-#: kilestdactions.cpp:438
+#: kilestdactions.cpp:450
 #, kde-format
 msgid "biggl - \\biggl"
 msgstr "biggl - \\biggl"
 
-#: kilestdactions.cpp:438
+#: kilestdactions.cpp:450
 #, kde-format
 msgid "biggl"
 msgstr "biggl"
 
-#: kilestdactions.cpp:439
+#: kilestdactions.cpp:451
 #, kde-format
 msgid "Biggl - \\Biggl"
 msgstr "Biggl - \\Biggl"
 
-#: kilestdactions.cpp:439
+#: kilestdactions.cpp:451
 #, kde-format
 msgid "Biggl"
 msgstr "Biggl"
 
-#: kilestdactions.cpp:441
+#: kilestdactions.cpp:453
 #, kde-format
 msgid "bigr - \\bigr"
 msgstr "bigr - \\bigr"
 
-#: kilestdactions.cpp:441
+#: kilestdactions.cpp:453
 #, kde-format
 msgid "bigr"
 msgstr "bigr"
 
-#: kilestdactions.cpp:442
+#: kilestdactions.cpp:454
 #, kde-format
 msgid "Bigr - \\Bigr"
 msgstr "Bigr - \\Bigr"
 
-#: kilestdactions.cpp:442
+#: kilestdactions.cpp:454
 #, kde-format
 msgid "Bigr"
 msgstr "Bigr"
 
-#: kilestdactions.cpp:443
+#: kilestdactions.cpp:455
 #, kde-format
 msgid "biggr - \\biggr"
 msgstr "biggr - \\biggr"
 
-#: kilestdactions.cpp:443
+#: kilestdactions.cpp:455
 #, kde-format
 msgid "biggr"
 msgstr "biggr"
 
-#: kilestdactions.cpp:444
+#: kilestdactions.cpp:456
 #, kde-format
 msgid "Biggr - \\Biggr"
 msgstr "Biggr - \\Biggr"
 
-#: kilestdactions.cpp:444
+#: kilestdactions.cpp:456
 #, kde-format
 msgid "Biggr"
 msgstr "Biggr"
 
-#: kilestdactions.cpp:447
+#: kilestdactions.cpp:459
 #, kde-format
 msgid "Text in Mathmode - \\text{}"
 msgstr "수식 모드에서의 텍스트 - \\text{}"
 
-#: kilestdactions.cpp:447
+#: kilestdactions.cpp:459
 #, kde-format
 msgid "Text in Mathmode"
 msgstr "수식 모드에서의 텍스트"
 
-#: kilestdactions.cpp:449
+#: kilestdactions.cpp:461
 #, kde-format
 msgid "Intertext - \\intertext{}"
 msgstr "Intertext - \\intertext{}"
 
-#: kilestdactions.cpp:449
+#: kilestdactions.cpp:461
 #, kde-format
 msgid "Intertext"
 msgstr "Intertext"
 
-#: kilestdactions.cpp:452
+#: kilestdactions.cpp:464
 #, kde-format
 msgid "Math - \\begin{math}"
 msgstr "수식 - \\begin{math}"
 
-#: kilestdactions.cpp:454
+#: kilestdactions.cpp:466
 #, kde-format
 msgid "Displaymath - \\begin{displaymath}"
 msgstr "Displaymath - \\begin{displaymath}"
 
-#: kilestdactions.cpp:454
+#: kilestdactions.cpp:466
 #, kde-format
 msgid "Displaymath"
 msgstr "Displaymath"
 
-#: kilestdactions.cpp:456
+#: kilestdactions.cpp:468
 #, kde-format
 msgid "Equation (not numbered) - \\begin{equation*}"
 msgstr "수식(번호 매기지 않음) - \\begin{equation*}"
 
-#: kilestdactions.cpp:456
+#: kilestdactions.cpp:468
 #, kde-format
 msgid "Equation (not numbered)"
 msgstr "수식(번호 매기지 않음)"
 
-#: kilestdactions.cpp:459
+#: kilestdactions.cpp:471
 #, kde-format
 msgid "Multline - \\begin{multline}"
 msgstr "Multline - \\begin{multline}"
 
-#: kilestdactions.cpp:459
+#: kilestdactions.cpp:471
 #, kde-format
 msgid "Multline"
 msgstr "Multline"
 
-#: kilestdactions.cpp:460
+#: kilestdactions.cpp:472
 #, kde-format
 msgid "Multline* - \\begin{multline*}"
 msgstr "Multline* - \\begin{multline*}"
 
-#: kilestdactions.cpp:460
+#: kilestdactions.cpp:472
 #, kde-format
 msgid "Multline*"
 msgstr "Multline*"
 
-#: kilestdactions.cpp:462
+#: kilestdactions.cpp:474
 #, kde-format
 msgid "Split - \\begin{split}"
 msgstr "Split - \\begin{split}"
 
-#: kilestdactions.cpp:462
+#: kilestdactions.cpp:474
 #, kde-format
 msgid "Split"
 msgstr "Split"
 
-#: kilestdactions.cpp:464
+#: kilestdactions.cpp:476
 #, kde-format
 msgid "Gather - \\begin{gather}"
 msgstr "Gather - \\begin{gather}"
 
-#: kilestdactions.cpp:464
+#: kilestdactions.cpp:476
 #, kde-format
 msgid "Gather"
 msgstr "Gather"
 
-#: kilestdactions.cpp:465
+#: kilestdactions.cpp:477
 #, kde-format
 msgid "Gather* - \\begin{gather*}"
 msgstr "Gather* - \\begin{gather*}"
 
-#: kilestdactions.cpp:465
+#: kilestdactions.cpp:477
 #, kde-format
 msgid "Gather*"
 msgstr "Gather*"
 
-#: kilestdactions.cpp:467
+#: kilestdactions.cpp:479
 #, kde-format
 msgid "Align - \\begin{align}"
 msgstr "Align - \\begin{align}"
 
-#: kilestdactions.cpp:467
+#: kilestdactions.cpp:479
 #, kde-format
 msgid "Align"
 msgstr "Align"
 
-#: kilestdactions.cpp:468
+#: kilestdactions.cpp:480
 #, kde-format
 msgid "Align* - \\begin{align*}"
 msgstr "Align* - \\begin{align*}"
 
-#: kilestdactions.cpp:468
+#: kilestdactions.cpp:480
 #, kde-format
 msgid "Align*"
 msgstr "Align*"
 
-#: kilestdactions.cpp:470
+#: kilestdactions.cpp:482
 #, kde-format
 msgid "Flalign - \\begin{flalign}"
 msgstr "Flalign - \\begin{flalign}"
 
-#: kilestdactions.cpp:470
+#: kilestdactions.cpp:482
 #, kde-format
 msgid "Flalign"
 msgstr "Flalign"
 
-#: kilestdactions.cpp:471
+#: kilestdactions.cpp:483
 #, kde-format
 msgid "Flalign* - \\begin{flalign*}"
 msgstr "Flalign* - \\begin{flalign*}"
 
-#: kilestdactions.cpp:471
+#: kilestdactions.cpp:483
 #, kde-format
 msgid "Flalign*"
 msgstr "Flalign*"
 
-#: kilestdactions.cpp:473
+#: kilestdactions.cpp:485
 #, kde-format
 msgid "Alignat - \\begin{alignat}"
 msgstr "Alignat - \\begin{alignat}"
 
-#: kilestdactions.cpp:473
+#: kilestdactions.cpp:485
 #, kde-format
 msgid "Alignat"
 msgstr "Alignat"
 
-#: kilestdactions.cpp:474
+#: kilestdactions.cpp:486
 #, kde-format
 msgid "Alignat* - \\begin{alignat*}"
 msgstr "Alignat* - \\begin{alignat*}"
 
-#: kilestdactions.cpp:474
+#: kilestdactions.cpp:486
 #, kde-format
 msgid "Alignat*"
 msgstr "Alignat*"
 
-#: kilestdactions.cpp:476
+#: kilestdactions.cpp:488
 #, kde-format
 msgid "Aligned - \\begin{aligned}"
 msgstr "Aligned - \\begin{aligned}"
 
-#: kilestdactions.cpp:476
+#: kilestdactions.cpp:488
 #, kde-format
 msgid "Aligned"
 msgstr "Aligned"
 
-#: kilestdactions.cpp:477
+#: kilestdactions.cpp:489
 #, kde-format
 msgid "Gathered - \\begin{gathered}"
 msgstr "Gathered - \\begin{gathered}"
 
-#: kilestdactions.cpp:477
+#: kilestdactions.cpp:489
 #, kde-format
 msgid "Gathered"
 msgstr "Gathered"
 
-#: kilestdactions.cpp:478
+#: kilestdactions.cpp:490
 #, kde-format
 msgid "Alignedat - \\begin{alignedat}"
 msgstr "Alignedat - \\begin{alignedat}"
 
-#: kilestdactions.cpp:478
+#: kilestdactions.cpp:490
 #, kde-format
 msgid "Alignedat"
 msgstr "Alignedat"
 
-#: kilestdactions.cpp:480
+#: kilestdactions.cpp:492
 #, kde-format
 msgid "Cases - \\begin{cases}"
 msgstr "경우의 수 - \\begin{cases}"
 
-#: kilestdactions.cpp:480
+#: kilestdactions.cpp:492
 #, kde-format
 msgid "Cases"
 msgstr "경우의 수"
 
-#: kilestdactions.cpp:482
+#: kilestdactions.cpp:494
 #, kde-format
 msgid "matrix - \\begin{matrix}"
 msgstr "matrix - \\begin{matrix}"
 
-#: kilestdactions.cpp:482
+#: kilestdactions.cpp:494
 #, kde-format
 msgid "matrix"
 msgstr "matrix"
 
-#: kilestdactions.cpp:483
+#: kilestdactions.cpp:495
 #, kde-format
 msgid "pmatrix - \\begin{pmatrix}"
 msgstr "pmatrix - \\begin{pmatrix}"
 
-#: kilestdactions.cpp:483
+#: kilestdactions.cpp:495
 #, kde-format
 msgid "pmatrix"
 msgstr "pmatrix"
 
-#: kilestdactions.cpp:484
+#: kilestdactions.cpp:496
 #, kde-format
 msgid "vmatrix - \\begin{vmatrix}"
 msgstr "vmatrix - \\begin{vmatrix}"
 
-#: kilestdactions.cpp:484
+#: kilestdactions.cpp:496
 #, kde-format
 msgid "vmatrix"
 msgstr "vmatrix"
 
-#: kilestdactions.cpp:485
+#: kilestdactions.cpp:497
 #, kde-format
 msgid "Vmatrix - \\begin{Vmatrix}"
 msgstr "Vmatrix - \\begin{Vmatrix}"
 
-#: kilestdactions.cpp:485
+#: kilestdactions.cpp:497
 #, kde-format
 msgid "Vmatrix"
 msgstr "Vmatrix"
 
-#: kilestdactions.cpp:486
+#: kilestdactions.cpp:498
 #, kde-format
 msgid "bmatrix - \\begin{bmatrix}"
 msgstr "bmatrix - \\begin{bmatrix}"
 
-#: kilestdactions.cpp:486
+#: kilestdactions.cpp:498
 #, kde-format
 msgid "bmatrix"
 msgstr "bmatrix"
 
-#: kilestdactions.cpp:487
+#: kilestdactions.cpp:499
 #, kde-format
 msgid "Bmatrix - \\begin{Bmatrix}"
 msgstr "Bmatrix - \\begin{Bmatrix}"
 
-#: kilestdactions.cpp:487
+#: kilestdactions.cpp:499
 #, kde-format
 msgid "Bmatrix"
 msgstr "Bmatrix"
 
-#: kilestdactions.cpp:490
+#: kilestdactions.cpp:502
 #, kde-format
 msgid "dmath - \\begin{dmath}"
 msgstr "dmath - \\begin{dmath}"
 
-#: kilestdactions.cpp:490
+#: kilestdactions.cpp:502
 #, kde-format
 msgid "dmath"
 msgstr "dmath"
 
-#: kilestdactions.cpp:491
+#: kilestdactions.cpp:503
 #, kde-format
 msgid "dmath* - \\begin{dmath*}"
 msgstr "dmath* - \\begin{dmath*}"
 
-#: kilestdactions.cpp:491
+#: kilestdactions.cpp:503
 #, kde-format
 msgid "dmath*"
 msgstr "dmath*"
 
-#: kilestdactions.cpp:493
+#: kilestdactions.cpp:505
 #, kde-format
 msgid "dseries - \\begin{dseries}"
 msgstr "dseries - \\begin{dseries}"
 
-#: kilestdactions.cpp:493
+#: kilestdactions.cpp:505
 #, kde-format
 msgid "dseries"
 msgstr "dseries"
 
-#: kilestdactions.cpp:494
+#: kilestdactions.cpp:506
 #, kde-format
 msgid "dseries* - \\begin{dseries*}"
 msgstr "dseries* - \\begin{dseries*}"
 
-#: kilestdactions.cpp:494
+#: kilestdactions.cpp:506
 #, kde-format
 msgid "dseries*"
 msgstr "dseries*"
 
-#: kilestdactions.cpp:496
+#: kilestdactions.cpp:508
 #, kde-format
 msgid "dgroup - \\begin{dgroup}"
 msgstr "dgroup - \\begin{dgroup}"
 
-#: kilestdactions.cpp:496
+#: kilestdactions.cpp:508
 #, kde-format
 msgid "dgroup"
 msgstr "dgroup"
 
-#: kilestdactions.cpp:497
+#: kilestdactions.cpp:509
 #, kde-format
 msgid "dgroup* - \\begin{dgroup*}"
 msgstr "dgroup* - \\begin{dgroup*}"
 
-#: kilestdactions.cpp:497
+#: kilestdactions.cpp:509
 #, kde-format
 msgid "dgroup*"
 msgstr "dgroup*"
@@ -10364,32 +10370,32 @@ msgstr "팩토리가 설치되지 않았습니다. Kile 개발자에게 연락�
 msgid "Aborted"
 msgstr "중단됨"
 
-#: kiletoolmanager.cpp:485
+#: kiletoolmanager.cpp:483
 #, kde-format
 msgid "Cannot find the tool \"%1\" in the configuration database."
 msgstr "설정 데이터베이스에서 \"%1\" 도구를 찾을 수 없습니다."
 
-#: kiletoolmanager.cpp:730
+#: kiletoolmanager.cpp:728
 #, kde-format
 msgid "&Stop"
 msgstr "정지(&S)"
 
-#: kiletoolmanager.cpp:739
+#: kiletoolmanager.cpp:737
 #, kde-format
 msgid "Bibliography Back End"
 msgstr "서지 정보 백엔드"
 
-#: kiletoolmanager.cpp:740
+#: kiletoolmanager.cpp:738
 #, kde-format
 msgid "Auto-Detect"
 msgstr "자동 감지"
 
-#: kiletoolmanager.cpp:741
+#: kiletoolmanager.cpp:739
 #, kde-format
 msgid "Auto-detect the bibliography back end from LaTeX output"
 msgstr "LaTeX 출력에서 서지 정보 백엔드 자동 감지"
 
-#: kiletoolmanager.cpp:746
+#: kiletoolmanager.cpp:744
 #, kde-format
 msgid "Reset Auto-Detected Back End"
 msgstr "자동으로 감지된 백엔드 초기화"
@@ -10407,7 +10413,7 @@ msgid "Con&vert To"
 msgstr "다음으로 변환(&V)"
 
 #. i18n: ectx: Menu (edit)
-#: kileui.rc:55 widgets/abbreviationview.cpp:120
+#: kileui.rc:55 widgets/abbreviationview.cpp:122
 #, kde-format
 msgid "&Edit"
 msgstr "편집(&E)"
@@ -11298,33 +11304,33 @@ msgstr "파일 '%1'이(가) 없습니다."
 msgid "Input Dialog"
 msgstr "입력 대화 상자"
 
-#: widgets/abbreviationview.cpp:38
+#: widgets/abbreviationview.cpp:40
 #, kde-format
 msgid "Short"
 msgstr "짧은"
 
-#: widgets/abbreviationview.cpp:38
+#: widgets/abbreviationview.cpp:40
 #, kde-format
 msgid "Expanded Text"
 msgstr "확장된 문자열"
 
 #. i18n: ectx: property (text), widget (QPushButton, m_pshbAdd)
-#: widgets/abbreviationview.cpp:111 widgets/quicktoolconfigwidget.ui:103
+#: widgets/abbreviationview.cpp:113 widgets/quicktoolconfigwidget.ui:103
 #, kde-format
 msgid "&Add"
 msgstr "추가(&A)"
 
-#: widgets/abbreviationview.cpp:124 widgets/structurewidget.cpp:781
+#: widgets/abbreviationview.cpp:126 widgets/structurewidget.cpp:781
 #, kde-format
 msgid "&Delete"
 msgstr "삭제(&D)"
 
-#: widgets/abbreviationview.cpp:171
+#: widgets/abbreviationview.cpp:173
 #, kde-format
 msgid "Delete the abbreviation '%1'?"
 msgstr "축약어 '%1'을(를) 삭제하시겠습니까?"
 
-#: widgets/abbreviationview.cpp:174
+#: widgets/abbreviationview.cpp:176
 #, kde-format
 msgid "Delete Abbreviation"
 msgstr "축약어 삭제"
@@ -11353,32 +11359,32 @@ msgstr "시작할 때 시작 화면 표시"
 msgid "Show in external window"
 msgstr "외부 창에 표시"
 
-#: widgets/codecompletionconfigwidget.cpp:53
+#: widgets/codecompletionconfigwidget.cpp:55
 #, kde-format
 msgid "TeX/LaTeX"
 msgstr "TeX/LaTeX"
 
-#: widgets/codecompletionconfigwidget.cpp:54
+#: widgets/codecompletionconfigwidget.cpp:56
 #, kde-format
 msgid "Dictionary"
 msgstr "사전"
 
-#: widgets/codecompletionconfigwidget.cpp:57
+#: widgets/codecompletionconfigwidget.cpp:59
 #, kde-format
 msgid "Try to place the cursor."
 msgstr "커서를 배치하려고 시도합니다."
 
-#: widgets/codecompletionconfigwidget.cpp:58
+#: widgets/codecompletionconfigwidget.cpp:60
 #, kde-format
 msgid "Insert bullets where the user must input data."
 msgstr "사용자가 데이터를 입력해야 할 때 불릿 기호를 삽입합니다."
 
-#: widgets/codecompletionconfigwidget.cpp:59
+#: widgets/codecompletionconfigwidget.cpp:61
 #, kde-format
 msgid "Also close an environment when an opening command is inserted."
 msgstr "환경을 여는 명령을 입력했을 때 닫는 명령도 입력합니다."
 
-#: widgets/codecompletionconfigwidget.cpp:60
+#: widgets/codecompletionconfigwidget.cpp:62
 #, kde-format
 msgid ""
 "Directional or popup-based completion of the TeX/LaTeX commands that are "
@@ -11387,7 +11393,7 @@ msgstr ""
 "선택한 자동 완성 파일에 포함된 방향 및 팝업 기반 자동 완성에 사용할 LaTeX 명"
 "령입니다."
 
-#: widgets/codecompletionconfigwidget.cpp:61
+#: widgets/codecompletionconfigwidget.cpp:63
 #, kde-format
 msgid ""
 "Automatically show a completion list of TeX/LaTeX commands when the word has "
@@ -11396,12 +11402,12 @@ msgstr ""
 "단어 길이가 지정한 길이 이상일 때 TeX/LaTeX 명령 자동 완성을 자동으로 표시합"
 "니다."
 
-#: widgets/codecompletionconfigwidget.cpp:63
+#: widgets/codecompletionconfigwidget.cpp:65
 #, kde-format
 msgid "Show abbreviations of the selected completion files in the sidebar"
 msgstr "사이드바에 선택한 자동 완성 파일의 축약어 표시"
 
-#: widgets/codecompletionconfigwidget.cpp:64
+#: widgets/codecompletionconfigwidget.cpp:66
 #, kde-format
 msgid ""
 "Directional or popup-based completion of abbreviations that are contained in "
@@ -11410,30 +11416,30 @@ msgstr ""
 "선택한 자동 완성 파일에 포함된 방향 및 팝업 기반 자동 완성에 사용할 축약어입"
 "니다."
 
-#: widgets/codecompletionconfigwidget.cpp:65
+#: widgets/codecompletionconfigwidget.cpp:67
 #, kde-format
 msgid "Show LaTeX commands of the selected completion files in the sidebar"
 msgstr "사이드바에 선택한 자동 완성 파일의 LaTeX 명령 표시"
 
 #. i18n: ectx: property (title), widget (QGroupBox, groupBox_2)
-#: widgets/codecompletionconfigwidget.cpp:95
-#: widgets/codecompletionconfigwidget.cpp:326
+#: widgets/codecompletionconfigwidget.cpp:97
+#: widgets/codecompletionconfigwidget.cpp:328
 #: widgets/codecompletionconfigwidget.ui:99
 #, kde-format
 msgid "Completion Files"
 msgstr "자동 완성 파일"
 
-#: widgets/codecompletionconfigwidget.cpp:204
+#: widgets/codecompletionconfigwidget.cpp:206
 #, kde-format
 msgid "File not found"
 msgstr "파일을 찾을 수 없음"
 
-#: widgets/codecompletionconfigwidget.cpp:274
+#: widgets/codecompletionconfigwidget.cpp:276
 #, kde-format
 msgid "Wordlist '%1' contains duplicate entries."
 msgstr "단어 목록 '%1'에 중복 항목이 있습니다."
 
-#: widgets/codecompletionconfigwidget.cpp:274
+#: widgets/codecompletionconfigwidget.cpp:276
 #, kde-format
 msgid "Completion"
 msgstr "자동 완성"
@@ -11521,8 +11527,14 @@ msgstr "시스템 검사 중"
 msgid "Checking if your TeX system is installed correctly..."
 msgstr "TeX 시스템이 완전히 설치되어 있는지 확인 중..."
 
+#. i18n: ectx: property (format), widget (QProgressBar, m_progress)
+#: widgets/configcheckerwidget.ui:45
+#, no-c-format, kde-format
+msgid "%p%"
+msgstr "%p%"
+
 #. i18n: ectx: property (title), widget (QGroupBox, m_grpResults)
-#: widgets/configcheckerwidget.ui:55
+#: widgets/configcheckerwidget.ui:58
 #, kde-format
 msgid "Results"
 msgstr "결과"
@@ -12469,66 +12481,66 @@ msgstr "스크립트 실행 시간 제한(&L)"
 msgid "&Time limit (seconds):"
 msgstr "시간 제한(초)(&T):"
 
-#: widgets/scriptsmanagementwidget.cpp:76
+#: widgets/scriptsmanagementwidget.cpp:78
 #, kde-format
 msgid "Run Selected Script"
 msgstr "선택한 스크립트 실행"
 
-#: widgets/scriptsmanagementwidget.cpp:82
+#: widgets/scriptsmanagementwidget.cpp:84
 #, kde-format
 msgid "Create New Script"
 msgstr "새 스크립트 만들기"
 
-#: widgets/scriptsmanagementwidget.cpp:88
+#: widgets/scriptsmanagementwidget.cpp:90
 #, kde-format
 msgid "Open Selected Script in Editor"
 msgstr "편집기에서 선택한 스크립트 열기"
 
-#: widgets/scriptsmanagementwidget.cpp:94
+#: widgets/scriptsmanagementwidget.cpp:96
 #, kde-format
 msgid "Configure Key Sequence"
 msgstr "키 배열 설정"
 
-#: widgets/scriptsmanagementwidget.cpp:100
+#: widgets/scriptsmanagementwidget.cpp:102
 #, kde-format
 msgid "Remove Key Sequence"
 msgstr "키 배열 삭제"
 
-#: widgets/scriptsmanagementwidget.cpp:106
+#: widgets/scriptsmanagementwidget.cpp:108
 #, kde-format
 msgid "Refresh List"
 msgstr "목록 새로 고침"
 
-#: widgets/scriptsmanagementwidget.cpp:117
+#: widgets/scriptsmanagementwidget.cpp:119
 #, kde-format
 msgid "Script Name"
 msgstr "스크립트 이름"
 
-#: widgets/scriptsmanagementwidget.cpp:118
+#: widgets/scriptsmanagementwidget.cpp:120
 #, kde-format
 msgid "Sequence"
 msgstr "배열"
 
-#: widgets/scriptsmanagementwidget.cpp:223
+#: widgets/scriptsmanagementwidget.cpp:225
 #, kde-format
 msgid "The sequence \"%1\" is already assigned to the action \"%2\""
 msgstr "배열 \"%1\"이(가) 동작 \"%2\"에 이미 할당됨"
 
-#: widgets/scriptsmanagementwidget.cpp:224
-#: widgets/scriptsmanagementwidget.cpp:228
-#: widgets/scriptsmanagementwidget.cpp:232
+#: widgets/scriptsmanagementwidget.cpp:226
+#: widgets/scriptsmanagementwidget.cpp:230
+#: widgets/scriptsmanagementwidget.cpp:234
 #, kde-format
 msgid "Sequence Already Assigned"
 msgstr "배열이 이미 할당됨"
 
-#: widgets/scriptsmanagementwidget.cpp:227
+#: widgets/scriptsmanagementwidget.cpp:229
 #, kde-format
 msgid ""
 "The sequence \"%1\" is a subsequence of \"%2\", which is already assigned to "
 "the action \"%3\""
 msgstr "배열 \"%1\"은(는) \"%2\"의 하위 배열로, 동작 \"%3\"에 이미 할당됨"
 
-#: widgets/scriptsmanagementwidget.cpp:231
+#: widgets/scriptsmanagementwidget.cpp:233
 #, kde-format
 msgid "The shorter sequence \"%1\" is already assigned to the action \"%2\""
 msgstr "짧은 배열 \"%1\"이(가) 동작 \"%2\"에 이미 할당됨"
@@ -12937,32 +12949,32 @@ msgstr "유니코드"
 msgid "Insert Unicode representation of the selected symbol (when available)"
 msgstr "선택한 기호의 유니코드 표현 삽입(사용 가능한 경우)"
 
-#: widgets/toolconfigwidget.cpp:111
+#: widgets/toolconfigwidget.cpp:112
 #, kde-format
 msgid "Run Outside of Kile"
 msgstr "Kile 외부에서 실행"
 
-#: widgets/toolconfigwidget.cpp:112
+#: widgets/toolconfigwidget.cpp:113
 #, kde-format
 msgid "Run in Konsole"
 msgstr "Konsole에서 실행"
 
-#: widgets/toolconfigwidget.cpp:113
+#: widgets/toolconfigwidget.cpp:114
 #, kde-format
 msgid "Use Document Viewer"
 msgstr "문서 뷰어 사용"
 
-#: widgets/toolconfigwidget.cpp:114
+#: widgets/toolconfigwidget.cpp:115
 #, kde-format
 msgid "Run Sequence of Tools"
 msgstr "도구 시퀀스 실행"
 
-#: widgets/toolconfigwidget.cpp:161
+#: widgets/toolconfigwidget.cpp:162
 #, kde-format
 msgid "Use the \"Advanced\" tab to configure this tool."
 msgstr "이 도구를 설정하려면 \"고급\" 탭을 사용하십시오."
 
-#: widgets/toolconfigwidget.cpp:172
+#: widgets/toolconfigwidget.cpp:173
 #, kde-format
 msgid ""
 "Unknown tool type; your configuration data is malformed.\n"
@@ -12971,7 +12983,7 @@ msgstr ""
 "알 수 없는 도구 형식입니다. 설정 파일이 잘못된 것 같습니다.\n"
 "기본 설정을 복원해 보십시오."
 
-#: widgets/toolconfigwidget.cpp:225
+#: widgets/toolconfigwidget.cpp:227
 #, kde-format
 msgid ""
 "All your tool settings will be overwritten with the default settings.\n"
@@ -12980,37 +12992,37 @@ msgstr ""
 "모든 도구 설정을 기본 설정으로 덮어씁니다.\n"
 "계속 진행하시겠습니까?"
 
-#: widgets/toolconfigwidget.cpp:350
+#: widgets/toolconfigwidget.cpp:353
 #, kde-format
 msgid "Choose a configuration for the tool %1"
 msgstr "%1 도구의 설정 선택"
 
-#: widgets/toolconfigwidget.cpp:420
+#: widgets/toolconfigwidget.cpp:423
 #, kde-format
 msgid "New Configuration"
 msgstr "새 설정"
 
-#: widgets/toolconfigwidget.cpp:420
+#: widgets/toolconfigwidget.cpp:423
 #, kde-format
 msgid "Enter new configuration name:"
 msgstr "새 설정 이름 입력:"
 
-#: widgets/toolconfigwidget.cpp:447
+#: widgets/toolconfigwidget.cpp:450
 #, kde-format
 msgid "Are you sure you want to remove the tool %1?"
 msgstr "%1 도구를 삭제하시겠습니까?"
 
-#: widgets/toolconfigwidget.cpp:477
+#: widgets/toolconfigwidget.cpp:480
 #, kde-format
 msgid "Are you sure that you want to remove this configuration?"
 msgstr "이 설정을 삭제하시겠습니까?"
 
-#: widgets/toolconfigwidget.cpp:491
+#: widgets/toolconfigwidget.cpp:494
 #, kde-format
 msgid "You need at least one configuration for each tool."
 msgstr "각각 도구의 설정을 최소 한 개는 추가해야 합니다."
 
-#: widgets/toolconfigwidget.cpp:491
+#: widgets/toolconfigwidget.cpp:494
 #, kde-format
 msgid "Cannot Remove Configuration"
 msgstr "설정을 삭제할 수 없음"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kile\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
-"POT-Creation-Date: 2024-08-05 00:39+0000\n"
+"POT-Creation-Date: 2025-07-07 00:42+0000\n"
 "PO-Revision-Date: 2015-02-09 09:30+0100\n"
 "Last-Translator: Samir Ribic <samir.ribic@etf.unsa.ba>\n"
 "Language-Team: Bosnian <bhld@linux.org.ba>\n"
@@ -252,36 +252,42 @@ msgstr "Sistemska provjera & Asistent za podešavanje"
 msgid "Checking whether the system is set up correctly..."
 msgstr "Provjera da li je sistem podešen ispravno..."
 
-#: dialogs/configcheckerdialog.cpp:147
+#: dialogs/configcheckerdialog.cpp:134
+#, kde-format
+msgctxt "%p is the percent value, % is the percent sign"
+msgid "%p%"
+msgstr ""
+
+#: dialogs/configcheckerdialog.cpp:148
 #, kde-format
 msgid "Configure the viewer tools to use the document viewer"
 msgstr "Podesite pregled alate za korištenje pregleda dokumenta"
 
-#: dialogs/configcheckerdialog.cpp:149
+#: dialogs/configcheckerdialog.cpp:150
 #, kde-format
 msgid "Use the 'modern' configuration for the TeX, PDFTeX, and LaTeX tools"
 msgstr "Koristite 'modernu' konfiguraciju za TeX, PDFTeX, i LaTeX alate"
 
-#: dialogs/configcheckerdialog.cpp:151
+#: dialogs/configcheckerdialog.cpp:152
 #, kde-format
 msgid ""
 "Use the 'modern' configuration for the PDFLaTeX, LuaLaTeX and XeLaTeX tools"
 msgstr ""
 "Koristite 'modernu' konfiguraciju za PDFLaTeX, LuaLaTeX i XeLaTeX alate"
 
-#: dialogs/configcheckerdialog.cpp:153
+#: dialogs/configcheckerdialog.cpp:154
 #, kde-format
 msgid ""
 "<br/>Please press 'Finish' now to accept the recommended configuration "
 "changes."
 msgstr "<br/>Pritisnite 'Završi' sada da prihvatite promjene zadanih postavki."
 
-#: dialogs/configcheckerdialog.cpp:156
+#: dialogs/configcheckerdialog.cpp:157
 #, kde-format
 msgid "Test Results"
 msgstr "Rezultati testa"
 
-#: dialogs/configcheckerdialog.cpp:231
+#: dialogs/configcheckerdialog.cpp:232
 #, kde-format
 msgid ""
 "The following <b>critical</b> tests did not succeed:<br/><br/>%1<br/><br/"
@@ -292,7 +298,7 @@ msgstr ""
 "ne može funkcionisati ispravno na vašem sistemu. Molimo provjerite rezultate "
 "testa<br/>da saznate koji programi moraju biti popravlljeni."
 
-#: dialogs/configcheckerdialog.cpp:237
+#: dialogs/configcheckerdialog.cpp:238
 #, kde-format
 msgid ""
 "The following tests did not succeed:<br/><br/>%1<br/><br/>You will still be "
@@ -301,21 +307,21 @@ msgstr ""
 "Sljedeći testovi nisu uspjeli:<br/><br/>%1<br/><br/>Još uvijek možete "
 "koristiti Kile; međutim, neće sve mogućnosti zasigurno raditi."
 
-#: dialogs/configcheckerdialog.cpp:242
+#: dialogs/configcheckerdialog.cpp:243
 #, kde-format
 msgid ""
 "<b>No problems were detected. Kile will work correctly on your system.</b>"
 msgstr ""
 "<b>Nisu otkriveni problemi. Kile će raditi ispravno na vašem sistemu.</b>"
 
-#: dialogs/configcheckerdialog.cpp:255
+#: dialogs/configcheckerdialog.cpp:256
 #, fuzzy, kde-format
 #| msgid "The embedded viewer is available and live preview is supported."
 msgid ""
 "The embedded document viewer is available and live preview is supported."
 msgstr "Ugrađeni preglednik je dostupan i pregled uživo je podržan."
 
-#: dialogs/configcheckerdialog.cpp:258
+#: dialogs/configcheckerdialog.cpp:259
 #, fuzzy, kde-format
 #| msgid ""
 #| "The embedded viewer is available, but the installed version of PDFLaTeX "
@@ -327,7 +333,7 @@ msgstr ""
 "Ugrađeni preglednik je dostupan, ali instalirana verzija PDFLaTeX <br/><b> "
 "nije kompatibilna</b> sa pregledom uživo."
 
-#: dialogs/configcheckerdialog.cpp:266
+#: dialogs/configcheckerdialog.cpp:267
 #, fuzzy, kde-format
 #| msgid ""
 #| "The embedded viewer is <b>not available</b> (as Okular is either not "
@@ -341,7 +347,7 @@ msgstr ""
 "Ugrađeni preglednik <b>nije dostupan</b> (Okular nije dostupan ili je "
 "instalirana<br/>verzija prestara).  Pregled uživo stoga nije podržan."
 
-#: dialogs/configcheckerdialog.cpp:290
+#: dialogs/configcheckerdialog.cpp:291
 #, kde-format
 msgid ""
 "<br/><font color=\"#FF0000\"><b>The tests could not be finished correctly. "
@@ -366,7 +372,7 @@ msgstr "Kile"
 
 #. i18n: ectx: property (windowTitle), widget (QWidget, KileWidgetLatexConfig)
 #. i18n: ectx: property (windowTitle), widget (QWidget, KileWidgetEnvironmentConfig)
-#: dialogs/configurationdialog.cpp:69 kile.cpp:696 kile.cpp:1076
+#: dialogs/configurationdialog.cpp:69 kile.cpp:696 kile.cpp:1084
 #: kileinfo.cpp:355 widgets/environmentconfigwidget.ui:20
 #: widgets/latexconfigwidget.ui:14
 #, kde-format
@@ -547,7 +553,7 @@ msgstr "Komanda[]"
 #. i18n: ectx: property (text), widget (QTreeWidget, environments)
 #: dialogs/findfilesdialog.cpp:144 dialogs/floatdialog_base.ui:29
 #: dialogs/latexcommanddialog_base.ui:69 dialogs/mathenvironmentdialog.cpp:56
-#: dialogs/tabular/newtabulardialog.cpp:123 kile.cpp:998
+#: dialogs/tabular/newtabulardialog.cpp:123 kile.cpp:1000
 #, kde-format
 msgid "Environment"
 msgstr "Okruženje"
@@ -557,13 +563,13 @@ msgstr "Okruženje"
 msgid "Image"
 msgstr "Slika"
 
-#: dialogs/findfilesdialog.cpp:146 kilestdactions.cpp:128
-#: kilestdactions.cpp:129 usermenu/usermenu.cpp:909
+#: dialogs/findfilesdialog.cpp:146 kilestdactions.cpp:140
+#: kilestdactions.cpp:141 usermenu/usermenu.cpp:909
 #, kde-format
 msgid "Label"
 msgstr "Oznaka"
 
-#: dialogs/findfilesdialog.cpp:147 kilestdactions.cpp:134
+#: dialogs/findfilesdialog.cpp:147 kilestdactions.cpp:146
 #: usermenu/usermenu.cpp:914
 #, kde-format
 msgid "Reference"
@@ -1308,7 +1314,7 @@ msgstr "AMS-Math"
 #. i18n: ectx: ToolBar (mathToolBar)
 #. i18n: ectx: property (text), widget (QTreeWidget, environments)
 #: dialogs/latexcommanddialog.cpp:389 dialogs/latexcommanddialog_base.ui:84
-#: kile.cpp:1031 kilestdactions.cpp:452 kileui.rc:583
+#: kile.cpp:1039 kilestdactions.cpp:464 kileui.rc:583
 #, kde-format
 msgid "Math"
 msgstr "Matematika"
@@ -1318,7 +1324,7 @@ msgstr "Matematika"
 msgid "Lists"
 msgstr "Liste"
 
-#: dialogs/latexcommanddialog.cpp:391 kile.cpp:1027 kilestdactions.cpp:80
+#: dialogs/latexcommanddialog.cpp:391 kile.cpp:1035 kilestdactions.cpp:80
 #, kde-format
 msgid "Tabular"
 msgstr "Tabela"
@@ -1353,13 +1359,13 @@ msgstr "Citati"
 msgid "Includes"
 msgstr "Uključuje"
 
-#: dialogs/latexcommanddialog.cpp:623 kile.cpp:1078
+#: dialogs/latexcommanddialog.cpp:623 kile.cpp:1090
 #, kde-format
 msgid "LaTeX Environments"
 msgstr "LaTeX okruženje"
 
 #: dialogs/latexcommanddialog.cpp:627 dialogs/latexcommanddialog.cpp:699
-#: kile.cpp:1077
+#: kile.cpp:1087
 #, kde-format
 msgid "LaTeX Commands"
 msgstr "LaTeX komande"
@@ -1536,7 +1542,7 @@ msgstr[2] "%1 elemenata nađeno."
 msgid "File Name"
 msgstr "Ime datoteke"
 
-#: dialogs/listselector.cpp:151 widgets/codecompletionconfigwidget.cpp:96
+#: dialogs/listselector.cpp:151 widgets/codecompletionconfigwidget.cpp:98
 #, kde-format
 msgid "Local File"
 msgstr "Lokalna datoteka"
@@ -1581,8 +1587,8 @@ msgstr "Uredite lokalne datoteke završavanja u upravitelju datotekama"
 #: dialogs/listselector.cpp:210 dialogs/listselector.cpp:263
 #: dialogs/listselector.cpp:268 dialogs/pdf-wizard/pdfdialog.cpp:283
 #: dialogs/pdf-wizard/pdfdialog.cpp:939 dialogs/postscriptdialog.cpp:219
-#: widgets/codecompletionconfigwidget.cpp:196
-#: widgets/codecompletionconfigwidget.cpp:353
+#: widgets/codecompletionconfigwidget.cpp:198
+#: widgets/codecompletionconfigwidget.cpp:355
 #, kde-format
 msgid "yes"
 msgstr "da"
@@ -1591,8 +1597,8 @@ msgstr "da"
 #: dialogs/listselector.cpp:214 dialogs/pdf-wizard/pdfdialog.cpp:283
 #: dialogs/pdf-wizard/pdfdialog.cpp:939
 #: dialogs/pdf-wizard/pdfdialog_base.ui:518 dialogs/postscriptdialog.cpp:219
-#: widgets/codecompletionconfigwidget.cpp:200
-#: widgets/codecompletionconfigwidget.cpp:356
+#: widgets/codecompletionconfigwidget.cpp:202
+#: widgets/codecompletionconfigwidget.cpp:358
 #, kde-format
 msgid "no"
 msgstr "ne"
@@ -2319,7 +2325,7 @@ msgstr ""
 "p>"
 
 #: dialogs/pdf-wizard/pdfdialog.cpp:910 dialogs/pdf-wizard/pdfdialog.cpp:1698
-#: dialogs/pdf-wizard/pdfdialog.cpp:1768 kile.cpp:1033
+#: dialogs/pdf-wizard/pdfdialog.cpp:1768 kile.cpp:1041
 #, kde-format
 msgid "PDF Tools"
 msgstr "PDF alati"
@@ -2908,7 +2914,7 @@ msgstr "Nepoznat format datoteke: kao izlaznu datoteku prihvata se samo „.ps�
 msgid "Copies:"
 msgstr "Kopije:"
 
-#: dialogs/postscriptdialog.cpp:517 kile.cpp:1032
+#: dialogs/postscriptdialog.cpp:517 kile.cpp:1040
 #, kde-format
 msgid "Postscript Tools"
 msgstr "PostScript Alati"
@@ -4434,17 +4440,17 @@ msgstr "Centrirano"
 msgid "Align Right"
 msgstr "Poravnaj desno"
 
-#: dialogs/tabular/newtabulardialog.cpp:85 kilestdactions.cpp:202
+#: dialogs/tabular/newtabulardialog.cpp:85 kilestdactions.cpp:214
 #, kde-format
 msgid "Bold"
 msgstr "Masno"
 
-#: dialogs/tabular/newtabulardialog.cpp:86 kilestdactions.cpp:205
+#: dialogs/tabular/newtabulardialog.cpp:86 kilestdactions.cpp:217
 #, kde-format
 msgid "Italic"
 msgstr "Kurzivno"
 
-#: dialogs/tabular/newtabulardialog.cpp:87 kilestdactions.cpp:136
+#: dialogs/tabular/newtabulardialog.cpp:87 kilestdactions.cpp:148
 #, kde-format
 msgid "Underline"
 msgstr "Podvučeno"
@@ -4720,7 +4726,7 @@ msgstr "Nema sadržaja umetnutog u tablicu prijenosnik je prazan."
 msgid "Empty Clipboard"
 msgstr "Prazan Međuspremnik"
 
-#: dialogs/texdocumentationdialog.cpp:58 kile.cpp:1080
+#: dialogs/texdocumentationdialog.cpp:58 kile.cpp:1096
 #, kde-format
 msgid "Documentation Browser"
 msgstr "Preglednik dokumentacije"
@@ -4834,7 +4840,7 @@ msgid "Configure User Help"
 msgstr "Konfiguracija Korisničke Pomoći"
 
 #. i18n: ectx: property (title), widget (QGroupBox, m_gbUserHelp)
-#: dialogs/userhelpdialog.cpp:57 dialogs/userhelpdialog.cpp:378 kile.cpp:1092
+#: dialogs/userhelpdialog.cpp:57 dialogs/userhelpdialog.cpp:378 kile.cpp:1110
 #: widgets/helpconfigwidget.ui:86
 #, kde-format
 msgid "User Help"
@@ -5959,7 +5965,7 @@ msgstr ""
 "> Kliknite na sliku za umetanje odgovarajuću naredbu, dodatno tipke \"Shift"
 "\" uneseno u math modu, pritiskom \"Ctrl\" u vitičastim zagradama. </p>"
 
-#: kile.cpp:707 widgets/codecompletionconfigwidget.cpp:55
+#: kile.cpp:707 widgets/codecompletionconfigwidget.cpp:57
 #, kde-format
 msgid "Abbreviation"
 msgstr "Skraćenica"
@@ -6165,7 +6171,7 @@ msgstr "Otvoriti Sve &Projektne datoteke"
 msgid "Find in &Project..."
 msgstr "Pronađi u &Projektu..."
 
-#: kile.cpp:911 kile.cpp:1009 kile.cpp:2150 kiledocmanager.cpp:1963
+#: kile.cpp:911 kile.cpp:1017 kile.cpp:2168 kiledocmanager.cpp:1963
 #: kiledocmanager.cpp:1973
 #, kde-format
 msgid "Clean"
@@ -6299,128 +6305,128 @@ msgstr "Zatvori"
 msgid "Selection"
 msgstr "Izbor"
 
-#: kile.cpp:999
+#: kile.cpp:1003
 #, kde-format
 msgid "Subdocument"
 msgstr "Poddokument"
 
-#: kile.cpp:1000
+#: kile.cpp:1006
 #, kde-format
 msgid "Mathgroup"
 msgstr "Matematička grupa"
 
-#: kile.cpp:1005
+#: kile.cpp:1013
 #, kde-format
 msgid "&Bibliography"
 msgstr "&Bibliografija"
 
 #. i18n: ectx: Menu (settings)
-#: kile.cpp:1011 kileui.rc:517
+#: kile.cpp:1019 kileui.rc:517
 #, kde-format
 msgid "&Settings"
 msgstr "&Postavke"
 
-#: kile.cpp:1014
+#: kile.cpp:1022
 #, kde-format
 msgid "Settings for BibTeX"
 msgstr "Podešavanja za BibTeX"
 
-#: kile.cpp:1018
+#: kile.cpp:1026
 #, kde-format
 msgid "Settings for Biblatex"
 msgstr "Podešavanja za Biblatex"
 
-#: kile.cpp:1025 kile.cpp:2255
+#: kile.cpp:1033 kile.cpp:2273
 #, kde-format
 msgid "Quick Start"
 msgstr "Brzi početak"
 
-#: kile.cpp:1028 kilestdactions.cpp:385
+#: kile.cpp:1036 kilestdactions.cpp:397
 #, kde-format
 msgid "Array"
 msgstr "Niz"
 
-#: kile.cpp:1029 kile.cpp:2307 kilestdactions.cpp:79
+#: kile.cpp:1037 kile.cpp:2325 kilestdactions.cpp:79
 #, kde-format
 msgid "Tabbing"
 msgstr "Tabulatorisanje"
 
-#: kile.cpp:1030
+#: kile.cpp:1038
 #, kde-format
 msgid "Floats"
 msgstr "Plutajući"
 
-#: kile.cpp:1035
+#: kile.cpp:1043
 #, kde-format
 msgid "Define Current Document as '&Master Document'"
 msgstr "Definiši tekući dokument kao „&glavni dokument“"
 
-#: kile.cpp:1040
+#: kile.cpp:1048
 #, kde-format
 msgid "Show Document Viewer"
 msgstr "Prikaži preglednik dokumenata"
 
-#: kile.cpp:1047
+#: kile.cpp:1055
 #, kde-format
 msgid "Show S&ide Bar"
 msgstr "Prikaži &bočnu traku"
 
-#: kile.cpp:1053
+#: kile.cpp:1061
 #, kde-format
 msgid "Show Mess&ages Bar"
 msgstr "Prikaži traku &poruka"
 
-#: kile.cpp:1065
+#: kile.cpp:1073
 #, kde-format
 msgid "Watch File Mode"
 msgstr "Režim nadgledanja datoteke"
 
-#: kile.cpp:1079
+#: kile.cpp:1093
 #, kde-format
 msgid "Context Help"
 msgstr "Kontekstna pomoć"
 
-#: kile.cpp:1082
+#: kile.cpp:1100
 #, kde-format
 msgid "&About Editor Component"
 msgstr "&O uređivačkoj komponenti"
 
-#: kile.cpp:1090
+#: kile.cpp:1108
 #, kde-format
 msgid "&System Check..."
 msgstr "Provjera &sistema..."
 
-#: kile.cpp:1108 kileinfo.cpp:357
+#: kile.cpp:1126 kileinfo.cpp:357
 #, kde-format
 msgid "BibTeX"
 msgstr "BibTeX"
 
-#: kile.cpp:1111
+#: kile.cpp:1129
 #, kde-format
 msgid "Biblatex"
 msgstr "Biblatex"
 
-#: kile.cpp:1256 widgets/toolconfigwidget.cpp:76
+#: kile.cpp:1274 widgets/toolconfigwidget.cpp:77
 #, kde-format
 msgid "Compile"
 msgstr "Prevedi"
 
-#: kile.cpp:1257 widgets/toolconfigwidget.cpp:78
+#: kile.cpp:1275 widgets/toolconfigwidget.cpp:79
 #, kde-format
 msgid "View"
 msgstr "Prikaz"
 
-#: kile.cpp:1258 widgets/toolconfigwidget.cpp:77
+#: kile.cpp:1276 widgets/toolconfigwidget.cpp:78
 #, kde-format
 msgid "Convert"
 msgstr "Pretvori"
 
-#: kile.cpp:1259 widgets/toolconfigwidget.cpp:75
+#: kile.cpp:1277 widgets/toolconfigwidget.cpp:76
 #, kde-format
 msgid "Quick"
 msgstr "Brzo"
 
-#: kile.cpp:1438
+#: kile.cpp:1456
 #, kde-format
 msgid ""
 "It was impossible to create the \"Archive\" tool.\n"
@@ -6431,78 +6437,78 @@ msgstr ""
 "\n"
 "Molimo provjerite i popravite svoju instalaciju Kile-a."
 
-#: kile.cpp:1440
+#: kile.cpp:1458
 #, kde-format
 msgid "Unable to Create Archive Tool"
 msgstr "Nemoguće kreirati alat arhive"
 
-#: kile.cpp:1505
+#: kile.cpp:1523
 #, kde-format
 msgid "Project: %1"
 msgstr "Projekat: %1"
 
-#: kile.cpp:1508
+#: kile.cpp:1526
 #, kde-format
 msgid "Project: %1 (Master document: %2)"
 msgstr "Projekat: %1 (glavni dokument: %2)"
 
-#: kile.cpp:1513
+#: kile.cpp:1531
 #, kde-format
 msgid "Normal mode"
 msgstr "Normalan režim"
 
-#: kile.cpp:1516
+#: kile.cpp:1534
 #, kde-format
 msgid "Master document: %1"
 msgstr "Glavni dokument: %1"
 
-#: kile.cpp:1521 kile.cpp:2664
+#: kile.cpp:1539 kile.cpp:2682
 #, kde-format
 msgid "Define Current Document as 'Master Document'"
 msgstr "Definiši tekući dokument kao „glavni dokument“"
 
-#: kile.cpp:1525 kile.cpp:2654
+#: kile.cpp:1543 kile.cpp:2672
 #, kde-format
 msgid "Normal mode (current master document: %1)"
 msgstr "Normalni režim (tekući glavni dokument: %1)"
 
-#: kile.cpp:1765
+#: kile.cpp:1783
 #, kde-format
 msgctxt "Window caption in read-only mode: <file name> [Read-Only]"
 msgid "%1 [Read-Only]"
 msgstr "%1 [Samo za čitanje]"
 
-#: kile.cpp:2143
+#: kile.cpp:2161
 #, kde-format
 msgid "There is no active document or it is not saved."
 msgstr "Nema aktivnog dokumenta ili nije snimljen."
 
-#: kile.cpp:2226
+#: kile.cpp:2244
 #, kde-format
 msgid "You have to include the package %1."
 msgstr "Morate uključiti Paket %1."
 
-#: kile.cpp:2226 kile.cpp:2229
+#: kile.cpp:2244 kile.cpp:2247
 #, kde-format
 msgid "Insert text"
 msgstr "Umetni tekst"
 
-#: kile.cpp:2229
+#: kile.cpp:2247
 #, kde-format
 msgid "You have to include the packages %1."
 msgstr "Trebate uključiti pakete %1."
 
-#: kile.cpp:2450
+#: kile.cpp:2468
 #, kde-format
 msgid "No Name"
 msgstr "Bez imena"
 
-#: kile.cpp:2486
+#: kile.cpp:2504
 #, kde-format
 msgid "no name"
 msgstr "bez imena"
 
-#: kile.cpp:2682
+#: kile.cpp:2700
 #, kde-format
 msgid ""
 "In order to define the current document as a master document, it has to be "
@@ -6510,30 +6516,30 @@ msgid ""
 msgstr ""
 "Da biste definisali tekući dokument kao glavni, morate ga prvo snimiti."
 
-#: kile.cpp:3024
+#: kile.cpp:3042
 #, kde-format
 msgctxt "@info:status status bar label for block selection mode"
 msgid "BLOCK"
 msgstr "BLOK"
 
-#: kile.cpp:3025
+#: kile.cpp:3043
 #, kde-format
 msgctxt "@info:status status bar label for line selection mode"
 msgid "LINE"
 msgstr "LINIJA"
 
-#: kile.cpp:3032
+#: kile.cpp:3050
 #, kde-format
 msgid "Refreshing structure..."
 msgstr "Osvježavanje strukture..."
 
-#: kile.cpp:3050
+#: kile.cpp:3068
 #, kde-format
 msgid ""
 "This will hide the menu bar completely. You can show it again by typing %1."
 msgstr ""
 
-#: kile.cpp:3053
+#: kile.cpp:3071
 #, kde-format
 msgid "Hide menu bar"
 msgstr ""
@@ -7849,17 +7855,17 @@ msgstr "Preglednik dokumenata nije dostupan"
 msgid "Please disable the live preview before launching this tool"
 msgstr "Molimo deaktivirajte pregled uživo prije pokretanja ovog alata"
 
-#: kilelyxserver.cpp:240
+#: kilelyxserver.cpp:241
 #, kde-format
 msgid "Cite"
 msgstr "Citirati"
 
-#: kilelyxserver.cpp:246
+#: kilelyxserver.cpp:247
 #, kde-format
 msgid "Add BibTeX database"
 msgstr "Dodaj BiBTeX baze podataka"
 
-#: kilelyxserver.cpp:251
+#: kilelyxserver.cpp:252
 #, kde-format
 msgid "Paste"
 msgstr "Umetni"
@@ -8296,7 +8302,7 @@ msgstr "\\textit{tekst u kurzivu}"
 msgid "Slanted - \\textsl{}"
 msgstr "Iskošeno — \\textsl{}"
 
-#: kilestdactions.cpp:73 kilestdactions.cpp:206
+#: kilestdactions.cpp:73 kilestdactions.cpp:218
 #, kde-format
 msgid "Slanted"
 msgstr "Nakrivljeno"
@@ -8624,17 +8630,17 @@ msgstr "Umetanje Slike - \\includegraphics{fajl}"
 msgid "Image Insertion"
 msgstr "Umetanje Slike"
 
-#: kilestdactions.cpp:95
+#: kilestdactions.cpp:97
 #, kde-format
 msgid "Customizable File Inclusion - \\include{file}"
 msgstr "Prilagodljivo uključivanje datoteke — \\include{file}"
 
-#: kilestdactions.cpp:95
+#: kilestdactions.cpp:97
 #, kde-format
 msgid "Customizable File Inclusion"
 msgstr "Prilagodljivo uključivanje datoteke — \\include{file}"
 
-#: kilestdactions.cpp:95
+#: kilestdactions.cpp:101
 #, kde-format
 msgid ""
 "\\include{file}\n"
@@ -8645,22 +8651,22 @@ msgstr ""
 "Naredba \\include se koristi zajedno sa naredbom \\includeonly za selektivno "
 "uključivanje datoteka."
 
-#: kilestdactions.cpp:95 kilestdactions.cpp:96
+#: kilestdactions.cpp:102 kilestdactions.cpp:108
 #, kde-format
 msgid "Type or select a filename: "
 msgstr "Ukucajte ili izaberite ime datoteke: "
 
-#: kilestdactions.cpp:96
+#: kilestdactions.cpp:103
 #, kde-format
 msgid "File Inclusion - \\input{file}"
 msgstr "Uključivanje datoteke — \\input{file}"
 
-#: kilestdactions.cpp:96
+#: kilestdactions.cpp:103
 #, kde-format
 msgid "File Inclusion"
 msgstr "Uključivanje Fajla"
 
-#: kilestdactions.cpp:96
+#: kilestdactions.cpp:107
 #, kde-format
 msgid ""
 "\\input{file}\n"
@@ -8673,12 +8679,12 @@ msgstr ""
 "obrađuje na isti način kao da je njegov sadržaj ubačen u tekuću datoteku na "
 "tom mjestu."
 
-#: kilestdactions.cpp:98 widgets/structurewidget.cpp:774
+#: kilestdactions.cpp:110 widgets/structurewidget.cpp:774
 #, kde-format
 msgid "Sectioning"
 msgstr "Podjela na odjeljke"
 
-#: kilestdactions.cpp:100
+#: kilestdactions.cpp:112
 #, kde-format
 msgid ""
 "\\part{title}\n"
@@ -8688,19 +8694,19 @@ msgstr ""
 "\\part{naslov}\n"
 "\\part*{naslov} : ne uključuj broj i ne pravi unos u sadržaju\n"
 
-#: kilestdactions.cpp:100
+#: kilestdactions.cpp:112
 #, kde-format
 msgid "&Part"
 msgstr "&Deo"
 
-#: kilestdactions.cpp:100 kilestdactions.cpp:102 kilestdactions.cpp:103
-#: kilestdactions.cpp:104 kilestdactions.cpp:105 kilestdactions.cpp:107
-#: kilestdactions.cpp:108
+#: kilestdactions.cpp:112 kilestdactions.cpp:114 kilestdactions.cpp:115
+#: kilestdactions.cpp:116 kilestdactions.cpp:117 kilestdactions.cpp:119
+#: kilestdactions.cpp:120
 #, kde-format
 msgid "No &numbering"
 msgstr "Bez &numeracije"
 
-#: kilestdactions.cpp:102
+#: kilestdactions.cpp:114
 #, kde-format
 msgid ""
 "\\chapter{title}\n"
@@ -8712,12 +8718,12 @@ msgstr ""
 "\\chapter*{naslov} : ne uključuj broj i ne pravi unos u sadržaju\n"
 "Samo za dokumente klase izvještaja i knjige."
 
-#: kilestdactions.cpp:102
+#: kilestdactions.cpp:114
 #, kde-format
 msgid "C&hapter"
 msgstr "Po&glavlje"
 
-#: kilestdactions.cpp:103
+#: kilestdactions.cpp:115
 #, kde-format
 msgid ""
 "\\section{title}\n"
@@ -8727,12 +8733,12 @@ msgstr ""
 "\\section{naslov}\n"
 "\\section*{naslov} : ne uključuj broj i ne pravi unos u sadržaju"
 
-#: kilestdactions.cpp:103
+#: kilestdactions.cpp:115
 #, kde-format
 msgid "&Section"
 msgstr "&Odeljak"
 
-#: kilestdactions.cpp:104
+#: kilestdactions.cpp:116
 #, kde-format
 msgid ""
 "\\subsection{title}\n"
@@ -8742,12 +8748,12 @@ msgstr ""
 "\\subsection{naslov}\n"
 "\\subsection*{naslov} : ne uključuj broj i ne pravi unos u sadržaju"
 
-#: kilestdactions.cpp:104
+#: kilestdactions.cpp:116
 #, kde-format
 msgid "&Subsection"
 msgstr "&Pododeljak"
 
-#: kilestdactions.cpp:105
+#: kilestdactions.cpp:117
 #, kde-format
 msgid ""
 "\\subsubsection{title}\n"
@@ -8757,12 +8763,12 @@ msgstr ""
 "\\subsubsection{naslov}\n"
 "\\subsubsection*{naslov} : ne uključuj broj i ne pravi unos u sadržaju"
 
-#: kilestdactions.cpp:105
+#: kilestdactions.cpp:117
 #, kde-format
 msgid "&Subsubsection"
 msgstr "P&otpododeljak"
 
-#: kilestdactions.cpp:107
+#: kilestdactions.cpp:119
 #, kde-format
 msgid ""
 "\\paragraph{title}\n"
@@ -8772,12 +8778,12 @@ msgstr ""
 "\\paragraph{naslov}\n"
 "\\paragraph*{naslov} : ne uključuj broj i ne pravi unos u sadržaju"
 
-#: kilestdactions.cpp:107
+#: kilestdactions.cpp:119
 #, kde-format
 msgid "&Paragraph"
 msgstr "&Pasus"
 
-#: kilestdactions.cpp:108
+#: kilestdactions.cpp:120
 #, kde-format
 msgid ""
 "\\subparagraph{title}\n"
@@ -8787,88 +8793,88 @@ msgstr ""
 "\\subparagraph{naslov}\n"
 "\\subparagraph*{naslov} : ne uključuj broj i ne pravi unos u sadržaju"
 
-#: kilestdactions.cpp:108
+#: kilestdactions.cpp:120
 #, kde-format
 msgid "&Subparagraph"
 msgstr "&Potpasus"
 
-#: kilestdactions.cpp:110
+#: kilestdactions.cpp:122
 #, kde-format
 msgid "Size"
 msgstr "Veličina"
 
-#: kilestdactions.cpp:112
+#: kilestdactions.cpp:124
 #, kde-format
 msgid "tiny"
 msgstr "sićušan"
 
-#: kilestdactions.cpp:113
+#: kilestdactions.cpp:125
 #, kde-format
 msgid "scriptsize"
 msgstr "veličina pisma"
 
-#: kilestdactions.cpp:114
+#: kilestdactions.cpp:126
 #, kde-format
 msgid "footnotesize"
 msgstr "veličina fusnote"
 
-#: kilestdactions.cpp:115
+#: kilestdactions.cpp:127
 #, kde-format
 msgid "small"
 msgstr "mali"
 
-#: kilestdactions.cpp:117
+#: kilestdactions.cpp:129
 #, kde-format
 msgid "normalsize"
 msgstr "normalna veličina"
 
-#: kilestdactions.cpp:119
+#: kilestdactions.cpp:131
 #, kde-format
 msgid "large"
 msgstr "veliki"
 
-#: kilestdactions.cpp:120
+#: kilestdactions.cpp:132
 #, kde-format
 msgid "Large"
 msgstr "Veliki"
 
-#: kilestdactions.cpp:121
+#: kilestdactions.cpp:133
 #, kde-format
 msgid "LARGE"
 msgstr "VELIKI"
 
-#: kilestdactions.cpp:122
+#: kilestdactions.cpp:134
 #, kde-format
 msgid "huge"
 msgstr "ogroman"
 
-#: kilestdactions.cpp:123
+#: kilestdactions.cpp:135
 #, kde-format
 msgid "Huge"
 msgstr "Ogroman"
 
-#: kilestdactions.cpp:125 widgets/projectview.cpp:481
-#: widgets/toolconfigwidget.cpp:79
+#: kilestdactions.cpp:137 widgets/projectview.cpp:481
+#: widgets/toolconfigwidget.cpp:80
 #, kde-format
 msgid "Other"
 msgstr "Ostalo"
 
-#: kilestdactions.cpp:127
+#: kilestdactions.cpp:139
 #, kde-format
 msgid "\\label{key}"
 msgstr "\\label{ključ}"
 
-#: kilestdactions.cpp:131
+#: kilestdactions.cpp:143
 #, kde-format
 msgid "\\index{word}"
 msgstr "\\index{reč}"
 
-#: kilestdactions.cpp:132
+#: kilestdactions.cpp:144
 #, kde-format
 msgid "\\footnote{text}"
 msgstr "\\footnote{tekst}"
 
-#: kilestdactions.cpp:134
+#: kilestdactions.cpp:146
 #, kde-format
 msgid ""
 "This command generates an in-text citation to the reference associated with "
@@ -8880,27 +8886,27 @@ msgstr ""
 "Možete otvorite bib datoteku pomoću Kile-a da biste vidjeli sve dostupne "
 "reference"
 
-#: kilestdactions.cpp:136
+#: kilestdactions.cpp:148
 #, kde-format
 msgid "Underline - \\underline{}"
 msgstr "Podvučeno — \\underline{}"
 
-#: kilestdactions.cpp:139
+#: kilestdactions.cpp:151
 #, kde-format
 msgid "Smart Tabulator"
 msgstr "Pametni Tabulator"
 
-#: kilestdactions.cpp:146
+#: kilestdactions.cpp:158
 #, kde-format
 msgid "Abstract - \\begin{abstract}"
 msgstr "Sažetak — \\begin{abstract}"
 
-#: kilestdactions.cpp:146
+#: kilestdactions.cpp:158
 #, kde-format
 msgid "Abstract"
 msgstr "Apstrakt"
 
-#: kilestdactions.cpp:146
+#: kilestdactions.cpp:158
 #, kde-format
 msgid ""
 "\\begin{abstract}\n"
@@ -8915,17 +8921,17 @@ msgstr ""
 "Okruženje sažetka stvara naslovnu stranu, tj. stranu bez odštampanog broja "
 "strane ili zaglavlja."
 
-#: kilestdactions.cpp:148
+#: kilestdactions.cpp:160
 #, kde-format
 msgid "Tabular* - \\begin{tabular*}"
 msgstr "Tabular* - \\begin{tabular*}"
 
-#: kilestdactions.cpp:148
+#: kilestdactions.cpp:160
 #, kde-format
 msgid "Tabular*"
 msgstr "Tabelarno*"
 
-#: kilestdactions.cpp:148
+#: kilestdactions.cpp:160
 #, kde-format
 msgid ""
 "\\begin{tabular*}{width}[pos]{cols}\n"
@@ -8944,17 +8950,17 @@ msgstr ""
 "širinu. Između kolona mora postojati rastegljivi razmak koji se može širiti "
 "da bi ispunio navedenu širinu."
 
-#: kilestdactions.cpp:150
+#: kilestdactions.cpp:162
 #, kde-format
 msgid "Minipage - \\begin{minipage}"
 msgstr "Mini-strana — \\begin{minipage}"
 
-#: kilestdactions.cpp:150
+#: kilestdactions.cpp:162
 #, kde-format
 msgid "Minipage"
 msgstr "MiniStranica"
 
-#: kilestdactions.cpp:150
+#: kilestdactions.cpp:162
 #, kde-format
 msgid ""
 "The minipage environment is similar to a \\parbox command. It takes the same "
@@ -8965,92 +8971,92 @@ msgstr ""
 "argument položaja i obavezni argument širine. Možete koristiti druga "
 "okruženja koja prave pasuse u okviru mini-strane."
 
-#: kilestdactions.cpp:153
+#: kilestdactions.cpp:165
 #, kde-format
 msgid "Table of Figures - \\listoffigures"
 msgstr "Tabela slika - \\listoffigures"
 
-#: kilestdactions.cpp:153
+#: kilestdactions.cpp:165
 #, kde-format
 msgid "Table of Figures"
 msgstr "Tabela sa slikama"
 
-#: kilestdactions.cpp:153
+#: kilestdactions.cpp:165
 #, kde-format
 msgid "Put this command where you want the list of figures to go."
 msgstr "Ovu naredbu stavite tamo gdje želite da bude pregled slika."
 
-#: kilestdactions.cpp:155
+#: kilestdactions.cpp:167
 #, kde-format
 msgid "Table of Tables - \\listoftables"
 msgstr "Tabele sa Tabelama - \\listoftables"
 
-#: kilestdactions.cpp:155
+#: kilestdactions.cpp:167
 #, kde-format
 msgid "Table of Tables"
 msgstr "Tabela od Tabela"
 
-#: kilestdactions.cpp:155
+#: kilestdactions.cpp:167
 #, kde-format
 msgid "Put this command where you want the list of tables to go."
 msgstr "Ovu naredbu stavite tamo gdje želite da bude pregled tabela."
 
-#: kilestdactions.cpp:157
+#: kilestdactions.cpp:169
 #, kde-format
 msgid "Generate Index - \\makeindex"
 msgstr "Generiši Indeks -\\makeindex"
 
-#: kilestdactions.cpp:157
+#: kilestdactions.cpp:169
 #, kde-format
 msgid "Generate Index"
 msgstr "Generiši Indeks"
 
-#: kilestdactions.cpp:157
+#: kilestdactions.cpp:169
 #, kde-format
 msgid "Put this command when you want to generate the raw index."
 msgstr "Ovu naredbu upotrijebite kada želite da napravite sirovi indeks."
 
-#: kilestdactions.cpp:159
+#: kilestdactions.cpp:171
 #, kde-format
 msgid "Print Index - \\printindex"
 msgstr "Indeks Ispisa - \\printindex"
 
-#: kilestdactions.cpp:159
+#: kilestdactions.cpp:171
 #, kde-format
 msgid "Print Index"
 msgstr "Indeks Ispisa"
 
-#: kilestdactions.cpp:159
+#: kilestdactions.cpp:171
 #, kde-format
 msgid "Put this command when you want to print the formatted index."
 msgstr "Ovu naredbu upotrijebite kada želite da štampate formatirani indeks."
 
-#: kilestdactions.cpp:161
+#: kilestdactions.cpp:173
 #, kde-format
 msgid "Glossary - \\makeglossary"
 msgstr "Pojmovnik — \\makeglossary"
 
-#: kilestdactions.cpp:161
+#: kilestdactions.cpp:173
 #, kde-format
 msgid "Glossary"
 msgstr "Rječnik"
 
-#: kilestdactions.cpp:161
+#: kilestdactions.cpp:173
 #, kde-format
 msgid "Put this command when you want to print a glossary."
 msgstr "Ovu naredbu upotrijebite kada želite da štampate pojmovnik."
 
-#: kilestdactions.cpp:163
+#: kilestdactions.cpp:175
 #, kde-format
 msgid "Bibliography - \\begin{thebibliography}"
 msgstr "Bibliografija - \\begin {thebibliography}"
 
-#: kilestdactions.cpp:163 widgets/projectview.cpp:477
+#: kilestdactions.cpp:175 widgets/projectview.cpp:477
 #, kde-format
 msgid "Bibliography"
 msgstr "Bibliografija"
 
-#: kilestdactions.cpp:163
+#: kilestdactions.cpp:175
 #, kde-format
 msgid ""
 "\\begin{thebibliography}{widest-label}\n"
@@ -9071,17 +9077,17 @@ msgstr ""
 "najšira oznaka proizvedena naredbama \\bibitem\n"
 "\\bibitem : navedite bibliografsku stavku"
 
-#: kilestdactions.cpp:166
+#: kilestdactions.cpp:178
 #, kde-format
 msgid "Verbatim (show spaces) - \\begin{verbatim*}"
 msgstr "Doslovno (prikaži razmake) — \\begin{verbatim*}"
 
-#: kilestdactions.cpp:166
+#: kilestdactions.cpp:178
 #, kde-format
 msgid "Verbatim (show spaces)"
 msgstr "Verbatim (prikaži mjesta)"
 
-#: kilestdactions.cpp:166
+#: kilestdactions.cpp:178
 #, kde-format
 msgid ""
 "Environment that gets LaTeX to print exactly what you type in. In this "
@@ -9090,67 +9096,67 @@ msgstr ""
 "Okruženje koje tjera LaTeX da štampa tačno ono što upišete. U ovom obliku, "
 "razmaci se štampaju na poseban način."
 
-#: kilestdactions.cpp:168
+#: kilestdactions.cpp:180
 #, kde-format
 msgid "Embedded Code - \\verb||"
 msgstr "Ugnježdeni kôd — \\verb||"
 
-#: kilestdactions.cpp:168
+#: kilestdactions.cpp:180
 #, kde-format
 msgid "Embedded Code"
 msgstr "Ugrađeni program"
 
-#: kilestdactions.cpp:168
+#: kilestdactions.cpp:180
 #, kde-format
 msgid "Macro form of the verbatim environment."
 msgstr "Doslovno okruženje u obliku makroa."
 
-#: kilestdactions.cpp:170
+#: kilestdactions.cpp:182
 #, kde-format
 msgid "Embedded Code (show spaces) - \\verb*||"
 msgstr "Ugnježdeni kôd (prikaži razmake) — \\verb*||"
 
-#: kilestdactions.cpp:170
+#: kilestdactions.cpp:182
 #, kde-format
 msgid "Embedded Code (show spaces)"
 msgstr "Ugrađeni Kod (prikazati razmake)"
 
-#: kilestdactions.cpp:170
+#: kilestdactions.cpp:182
 #, kde-format
 msgid "Macro form of the verbatim* environment."
 msgstr "Doslovno okruženje sa zvjezdicom u obliku makroa."
 
-#: kilestdactions.cpp:173
+#: kilestdactions.cpp:185
 #, kde-format
 msgid "\"Small\" Vertical Space - \\smallskip"
 msgstr "\"Mali\" Vertikalni Razmak- \\smallskip"
 
-#: kilestdactions.cpp:173
+#: kilestdactions.cpp:185
 #, kde-format
 msgid "\"Small\" Vertical Space"
 msgstr "\"Mali\" Vertikalni Razmak"
 
-#: kilestdactions.cpp:173
+#: kilestdactions.cpp:185
 #, kde-format
 msgid "The \\smallskip command adds a 'small' vertical space."
 msgstr "Naredba \\smallskip dodaje „mali“ uspravni razmak."
 
-#: kilestdactions.cpp:175
+#: kilestdactions.cpp:187
 #, kde-format
 msgid "\\enskip"
 msgstr "\\enskip"
 
-#: kilestdactions.cpp:177
+#: kilestdactions.cpp:189
 #, kde-format
 msgid "Horizontal Variable Space - \\hfill"
 msgstr "Horizontalni Promjenljivi Razmak- \\hfill"
 
-#: kilestdactions.cpp:177
+#: kilestdactions.cpp:189
 #, kde-format
 msgid "Horizontal Variable Space"
 msgstr "Horizontalni Promjenljivi Razmak"
 
-#: kilestdactions.cpp:177
+#: kilestdactions.cpp:189
 #, kde-format
 msgid ""
 "The \\hfill fill command produces a \"rubber length\" which can stretch or "
@@ -9159,17 +9165,17 @@ msgstr ""
 "Naredba \\hfill proizvodi „rastegljivu dužinu“, koja se može širiti ili "
 "skupljati vodoravno. Biće ispunjena razmacima."
 
-#: kilestdactions.cpp:179
+#: kilestdactions.cpp:191
 #, kde-format
 msgid "Horizontal Dots - \\dotfill"
 msgstr "Horizontalne tačkice- \\dotfill"
 
-#: kilestdactions.cpp:179
+#: kilestdactions.cpp:191
 #, kde-format
 msgid "Horizontal Dots"
 msgstr "Horizontalne tačkice"
 
-#: kilestdactions.cpp:179
+#: kilestdactions.cpp:191
 #, kde-format
 msgid ""
 "The \\dotfill command produces a \"rubber length\" that produces dots "
@@ -9178,17 +9184,17 @@ msgstr ""
 "Naredba \\dotfill proizvodi „rastegljivu dužinu“ koja koristi tačke umjesto "
 "razmaka."
 
-#: kilestdactions.cpp:181
+#: kilestdactions.cpp:193
 #, kde-format
 msgid "Horizontal Rule - \\hrulefill"
 msgstr "Horizontalna linija- \\hrulefill"
 
-#: kilestdactions.cpp:181
+#: kilestdactions.cpp:193
 #, kde-format
 msgid "Horizontal Rule"
 msgstr "Horizontalna linija"
 
-#: kilestdactions.cpp:181
+#: kilestdactions.cpp:193
 #, kde-format
 msgid ""
 "The \\hrulefill fill command produces a \"rubber length\" which can stretch "
@@ -9197,17 +9203,17 @@ msgstr ""
 "Naredba \\hrulefill proizvodi „rastegljivu dužinu“, koja se može širiti ili "
 "skupljati vodoravno. Biće ispunjena vodoravnim ravnanjem."
 
-#: kilestdactions.cpp:183
+#: kilestdactions.cpp:195
 #, kde-format
 msgid "Vertical Variable Space - \\vfill"
 msgstr "Vertikalni Promjenljivi Razmak- \\vfill"
 
-#: kilestdactions.cpp:183
+#: kilestdactions.cpp:195
 #, kde-format
 msgid "Vertical Variable Space"
 msgstr "Vertikalni Promjenljivi Razmak"
 
-#: kilestdactions.cpp:183
+#: kilestdactions.cpp:195
 #, kde-format
 msgid ""
 "The \\vfill fill command produces a \"rubber length\" which can stretch or "
@@ -9216,17 +9222,17 @@ msgstr ""
 "Naredba \\vfill proizvodi „rastegljivu dužinu“, koja se može širiti ili "
 "skupljati uspravno."
 
-#: kilestdactions.cpp:185
+#: kilestdactions.cpp:197
 #, kde-format
 msgid "Horizontal Space - \\hspace{}"
 msgstr "Horizontalni Razmak- \\hspace{}"
 
-#: kilestdactions.cpp:185
+#: kilestdactions.cpp:197
 #, kde-format
 msgid "Horizontal Space"
 msgstr "Horizontalni Razmak"
 
-#: kilestdactions.cpp:185
+#: kilestdactions.cpp:197
 #, kde-format
 msgid ""
 "The \\hspace command adds horizontal space. The length of the space can be "
@@ -9239,17 +9245,17 @@ msgstr ""
 "možete dodavati kako pozitivne tako i negativne razmake. Dodavanje "
 "negativnih razmaka je kao brisanje."
 
-#: kilestdactions.cpp:187
+#: kilestdactions.cpp:199
 #, kde-format
 msgid "Horizontal Space (forced) - \\hspace*{}"
 msgstr "Horizontalni Razmak{prisilni}- \\hspace*{}"
 
-#: kilestdactions.cpp:187
+#: kilestdactions.cpp:199
 #, kde-format
 msgid "Horizontal Space (forced)"
 msgstr "Horizontalni Razmak{prisilni}"
 
-#: kilestdactions.cpp:187
+#: kilestdactions.cpp:199
 #, kde-format
 msgid ""
 "The \\hspace* command adds horizontal space like the \\hspace command. LaTeX "
@@ -9261,17 +9267,17 @@ msgstr ""
 "uklanja vodoravni razmak koji se nalazi na kraju reda. Ako ne želite da "
 "LaTeX to čini, dodajte opcionu zvjezdicu. Tada se razmak nikad ne uklanja."
 
-#: kilestdactions.cpp:189
+#: kilestdactions.cpp:201
 #, kde-format
 msgid "Vertical Space - \\vspace{}"
 msgstr "Vertikalni Razmak- \\vrazmak{}"
 
-#: kilestdactions.cpp:189
+#: kilestdactions.cpp:201
 #, kde-format
 msgid "Vertical Space"
 msgstr "Vertikalni Razmak"
 
-#: kilestdactions.cpp:189
+#: kilestdactions.cpp:201
 #, kde-format
 msgid ""
 "The \\vspace command adds vertical space. The length of the space can be "
@@ -9282,17 +9288,17 @@ msgstr ""
 "bilo koji način koji LaTeX razume, tj. u tačkama, inčima, itd. Ovom naredbom "
 "možete dodavati kako pozitivne tako i negativne razmake."
 
-#: kilestdactions.cpp:191
+#: kilestdactions.cpp:203
 #, kde-format
 msgid "Vertical Space (forced) - \\vspace*{}"
 msgstr "Vertikalni Razmak{prisilni}- \\vspace*{}"
 
-#: kilestdactions.cpp:191
+#: kilestdactions.cpp:203
 #, kde-format
 msgid "Vertical Space (forced)"
 msgstr "Vertikalni Razmak{prisilni}"
 
-#: kilestdactions.cpp:191
+#: kilestdactions.cpp:203
 #, kde-format
 msgid ""
 "The \\vspace* command adds vertical space like the \\vspace command. LaTeX "
@@ -9305,122 +9311,122 @@ msgstr ""
 "LaTeX ukloni ovaj prostor, uključite opcionalni * argument. Tada prostor "
 "nikada nije uklonjen."
 
-#: kilestdactions.cpp:194
+#: kilestdactions.cpp:206
 #, kde-format
 msgid "Emphasized - \\emph{}"
 msgstr "Naglašeno — \\emph{}"
 
-#: kilestdactions.cpp:194
+#: kilestdactions.cpp:206
 #, kde-format
 msgid "Emphasized"
 msgstr "Naglašeno"
 
-#: kilestdactions.cpp:194
+#: kilestdactions.cpp:206
 #, kde-format
 msgid "\\emph{emphasized text}"
 msgstr "\\emph{naglašen tekst}"
 
-#: kilestdactions.cpp:195
+#: kilestdactions.cpp:207
 #, kde-format
 msgid "Strong - \\strong{}"
 msgstr "Jak - \\string{}"
 
-#: kilestdactions.cpp:195
+#: kilestdactions.cpp:207
 #, kde-format
 msgid "Strong"
 msgstr "Jak"
 
-#: kilestdactions.cpp:195
+#: kilestdactions.cpp:207
 #, kde-format
 msgid "\\strong{text}"
 msgstr "\\strong{text}"
 
-#: kilestdactions.cpp:197
+#: kilestdactions.cpp:209
 #, kde-format
 msgid "Roman - \\rmfamily"
 msgstr "Latinica - \\rmfamily"
 
-#: kilestdactions.cpp:197
+#: kilestdactions.cpp:209
 #, kde-format
 msgid "Roman"
 msgstr "Latinica"
 
-#: kilestdactions.cpp:198
+#: kilestdactions.cpp:210
 #, kde-format
 msgid "Sans Serif - \\sffamily"
 msgstr "Sans Serif - \\sffamily"
 
-#: kilestdactions.cpp:198
+#: kilestdactions.cpp:210
 #, kde-format
 msgid "Sans Serif"
 msgstr "Sans Serif"
 
-#: kilestdactions.cpp:199
+#: kilestdactions.cpp:211
 #, kde-format
 msgid "Monospace - \\ttfamily"
 msgstr "Neproporcionalni - \\ttfamily"
 
-#: kilestdactions.cpp:199
+#: kilestdactions.cpp:211
 #, kde-format
 msgid "Monospace"
 msgstr "Fiksna širina"
 
-#: kilestdactions.cpp:201
+#: kilestdactions.cpp:213
 #, kde-format
 msgid "Medium - \\mdseries"
 msgstr "Srednji - \\mdseries"
 
-#: kilestdactions.cpp:201
+#: kilestdactions.cpp:213
 #, kde-format
 msgid "Medium"
 msgstr "Srednje"
 
-#: kilestdactions.cpp:202
+#: kilestdactions.cpp:214
 #, kde-format
 msgid "Bold - \\bfseries"
 msgstr "Podebljano - \\bfseries"
 
-#: kilestdactions.cpp:204
+#: kilestdactions.cpp:216
 #, kde-format
 msgid "Upright - \\upshape"
 msgstr "Uspravno - \\upshape"
 
-#: kilestdactions.cpp:204
+#: kilestdactions.cpp:216
 #, kde-format
 msgid "Upright"
 msgstr "Uspravno"
 
-#: kilestdactions.cpp:205
+#: kilestdactions.cpp:217
 #, kde-format
 msgid "Italic - \\itshape"
 msgstr "Kurzivno - \\itshape"
 
-#: kilestdactions.cpp:206
+#: kilestdactions.cpp:218
 #, kde-format
 msgid "Slanted - \\slshape"
 msgstr "Nakrivljen - \\slshape"
 
-#: kilestdactions.cpp:207
+#: kilestdactions.cpp:219
 #, kde-format
 msgid "Smallcaps - \\scshape"
 msgstr "Mala slova - \\scshape"
 
-#: kilestdactions.cpp:207
+#: kilestdactions.cpp:219
 #, kde-format
 msgid "Smallcaps"
 msgstr "Mala slova"
 
-#: kilestdactions.cpp:219
+#: kilestdactions.cpp:231
 #, kde-format
 msgid "Bibliography Style Selection - \\bibliographystyle{}"
 msgstr "Bibliografski Stilski Izbor - \\bibliographystyle{}"
 
-#: kilestdactions.cpp:219
+#: kilestdactions.cpp:231
 #, kde-format
 msgid "Bibliography Style Selection"
 msgstr "Bibliografski Stilski Izbor"
 
-#: kilestdactions.cpp:219
+#: kilestdactions.cpp:231
 #, kde-format
 msgid ""
 "The argument to \\bibliographystyle refers to a file style.bst, which "
@@ -9441,17 +9447,17 @@ msgstr ""
 "unsrt : kao plain, ali su unosi poređani redoslijedom kojim su navođeni.\n"
 "abbrv : kao plain, ali oznake su manjih dimenzija."
 
-#: kilestdactions.cpp:220 kilestdactions.cpp:228
+#: kilestdactions.cpp:232 kilestdactions.cpp:240
 #, kde-format
 msgid "Bibliography Generation - \\bibliography{}"
 msgstr "Bibliografsko Generisanje -\\bibliography{}"
 
-#: kilestdactions.cpp:220 kilestdactions.cpp:228
+#: kilestdactions.cpp:232 kilestdactions.cpp:240
 #, kde-format
 msgid "Bibliography Generation"
 msgstr "Bibliografsko Generisanje"
 
-#: kilestdactions.cpp:220 kilestdactions.cpp:228
+#: kilestdactions.cpp:232 kilestdactions.cpp:240
 #, kde-format
 msgid ""
 "The argument to \\bibliography refers to the bib file (without extension)\n"
@@ -9462,288 +9468,288 @@ msgstr ""
 "koji bi trebalo da sadrži vašu bazu podataka u BibTeX-ovom formatu.\n"
 "Kile automatski umeće osnovno ime TeX-ove datoteke"
 
-#: kilestdactions.cpp:227
+#: kilestdactions.cpp:239
 #, kde-format
 msgid "Load Biblatex Package - \\usepackage{biblatex}"
 msgstr "Učitaj Biblatex Paket - \\usepackage{biblatex}"
 
-#: kilestdactions.cpp:227
+#: kilestdactions.cpp:239
 #, kde-format
 msgid "Load Biblatex Package"
 msgstr "Učitaj Biblatex Paket"
 
-#: kilestdactions.cpp:227
+#: kilestdactions.cpp:239
 #, kde-format
 msgid "This includes the package biblatex"
 msgstr "To uključuje paket biblatex"
 
-#: kilestdactions.cpp:229
+#: kilestdactions.cpp:241
 #, kde-format
 msgid "Print Bibliography"
 msgstr "Ispis Bibliografija"
 
-#: kilestdactions.cpp:229
+#: kilestdactions.cpp:241
 #, kde-format
 msgid "Prints the complete bibliography"
 msgstr "Ispisuje potpunu bibliografiju"
 
-#: kilestdactions.cpp:230
+#: kilestdactions.cpp:242
 #, kde-format
 msgid "Print Bibliography by Section"
 msgstr "Ispi sBibliografije sa Odjela"
 
-#: kilestdactions.cpp:230
+#: kilestdactions.cpp:242
 #, kde-format
 msgid "Print the bibliography for each section"
 msgstr "Ispis bibliografije za svaku sekciju(odjel)"
 
-#: kilestdactions.cpp:231
+#: kilestdactions.cpp:243
 #, kde-format
 msgid "Print List of Shorthands"
 msgstr "Ispis Liste skraćenica"
 
-#: kilestdactions.cpp:330
+#: kilestdactions.cpp:342
 #, kde-format
 msgid "ALT.... : you have the choice between these two fields\n"
 msgstr "ALT .... : Imate izbor između ta dva polja\n"
 
-#: kilestdactions.cpp:331
+#: kilestdactions.cpp:343
 #, kde-format
 msgid "OPT.... : optional fields (use the 'Clean' command to remove them)"
 msgstr "OPT .... : Izborna polja (koristiti 'Clean' naredbu da ih ukloni)"
 
-#: kilestdactions.cpp:332
+#: kilestdactions.cpp:344
 #, kde-format
 msgid "Bib fields - %1\n"
 msgstr "Bib polja -%1\n"
 
-#: kilestdactions.cpp:347
+#: kilestdactions.cpp:359
 #, kde-format
 msgid "\\mathrm{}"
 msgstr "\\mathrm{}"
 
-#: kilestdactions.cpp:348
+#: kilestdactions.cpp:360
 #, kde-format
 msgid "\\mathit{}"
 msgstr "\\mathhit{}"
 
-#: kilestdactions.cpp:349
+#: kilestdactions.cpp:361
 #, kde-format
 msgid "\\mathbf{}"
 msgstr "\\mathbf{}"
 
-#: kilestdactions.cpp:350
+#: kilestdactions.cpp:362
 #, kde-format
 msgid "\\mathsf{}"
 msgstr "\\mathsf{}"
 
-#: kilestdactions.cpp:351
+#: kilestdactions.cpp:363
 #, kde-format
 msgid "\\mathtt{}"
 msgstr "\\mathtt{}"
 
-#: kilestdactions.cpp:352
+#: kilestdactions.cpp:364
 #, kde-format
 msgid "\\mathcal{}"
 msgstr "\\mathcal{}"
 
-#: kilestdactions.cpp:353
+#: kilestdactions.cpp:365
 #, kde-format
 msgid "\\mathbb{}"
 msgstr "\\mathbb{}"
 
-#: kilestdactions.cpp:354
+#: kilestdactions.cpp:366
 #, kde-format
 msgid "\\mathfrak{}"
 msgstr "\\mathfrak{}"
 
-#: kilestdactions.cpp:356
+#: kilestdactions.cpp:368
 #, kde-format
 msgid "\\acute{}"
 msgstr "\\acute{}"
 
-#: kilestdactions.cpp:357
+#: kilestdactions.cpp:369
 #, kde-format
 msgid "\\grave{}"
 msgstr "\\grave{}"
 
-#: kilestdactions.cpp:358
+#: kilestdactions.cpp:370
 #, kde-format
 msgid "\\tilde{}"
 msgstr "\\tilde{}"
 
-#: kilestdactions.cpp:359
+#: kilestdactions.cpp:371
 #, kde-format
 msgid "\\bar{}"
 msgstr "\\bar{}"
 
-#: kilestdactions.cpp:360
+#: kilestdactions.cpp:372
 #, kde-format
 msgid "\\vec{}"
 msgstr "\\vec{}"
 
-#: kilestdactions.cpp:361
+#: kilestdactions.cpp:373
 #, kde-format
 msgid "\\hat{}"
 msgstr "\\hat{}"
 
-#: kilestdactions.cpp:362
+#: kilestdactions.cpp:374
 #, kde-format
 msgid "\\check{}"
 msgstr "\\check{}"
 
-#: kilestdactions.cpp:363
+#: kilestdactions.cpp:375
 #, kde-format
 msgid "\\breve{}"
 msgstr "\\breve{}"
 
-#: kilestdactions.cpp:364
+#: kilestdactions.cpp:376
 #, kde-format
 msgid "\\dot{}"
 msgstr "\\tačka{}"
 
-#: kilestdactions.cpp:365
+#: kilestdactions.cpp:377
 #, kde-format
 msgid "\\ddot{}"
 msgstr "\\ddot{}"
 
-#: kilestdactions.cpp:367
+#: kilestdactions.cpp:379
 #, kde-format
 msgid "Small Space"
 msgstr "Mali Razmak"
 
-#: kilestdactions.cpp:368
+#: kilestdactions.cpp:380
 #, kde-format
 msgid "Medium Space"
 msgstr "Srednji Razmak"
 
-#: kilestdactions.cpp:369
+#: kilestdactions.cpp:381
 #, kde-format
 msgid "Large Space"
 msgstr "Veliki Razmak"
 
-#: kilestdactions.cpp:370
+#: kilestdactions.cpp:382
 #, kde-format
 msgid "\\quad"
 msgstr "\\quad"
 
-#: kilestdactions.cpp:371
+#: kilestdactions.cpp:383
 #, kde-format
 msgid "\\qquad"
 msgstr "\\qquad"
 
-#: kilestdactions.cpp:373
+#: kilestdactions.cpp:385
 #, kde-format
 msgid "Math Mode - $...$"
 msgstr "Matematički način rada - $...$"
 
-#: kilestdactions.cpp:373 kilestdactions.cpp:374
+#: kilestdactions.cpp:385 kilestdactions.cpp:386
 #, kde-format
 msgid "Math Mode"
 msgstr "Matematički način rada"
 
-#: kilestdactions.cpp:374
+#: kilestdactions.cpp:386
 #, fuzzy, kde-format
 #| msgid "Math Mode - $...$"
 msgid "Math Mode - \\(...\\)"
 msgstr "Matematički način rada - $...$"
 
-#: kilestdactions.cpp:375
+#: kilestdactions.cpp:387
 #, kde-format
 msgid "Displaymath Mode - \\[...\\]"
 msgstr "Displey način rada -\\[...\\]"
 
-#: kilestdactions.cpp:375
+#: kilestdactions.cpp:387
 #, kde-format
 msgid "Displaymath Mode"
 msgstr "Displaymath način rada"
 
-#: kilestdactions.cpp:376
+#: kilestdactions.cpp:388
 #, kde-format
 msgid "Equation - \\begin{equation}"
 msgstr "Jednačina — \\begin{equation}"
 
-#: kilestdactions.cpp:376
+#: kilestdactions.cpp:388
 #, kde-format
 msgid "Equation"
 msgstr "Jednačina"
 
-#: kilestdactions.cpp:377
+#: kilestdactions.cpp:389
 #, kde-format
 msgid "Subscript - _{}"
 msgstr "Tekst u indeksu — _{}"
 
-#: kilestdactions.cpp:377
+#: kilestdactions.cpp:389
 #, kde-format
 msgid "Subscript"
 msgstr "Indeks"
 
-#: kilestdactions.cpp:378
+#: kilestdactions.cpp:390
 #, kde-format
 msgid "Superscript - ^{}"
 msgstr "Tekst u izložiocu — ^{}"
 
-#: kilestdactions.cpp:378
+#: kilestdactions.cpp:390
 #, kde-format
 msgid "Superscript"
 msgstr "Eksponent"
 
-#: kilestdactions.cpp:379
+#: kilestdactions.cpp:391
 #, kde-format
 msgid "Normal Fraction - \\frac{}{}"
 msgstr "Normalna Frakcija - \\frac{}{}"
 
-#: kilestdactions.cpp:379
+#: kilestdactions.cpp:391
 #, kde-format
 msgid "Normal Fraction"
 msgstr "Normalna Frakcija"
 
-#: kilestdactions.cpp:380
+#: kilestdactions.cpp:392
 #, kde-format
 msgid "Displaystyle Fraction - \\dfrac{}{}"
 msgstr "DispleyStil Frakcija - \\dfrac{}{}"
 
-#: kilestdactions.cpp:380
+#: kilestdactions.cpp:392
 #, kde-format
 msgid "Displaystyle Fraction"
 msgstr "DispleyStil Frakcija"
 
-#: kilestdactions.cpp:381
+#: kilestdactions.cpp:393
 #, kde-format
 msgid "Textstyle Fraction - \\tfrac{}{}"
 msgstr "Tekststil Frakcija - \\tfrac{}{}"
 
-#: kilestdactions.cpp:381
+#: kilestdactions.cpp:393
 #, kde-format
 msgid "Textstyle Fraction"
 msgstr "Tekststil Frakcija"
 
-#: kilestdactions.cpp:382
+#: kilestdactions.cpp:394
 #, kde-format
 msgid "Square Root - \\sqrt{}"
 msgstr "Korijen - \\sqrt {}"
 
-#: kilestdactions.cpp:382
+#: kilestdactions.cpp:394
 #, kde-format
 msgid "Square Root"
 msgstr "Korijen"
 
-#: kilestdactions.cpp:383
+#: kilestdactions.cpp:395
 #, kde-format
 msgid "\\left"
 msgstr "\\left"
 
-#: kilestdactions.cpp:384
+#: kilestdactions.cpp:396
 #, kde-format
 msgid "\\right"
 msgstr "\\right"
 
-#: kilestdactions.cpp:385
+#: kilestdactions.cpp:397
 #, kde-format
 msgid "Array - \\begin{array}"
 msgstr "Niz — \\begin{array}"
 
-#: kilestdactions.cpp:386
+#: kilestdactions.cpp:398
 #, kde-format
 msgid ""
 "\\begin{array}{col1col2...coln}\n"
@@ -9766,586 +9772,586 @@ msgstr ""
 "     l — za spušteno u lijevo \n"
 "     r — za spušteno u desno\n"
 
-#: kilestdactions.cpp:389
+#: kilestdactions.cpp:401
 #, kde-format
 msgid "Left Delimiter"
 msgstr "Lijevi graničnik"
 
-#: kilestdactions.cpp:391
+#: kilestdactions.cpp:403
 #, kde-format
 msgid "left ("
 msgstr "lijevo("
 
-#: kilestdactions.cpp:392
+#: kilestdactions.cpp:404
 #, kde-format
 msgid "left ["
 msgstr "lijevo["
 
-#: kilestdactions.cpp:393
+#: kilestdactions.cpp:405
 #, kde-format
 msgid "left {"
 msgstr "lijevo{"
 
-#: kilestdactions.cpp:394
+#: kilestdactions.cpp:406
 #, kde-format
 msgid "left &lt;"
 msgstr "lijevo &lt;"
 
-#: kilestdactions.cpp:396
+#: kilestdactions.cpp:408
 #, kde-format
 msgid "left )"
 msgstr "lijevo)"
 
-#: kilestdactions.cpp:397
+#: kilestdactions.cpp:409
 #, kde-format
 msgid "left ]"
 msgstr "lijevo]"
 
-#: kilestdactions.cpp:398
+#: kilestdactions.cpp:410
 #, kde-format
 msgid "left }"
 msgstr "lijevo }"
 
-#: kilestdactions.cpp:399
+#: kilestdactions.cpp:411
 #, kde-format
 msgid "left &gt;"
 msgstr "lijevo &gt;"
 
-#: kilestdactions.cpp:401
+#: kilestdactions.cpp:413
 #, kde-format
 msgid "left ."
 msgstr "lijevo , ."
 
-#: kilestdactions.cpp:403
+#: kilestdactions.cpp:415
 #, kde-format
 msgid "Right Delimiter"
 msgstr "Desni graničnik"
 
-#: kilestdactions.cpp:405
+#: kilestdactions.cpp:417
 #, kde-format
 msgid "right )"
 msgstr "desno )"
 
-#: kilestdactions.cpp:406
+#: kilestdactions.cpp:418
 #, kde-format
 msgid "right ]"
 msgstr "desno ]"
 
-#: kilestdactions.cpp:407
+#: kilestdactions.cpp:419
 #, kde-format
 msgid "right }"
 msgstr "desno }"
 
-#: kilestdactions.cpp:408
+#: kilestdactions.cpp:420
 #, kde-format
 msgid "right &gt;"
 msgstr "desno  &gt;"
 
-#: kilestdactions.cpp:410
+#: kilestdactions.cpp:422
 #, kde-format
 msgid "right ("
 msgstr "desno {"
 
-#: kilestdactions.cpp:411
+#: kilestdactions.cpp:423
 #, kde-format
 msgid "right ["
 msgstr "desno ["
 
-#: kilestdactions.cpp:412
+#: kilestdactions.cpp:424
 #, kde-format
 msgid "right {"
 msgstr "desno {"
 
-#: kilestdactions.cpp:413
+#: kilestdactions.cpp:425
 #, kde-format
 msgid "right &lt;"
 msgstr "desno &lt;"
 
-#: kilestdactions.cpp:415
+#: kilestdactions.cpp:427
 #, kde-format
 msgid "right ."
 msgstr "desno ."
 
-#: kilestdactions.cpp:420
+#: kilestdactions.cpp:432
 #, kde-format
 msgid "Normal Binomial - \\binom{}{}"
 msgstr "Normalni Binom - \\binom{}{}"
 
-#: kilestdactions.cpp:420
+#: kilestdactions.cpp:432
 #, kde-format
 msgid "Normal Binomial"
 msgstr "Normalni Binom"
 
-#: kilestdactions.cpp:422
+#: kilestdactions.cpp:434
 #, kde-format
 msgid "Displaystyle Binomial - \\dbinom{}{}"
 msgstr "Displeystil Binom - \\dbinom{}{}"
 
-#: kilestdactions.cpp:422
+#: kilestdactions.cpp:434
 #, kde-format
 msgid "Displaystyle Binomial"
 msgstr "Displeystil Binom"
 
-#: kilestdactions.cpp:424
+#: kilestdactions.cpp:436
 #, kde-format
 msgid "Textstyle Binomial - \\tbinom{}{}"
 msgstr "Tekststil Binom - \\tbinom{}{}"
 
-#: kilestdactions.cpp:424
+#: kilestdactions.cpp:436
 #, kde-format
 msgid "Textstyle Binomial"
 msgstr "Tekststil Binom"
 
-#: kilestdactions.cpp:426
+#: kilestdactions.cpp:438
 #, kde-format
 msgid "N-th Root - \\sqrt[]{}"
 msgstr "N-ti Korijen - \\sqrt[]{}"
 
-#: kilestdactions.cpp:426
+#: kilestdactions.cpp:438
 #, kde-format
 msgid "N-th Root"
 msgstr "N-ti Korijen"
 
-#: kilestdactions.cpp:428
+#: kilestdactions.cpp:440
 #, kde-format
 msgid "Left-Right () - \\left(..\\right)"
 msgstr "Left-Right () - \\left(..\\right)"
 
-#: kilestdactions.cpp:428
+#: kilestdactions.cpp:440
 #, kde-format
 msgid "Left-Right ()"
 msgstr "Left-Right ()"
 
-#: kilestdactions.cpp:430
+#: kilestdactions.cpp:442
 #, kde-format
 msgid "Extendable Left Arrow - \\xleftarrow{}"
 msgstr "Produživa Strijelica u Lijevo - \\xleftarrow{}"
 
-#: kilestdactions.cpp:430
+#: kilestdactions.cpp:442
 #, kde-format
 msgid "Extendable Left Arrow"
 msgstr "Produživa Strijelica u Lijevo"
 
-#: kilestdactions.cpp:432
+#: kilestdactions.cpp:444
 #, kde-format
 msgid "Extendable Right Arrow - \\xrightarrow{}"
 msgstr "Produživa Strijelica u desno - \\xrightarrow{}"
 
-#: kilestdactions.cpp:432
+#: kilestdactions.cpp:444
 #, kde-format
 msgid "Extendable Right Arrow"
 msgstr "Produživa Strijelica u desno"
 
-#: kilestdactions.cpp:434
+#: kilestdactions.cpp:446
 #, kde-format
 msgid "Boxed Formula - \\boxed{}"
 msgstr "Boksirana Formula - \\boksirano{}"
 
-#: kilestdactions.cpp:434
+#: kilestdactions.cpp:446
 #, kde-format
 msgid "Boxed Formula"
 msgstr "Boksirana Formula"
 
-#: kilestdactions.cpp:436
+#: kilestdactions.cpp:448
 #, kde-format
 msgid "bigl - \\bigl"
 msgstr "veće lijevo — \\bigl"
 
-#: kilestdactions.cpp:436
+#: kilestdactions.cpp:448
 #, kde-format
 msgid "bigl"
 msgstr "velikol"
 
-#: kilestdactions.cpp:437
+#: kilestdactions.cpp:449
 #, kde-format
 msgid "Bigl - \\Bigl"
 msgstr "2v lijevo — \\Bigl"
 
-#: kilestdactions.cpp:437
+#: kilestdactions.cpp:449
 #, kde-format
 msgid "Bigl"
 msgstr "Velikol"
 
-#: kilestdactions.cpp:438
+#: kilestdactions.cpp:450
 #, kde-format
 msgid "biggl - \\biggl"
 msgstr "3v lijevo — \\biggl"
 
-#: kilestdactions.cpp:438
+#: kilestdactions.cpp:450
 #, kde-format
 msgid "biggl"
 msgstr "velikogl"
 
-#: kilestdactions.cpp:439
+#: kilestdactions.cpp:451
 #, kde-format
 msgid "Biggl - \\Biggl"
 msgstr "4v vilo — \\Biggl"
 
-#: kilestdactions.cpp:439
+#: kilestdactions.cpp:451
 #, kde-format
 msgid "Biggl"
 msgstr "Velikogl"
 
-#: kilestdactions.cpp:441
+#: kilestdactions.cpp:453
 #, kde-format
 msgid "bigr - \\bigr"
 msgstr "veće desno — \\bigr"
 
-#: kilestdactions.cpp:441
+#: kilestdactions.cpp:453
 #, kde-format
 msgid "bigr"
 msgstr "velikor"
 
-#: kilestdactions.cpp:442
+#: kilestdactions.cpp:454
 #, kde-format
 msgid "Bigr - \\Bigr"
 msgstr "2v desno — \\Bigr"
 
-#: kilestdactions.cpp:442
+#: kilestdactions.cpp:454
 #, kde-format
 msgid "Bigr"
 msgstr "Velikor"
 
-#: kilestdactions.cpp:443
+#: kilestdactions.cpp:455
 #, kde-format
 msgid "biggr - \\biggr"
 msgstr "3v desno — \\biggr"
 
-#: kilestdactions.cpp:443
+#: kilestdactions.cpp:455
 #, kde-format
 msgid "biggr"
 msgstr "velikogr"
 
-#: kilestdactions.cpp:444
+#: kilestdactions.cpp:456
 #, kde-format
 msgid "Biggr - \\Biggr"
 msgstr "4v desno — \\Biggr"
 
-#: kilestdactions.cpp:444
+#: kilestdactions.cpp:456
 #, kde-format
 msgid "Biggr"
 msgstr "Velikogr"
 
-#: kilestdactions.cpp:447
+#: kilestdactions.cpp:459
 #, kde-format
 msgid "Text in Mathmode - \\text{}"
 msgstr "Tekst u Matematičkom načinu rada - \\text{}"
 
-#: kilestdactions.cpp:447
+#: kilestdactions.cpp:459
 #, kde-format
 msgid "Text in Mathmode"
 msgstr "Tekst u Matematičkom načinu rada"
 
-#: kilestdactions.cpp:449
+#: kilestdactions.cpp:461
 #, kde-format
 msgid "Intertext - \\intertext{}"
 msgstr "Međutekst — \\intertext{}"
 
-#: kilestdactions.cpp:449
+#: kilestdactions.cpp:461
 #, kde-format
 msgid "Intertext"
 msgstr "Izmeđuteksta"
 
-#: kilestdactions.cpp:452
+#: kilestdactions.cpp:464
 #, fuzzy, kde-format
 #| msgid "Gather - \\begin{gather}"
 msgid "Math - \\begin{math}"
 msgstr "Sakupljanje — \\begin{gather}"
 
-#: kilestdactions.cpp:454
+#: kilestdactions.cpp:466
 #, kde-format
 msgid "Displaymath - \\begin{displaymath}"
 msgstr "Prikaz matematike — \\begin{displaymath}"
 
-#: kilestdactions.cpp:454
+#: kilestdactions.cpp:466
 #, kde-format
 msgid "Displaymath"
 msgstr "Displeymath"
 
-#: kilestdactions.cpp:456
+#: kilestdactions.cpp:468
 #, kde-format
 msgid "Equation (not numbered) - \\begin{equation*}"
 msgstr "Jednačina (bez broja) — \\begin{equation*}"
 
-#: kilestdactions.cpp:456
+#: kilestdactions.cpp:468
 #, kde-format
 msgid "Equation (not numbered)"
 msgstr "Jednadžba (ne numerisanje)"
 
-#: kilestdactions.cpp:459
+#: kilestdactions.cpp:471
 #, kde-format
 msgid "Multline - \\begin{multline}"
 msgstr "Višelinijski — \\begin{multline}"
 
-#: kilestdactions.cpp:459
+#: kilestdactions.cpp:471
 #, kde-format
 msgid "Multline"
 msgstr "Multlinija"
 
-#: kilestdactions.cpp:460
+#: kilestdactions.cpp:472
 #, kde-format
 msgid "Multline* - \\begin{multline*}"
 msgstr "Višelinijski sa zvjezdicom - \\begin{multline*}"
 
-#: kilestdactions.cpp:460
+#: kilestdactions.cpp:472
 #, kde-format
 msgid "Multline*"
 msgstr "Multlinija*"
 
-#: kilestdactions.cpp:462
+#: kilestdactions.cpp:474
 #, kde-format
 msgid "Split - \\begin{split}"
 msgstr "Podjela — \\begin{split}"
 
-#: kilestdactions.cpp:462
+#: kilestdactions.cpp:474
 #, kde-format
 msgid "Split"
 msgstr "Razdvoji"
 
-#: kilestdactions.cpp:464
+#: kilestdactions.cpp:476
 #, kde-format
 msgid "Gather - \\begin{gather}"
 msgstr "Sakupljanje — \\begin{gather}"
 
-#: kilestdactions.cpp:464
+#: kilestdactions.cpp:476
 #, kde-format
 msgid "Gather"
 msgstr "Sakupi"
 
-#: kilestdactions.cpp:465
+#: kilestdactions.cpp:477
 #, kde-format
 msgid "Gather* - \\begin{gather*}"
 msgstr "Sakupljanje sa zvjezdicom — \\begin{gather*}"
 
-#: kilestdactions.cpp:465
+#: kilestdactions.cpp:477
 #, kde-format
 msgid "Gather*"
 msgstr "Sakupi*"
 
-#: kilestdactions.cpp:467
+#: kilestdactions.cpp:479
 #, kde-format
 msgid "Align - \\begin{align}"
 msgstr "Poravnanje — \\begin{align}"
 
-#: kilestdactions.cpp:467
+#: kilestdactions.cpp:479
 #, kde-format
 msgid "Align"
 msgstr "Poravnanje"
 
-#: kilestdactions.cpp:468
+#: kilestdactions.cpp:480
 #, kde-format
 msgid "Align* - \\begin{align*}"
 msgstr "Poravnanje sa zvjezdicom — \\begin{align*}"
 
-#: kilestdactions.cpp:468
+#: kilestdactions.cpp:480
 #, kde-format
 msgid "Align*"
 msgstr "Poravnanje*"
 
-#: kilestdactions.cpp:470
+#: kilestdactions.cpp:482
 #, kde-format
 msgid "Flalign - \\begin{flalign}"
 msgstr "Poravnanje sa razmakom — \\begin{flalign}"
 
-#: kilestdactions.cpp:470
+#: kilestdactions.cpp:482
 #, kde-format
 msgid "Flalign"
 msgstr "Flalign"
 
-#: kilestdactions.cpp:471
+#: kilestdactions.cpp:483
 #, kde-format
 msgid "Flalign* - \\begin{flalign*}"
 msgstr "Poravnanje sa razmakom sa zvjezdicom — \\begin{flalign*}"
 
-#: kilestdactions.cpp:471
+#: kilestdactions.cpp:483
 #, kde-format
 msgid "Flalign*"
 msgstr "Flalign*"
 
-#: kilestdactions.cpp:473
+#: kilestdactions.cpp:485
 #, kde-format
 msgid "Alignat - \\begin{alignat}"
 msgstr "Poravnanje na — \\begin{alignat}"
 
-#: kilestdactions.cpp:473
+#: kilestdactions.cpp:485
 #, kde-format
 msgid "Alignat"
 msgstr "Poravnajna"
 
-#: kilestdactions.cpp:474
+#: kilestdactions.cpp:486
 #, kde-format
 msgid "Alignat* - \\begin{alignat*}"
 msgstr "Poravnanje na sa zvjezdicom — \\begin{alignat*}"
 
-#: kilestdactions.cpp:474
+#: kilestdactions.cpp:486
 #, kde-format
 msgid "Alignat*"
 msgstr "Poravnajna*"
 
-#: kilestdactions.cpp:476
+#: kilestdactions.cpp:488
 #, kde-format
 msgid "Aligned - \\begin{aligned}"
 msgstr "Poravnanje unutar jednačine — \\begin{aligned}"
 
-#: kilestdactions.cpp:476
+#: kilestdactions.cpp:488
 #, kde-format
 msgid "Aligned"
 msgstr "Poravnato"
 
-#: kilestdactions.cpp:477
+#: kilestdactions.cpp:489
 #, kde-format
 msgid "Gathered - \\begin{gathered}"
 msgstr "Sakupljanje unutar jednačine — \\begin{gathered}"
 
-#: kilestdactions.cpp:477
+#: kilestdactions.cpp:489
 #, kde-format
 msgid "Gathered"
 msgstr "Okupljen"
 
-#: kilestdactions.cpp:478
+#: kilestdactions.cpp:490
 #, kde-format
 msgid "Alignedat - \\begin{alignedat}"
 msgstr "Poravnanje na unutar jednačine — \\begin{alignedat}"
 
-#: kilestdactions.cpp:478
+#: kilestdactions.cpp:490
 #, kde-format
 msgid "Alignedat"
 msgstr "Poravnajdat"
 
-#: kilestdactions.cpp:480
+#: kilestdactions.cpp:492
 #, kde-format
 msgid "Cases - \\begin{cases}"
 msgstr "Slučajevi — \\begin{cases}"
 
-#: kilestdactions.cpp:480
+#: kilestdactions.cpp:492
 #, kde-format
 msgid "Cases"
 msgstr "Slučajevi"
 
-#: kilestdactions.cpp:482
+#: kilestdactions.cpp:494
 #, kde-format
 msgid "matrix - \\begin{matrix}"
 msgstr "matrica - \\ početak {matrica}"
 
-#: kilestdactions.cpp:482
+#: kilestdactions.cpp:494
 #, kde-format
 msgid "matrix"
 msgstr "matrica"
 
-#: kilestdactions.cpp:483
+#: kilestdactions.cpp:495
 #, kde-format
 msgid "pmatrix - \\begin{pmatrix}"
 msgstr "pmatrica - \\ početak {pmatrica}"
 
-#: kilestdactions.cpp:483
+#: kilestdactions.cpp:495
 #, kde-format
 msgid "pmatrix"
 msgstr "pmatrica"
 
-#: kilestdactions.cpp:484
+#: kilestdactions.cpp:496
 #, kde-format
 msgid "vmatrix - \\begin{vmatrix}"
 msgstr "vmatrica - \\begin{vmatrix}"
 
-#: kilestdactions.cpp:484
+#: kilestdactions.cpp:496
 #, kde-format
 msgid "vmatrix"
 msgstr "vmatrica"
 
-#: kilestdactions.cpp:485
+#: kilestdactions.cpp:497
 #, kde-format
 msgid "Vmatrix - \\begin{Vmatrix}"
 msgstr "Vmatrica- \\begin{Vmatrix}"
 
-#: kilestdactions.cpp:485
+#: kilestdactions.cpp:497
 #, kde-format
 msgid "Vmatrix"
 msgstr "Vmatrica"
 
-#: kilestdactions.cpp:486
+#: kilestdactions.cpp:498
 #, kde-format
 msgid "bmatrix - \\begin{bmatrix}"
 msgstr "bmatrica - \\begin{bmatrix}"
 
-#: kilestdactions.cpp:486
+#: kilestdactions.cpp:498
 #, kde-format
 msgid "bmatrix"
 msgstr "bmatirca"
 
-#: kilestdactions.cpp:487
+#: kilestdactions.cpp:499
 #, kde-format
 msgid "Bmatrix - \\begin{Bmatrix}"
 msgstr "Bmatirca - \\početak{Bmatrica}"
 
-#: kilestdactions.cpp:487
+#: kilestdactions.cpp:499
 #, kde-format
 msgid "Bmatrix"
 msgstr "Bmatirca"
 
-#: kilestdactions.cpp:490
+#: kilestdactions.cpp:502
 #, fuzzy, kde-format
 #| msgid "Gather - \\begin{gather}"
 msgid "dmath - \\begin{dmath}"
 msgstr "Sakupljanje — \\begin{gather}"
 
-#: kilestdactions.cpp:490
+#: kilestdactions.cpp:502
 #, kde-format
 msgid "dmath"
 msgstr ""
 
-#: kilestdactions.cpp:491
+#: kilestdactions.cpp:503
 #, fuzzy, kde-format
 #| msgid "Gather* - \\begin{gather*}"
 msgid "dmath* - \\begin{dmath*}"
 msgstr "Sakupljanje sa zvjezdicom — \\begin{gather*}"
 
-#: kilestdactions.cpp:491
+#: kilestdactions.cpp:503
 #, kde-format
 msgid "dmath*"
 msgstr ""
 
-#: kilestdactions.cpp:493
+#: kilestdactions.cpp:505
 #, fuzzy, kde-format
 #| msgid "Cases - \\begin{cases}"
 msgid "dseries - \\begin{dseries}"
 msgstr "Slučajevi — \\begin{cases}"
 
-#: kilestdactions.cpp:493
+#: kilestdactions.cpp:505
 #, fuzzy, kde-format
 #| msgid "Bold - \\bfseries"
 msgid "dseries"
 msgstr "Podebljano - \\bfseries"
 
-#: kilestdactions.cpp:494
+#: kilestdactions.cpp:506
 #, fuzzy, kde-format
 #| msgid "Verse - \\begin{verse}"
 msgid "dseries* - \\begin{dseries*}"
 msgstr "Stih — \\begin{verse}"
 
-#: kilestdactions.cpp:494
+#: kilestdactions.cpp:506
 #, kde-format
 msgid "dseries*"
 msgstr ""
 
-#: kilestdactions.cpp:496
+#: kilestdactions.cpp:508
 #, fuzzy, kde-format
 #| msgid "Figure - \\begin{figure}"
 msgid "dgroup - \\begin{dgroup}"
 msgstr "Slika — \\begin{figure}"
 
-#: kilestdactions.cpp:496
+#: kilestdactions.cpp:508
 #, fuzzy, kde-format
 #| msgid "Mathgroup"
 msgid "dgroup"
 msgstr "Matematička grupa"
 
-#: kilestdactions.cpp:497
+#: kilestdactions.cpp:509
 #, fuzzy, kde-format
 #| msgid "Gather* - \\begin{gather*}"
 msgid "dgroup* - \\begin{dgroup*}"
 msgstr "Sakupljanje sa zvjezdicom — \\begin{gather*}"
 
-#: kilestdactions.cpp:497
+#: kilestdactions.cpp:509
 #, fuzzy, kde-format
 #| msgid "Mathgroup"
 msgid "dgroup*"
@@ -10557,32 +10563,32 @@ msgstr "Nema instalirane fabrike, kontaktirajte autora Kile-a."
 msgid "Aborted"
 msgstr "Obustavljeno"
 
-#: kiletoolmanager.cpp:485
+#: kiletoolmanager.cpp:483
 #, kde-format
 msgid "Cannot find the tool \"%1\" in the configuration database."
 msgstr "Ne mogu pronaći alat  \"%1\" u konfiguracionoj bazi."
 
-#: kiletoolmanager.cpp:730
+#: kiletoolmanager.cpp:728
 #, kde-format
 msgid "&Stop"
 msgstr "&Zaustavi"
 
-#: kiletoolmanager.cpp:739
+#: kiletoolmanager.cpp:737
 #, kde-format
 msgid "Bibliography Back End"
 msgstr "Bibliografija u pozadini"
 
-#: kiletoolmanager.cpp:740
+#: kiletoolmanager.cpp:738
 #, kde-format
 msgid "Auto-Detect"
 msgstr "Auto-detekcija"
 
-#: kiletoolmanager.cpp:741
+#: kiletoolmanager.cpp:739
 #, kde-format
 msgid "Auto-detect the bibliography back end from LaTeX output"
 msgstr "Automatski otkrij bibliografsku pozadinu iz LaTeX izlaza"
 
-#: kiletoolmanager.cpp:746
+#: kiletoolmanager.cpp:744
 #, kde-format
 msgid "Reset Auto-Detected Back End"
 msgstr "Poništi Automatsko otkrivanje pozadine"
@@ -10600,7 +10606,7 @@ msgid "Con&vert To"
 msgstr "&Pretvori u"
 
 #. i18n: ectx: Menu (edit)
-#: kileui.rc:55 widgets/abbreviationview.cpp:120
+#: kileui.rc:55 widgets/abbreviationview.cpp:122
 #, kde-format
 msgid "&Edit"
 msgstr "&Izmijeni"
@@ -11505,33 +11511,33 @@ msgstr "Datoteka '%1' ne postoji."
 msgid "Input Dialog"
 msgstr "Prozorčić za unos"
 
-#: widgets/abbreviationview.cpp:38
+#: widgets/abbreviationview.cpp:40
 #, kde-format
 msgid "Short"
 msgstr "Kratko"
 
-#: widgets/abbreviationview.cpp:38
+#: widgets/abbreviationview.cpp:40
 #, kde-format
 msgid "Expanded Text"
 msgstr "Prošireni tekst"
 
 #. i18n: ectx: property (text), widget (QPushButton, m_pshbAdd)
-#: widgets/abbreviationview.cpp:111 widgets/quicktoolconfigwidget.ui:103
+#: widgets/abbreviationview.cpp:113 widgets/quicktoolconfigwidget.ui:103
 #, kde-format
 msgid "&Add"
 msgstr "&Dodaj"
 
-#: widgets/abbreviationview.cpp:124 widgets/structurewidget.cpp:781
+#: widgets/abbreviationview.cpp:126 widgets/structurewidget.cpp:781
 #, kde-format
 msgid "&Delete"
 msgstr "&Obriši"
 
-#: widgets/abbreviationview.cpp:171
+#: widgets/abbreviationview.cpp:173
 #, kde-format
 msgid "Delete the abbreviation '%1'?"
 msgstr "Obriši skraćenicu '%1'?"
 
-#: widgets/abbreviationview.cpp:174
+#: widgets/abbreviationview.cpp:176
 #, kde-format
 msgid "Delete Abbreviation"
 msgstr "Obriši skraćenicu"
@@ -11560,32 +11566,32 @@ msgstr "Pokaži pozdravni ekran  pri pokretanju"
 msgid "Show in external window"
 msgstr "Prikaži u vanjskom prozoru"
 
-#: widgets/codecompletionconfigwidget.cpp:53
+#: widgets/codecompletionconfigwidget.cpp:55
 #, kde-format
 msgid "TeX/LaTeX"
 msgstr "TeX/LaTeX"
 
-#: widgets/codecompletionconfigwidget.cpp:54
+#: widgets/codecompletionconfigwidget.cpp:56
 #, kde-format
 msgid "Dictionary"
 msgstr "Rječnik"
 
-#: widgets/codecompletionconfigwidget.cpp:57
+#: widgets/codecompletionconfigwidget.cpp:59
 #, kde-format
 msgid "Try to place the cursor."
 msgstr "Pokušaj da postaviš kursor."
 
-#: widgets/codecompletionconfigwidget.cpp:58
+#: widgets/codecompletionconfigwidget.cpp:60
 #, kde-format
 msgid "Insert bullets where the user must input data."
 msgstr "Ubaci dugmić gdje korisnik treba unijketi podatke."
 
-#: widgets/codecompletionconfigwidget.cpp:59
+#: widgets/codecompletionconfigwidget.cpp:61
 #, kde-format
 msgid "Also close an environment when an opening command is inserted."
 msgstr "Zatvori i okruženje kada se unese komanda za otvaranje."
 
-#: widgets/codecompletionconfigwidget.cpp:60
+#: widgets/codecompletionconfigwidget.cpp:62
 #, kde-format
 msgid ""
 "Directional or popup-based completion of the TeX/LaTeX commands that are "
@@ -11594,7 +11600,7 @@ msgstr ""
 "Usmjereni ili iskočno bazirani završetak TeX/LaTeX naredbi koje su sadržane "
 "u odabranim datotekema završetka."
 
-#: widgets/codecompletionconfigwidget.cpp:61
+#: widgets/codecompletionconfigwidget.cpp:63
 #, kde-format
 msgid ""
 "Automatically show a completion list of TeX/LaTeX commands when the word has "
@@ -11603,12 +11609,12 @@ msgstr ""
 "Automatski pokazuju liste završetaka TeX / LaTeX naredbi kada riječ ima tu "
 "dužinu."
 
-#: widgets/codecompletionconfigwidget.cpp:63
+#: widgets/codecompletionconfigwidget.cpp:65
 #, kde-format
 msgid "Show abbreviations of the selected completion files in the sidebar"
 msgstr "Prikaži skraćenice izabranih datoteka završetka u bočnoj traci"
 
-#: widgets/codecompletionconfigwidget.cpp:64
+#: widgets/codecompletionconfigwidget.cpp:66
 #, kde-format
 msgid ""
 "Directional or popup-based completion of abbreviations that are contained in "
@@ -11617,30 +11623,30 @@ msgstr ""
 "Usmjereni ili iskočno bazirani završetak skraćenica koje se nalaze u "
 "izabranim datotekama za završavanje,."
 
-#: widgets/codecompletionconfigwidget.cpp:65
+#: widgets/codecompletionconfigwidget.cpp:67
 #, kde-format
 msgid "Show LaTeX commands of the selected completion files in the sidebar"
 msgstr "Prikaži LaTeX komande izabranih datoteka za završavanje u bočnoj traci"
 
 #. i18n: ectx: property (title), widget (QGroupBox, groupBox_2)
-#: widgets/codecompletionconfigwidget.cpp:95
-#: widgets/codecompletionconfigwidget.cpp:326
+#: widgets/codecompletionconfigwidget.cpp:97
+#: widgets/codecompletionconfigwidget.cpp:328
 #: widgets/codecompletionconfigwidget.ui:99
 #, kde-format
 msgid "Completion Files"
 msgstr "Datoteke za završavanje"
 
-#: widgets/codecompletionconfigwidget.cpp:204
+#: widgets/codecompletionconfigwidget.cpp:206
 #, kde-format
 msgid "File not found"
 msgstr "Datoteka nije pronađena"
 
-#: widgets/codecompletionconfigwidget.cpp:274
+#: widgets/codecompletionconfigwidget.cpp:276
 #, kde-format
 msgid "Wordlist '%1' contains duplicate entries."
 msgstr "Lista riječi '%1' sadrži duple elemente."
 
-#: widgets/codecompletionconfigwidget.cpp:274
+#: widgets/codecompletionconfigwidget.cpp:276
 #, kde-format
 msgid "Completion"
 msgstr "Dovršavanje"
@@ -11730,8 +11736,14 @@ msgstr "Provjeravam sistem"
 msgid "Checking if your TeX system is installed correctly..."
 msgstr "Provjeravam da li je vaš TeX sistem ispravno instaliran..."
 
+#. i18n: ectx: property (format), widget (QProgressBar, m_progress)
+#: widgets/configcheckerwidget.ui:45
+#, no-c-format, kde-format
+msgid "%p%"
+msgstr ""
+
 #. i18n: ectx: property (title), widget (QGroupBox, m_grpResults)
-#: widgets/configcheckerwidget.ui:55
+#: widgets/configcheckerwidget.ui:58
 #, kde-format
 msgid "Results"
 msgstr "Rezultati"
@@ -12706,59 +12718,59 @@ msgstr "&Ograničite vrijeme izvršavanja skripti"
 msgid "&Time limit (seconds):"
 msgstr "&Rok(sekunde):"
 
-#: widgets/scriptsmanagementwidget.cpp:76
+#: widgets/scriptsmanagementwidget.cpp:78
 #, kde-format
 msgid "Run Selected Script"
 msgstr "Pokreni Odabrane Skripte"
 
-#: widgets/scriptsmanagementwidget.cpp:82
+#: widgets/scriptsmanagementwidget.cpp:84
 #, kde-format
 msgid "Create New Script"
 msgstr "Kreiraj Novu Skriptu"
 
-#: widgets/scriptsmanagementwidget.cpp:88
+#: widgets/scriptsmanagementwidget.cpp:90
 #, kde-format
 msgid "Open Selected Script in Editor"
 msgstr "Otvori Označenu Skriptu u Uredniku"
 
-#: widgets/scriptsmanagementwidget.cpp:94
+#: widgets/scriptsmanagementwidget.cpp:96
 #, kde-format
 msgid "Configure Key Sequence"
 msgstr "Konfiguracija skripti"
 
-#: widgets/scriptsmanagementwidget.cpp:100
+#: widgets/scriptsmanagementwidget.cpp:102
 #, kde-format
 msgid "Remove Key Sequence"
 msgstr "Uklonite Ključni Niz"
 
-#: widgets/scriptsmanagementwidget.cpp:106
+#: widgets/scriptsmanagementwidget.cpp:108
 #, kde-format
 msgid "Refresh List"
 msgstr "Osvježi Listu"
 
-#: widgets/scriptsmanagementwidget.cpp:117
+#: widgets/scriptsmanagementwidget.cpp:119
 #, kde-format
 msgid "Script Name"
 msgstr "Naziv Skripte"
 
-#: widgets/scriptsmanagementwidget.cpp:118
+#: widgets/scriptsmanagementwidget.cpp:120
 #, kde-format
 msgid "Sequence"
 msgstr "Niz"
 
-#: widgets/scriptsmanagementwidget.cpp:223
+#: widgets/scriptsmanagementwidget.cpp:225
 #, kde-format
 msgid "The sequence \"%1\" is already assigned to the action \"%2\""
 msgstr "Nizu \"%1\" je već dodijeljena akcija \"%2\""
 
-#: widgets/scriptsmanagementwidget.cpp:224
-#: widgets/scriptsmanagementwidget.cpp:228
-#: widgets/scriptsmanagementwidget.cpp:232
+#: widgets/scriptsmanagementwidget.cpp:226
+#: widgets/scriptsmanagementwidget.cpp:230
+#: widgets/scriptsmanagementwidget.cpp:234
 #, kde-format
 msgid "Sequence Already Assigned"
 msgstr "Niz je vec dodijeljen."
 
-#: widgets/scriptsmanagementwidget.cpp:227
+#: widgets/scriptsmanagementwidget.cpp:229
 #, kde-format
 msgid ""
 "The sequence \"%1\" is a subsequence of \"%2\", which is already assigned to "
@@ -12766,7 +12778,7 @@ msgid ""
 msgstr ""
 "Niz \"%1\" je već podniz od \"%2\", kome je već dodijeljena akcija \"%3\""
 
-#: widgets/scriptsmanagementwidget.cpp:231
+#: widgets/scriptsmanagementwidget.cpp:233
 #, kde-format
 msgid "The shorter sequence \"%1\" is already assigned to the action \"%2\""
 msgstr "Kraći niz \"%1\" je već dodijeljen akciji \"%2\""
@@ -13180,33 +13192,33 @@ msgstr "Unikod"
 msgid "Insert Unicode representation of the selected symbol (when available)"
 msgstr "Ubaci Unicode predstavu izabranog simbola (kada je moguće)"
 
-#: widgets/toolconfigwidget.cpp:111
+#: widgets/toolconfigwidget.cpp:112
 #, kde-format
 msgid "Run Outside of Kile"
 msgstr "Pokreni izvan Kile-a"
 
-#: widgets/toolconfigwidget.cpp:112
+#: widgets/toolconfigwidget.cpp:113
 #, kde-format
 msgid "Run in Konsole"
 msgstr "Pokreni u Konsole-i"
 
-#: widgets/toolconfigwidget.cpp:113
+#: widgets/toolconfigwidget.cpp:114
 #, fuzzy, kde-format
 #| msgid "Use document viewer"
 msgid "Use Document Viewer"
 msgstr "Koristi preglednik dokumenata"
 
-#: widgets/toolconfigwidget.cpp:114
+#: widgets/toolconfigwidget.cpp:115
 #, kde-format
 msgid "Run Sequence of Tools"
 msgstr "Izvrši niz alata"
 
-#: widgets/toolconfigwidget.cpp:161
+#: widgets/toolconfigwidget.cpp:162
 #, kde-format
 msgid "Use the \"Advanced\" tab to configure this tool."
 msgstr "Koristite jezičak „Napredno“ da biste podesili ovaj alat."
 
-#: widgets/toolconfigwidget.cpp:172
+#: widgets/toolconfigwidget.cpp:173
 #, kde-format
 msgid ""
 "Unknown tool type; your configuration data is malformed.\n"
@@ -13215,7 +13227,7 @@ msgstr ""
 "Nepoznat tip alata; vaša podešavanja su neispravna.\n"
 "Možda bi bilo dobro da vratite podrazumijevana podešavanja."
 
-#: widgets/toolconfigwidget.cpp:225
+#: widgets/toolconfigwidget.cpp:227
 #, fuzzy, kde-format
 #| msgid ""
 #| "All your tool settings will be overwritten with the default settings, are "
@@ -13227,37 +13239,37 @@ msgstr ""
 "Sva vaša podešavanja alata biće prebrisana podrazumijevanim, želite li "
 "zaista da nastavite?"
 
-#: widgets/toolconfigwidget.cpp:350
+#: widgets/toolconfigwidget.cpp:353
 #, kde-format
 msgid "Choose a configuration for the tool %1"
 msgstr "Odaberite konfiguraciju za alat %1"
 
-#: widgets/toolconfigwidget.cpp:420
+#: widgets/toolconfigwidget.cpp:423
 #, kde-format
 msgid "New Configuration"
 msgstr "Nova konfiguracija"
 
-#: widgets/toolconfigwidget.cpp:420
+#: widgets/toolconfigwidget.cpp:423
 #, kde-format
 msgid "Enter new configuration name:"
 msgstr "Unesite ime nove konfiguracije:"
 
-#: widgets/toolconfigwidget.cpp:447
+#: widgets/toolconfigwidget.cpp:450
 #, kde-format
 msgid "Are you sure you want to remove the tool %1?"
 msgstr "Želite li zaista da uklonite alat %1?"
 
-#: widgets/toolconfigwidget.cpp:477
+#: widgets/toolconfigwidget.cpp:480
 #, kde-format
 msgid "Are you sure that you want to remove this configuration?"
 msgstr "Jeste li sigurni da želite ukloniti ovu konfiguraciju?"
 
-#: widgets/toolconfigwidget.cpp:491
+#: widgets/toolconfigwidget.cpp:494
 #, kde-format
 msgid "You need at least one configuration for each tool."
 msgstr "Potrebna vam je bar jedna konfiguracija za svaki alat."
 
-#: widgets/toolconfigwidget.cpp:491
+#: widgets/toolconfigwidget.cpp:494
 #, kde-format
 msgid "Cannot Remove Configuration"
 msgstr "Ne mogu da uklonim konfiguraciju"

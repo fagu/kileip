@@ -5,7 +5,7 @@ project(kile VERSION 2.9.95)
 find_package(ECM 6.0.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-set(KDE_COMPILERSETTINGS_LEVEL 5.84)
+set(KDE_COMPILERSETTINGS_LEVEL 6.0)
 
 include(KDECompilerSettings NO_POLICY_SCOPE)
 
@@ -30,6 +30,7 @@ ecm_setup_version(${PROJECT_VERSION}
     VARIABLE_PREFIX KILE
     VERSION_HEADER ${CMAKE_CURRENT_BINARY_DIR}/src/cmake-kile-version.h
 )
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 kde_enable_exceptions()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/modules)
@@ -59,13 +60,10 @@ find_package(KF6 6.0.0
 		WindowSystem
 		XmlGui
 		TextWidgets
+		ColorScheme
 	OPTIONAL_COMPONENTS
 		DocTools
 )
-
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(Okular6 REQUIRED)
 set_package_properties(Okular6 PROPERTIES

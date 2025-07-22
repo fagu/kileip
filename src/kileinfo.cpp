@@ -391,7 +391,7 @@ bool KileInfo::projectIsOpen(const QUrl &url)
 {
     const KileProject *project = docManager()->projectFor(url);
 
-    return project != 0 ;
+    return (project != nullptr);
 }
 
 
@@ -423,7 +423,7 @@ QString KileInfo::expandEnvironmentVars(const QString &str)
     while (matches.hasNext()) {
         const auto match = matches.next();
 
-        result.replace(match.captured(0), qgetenv(match.captured(1).toLocal8Bit()));
+        result.replace(match.captured(0), qgetenv(match.captured(1).toLocal8Bit().constData()));
     }
 
     return result;

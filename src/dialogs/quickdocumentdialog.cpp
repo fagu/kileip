@@ -72,7 +72,7 @@ enum {
 
 class EditableItemDelegate : public QItemDelegate {
 public:
-    explicit EditableItemDelegate(QObject *parent = 0) : QItemDelegate(parent) {}
+    explicit EditableItemDelegate(QObject *parent = nullptr) : QItemDelegate(parent) {}
 
     virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex& index) const override
     {
@@ -1397,8 +1397,8 @@ bool QuickDocument::isTreeWidgetChild(QTreeWidget *treeWidget, const QString &en
 QString QuickDocument::addPackageDefault(const QString &option, const QString &description)
 {
     return (m_dictPackagesDefaultvalues.contains(option))
-           ? description + " [" + m_dictPackagesDefaultvalues[option] + ']'
-           : description + " [ ]";
+           ? QString(description + " [" + m_dictPackagesDefaultvalues[option] + ']')
+           : QString(description + " [ ]");
 }
 
 QString QuickDocument::stripPackageDefault(const QString &option, const QString &description)

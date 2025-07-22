@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kile\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
-"POT-Creation-Date: 2024-08-05 00:39+0000\n"
+"POT-Creation-Date: 2025-07-07 00:42+0000\n"
 "PO-Revision-Date: 2024-12-25 19:37+0530\n"
 "Last-Translator: kali <shreekantkalwar@gmail.com>\n"
 "Language-Team: Sanskrit <kde-i18n-doc@kde.org>\n"
@@ -251,36 +251,42 @@ msgstr "प्रणाली जाँच एवं विन्यास स�
 msgid "Checking whether the system is set up correctly..."
 msgstr "प्रणाली सम्यक् स्थापिता अस्ति वा इति परीक्ष्य..."
 
-#: dialogs/configcheckerdialog.cpp:147
+#: dialogs/configcheckerdialog.cpp:134
+#, kde-format
+msgctxt "%p is the percent value, % is the percent sign"
+msgid "%p%"
+msgstr ""
+
+#: dialogs/configcheckerdialog.cpp:148
 #, kde-format
 msgid "Configure the viewer tools to use the document viewer"
 msgstr "दस्तावेजदर्शकस्य उपयोगाय दर्शकसाधनं विन्यस्यताम्"
 
-#: dialogs/configcheckerdialog.cpp:149
+#: dialogs/configcheckerdialog.cpp:150
 #, kde-format
 msgid "Use the 'modern' configuration for the TeX, PDFTeX, and LaTeX tools"
 msgstr "TeX, PDFTeX, LaTeX च साधनानां कृते 'आधुनिक' विन्यासस्य उपयोगं कुर्वन्तु"
 
-#: dialogs/configcheckerdialog.cpp:151
+#: dialogs/configcheckerdialog.cpp:152
 #, kde-format
 msgid ""
 "Use the 'modern' configuration for the PDFLaTeX, LuaLaTeX and XeLaTeX tools"
 msgstr ""
 "PDFLaTeX, LuaLaTeX तथा XeLaTeX उपकरणानां कृते 'आधुनिक' विन्यासस्य उपयोगं कुर्वन्तु"
 
-#: dialogs/configcheckerdialog.cpp:153
+#: dialogs/configcheckerdialog.cpp:154
 #, kde-format
 msgid ""
 "<br/>Please press 'Finish' now to accept the recommended configuration "
 "changes."
 msgstr "<br/>अनुशंसितं विन्यासपरिवर्तनं स्वीकुर्वितुं कृपया इदानीं &#39;Finish&#39; नुदन्तु ।"
 
-#: dialogs/configcheckerdialog.cpp:156
+#: dialogs/configcheckerdialog.cpp:157
 #, kde-format
 msgid "Test Results"
 msgstr "परीक्षाफलम्"
 
-#: dialogs/configcheckerdialog.cpp:231
+#: dialogs/configcheckerdialog.cpp:232
 #, kde-format
 msgid ""
 "The following <b>critical</b> tests did not succeed:<br/><br/>%1<br/><br/"
@@ -291,7 +297,7 @@ msgstr ""
 "प्रणाल्यां सम्यक् कार्यं कर्तुं न शक्नोति । कृपया परीक्षणपरिणामस्य परामर्शं कुर्वन्तु<br/> केषां "
 "कार्यक्रमानां निश्चयः करणीयः इति निर्धारयितुं ।"
 
-#: dialogs/configcheckerdialog.cpp:237
+#: dialogs/configcheckerdialog.cpp:238
 #, kde-format
 msgid ""
 "The following tests did not succeed:<br/><br/>%1<br/><br/>You will still be "
@@ -300,19 +306,19 @@ msgstr ""
 "निम्नलिखितपरीक्षाः सफलाः न अभवन् ।<br/><br/> %1<br/><br/> भवन्तः अद्यापि किले "
 "इत्यस्य उपयोगं कर्तुं शक्नुवन्ति; तथापि सर्वेषां विशेषतानां कार्यं कर्तुं गारण्टी नास्ति ।"
 
-#: dialogs/configcheckerdialog.cpp:242
+#: dialogs/configcheckerdialog.cpp:243
 #, kde-format
 msgid ""
 "<b>No problems were detected. Kile will work correctly on your system.</b>"
 msgstr "<b>कोऽपि समस्या न ज्ञाता । किले भवतः प्रणाल्यां सम्यक् कार्यं करिष्यति ।</b>"
 
-#: dialogs/configcheckerdialog.cpp:255
+#: dialogs/configcheckerdialog.cpp:256
 #, kde-format
 msgid ""
 "The embedded document viewer is available and live preview is supported."
 msgstr "एम्बेडेड् दस्तावेजदर्शकः उपलब्धः अस्ति तथा च लाइव् पूर्वावलोकनं समर्थितम् अस्ति ।"
 
-#: dialogs/configcheckerdialog.cpp:258
+#: dialogs/configcheckerdialog.cpp:259
 #, kde-format
 msgid ""
 "The embedded document viewer is available, but the installed version of "
@@ -321,7 +327,7 @@ msgstr ""
 "एम्बेडेड् दस्तावेजदर्शकः उपलब्धः अस्ति, परन्तु PDFLaTeX इत्यस्य संस्थापितं संस्करणम् अस्ति<br/> "
 "लाइव पूर्वावलोकनेन सह <b>सङ्गतम् नास्ति</b> ।"
 
-#: dialogs/configcheckerdialog.cpp:266
+#: dialogs/configcheckerdialog.cpp:267
 #, kde-format
 msgid ""
 "The embedded document viewer is <b>not available</b> (as Okular is either "
@@ -332,7 +338,7 @@ msgstr ""
 "संस्थापितः अस्ति<br/> संस्करणम् अतीव पुरातनम् अस्ति)। अतः लाइव पूर्वावलोकनं समर्थितं नास्ति "
 "।"
 
-#: dialogs/configcheckerdialog.cpp:290
+#: dialogs/configcheckerdialog.cpp:291
 #, kde-format
 msgid ""
 "<br/><font color=\"#FF0000\"><b>The tests could not be finished correctly. "
@@ -357,7 +363,7 @@ msgstr "किम्‌"
 
 #. i18n: ectx: property (windowTitle), widget (QWidget, KileWidgetLatexConfig)
 #. i18n: ectx: property (windowTitle), widget (QWidget, KileWidgetEnvironmentConfig)
-#: dialogs/configurationdialog.cpp:69 kile.cpp:696 kile.cpp:1076
+#: dialogs/configurationdialog.cpp:69 kile.cpp:696 kile.cpp:1084
 #: kileinfo.cpp:355 widgets/environmentconfigwidget.ui:20
 #: widgets/latexconfigwidget.ui:14
 #, kde-format
@@ -538,7 +544,7 @@ msgstr "आदेश[]"
 #. i18n: ectx: property (text), widget (QTreeWidget, environments)
 #: dialogs/findfilesdialog.cpp:144 dialogs/floatdialog_base.ui:29
 #: dialogs/latexcommanddialog_base.ui:69 dialogs/mathenvironmentdialog.cpp:56
-#: dialogs/tabular/newtabulardialog.cpp:123 kile.cpp:998
+#: dialogs/tabular/newtabulardialog.cpp:123 kile.cpp:1000
 #, kde-format
 msgid "Environment"
 msgstr "पर्यावरणम्‌"
@@ -548,13 +554,13 @@ msgstr "पर्यावरणम्‌"
 msgid "Image"
 msgstr "छवि"
 
-#: dialogs/findfilesdialog.cpp:146 kilestdactions.cpp:128
-#: kilestdactions.cpp:129 usermenu/usermenu.cpp:909
+#: dialogs/findfilesdialog.cpp:146 kilestdactions.cpp:140
+#: kilestdactions.cpp:141 usermenu/usermenu.cpp:909
 #, kde-format
 msgid "Label"
 msgstr "नामपत्र"
 
-#: dialogs/findfilesdialog.cpp:147 kilestdactions.cpp:134
+#: dialogs/findfilesdialog.cpp:147 kilestdactions.cpp:146
 #: usermenu/usermenu.cpp:914
 #, kde-format
 msgid "Reference"
@@ -1288,7 +1294,7 @@ msgstr "अम्स-गणित"
 #. i18n: ectx: ToolBar (mathToolBar)
 #. i18n: ectx: property (text), widget (QTreeWidget, environments)
 #: dialogs/latexcommanddialog.cpp:389 dialogs/latexcommanddialog_base.ui:84
-#: kile.cpp:1031 kilestdactions.cpp:452 kileui.rc:583
+#: kile.cpp:1039 kilestdactions.cpp:464 kileui.rc:583
 #, kde-format
 msgid "Math"
 msgstr "गणित"
@@ -1298,7 +1304,7 @@ msgstr "गणित"
 msgid "Lists"
 msgstr "सूचीः"
 
-#: dialogs/latexcommanddialog.cpp:391 kile.cpp:1027 kilestdactions.cpp:80
+#: dialogs/latexcommanddialog.cpp:391 kile.cpp:1035 kilestdactions.cpp:80
 #, kde-format
 msgid "Tabular"
 msgstr "सारणीबद्धः"
@@ -1333,13 +1339,13 @@ msgstr "उद्धरणम्"
 msgid "Includes"
 msgstr "अन्तर्भवति"
 
-#: dialogs/latexcommanddialog.cpp:623 kile.cpp:1078
+#: dialogs/latexcommanddialog.cpp:623 kile.cpp:1090
 #, kde-format
 msgid "LaTeX Environments"
 msgstr "LaTeX वातावरणम्"
 
 #: dialogs/latexcommanddialog.cpp:627 dialogs/latexcommanddialog.cpp:699
-#: kile.cpp:1077
+#: kile.cpp:1087
 #, kde-format
 msgid "LaTeX Commands"
 msgstr "LaTeX आदेशाः"
@@ -1507,7 +1513,7 @@ msgstr[1] "%1 वस्तूनि प्राप्तानि।"
 msgid "File Name"
 msgstr "सञ्चिकानाम"
 
-#: dialogs/listselector.cpp:151 widgets/codecompletionconfigwidget.cpp:96
+#: dialogs/listselector.cpp:151 widgets/codecompletionconfigwidget.cpp:98
 #, kde-format
 msgid "Local File"
 msgstr "स्थानीय सञ्चिका"
@@ -1550,8 +1556,8 @@ msgstr "सञ्चिकाप्रबन्धके स्थानीय�
 #: dialogs/listselector.cpp:210 dialogs/listselector.cpp:263
 #: dialogs/listselector.cpp:268 dialogs/pdf-wizard/pdfdialog.cpp:283
 #: dialogs/pdf-wizard/pdfdialog.cpp:939 dialogs/postscriptdialog.cpp:219
-#: widgets/codecompletionconfigwidget.cpp:196
-#: widgets/codecompletionconfigwidget.cpp:353
+#: widgets/codecompletionconfigwidget.cpp:198
+#: widgets/codecompletionconfigwidget.cpp:355
 #, kde-format
 msgid "yes"
 msgstr "आम्‌"
@@ -1560,8 +1566,8 @@ msgstr "आम्‌"
 #: dialogs/listselector.cpp:214 dialogs/pdf-wizard/pdfdialog.cpp:283
 #: dialogs/pdf-wizard/pdfdialog.cpp:939
 #: dialogs/pdf-wizard/pdfdialog_base.ui:518 dialogs/postscriptdialog.cpp:219
-#: widgets/codecompletionconfigwidget.cpp:200
-#: widgets/codecompletionconfigwidget.cpp:356
+#: widgets/codecompletionconfigwidget.cpp:202
+#: widgets/codecompletionconfigwidget.cpp:358
 #, kde-format
 msgid "no"
 msgstr "नहि"
@@ -2284,7 +2290,7 @@ msgstr ""
 "गुणानाम् अनुमतिनां च सेट्, परिवर्तनं, निष्कासनं च सम्भवं नास्ति ।</p>"
 
 #: dialogs/pdf-wizard/pdfdialog.cpp:910 dialogs/pdf-wizard/pdfdialog.cpp:1698
-#: dialogs/pdf-wizard/pdfdialog.cpp:1768 kile.cpp:1033
+#: dialogs/pdf-wizard/pdfdialog.cpp:1768 kile.cpp:1041
 #, kde-format
 msgid "PDF Tools"
 msgstr "PDF Tools इति"
@@ -2862,7 +2868,7 @@ msgstr "अज्ञातसञ्चिकास्वरूपम्: के�
 msgid "Copies:"
 msgstr "प्रतिलिपानि :"
 
-#: dialogs/postscriptdialog.cpp:517 kile.cpp:1032
+#: dialogs/postscriptdialog.cpp:517 kile.cpp:1040
 #, kde-format
 msgid "Postscript Tools"
 msgstr "पोस्टस्क्रिप्ट टूल्स"
@@ -4374,17 +4380,17 @@ msgstr "संरेखित केन्द्र"
 msgid "Align Right"
 msgstr "Align Right इति"
 
-#: dialogs/tabular/newtabulardialog.cpp:85 kilestdactions.cpp:202
+#: dialogs/tabular/newtabulardialog.cpp:85 kilestdactions.cpp:214
 #, kde-format
 msgid "Bold"
 msgstr "विक्रान्तः"
 
-#: dialogs/tabular/newtabulardialog.cpp:86 kilestdactions.cpp:205
+#: dialogs/tabular/newtabulardialog.cpp:86 kilestdactions.cpp:217
 #, kde-format
 msgid "Italic"
 msgstr "इटालिक"
 
-#: dialogs/tabular/newtabulardialog.cpp:87 kilestdactions.cpp:136
+#: dialogs/tabular/newtabulardialog.cpp:87 kilestdactions.cpp:148
 #, kde-format
 msgid "Underline"
 msgstr "रेखांकनम्"
@@ -4660,7 +4666,7 @@ msgstr "क्लिप्बोर्ड् रिक्तत्वात् �
 msgid "Empty Clipboard"
 msgstr "रिक्त क्लिपबोर्ड"
 
-#: dialogs/texdocumentationdialog.cpp:58 kile.cpp:1080
+#: dialogs/texdocumentationdialog.cpp:58 kile.cpp:1096
 #, kde-format
 msgid "Documentation Browser"
 msgstr "दस्तावेजीकरण ब्राउज़र"
@@ -4767,7 +4773,7 @@ msgid "Configure User Help"
 msgstr "उपयोक्तृसहायतां विन्यस्यताम्"
 
 #. i18n: ectx: property (title), widget (QGroupBox, m_gbUserHelp)
-#: dialogs/userhelpdialog.cpp:57 dialogs/userhelpdialog.cpp:378 kile.cpp:1092
+#: dialogs/userhelpdialog.cpp:57 dialogs/userhelpdialog.cpp:378 kile.cpp:1110
 #: widgets/helpconfigwidget.ui:86
 #, kde-format
 msgid "User Help"
@@ -5878,7 +5884,7 @@ msgstr ""
 "सम्मिलितुं चित्रे क्लिक् कुर्वन्तु, अतिरिक्तं &quot;Shift&quot; नुदन् गणितविधाने सम्मिलितं "
 "भवति, कुञ्चितकोष्ठकेषु &quot;Ctrl&quot; नुदन् ।</p>"
 
-#: kile.cpp:707 widgets/codecompletionconfigwidget.cpp:55
+#: kile.cpp:707 widgets/codecompletionconfigwidget.cpp:57
 #, kde-format
 msgid "Abbreviation"
 msgstr "संक्षेपः"
@@ -6084,7 +6090,7 @@ msgstr "All &Project Files उद्घाटयन्तु"
 msgid "Find in &Project..."
 msgstr "&Project इत्यत्र अन्वेष्टुम्..."
 
-#: kile.cpp:911 kile.cpp:1009 kile.cpp:2150 kiledocmanager.cpp:1963
+#: kile.cpp:911 kile.cpp:1017 kile.cpp:2168 kiledocmanager.cpp:1963
 #: kiledocmanager.cpp:1973
 #, kde-format
 msgid "Clean"
@@ -6218,128 +6224,128 @@ msgstr "पिधानं करोतु"
 msgid "Selection"
 msgstr "चयनम्"
 
-#: kile.cpp:999
+#: kile.cpp:1003
 #, kde-format
 msgid "Subdocument"
 msgstr "उपदस्तावेज"
 
-#: kile.cpp:1000
+#: kile.cpp:1006
 #, kde-format
 msgid "Mathgroup"
 msgstr "गणितसमूहः"
 
-#: kile.cpp:1005
+#: kile.cpp:1013
 #, kde-format
 msgid "&Bibliography"
 msgstr "&ग्रन्थसूची"
 
 #. i18n: ectx: Menu (settings)
-#: kile.cpp:1011 kileui.rc:517
+#: kile.cpp:1019 kileui.rc:517
 #, kde-format
 msgid "&Settings"
 msgstr "&सेटिंग्स"
 
-#: kile.cpp:1014
+#: kile.cpp:1022
 #, kde-format
 msgid "Settings for BibTeX"
 msgstr "BibTeX कृते सेटिंग्स्"
 
-#: kile.cpp:1018
+#: kile.cpp:1026
 #, kde-format
 msgid "Settings for Biblatex"
 msgstr "Biblatex कृते सेटिंग्स्"
 
-#: kile.cpp:1025 kile.cpp:2255
+#: kile.cpp:1033 kile.cpp:2273
 #, kde-format
 msgid "Quick Start"
 msgstr "त्वरित आरम्भ"
 
-#: kile.cpp:1028 kilestdactions.cpp:385
+#: kile.cpp:1036 kilestdactions.cpp:397
 #, kde-format
 msgid "Array"
 msgstr "सरणी"
 
-#: kile.cpp:1029 kile.cpp:2307 kilestdactions.cpp:79
+#: kile.cpp:1037 kile.cpp:2325 kilestdactions.cpp:79
 #, kde-format
 msgid "Tabbing"
 msgstr "टैबिंग्"
 
-#: kile.cpp:1030
+#: kile.cpp:1038
 #, kde-format
 msgid "Floats"
 msgstr "प्लवते"
 
-#: kile.cpp:1035
+#: kile.cpp:1043
 #, kde-format
 msgid "Define Current Document as '&Master Document'"
 msgstr "वर्तमान दस्तावेजं '&Master Document' इति परिभाषयन्तु।"
 
-#: kile.cpp:1040
+#: kile.cpp:1048
 #, kde-format
 msgid "Show Document Viewer"
 msgstr "दस्तावेजदर्शकं दर्शयतु"
 
-#: kile.cpp:1047
+#: kile.cpp:1055
 #, kde-format
 msgid "Show S&ide Bar"
 msgstr "S&ide Bar इति दर्शयतु"
 
-#: kile.cpp:1053
+#: kile.cpp:1061
 #, kde-format
 msgid "Show Mess&ages Bar"
 msgstr "Mess&ages Bar इति दर्शयतु"
 
-#: kile.cpp:1065
+#: kile.cpp:1073
 #, kde-format
 msgid "Watch File Mode"
 msgstr "Watch File Mode इति"
 
-#: kile.cpp:1079
+#: kile.cpp:1093
 #, kde-format
 msgid "Context Help"
 msgstr "सन्दर्भ सहायता"
 
-#: kile.cpp:1082
+#: kile.cpp:1100
 #, kde-format
 msgid "&About Editor Component"
 msgstr "&सम्पादक घटकस्य विषये"
 
-#: kile.cpp:1090
+#: kile.cpp:1108
 #, kde-format
 msgid "&System Check..."
 msgstr "&प्रणाली जाँच..."
 
-#: kile.cpp:1108 kileinfo.cpp:357
+#: kile.cpp:1126 kileinfo.cpp:357
 #, kde-format
 msgid "BibTeX"
 msgstr "BibTeX"
 
-#: kile.cpp:1111
+#: kile.cpp:1129
 #, kde-format
 msgid "Biblatex"
 msgstr "बिब्लेटेक्स"
 
-#: kile.cpp:1256 widgets/toolconfigwidget.cpp:76
+#: kile.cpp:1274 widgets/toolconfigwidget.cpp:77
 #, kde-format
 msgid "Compile"
 msgstr "संकलनम्"
 
-#: kile.cpp:1257 widgets/toolconfigwidget.cpp:78
+#: kile.cpp:1275 widgets/toolconfigwidget.cpp:79
 #, kde-format
 msgid "View"
 msgstr "दृश्यं"
 
-#: kile.cpp:1258 widgets/toolconfigwidget.cpp:77
+#: kile.cpp:1276 widgets/toolconfigwidget.cpp:78
 #, kde-format
 msgid "Convert"
 msgstr "रैकृ"
 
-#: kile.cpp:1259 widgets/toolconfigwidget.cpp:75
+#: kile.cpp:1277 widgets/toolconfigwidget.cpp:76
 #, kde-format
 msgid "Quick"
 msgstr "तीव्र"
 
-#: kile.cpp:1438
+#: kile.cpp:1456
 #, kde-format
 msgid ""
 "It was impossible to create the \"Archive\" tool.\n"
@@ -6350,109 +6356,109 @@ msgstr ""
 "\n"
 "कृपया किले इत्यस्य संस्थापनस्य जाँचं कृत्वा मरम्मतं कुर्वन्तु।"
 
-#: kile.cpp:1440
+#: kile.cpp:1458
 #, kde-format
 msgid "Unable to Create Archive Tool"
 msgstr "संग्रहसाधनं निर्मातुं असमर्थः"
 
-#: kile.cpp:1505
+#: kile.cpp:1523
 #, kde-format
 msgid "Project: %1"
 msgstr "परियोजना: %1"
 
-#: kile.cpp:1508
+#: kile.cpp:1526
 #, kde-format
 msgid "Project: %1 (Master document: %2)"
 msgstr "परियोजना: %1 (मास्टर दस्तावेज: %2)"
 
-#: kile.cpp:1513
+#: kile.cpp:1531
 #, kde-format
 msgid "Normal mode"
 msgstr "सामान्य मोड"
 
-#: kile.cpp:1516
+#: kile.cpp:1534
 #, kde-format
 msgid "Master document: %1"
 msgstr "मुख्यदस्तावेजः %1"
 
-#: kile.cpp:1521 kile.cpp:2664
+#: kile.cpp:1539 kile.cpp:2682
 #, kde-format
 msgid "Define Current Document as 'Master Document'"
 msgstr "वर्तमान दस्तावेजं 'मास्टर दस्तावेजम्' इति परिभाषयन्तु।"
 
-#: kile.cpp:1525 kile.cpp:2654
+#: kile.cpp:1543 kile.cpp:2672
 #, kde-format
 msgid "Normal mode (current master document: %1)"
 msgstr "सामान्यविधिः (वर्तमानः मुख्यदस्तावेजः: %1)"
 
-#: kile.cpp:1765
+#: kile.cpp:1783
 #, kde-format
 msgctxt "Window caption in read-only mode: <file name> [Read-Only]"
 msgid "%1 [Read-Only]"
 msgstr "%1 [केवलं पठनीयम्] ।"
 
-#: kile.cpp:2143
+#: kile.cpp:2161
 #, kde-format
 msgid "There is no active document or it is not saved."
 msgstr "सक्रियदस्तावेजं नास्ति अथवा न रक्षितम्।"
 
-#: kile.cpp:2226
+#: kile.cpp:2244
 #, kde-format
 msgid "You have to include the package %1."
 msgstr "भवद्भिः %1 संकुलं समाविष्टं कर्तव्यम् ।"
 
-#: kile.cpp:2226 kile.cpp:2229
+#: kile.cpp:2244 kile.cpp:2247
 #, kde-format
 msgid "Insert text"
 msgstr "पाठं सम्मिलितं कुर्वन्तु"
 
-#: kile.cpp:2229
+#: kile.cpp:2247
 #, kde-format
 msgid "You have to include the packages %1."
 msgstr "भवद्भिः %1 संकुलं समाविष्टं कर्तव्यम् ।"
 
-#: kile.cpp:2450
+#: kile.cpp:2468
 #, kde-format
 msgid "No Name"
 msgstr "न नाम"
 
-#: kile.cpp:2486
+#: kile.cpp:2504
 #, kde-format
 msgid "no name"
 msgstr "न नाम"
 
-#: kile.cpp:2682
+#: kile.cpp:2700
 #, kde-format
 msgid ""
 "In order to define the current document as a master document, it has to be "
 "saved first."
 msgstr "वर्तमानदस्तावेजं मुख्यदस्तावेजरूपेण परिभाषितुं प्रथमं तस्य रक्षणं कर्तव्यम् ।"
 
-#: kile.cpp:3024
+#: kile.cpp:3042
 #, kde-format
 msgctxt "@info:status status bar label for block selection mode"
 msgid "BLOCK"
 msgstr "मृदुवस्तु"
 
-#: kile.cpp:3025
+#: kile.cpp:3043
 #, kde-format
 msgctxt "@info:status status bar label for line selection mode"
 msgid "LINE"
 msgstr "पंक्ति"
 
-#: kile.cpp:3032
+#: kile.cpp:3050
 #, kde-format
 msgid "Refreshing structure..."
 msgstr "ताज़ा संरचना..."
 
-#: kile.cpp:3050
+#: kile.cpp:3068
 #, kde-format
 msgid ""
 "This will hide the menu bar completely. You can show it again by typing %1."
 msgstr ""
 "एतेन मेनू-पट्टिका पूर्णतया गोपिता भविष्यति । %1 इति टङ्कयित्वा पुनः दर्शयितुं शक्नुवन्ति ।"
 
-#: kile.cpp:3053
+#: kile.cpp:3071
 #, kde-format
 msgid "Hide menu bar"
 msgstr "मेनू-पट्टिकां गोपयन्तु"
@@ -7724,17 +7730,17 @@ msgstr "दस्तावेजदर्शकः उपलब्धः ना�
 msgid "Please disable the live preview before launching this tool"
 msgstr "कृपया एतत् साधनं प्रारम्भं कर्तुं पूर्वं लाइव पूर्वावलोकनं निष्क्रियं कुर्वन्तु"
 
-#: kilelyxserver.cpp:240
+#: kilelyxserver.cpp:241
 #, kde-format
 msgid "Cite"
 msgstr "उद्धृतम्"
 
-#: kilelyxserver.cpp:246
+#: kilelyxserver.cpp:247
 #, kde-format
 msgid "Add BibTeX database"
 msgstr "BibTeX आँकडाकोषं योजयन्तु"
 
-#: kilelyxserver.cpp:251
+#: kilelyxserver.cpp:252
 #, kde-format
 msgid "Paste"
 msgstr "चिनोतु"
@@ -8162,7 +8168,7 @@ msgstr "\\textit{italic text} इति ।"
 msgid "Slanted - \\textsl{}"
 msgstr "तिर्यक् - \\textsl{}"
 
-#: kilestdactions.cpp:73 kilestdactions.cpp:206
+#: kilestdactions.cpp:73 kilestdactions.cpp:218
 #, kde-format
 msgid "Slanted"
 msgstr "तिर्यक्"
@@ -8484,17 +8490,17 @@ msgstr "चित्रप्रवेशः - \\includegraphics{file}"
 msgid "Image Insertion"
 msgstr "बिम्ब सम्मिलनम्"
 
-#: kilestdactions.cpp:95
+#: kilestdactions.cpp:97
 #, kde-format
 msgid "Customizable File Inclusion - \\include{file}"
 msgstr "अनुकूलनीय सञ्चिका समावेश - \\include{file}"
 
-#: kilestdactions.cpp:95
+#: kilestdactions.cpp:97
 #, kde-format
 msgid "Customizable File Inclusion"
 msgstr "अनुकूलनीय सञ्चिका समावेश"
 
-#: kilestdactions.cpp:95
+#: kilestdactions.cpp:101
 #, kde-format
 msgid ""
 "\\include{file}\n"
@@ -8504,22 +8510,22 @@ msgstr ""
 "\\include{सञ्चिका} २.\n"
 "सञ्चिकानां चयनात्मकसमावेशार्थं \\include आदेशः \\includeonly आदेशेन सह उपयुज्यते ।"
 
-#: kilestdactions.cpp:95 kilestdactions.cpp:96
+#: kilestdactions.cpp:102 kilestdactions.cpp:108
 #, kde-format
 msgid "Type or select a filename: "
 msgstr "सञ्चिकानाम टङ्कयन्तु अथवा चिनोतु: "
 
-#: kilestdactions.cpp:96
+#: kilestdactions.cpp:103
 #, kde-format
 msgid "File Inclusion - \\input{file}"
 msgstr "सञ्चिका समावेशः - \\input{file}"
 
-#: kilestdactions.cpp:96
+#: kilestdactions.cpp:103
 #, kde-format
 msgid "File Inclusion"
 msgstr "सञ्चिकासमावेशः"
 
-#: kilestdactions.cpp:96
+#: kilestdactions.cpp:107
 #, kde-format
 msgid ""
 "\\input{file}\n"
@@ -8531,12 +8537,12 @@ msgstr ""
 "\\input आदेशः सूचितसञ्चिकां पठितुं संसाधितुं च प्रेरयति, यथा तस्मिन् बिन्दौ वर्तमानसञ्चिकायां "
 "तस्याः सामग्रीः प्रविष्टा आसीत् ।"
 
-#: kilestdactions.cpp:98 widgets/structurewidget.cpp:774
+#: kilestdactions.cpp:110 widgets/structurewidget.cpp:774
 #, kde-format
 msgid "Sectioning"
 msgstr "खण्डनम्"
 
-#: kilestdactions.cpp:100
+#: kilestdactions.cpp:112
 #, kde-format
 msgid ""
 "\\part{title}\n"
@@ -8546,19 +8552,19 @@ msgstr ""
 "\\भाग{शीर्षक} २.\n"
 "\\part*{title} : संख्यां न समावेशयन्तु तथा च सामग्रीसूचौ प्रविष्टिं न कुर्वन्तु\n"
 
-#: kilestdactions.cpp:100
+#: kilestdactions.cpp:112
 #, kde-format
 msgid "&Part"
 msgstr "&भाग"
 
-#: kilestdactions.cpp:100 kilestdactions.cpp:102 kilestdactions.cpp:103
-#: kilestdactions.cpp:104 kilestdactions.cpp:105 kilestdactions.cpp:107
-#: kilestdactions.cpp:108
+#: kilestdactions.cpp:112 kilestdactions.cpp:114 kilestdactions.cpp:115
+#: kilestdactions.cpp:116 kilestdactions.cpp:117 kilestdactions.cpp:119
+#: kilestdactions.cpp:120
 #, kde-format
 msgid "No &numbering"
 msgstr "न &संख्याकरणम्"
 
-#: kilestdactions.cpp:102
+#: kilestdactions.cpp:114
 #, kde-format
 msgid ""
 "\\chapter{title}\n"
@@ -8570,12 +8576,12 @@ msgstr ""
 "\\chapter*{title} : संख्यां न समावेशयन्तु तथा च सामग्रीसूचौ प्रविष्टिं न कुर्वन्तु\n"
 "केवलं 'रिपोर्ट्' तथा 'पुस्तक' वर्गदस्तावेजस्य कृते।"
 
-#: kilestdactions.cpp:102
+#: kilestdactions.cpp:114
 #, kde-format
 msgid "C&hapter"
 msgstr "C&hapter इति"
 
-#: kilestdactions.cpp:103
+#: kilestdactions.cpp:115
 #, kde-format
 msgid ""
 "\\section{title}\n"
@@ -8585,12 +8591,12 @@ msgstr ""
 "\\खण्ड{शीर्षक}\n"
 "\\section*{title} : संख्यां न समावेशयन्तु तथा च सामग्रीसूचौ प्रविष्टिं न कुर्वन्तु"
 
-#: kilestdactions.cpp:103
+#: kilestdactions.cpp:115
 #, kde-format
 msgid "&Section"
 msgstr "&खंड"
 
-#: kilestdactions.cpp:104
+#: kilestdactions.cpp:116
 #, kde-format
 msgid ""
 "\\subsection{title}\n"
@@ -8601,12 +8607,12 @@ msgstr ""
 "\\subsection*{title} : संख्यां न समाविष्टं कुर्वन्तु तथा च सामग्रीसारणीयां प्रविष्टिं न "
 "कुर्वन्तु"
 
-#: kilestdactions.cpp:104
+#: kilestdactions.cpp:116
 #, kde-format
 msgid "&Subsection"
 msgstr "&उपखण्ड"
 
-#: kilestdactions.cpp:105
+#: kilestdactions.cpp:117
 #, kde-format
 msgid ""
 "\\subsubsection{title}\n"
@@ -8617,12 +8623,12 @@ msgstr ""
 "\\subsubsection*{title} : संख्यां न समाविष्टं कुर्वन्तु तथा च सामग्रीसारणीयां प्रविष्टिं न "
 "कुर्वन्तु"
 
-#: kilestdactions.cpp:105
+#: kilestdactions.cpp:117
 #, kde-format
 msgid "&Subsubsection"
 msgstr "&उपखण्डः"
 
-#: kilestdactions.cpp:107
+#: kilestdactions.cpp:119
 #, kde-format
 msgid ""
 "\\paragraph{title}\n"
@@ -8632,12 +8638,12 @@ msgstr ""
 "\\परिच्छेद{शीर्षक}\n"
 "\\paragraph*{title} : संख्यां न समावेशयन्तु तथा च सामग्रीसूचौ प्रविष्टिं न कुर्वन्तु"
 
-#: kilestdactions.cpp:107
+#: kilestdactions.cpp:119
 #, kde-format
 msgid "&Paragraph"
 msgstr "&परिच्छेदः"
 
-#: kilestdactions.cpp:108
+#: kilestdactions.cpp:120
 #, kde-format
 msgid ""
 "\\subparagraph{title}\n"
@@ -8647,88 +8653,88 @@ msgstr ""
 "\\उपपरिच्छेद{शीर्षक}\n"
 "\\subparagraph*{title} : संख्यां न समावेशयन्तु तथा च सामग्रीसूचौ प्रविष्टिं न कुर्वन्तु"
 
-#: kilestdactions.cpp:108
+#: kilestdactions.cpp:120
 #, kde-format
 msgid "&Subparagraph"
 msgstr "&उपपरिच्छेदः"
 
-#: kilestdactions.cpp:110
+#: kilestdactions.cpp:122
 #, kde-format
 msgid "Size"
 msgstr "आकृति"
 
-#: kilestdactions.cpp:112
+#: kilestdactions.cpp:124
 #, kde-format
 msgid "tiny"
 msgstr "तुच्छ"
 
-#: kilestdactions.cpp:113
+#: kilestdactions.cpp:125
 #, kde-format
 msgid "scriptsize"
 msgstr "लिपि आकारः"
 
-#: kilestdactions.cpp:114
+#: kilestdactions.cpp:126
 #, kde-format
 msgid "footnotesize"
 msgstr "पादटिप्पणीप्रमाणम्"
 
-#: kilestdactions.cpp:115
+#: kilestdactions.cpp:127
 #, kde-format
 msgid "small"
 msgstr "लघु"
 
-#: kilestdactions.cpp:117
+#: kilestdactions.cpp:129
 #, kde-format
 msgid "normalsize"
 msgstr "normalsize इति"
 
-#: kilestdactions.cpp:119
+#: kilestdactions.cpp:131
 #, kde-format
 msgid "large"
 msgstr "बृहत्‌"
 
-#: kilestdactions.cpp:120
+#: kilestdactions.cpp:132
 #, kde-format
 msgid "Large"
 msgstr "बृहत्‌"
 
-#: kilestdactions.cpp:121
+#: kilestdactions.cpp:133
 #, kde-format
 msgid "LARGE"
 msgstr "बृहत्‌"
 
-#: kilestdactions.cpp:122
+#: kilestdactions.cpp:134
 #, kde-format
 msgid "huge"
 msgstr "विशालः"
 
-#: kilestdactions.cpp:123
+#: kilestdactions.cpp:135
 #, kde-format
 msgid "Huge"
 msgstr "विशालः"
 
-#: kilestdactions.cpp:125 widgets/projectview.cpp:481
-#: widgets/toolconfigwidget.cpp:79
+#: kilestdactions.cpp:137 widgets/projectview.cpp:481
+#: widgets/toolconfigwidget.cpp:80
 #, kde-format
 msgid "Other"
 msgstr "इतर"
 
-#: kilestdactions.cpp:127
+#: kilestdactions.cpp:139
 #, kde-format
 msgid "\\label{key}"
 msgstr "\\लेबल{कुंजी}"
 
-#: kilestdactions.cpp:131
+#: kilestdactions.cpp:143
 #, kde-format
 msgid "\\index{word}"
 msgstr "\\अनुक्रमणिका{शब्द}"
 
-#: kilestdactions.cpp:132
+#: kilestdactions.cpp:144
 #, kde-format
 msgid "\\footnote{text}"
 msgstr "\\पादटिप्पणी{पाठ}"
 
-#: kilestdactions.cpp:134
+#: kilestdactions.cpp:146
 #, kde-format
 msgid ""
 "This command generates an in-text citation to the reference associated with "
@@ -8738,27 +8744,27 @@ msgstr ""
 "एषः आदेशः bib सञ्चिकायां ref प्रविष्ट्या सह सम्बद्धस्य सन्दर्भस्य पाठान्तर्गतं उद्धरणं जनयति\n"
 "सर्वाणि उपलब्धानि सन्दर्भाणि द्रष्टुं भवान् Kile इत्यनेन bib सञ्चिकां उद्घाटयितुं शक्नोति"
 
-#: kilestdactions.cpp:136
+#: kilestdactions.cpp:148
 #, kde-format
 msgid "Underline - \\underline{}"
 msgstr "रेखांकन - \\अधोरेखा{}"
 
-#: kilestdactions.cpp:139
+#: kilestdactions.cpp:151
 #, kde-format
 msgid "Smart Tabulator"
 msgstr "स्मार्ट सारणीकार"
 
-#: kilestdactions.cpp:146
+#: kilestdactions.cpp:158
 #, kde-format
 msgid "Abstract - \\begin{abstract}"
 msgstr "सार - \\begin{abstract}"
 
-#: kilestdactions.cpp:146
+#: kilestdactions.cpp:158
 #, kde-format
 msgid "Abstract"
 msgstr "मूर्त"
 
-#: kilestdactions.cpp:146
+#: kilestdactions.cpp:158
 #, kde-format
 msgid ""
 "\\begin{abstract}\n"
@@ -8773,17 +8779,17 @@ msgstr ""
 "अमूर्तवातावरणं शीर्षकपृष्ठं निर्माति अर्थात् एकं पृष्ठं यस्य मुद्रितपृष्ठसङ्ख्या वा शीर्षकं वा "
 "नास्ति ।"
 
-#: kilestdactions.cpp:148
+#: kilestdactions.cpp:160
 #, kde-format
 msgid "Tabular* - \\begin{tabular*}"
 msgstr "सारणीबद्ध* - \\begin{सारणी*}"
 
-#: kilestdactions.cpp:148
+#: kilestdactions.cpp:160
 #, kde-format
 msgid "Tabular*"
 msgstr "सारणीबद्ध*"
 
-#: kilestdactions.cpp:148
+#: kilestdactions.cpp:160
 #, kde-format
 msgid ""
 "\\begin{tabular*}{width}[pos]{cols}\n"
@@ -8801,17 +8807,17 @@ msgstr ""
 "इदं सारणीबद्धवातावरणस्य विस्तारितं संस्करणं विस्तृतस्य कृते अतिरिक्तं पैरामीटर् अस्ति । "
 "निर्दिष्टविस्तारं पूरयितुं स्तम्भानां मध्ये रबरस्थानं भवितुमर्हति यत् प्रसारयितुं शक्नोति ।"
 
-#: kilestdactions.cpp:150
+#: kilestdactions.cpp:162
 #, kde-format
 msgid "Minipage - \\begin{minipage}"
 msgstr "लघुपृष्ठ - \\begin{minipage}"
 
-#: kilestdactions.cpp:150
+#: kilestdactions.cpp:162
 #, kde-format
 msgid "Minipage"
 msgstr "लघुपृष्ठम्"
 
-#: kilestdactions.cpp:150
+#: kilestdactions.cpp:162
 #, kde-format
 msgid ""
 "The minipage environment is similar to a \\parbox command. It takes the same "
@@ -8822,92 +8828,92 @@ msgstr ""
 "अनिवार्यविस्तारवादं च गृह्णाति । लघुपृष्ठस्य अन्तः अन्येषां अनुच्छेदनिर्माणवातावरणानां उपयोगं "
 "कर्तुं शक्नुवन्ति ।"
 
-#: kilestdactions.cpp:153
+#: kilestdactions.cpp:165
 #, kde-format
 msgid "Table of Figures - \\listoffigures"
 msgstr "आकृतीनां सारणी - \\listoffigures"
 
-#: kilestdactions.cpp:153
+#: kilestdactions.cpp:165
 #, kde-format
 msgid "Table of Figures"
 msgstr "आकृतीनां सारणी"
 
-#: kilestdactions.cpp:153
+#: kilestdactions.cpp:165
 #, kde-format
 msgid "Put this command where you want the list of figures to go."
 msgstr "यत्र भवन्तः आकृतीनां सूचीं गन्तुं इच्छन्ति तत्र एतत् आदेशं स्थापयन्तु ।"
 
-#: kilestdactions.cpp:155
+#: kilestdactions.cpp:167
 #, kde-format
 msgid "Table of Tables - \\listoftables"
 msgstr "सारणीनां सारणी - \\listoftables"
 
-#: kilestdactions.cpp:155
+#: kilestdactions.cpp:167
 #, kde-format
 msgid "Table of Tables"
 msgstr "सारणीनां सारणी"
 
-#: kilestdactions.cpp:155
+#: kilestdactions.cpp:167
 #, kde-format
 msgid "Put this command where you want the list of tables to go."
 msgstr "यत्र भवन्तः सारणीनां सूचीं गन्तुं इच्छन्ति तत्र एतत् आदेशं स्थापयन्तु ।"
 
-#: kilestdactions.cpp:157
+#: kilestdactions.cpp:169
 #, kde-format
 msgid "Generate Index - \\makeindex"
 msgstr "अनुक्रमणिका उत्पन्न करें - \\makeindex"
 
-#: kilestdactions.cpp:157
+#: kilestdactions.cpp:169
 #, kde-format
 msgid "Generate Index"
 msgstr "अनुक्रमणिका उत्पन्न करें"
 
-#: kilestdactions.cpp:157
+#: kilestdactions.cpp:169
 #, kde-format
 msgid "Put this command when you want to generate the raw index."
 msgstr "यदा भवान् कच्चा अनुक्रमणिकां जनयितुम् इच्छति तदा एतत् आदेशं स्थापयतु ।"
 
-#: kilestdactions.cpp:159
+#: kilestdactions.cpp:171
 #, kde-format
 msgid "Print Index - \\printindex"
 msgstr "मुद्रण अनुक्रमणिका - \\printindex"
 
-#: kilestdactions.cpp:159
+#: kilestdactions.cpp:171
 #, kde-format
 msgid "Print Index"
 msgstr "मुद्रण अनुक्रमणिका"
 
-#: kilestdactions.cpp:159
+#: kilestdactions.cpp:171
 #, kde-format
 msgid "Put this command when you want to print the formatted index."
 msgstr "यदा भवान् स्वरूपितं अनुक्रमणिकां मुद्रयितुम् इच्छति तदा एतत् आदेशं स्थापयतु ।"
 
-#: kilestdactions.cpp:161
+#: kilestdactions.cpp:173
 #, kde-format
 msgid "Glossary - \\makeglossary"
 msgstr "शब्दावली - \\makeglossary"
 
-#: kilestdactions.cpp:161
+#: kilestdactions.cpp:173
 #, kde-format
 msgid "Glossary"
 msgstr "शब्दावली"
 
-#: kilestdactions.cpp:161
+#: kilestdactions.cpp:173
 #, kde-format
 msgid "Put this command when you want to print a glossary."
 msgstr "यदा भवान् शब्दावलीं मुद्रयितुम् इच्छति तदा एतत् आदेशं स्थापयतु ।"
 
-#: kilestdactions.cpp:163
+#: kilestdactions.cpp:175
 #, kde-format
 msgid "Bibliography - \\begin{thebibliography}"
 msgstr "ग्रन्थसूची - \\begin{thebibliography}"
 
-#: kilestdactions.cpp:163 widgets/projectview.cpp:477
+#: kilestdactions.cpp:175 widgets/projectview.cpp:477
 #, kde-format
 msgid "Bibliography"
 msgstr "ग्रन्थसूची"
 
-#: kilestdactions.cpp:163
+#: kilestdactions.cpp:175
 #, kde-format
 msgid ""
 "\\begin{thebibliography}{widest-label}\n"
@@ -8928,17 +8934,17 @@ msgstr ""
 "तावत् विस्तृतः भवति\n"
 "\\bibitem : ग्रन्थसूची-वस्तु निर्दिशन्तु"
 
-#: kilestdactions.cpp:166
+#: kilestdactions.cpp:178
 #, kde-format
 msgid "Verbatim (show spaces) - \\begin{verbatim*}"
 msgstr "शब्दशः (रिक्तस्थानानि दर्शयतु) - \\begin{verbatim*}"
 
-#: kilestdactions.cpp:166
+#: kilestdactions.cpp:178
 #, kde-format
 msgid "Verbatim (show spaces)"
 msgstr "शब्दशः (स्थानानि दर्शयतु)"
 
-#: kilestdactions.cpp:166
+#: kilestdactions.cpp:178
 #, kde-format
 msgid ""
 "Environment that gets LaTeX to print exactly what you type in. In this "
@@ -8947,67 +8953,67 @@ msgstr ""
 "वातावरणं यत् LaTeX इत्येतत् यत् भवन्तः टङ्कयन्ति तत् एव मुद्रयितुं प्राप्नोति अस्मिन् प्रकारे "
 "रिक्तस्थानानि विशेषरीत्या मुद्रितानि भवन्ति ।"
 
-#: kilestdactions.cpp:168
+#: kilestdactions.cpp:180
 #, kde-format
 msgid "Embedded Code - \\verb||"
 msgstr "एम्बेडेड कोड - \\verb||"
 
-#: kilestdactions.cpp:168
+#: kilestdactions.cpp:180
 #, kde-format
 msgid "Embedded Code"
 msgstr "एम्बेडेड् कोड"
 
-#: kilestdactions.cpp:168
+#: kilestdactions.cpp:180
 #, kde-format
 msgid "Macro form of the verbatim environment."
 msgstr "शब्दशः वातावरणस्य स्थूलरूपम्।"
 
-#: kilestdactions.cpp:170
+#: kilestdactions.cpp:182
 #, kde-format
 msgid "Embedded Code (show spaces) - \\verb*||"
 msgstr "एम्बेडेड कोड (रिक्तस्थानानि दर्शयतु) - \\क्रिया*||"
 
-#: kilestdactions.cpp:170
+#: kilestdactions.cpp:182
 #, kde-format
 msgid "Embedded Code (show spaces)"
 msgstr "एम्बेडेड् कोड (स्थानानि दर्शयतु) ."
 
-#: kilestdactions.cpp:170
+#: kilestdactions.cpp:182
 #, kde-format
 msgid "Macro form of the verbatim* environment."
 msgstr "शब्दशः* वातावरणस्य स्थूलरूपम्।"
 
-#: kilestdactions.cpp:173
+#: kilestdactions.cpp:185
 #, kde-format
 msgid "\"Small\" Vertical Space - \\smallskip"
 msgstr "\"लघु\" ऊर्ध्वाधर स्थान - \\smallskip"
 
-#: kilestdactions.cpp:173
+#: kilestdactions.cpp:185
 #, kde-format
 msgid "\"Small\" Vertical Space"
 msgstr "\"लघु\" ऊर्ध्वाधर स्थान"
 
-#: kilestdactions.cpp:173
+#: kilestdactions.cpp:185
 #, kde-format
 msgid "The \\smallskip command adds a 'small' vertical space."
 msgstr "\\smallskip आदेशः 'लघु' ऊर्ध्वाधरस्थानं योजयति ।"
 
-#: kilestdactions.cpp:175
+#: kilestdactions.cpp:187
 #, kde-format
 msgid "\\enskip"
 msgstr "नौका"
 
-#: kilestdactions.cpp:177
+#: kilestdactions.cpp:189
 #, kde-format
 msgid "Horizontal Variable Space - \\hfill"
 msgstr "क्षैतिज चर स्थान - \\hfill"
 
-#: kilestdactions.cpp:177
+#: kilestdactions.cpp:189
 #, kde-format
 msgid "Horizontal Variable Space"
 msgstr "क्षैतिज चर स्थान"
 
-#: kilestdactions.cpp:177
+#: kilestdactions.cpp:189
 #, kde-format
 msgid ""
 "The \\hfill fill command produces a \"rubber length\" which can stretch or "
@@ -9016,17 +9022,17 @@ msgstr ""
 "\\hfill fill आदेशः \"रबरदीर्घता\" उत्पादयति यत् क्षैतिजरूपेण तानितुं वा संकुचितुं वा "
 "शक्नोति । रिक्तस्थानैः पूरितं भविष्यति।"
 
-#: kilestdactions.cpp:179
+#: kilestdactions.cpp:191
 #, kde-format
 msgid "Horizontal Dots - \\dotfill"
 msgstr "क्षैतिज बिन्दु - \\dotfill"
 
-#: kilestdactions.cpp:179
+#: kilestdactions.cpp:191
 #, kde-format
 msgid "Horizontal Dots"
 msgstr "क्षैतिज बिन्दु"
 
-#: kilestdactions.cpp:179
+#: kilestdactions.cpp:191
 #, kde-format
 msgid ""
 "The \\dotfill command produces a \"rubber length\" that produces dots "
@@ -9035,17 +9041,17 @@ msgstr ""
 "\\dotfill आदेशः \"रबरदीर्घता\" उत्पादयति यत् केवलं रिक्तस्थानानां स्थाने बिन्दून् उत्पादयति "
 "।"
 
-#: kilestdactions.cpp:181
+#: kilestdactions.cpp:193
 #, kde-format
 msgid "Horizontal Rule - \\hrulefill"
 msgstr "क्षैतिज नियम - \\hrulefill"
 
-#: kilestdactions.cpp:181
+#: kilestdactions.cpp:193
 #, kde-format
 msgid "Horizontal Rule"
 msgstr "क्षैतिज नियम"
 
-#: kilestdactions.cpp:181
+#: kilestdactions.cpp:193
 #, kde-format
 msgid ""
 "The \\hrulefill fill command produces a \"rubber length\" which can stretch "
@@ -9054,17 +9060,17 @@ msgstr ""
 "\\hrulefill fill आदेशः \"रबरदीर्घता\" उत्पादयति यत् क्षैतिजरूपेण तानितुं वा संकुचितुं वा "
 "शक्नोति । क्षैतिजनियमेन पूरितं भविष्यति।"
 
-#: kilestdactions.cpp:183
+#: kilestdactions.cpp:195
 #, kde-format
 msgid "Vertical Variable Space - \\vfill"
 msgstr "ऊर्ध्वाधर चर स्थान - \\vfill"
 
-#: kilestdactions.cpp:183
+#: kilestdactions.cpp:195
 #, kde-format
 msgid "Vertical Variable Space"
 msgstr "ऊर्ध्वाधर चर स्थान"
 
-#: kilestdactions.cpp:183
+#: kilestdactions.cpp:195
 #, kde-format
 msgid ""
 "The \\vfill fill command produces a \"rubber length\" which can stretch or "
@@ -9072,17 +9078,17 @@ msgid ""
 msgstr ""
 "\\vfill fill आदेशः \"रबरदीर्घता\" उत्पादयति यत् लम्बवत् तानितुं वा संकुचितुं वा शक्नोति ।"
 
-#: kilestdactions.cpp:185
+#: kilestdactions.cpp:197
 #, kde-format
 msgid "Horizontal Space - \\hspace{}"
 msgstr "क्षैतिज अन्तरिक्ष - \\hspace{}"
 
-#: kilestdactions.cpp:185
+#: kilestdactions.cpp:197
 #, kde-format
 msgid "Horizontal Space"
 msgstr "क्षैतिज अन्तरिक्ष"
 
-#: kilestdactions.cpp:185
+#: kilestdactions.cpp:197
 #, kde-format
 msgid ""
 "The \\hspace command adds horizontal space. The length of the space can be "
@@ -9094,17 +9100,17 @@ msgstr ""
 "अवगतं तत् व्यक्तं कर्तुं शक्यते, अर्थात् बिन्दुः, इञ्च् इत्यादीनि भवान् \\hspace आदेशेन ऋणात्मकं "
 "सकारात्मकं च स्थानं योजयितुं शक्नोति नकारात्मकं स्थानं योजयितुं पृष्ठान्तरं इव भवति ।"
 
-#: kilestdactions.cpp:187
+#: kilestdactions.cpp:199
 #, kde-format
 msgid "Horizontal Space (forced) - \\hspace*{}"
 msgstr "क्षैतिज अन्तरिक्ष (बलात्) - \\hspace*{}"
 
-#: kilestdactions.cpp:187
+#: kilestdactions.cpp:199
 #, kde-format
 msgid "Horizontal Space (forced)"
 msgstr "क्षैतिज अन्तरिक्ष (बलात्)"
 
-#: kilestdactions.cpp:187
+#: kilestdactions.cpp:199
 #, kde-format
 msgid ""
 "The \\hspace* command adds horizontal space like the \\hspace command. LaTeX "
@@ -9116,17 +9122,17 @@ msgstr ""
 "क्षैतिजस्थानं निष्कासयति । यदि भवान् इच्छति यत् LaTeX इत्येतत् स्थानं निष्कासयतु तर्हि "
 "वैकल्पिकं * तर्कं समावेशयन्तु । अथ कदापि अन्तरिक्षं न निष्कासितम्।"
 
-#: kilestdactions.cpp:189
+#: kilestdactions.cpp:201
 #, kde-format
 msgid "Vertical Space - \\vspace{}"
 msgstr "ऊर्ध्वाधर अन्तरिक्ष - \\vspace{}"
 
-#: kilestdactions.cpp:189
+#: kilestdactions.cpp:201
 #, kde-format
 msgid "Vertical Space"
 msgstr "ऊर्ध्वाधर अन्तरिक्ष"
 
-#: kilestdactions.cpp:189
+#: kilestdactions.cpp:201
 #, kde-format
 msgid ""
 "The \\vspace command adds vertical space. The length of the space can be "
@@ -9137,17 +9143,17 @@ msgstr ""
 "व्यक्तं कर्तुं शक्यते, अर्थात् बिन्दुः, इञ्च् इत्यादीनि भवान् \\vspace आदेशेन नकारात्मकं "
 "सकारात्मकं च स्थानं योजयितुं शक्नोति"
 
-#: kilestdactions.cpp:191
+#: kilestdactions.cpp:203
 #, kde-format
 msgid "Vertical Space (forced) - \\vspace*{}"
 msgstr "ऊर्ध्वाधर अन्तरिक्ष (बलात्) - \\vspace*{}"
 
-#: kilestdactions.cpp:191
+#: kilestdactions.cpp:203
 #, kde-format
 msgid "Vertical Space (forced)"
 msgstr "ऊर्ध्वाधर अन्तरिक्ष (बलात्)"
 
-#: kilestdactions.cpp:191
+#: kilestdactions.cpp:203
 #, kde-format
 msgid ""
 "The \\vspace* command adds vertical space like the \\vspace command. LaTeX "
@@ -9159,122 +9165,122 @@ msgstr ""
 "ऊर्ध्वाधरस्थानं आगच्छति तत् निष्कासयति । यदि भवान् इच्छति यत् LaTeX इत्येतत् स्थानं "
 "निष्कासयतु तर्हि वैकल्पिकं * तर्कं समावेशयन्तु । अथ कदापि अन्तरिक्षं न निष्कासितम्।"
 
-#: kilestdactions.cpp:194
+#: kilestdactions.cpp:206
 #, kde-format
 msgid "Emphasized - \\emph{}"
 msgstr "बलं दत्तम् - \\emph{}"
 
-#: kilestdactions.cpp:194
+#: kilestdactions.cpp:206
 #, kde-format
 msgid "Emphasized"
 msgstr "बलं दत्तम्"
 
-#: kilestdactions.cpp:194
+#: kilestdactions.cpp:206
 #, kde-format
 msgid "\\emph{emphasized text}"
 msgstr "\\emph{उभारित पाठ}"
 
-#: kilestdactions.cpp:195
+#: kilestdactions.cpp:207
 #, kde-format
 msgid "Strong - \\strong{}"
 msgstr "बलवान् - \\strong{}"
 
-#: kilestdactions.cpp:195
+#: kilestdactions.cpp:207
 #, kde-format
 msgid "Strong"
 msgstr "समर्थः"
 
-#: kilestdactions.cpp:195
+#: kilestdactions.cpp:207
 #, kde-format
 msgid "\\strong{text}"
 msgstr "\\strong{text}"
 
-#: kilestdactions.cpp:197
+#: kilestdactions.cpp:209
 #, kde-format
 msgid "Roman - \\rmfamily"
 msgstr "रोमन - \\rmfamily"
 
-#: kilestdactions.cpp:197
+#: kilestdactions.cpp:209
 #, kde-format
 msgid "Roman"
 msgstr "रोमन"
 
-#: kilestdactions.cpp:198
+#: kilestdactions.cpp:210
 #, kde-format
 msgid "Sans Serif - \\sffamily"
 msgstr "संस सेरिफ - \\sffamily"
 
-#: kilestdactions.cpp:198
+#: kilestdactions.cpp:210
 #, kde-format
 msgid "Sans Serif"
 msgstr "संस सेरिफ"
 
-#: kilestdactions.cpp:199
+#: kilestdactions.cpp:211
 #, kde-format
 msgid "Monospace - \\ttfamily"
 msgstr "एकस्थान - \\ttfamily"
 
-#: kilestdactions.cpp:199
+#: kilestdactions.cpp:211
 #, kde-format
 msgid "Monospace"
 msgstr "मिनीवैन"
 
-#: kilestdactions.cpp:201
+#: kilestdactions.cpp:213
 #, kde-format
 msgid "Medium - \\mdseries"
 msgstr "मध्यम - \\mdseries"
 
-#: kilestdactions.cpp:201
+#: kilestdactions.cpp:213
 #, kde-format
 msgid "Medium"
 msgstr "मध्यम"
 
-#: kilestdactions.cpp:202
+#: kilestdactions.cpp:214
 #, kde-format
 msgid "Bold - \\bfseries"
 msgstr "बोल्ड - \\bfseries"
 
-#: kilestdactions.cpp:204
+#: kilestdactions.cpp:216
 #, kde-format
 msgid "Upright - \\upshape"
 msgstr "सीधा - \\उपाकारः"
 
-#: kilestdactions.cpp:204
+#: kilestdactions.cpp:216
 #, kde-format
 msgid "Upright"
 msgstr "ऋजुः"
 
-#: kilestdactions.cpp:205
+#: kilestdactions.cpp:217
 #, kde-format
 msgid "Italic - \\itshape"
 msgstr "इटालिक - \\itshape"
 
-#: kilestdactions.cpp:206
+#: kilestdactions.cpp:218
 #, kde-format
 msgid "Slanted - \\slshape"
 msgstr "तिर्यक् - \\slshape"
 
-#: kilestdactions.cpp:207
+#: kilestdactions.cpp:219
 #, kde-format
 msgid "Smallcaps - \\scshape"
 msgstr "लघुटोपी - \\scshape"
 
-#: kilestdactions.cpp:207
+#: kilestdactions.cpp:219
 #, kde-format
 msgid "Smallcaps"
 msgstr "लघुटोपी"
 
-#: kilestdactions.cpp:219
+#: kilestdactions.cpp:231
 #, kde-format
 msgid "Bibliography Style Selection - \\bibliographystyle{}"
 msgstr "ग्रन्थसूची शैली चयन - \\bibliographystyle{}"
 
-#: kilestdactions.cpp:219
+#: kilestdactions.cpp:231
 #, kde-format
 msgid "Bibliography Style Selection"
 msgstr "ग्रन्थसूची शैली चयन"
 
-#: kilestdactions.cpp:219
+#: kilestdactions.cpp:231
 #, kde-format
 msgid ""
 "The argument to \\bibliographystyle refers to a file style.bst, which "
@@ -9294,17 +9300,17 @@ msgstr ""
 "unsrt : साधारणवत्, परन्तु प्रविष्टयः उद्धरणक्रमेण भवन्ति।\n"
 "abbrv : सादे इव, परन्तु अधिकं संकुचितं लेबलम्।"
 
-#: kilestdactions.cpp:220 kilestdactions.cpp:228
+#: kilestdactions.cpp:232 kilestdactions.cpp:240
 #, kde-format
 msgid "Bibliography Generation - \\bibliography{}"
 msgstr "ग्रन्थसूची जनरेशन - \\bibliography{}"
 
-#: kilestdactions.cpp:220 kilestdactions.cpp:228
+#: kilestdactions.cpp:232 kilestdactions.cpp:240
 #, kde-format
 msgid "Bibliography Generation"
 msgstr "ग्रन्थसूची जनरेशन"
 
-#: kilestdactions.cpp:220 kilestdactions.cpp:228
+#: kilestdactions.cpp:232 kilestdactions.cpp:240
 #, kde-format
 msgid ""
 "The argument to \\bibliography refers to the bib file (without extension)\n"
@@ -9315,287 +9321,287 @@ msgstr ""
 "यस्मिन् भवतः दत्तांशकोशः BibTeX प्रारूपेण भवितुम् अर्हति ।\n"
 "Kile स्वयमेव TeX सञ्चिकायाः आधारनाम सम्मिलितं करोति"
 
-#: kilestdactions.cpp:227
+#: kilestdactions.cpp:239
 #, kde-format
 msgid "Load Biblatex Package - \\usepackage{biblatex}"
 msgstr "Biblatex संकुल लोड करें - \\usepackage{biblatex}"
 
-#: kilestdactions.cpp:227
+#: kilestdactions.cpp:239
 #, kde-format
 msgid "Load Biblatex Package"
 msgstr "बिब्लेटेक्स संकुल लोड करें"
 
-#: kilestdactions.cpp:227
+#: kilestdactions.cpp:239
 #, kde-format
 msgid "This includes the package biblatex"
 msgstr "अस्मिन् biblatex इति संकुलं समावेशितम् अस्ति"
 
-#: kilestdactions.cpp:229
+#: kilestdactions.cpp:241
 #, kde-format
 msgid "Print Bibliography"
 msgstr "मुद्रण ग्रंथसूची"
 
-#: kilestdactions.cpp:229
+#: kilestdactions.cpp:241
 #, kde-format
 msgid "Prints the complete bibliography"
 msgstr "सम्पूर्णं ग्रन्थसूचीं मुद्रयति"
 
-#: kilestdactions.cpp:230
+#: kilestdactions.cpp:242
 #, kde-format
 msgid "Print Bibliography by Section"
 msgstr "खण्डानुसार ग्रन्थसूची मुद्रित करें"
 
-#: kilestdactions.cpp:230
+#: kilestdactions.cpp:242
 #, kde-format
 msgid "Print the bibliography for each section"
 msgstr "प्रत्येकस्य विभागस्य ग्रन्थसूचीं मुद्रयन्तु"
 
-#: kilestdactions.cpp:231
+#: kilestdactions.cpp:243
 #, kde-format
 msgid "Print List of Shorthands"
 msgstr "आशुलिपिनां सूचीं मुद्रयन्तु"
 
-#: kilestdactions.cpp:330
+#: kilestdactions.cpp:342
 #, kde-format
 msgid "ALT.... : you have the choice between these two fields\n"
 msgstr "ALT.... : एतयोः क्षेत्रयोः मध्ये भवतः विकल्पः अस्ति\n"
 
-#: kilestdactions.cpp:331
+#: kilestdactions.cpp:343
 #, kde-format
 msgid "OPT.... : optional fields (use the 'Clean' command to remove them)"
 msgstr "OPT.... : वैकल्पिकक्षेत्राणि (तानि निष्कासयितुं 'Clean' आदेशस्य उपयोगं कुर्वन्तु)"
 
-#: kilestdactions.cpp:332
+#: kilestdactions.cpp:344
 #, kde-format
 msgid "Bib fields - %1\n"
 msgstr "बिब् क्षेत्राणि - %1\n"
 
-#: kilestdactions.cpp:347
+#: kilestdactions.cpp:359
 #, kde-format
 msgid "\\mathrm{}"
 msgstr "\\मथर्म्{}"
 
-#: kilestdactions.cpp:348
+#: kilestdactions.cpp:360
 #, kde-format
 msgid "\\mathit{}"
 msgstr "\\मथित्{}"
 
-#: kilestdactions.cpp:349
+#: kilestdactions.cpp:361
 #, kde-format
 msgid "\\mathbf{}"
 msgstr "\\mathbf{} इति ।"
 
-#: kilestdactions.cpp:350
+#: kilestdactions.cpp:362
 #, kde-format
 msgid "\\mathsf{}"
 msgstr "\\mathsf{} इति ।"
 
-#: kilestdactions.cpp:351
+#: kilestdactions.cpp:363
 #, kde-format
 msgid "\\mathtt{}"
 msgstr "\\मथत्त{}"
 
-#: kilestdactions.cpp:352
+#: kilestdactions.cpp:364
 #, kde-format
 msgid "\\mathcal{}"
 msgstr "\\मथकल{}"
 
-#: kilestdactions.cpp:353
+#: kilestdactions.cpp:365
 #, kde-format
 msgid "\\mathbb{}"
 msgstr "\\मथब्ब{}"
 
-#: kilestdactions.cpp:354
+#: kilestdactions.cpp:366
 #, kde-format
 msgid "\\mathfrak{}"
 msgstr "\\मथफ्रक्{}"
 
-#: kilestdactions.cpp:356
+#: kilestdactions.cpp:368
 #, kde-format
 msgid "\\acute{}"
 msgstr "\\न्यून{}"
 
-#: kilestdactions.cpp:357
+#: kilestdactions.cpp:369
 #, kde-format
 msgid "\\grave{}"
 msgstr "\\गंभीर{}"
 
-#: kilestdactions.cpp:358
+#: kilestdactions.cpp:370
 #, kde-format
 msgid "\\tilde{}"
 msgstr "\\तिलदे{}"
 
-#: kilestdactions.cpp:359
+#: kilestdactions.cpp:371
 #, kde-format
 msgid "\\bar{}"
 msgstr "\\प्रच्छेद{}"
 
-#: kilestdactions.cpp:360
+#: kilestdactions.cpp:372
 #, kde-format
 msgid "\\vec{}"
 msgstr "\\वस्तु{}"
 
-#: kilestdactions.cpp:361
+#: kilestdactions.cpp:373
 #, kde-format
 msgid "\\hat{}"
 msgstr "\\वा{}"
 
-#: kilestdactions.cpp:362
+#: kilestdactions.cpp:374
 #, kde-format
 msgid "\\check{}"
 msgstr "\\अनुशीलय{}"
 
-#: kilestdactions.cpp:363
+#: kilestdactions.cpp:375
 #, kde-format
 msgid "\\breve{}"
 msgstr "\\साक्षिप्तं{}"
 
-#: kilestdactions.cpp:364
+#: kilestdactions.cpp:376
 #, kde-format
 msgid "\\dot{}"
 msgstr "\\बिन्दु{}"
 
-#: kilestdactions.cpp:365
+#: kilestdactions.cpp:377
 #, kde-format
 msgid "\\ddot{}"
 msgstr "\\बिन्दु{}"
 
-#: kilestdactions.cpp:367
+#: kilestdactions.cpp:379
 #, kde-format
 msgid "Small Space"
 msgstr "लघु अन्तरिक्ष"
 
-#: kilestdactions.cpp:368
+#: kilestdactions.cpp:380
 #, kde-format
 msgid "Medium Space"
 msgstr "मध्यम अन्तरिक्ष"
 
-#: kilestdactions.cpp:369
+#: kilestdactions.cpp:381
 #, kde-format
 msgid "Large Space"
 msgstr "बृहत् अन्तरिक्षम्"
 
-#: kilestdactions.cpp:370
+#: kilestdactions.cpp:382
 #, kde-format
 msgid "\\quad"
 msgstr "\\quad"
 
-#: kilestdactions.cpp:371
+#: kilestdactions.cpp:383
 #, kde-format
 msgid "\\qquad"
 msgstr "\\qquad"
 
-#: kilestdactions.cpp:373
+#: kilestdactions.cpp:385
 #, kde-format
 msgid "Math Mode - $...$"
 msgstr "गणित मोड - $...$"
 
-#: kilestdactions.cpp:373 kilestdactions.cpp:374
+#: kilestdactions.cpp:385 kilestdactions.cpp:386
 #, kde-format
 msgid "Math Mode"
 msgstr "गणित मोड"
 
-#: kilestdactions.cpp:374
+#: kilestdactions.cpp:386
 #, kde-format
 msgid "Math Mode - \\(...\\)"
 msgstr "गणित मोड - \\(...\\)"
 
-#: kilestdactions.cpp:375
+#: kilestdactions.cpp:387
 #, kde-format
 msgid "Displaymath Mode - \\[...\\]"
 msgstr "प्रदर्शनमाथ मोड - \\[...\\]"
 
-#: kilestdactions.cpp:375
+#: kilestdactions.cpp:387
 #, kde-format
 msgid "Displaymath Mode"
 msgstr "प्रदर्शनमैथ मोड"
 
-#: kilestdactions.cpp:376
+#: kilestdactions.cpp:388
 #, kde-format
 msgid "Equation - \\begin{equation}"
 msgstr "समीकरण - \\begin{equation}"
 
-#: kilestdactions.cpp:376
+#: kilestdactions.cpp:388
 #, kde-format
 msgid "Equation"
 msgstr "समीकरणम्"
 
-#: kilestdactions.cpp:377
+#: kilestdactions.cpp:389
 #, kde-format
 msgid "Subscript - _{}"
 msgstr "उपलिपिः - _{}"
 
-#: kilestdactions.cpp:377
+#: kilestdactions.cpp:389
 #, kde-format
 msgid "Subscript"
 msgstr "उपलिपिः"
 
-#: kilestdactions.cpp:378
+#: kilestdactions.cpp:390
 #, kde-format
 msgid "Superscript - ^{}"
 msgstr "अधिलिपि - ^{}"
 
-#: kilestdactions.cpp:378
+#: kilestdactions.cpp:390
 #, kde-format
 msgid "Superscript"
 msgstr "अधिलिपि"
 
-#: kilestdactions.cpp:379
+#: kilestdactions.cpp:391
 #, kde-format
 msgid "Normal Fraction - \\frac{}{}"
 msgstr "सामान्य अंश - \\frac{}{}"
 
-#: kilestdactions.cpp:379
+#: kilestdactions.cpp:391
 #, kde-format
 msgid "Normal Fraction"
 msgstr "सामान्य अंश"
 
-#: kilestdactions.cpp:380
+#: kilestdactions.cpp:392
 #, kde-format
 msgid "Displaystyle Fraction - \\dfrac{}{}"
 msgstr "प्रदर्शनशैली अंश - \\dfrac{}{}"
 
-#: kilestdactions.cpp:380
+#: kilestdactions.cpp:392
 #, kde-format
 msgid "Displaystyle Fraction"
 msgstr "प्रदर्शनशैली अंशः"
 
-#: kilestdactions.cpp:381
+#: kilestdactions.cpp:393
 #, kde-format
 msgid "Textstyle Fraction - \\tfrac{}{}"
 msgstr "पाठशैली अंश - \\tfrac{}{}"
 
-#: kilestdactions.cpp:381
+#: kilestdactions.cpp:393
 #, kde-format
 msgid "Textstyle Fraction"
 msgstr "पाठशैली अंश"
 
-#: kilestdactions.cpp:382
+#: kilestdactions.cpp:394
 #, kde-format
 msgid "Square Root - \\sqrt{}"
 msgstr "वर्गमूल - \\sqrt{}"
 
-#: kilestdactions.cpp:382
+#: kilestdactions.cpp:394
 #, kde-format
 msgid "Square Root"
 msgstr "वर्गमूलम्"
 
-#: kilestdactions.cpp:383
+#: kilestdactions.cpp:395
 #, kde-format
 msgid "\\left"
 msgstr "\\वामः"
 
-#: kilestdactions.cpp:384
+#: kilestdactions.cpp:396
 #, kde-format
 msgid "\\right"
 msgstr "\\दक्षिणः"
 
-#: kilestdactions.cpp:385
+#: kilestdactions.cpp:397
 #, kde-format
 msgid "Array - \\begin{array}"
 msgstr "सरणी - \\begin{array}"
 
-#: kilestdactions.cpp:386
+#: kilestdactions.cpp:398
 #, kde-format
 msgid ""
 "\\begin{array}{col1col2...coln}\n"
@@ -9618,577 +9624,577 @@ msgstr ""
 "     ल -- फ्लश वामस्य कृते \n"
 "     र -- फ्लश राइट् कृते\n"
 
-#: kilestdactions.cpp:389
+#: kilestdactions.cpp:401
 #, kde-format
 msgid "Left Delimiter"
 msgstr "वामपरिसीमकः"
 
-#: kilestdactions.cpp:391
+#: kilestdactions.cpp:403
 #, kde-format
 msgid "left ("
 msgstr "वामः ("
 
-#: kilestdactions.cpp:392
+#: kilestdactions.cpp:404
 #, kde-format
 msgid "left ["
 msgstr "वामः ["
 
-#: kilestdactions.cpp:393
+#: kilestdactions.cpp:405
 #, kde-format
 msgid "left {"
 msgstr "वामः {"
 
-#: kilestdactions.cpp:394
+#: kilestdactions.cpp:406
 #, kde-format
 msgid "left &lt;"
 msgstr "वामम् &lt;"
 
-#: kilestdactions.cpp:396
+#: kilestdactions.cpp:408
 #, kde-format
 msgid "left )"
 msgstr "वामः )"
 
-#: kilestdactions.cpp:397
+#: kilestdactions.cpp:409
 #, kde-format
 msgid "left ]"
 msgstr "वामः ]"
 
-#: kilestdactions.cpp:398
+#: kilestdactions.cpp:410
 #, kde-format
 msgid "left }"
 msgstr "वामः }"
 
-#: kilestdactions.cpp:399
+#: kilestdactions.cpp:411
 #, kde-format
 msgid "left &gt;"
 msgstr "वामम् &gt;"
 
-#: kilestdactions.cpp:401
+#: kilestdactions.cpp:413
 #, kde-format
 msgid "left ."
 msgstr "वामः ।"
 
-#: kilestdactions.cpp:403
+#: kilestdactions.cpp:415
 #, kde-format
 msgid "Right Delimiter"
 msgstr "सही सीमांकक"
 
-#: kilestdactions.cpp:405
+#: kilestdactions.cpp:417
 #, kde-format
 msgid "right )"
 msgstr "दक्षिणः )"
 
-#: kilestdactions.cpp:406
+#: kilestdactions.cpp:418
 #, kde-format
 msgid "right ]"
 msgstr "दक्षिणः ]"
 
-#: kilestdactions.cpp:407
+#: kilestdactions.cpp:419
 #, kde-format
 msgid "right }"
 msgstr "दक्षिणः }"
 
-#: kilestdactions.cpp:408
+#: kilestdactions.cpp:420
 #, kde-format
 msgid "right &gt;"
 msgstr "सम्यक् &gt;"
 
-#: kilestdactions.cpp:410
+#: kilestdactions.cpp:422
 #, kde-format
 msgid "right ("
 msgstr "दक्षिणः ("
 
-#: kilestdactions.cpp:411
+#: kilestdactions.cpp:423
 #, kde-format
 msgid "right ["
 msgstr "दक्षिणः ["
 
-#: kilestdactions.cpp:412
+#: kilestdactions.cpp:424
 #, kde-format
 msgid "right {"
 msgstr "दक्षिणः {"
 
-#: kilestdactions.cpp:413
+#: kilestdactions.cpp:425
 #, kde-format
 msgid "right &lt;"
 msgstr "सम्यक् &lt;"
 
-#: kilestdactions.cpp:415
+#: kilestdactions.cpp:427
 #, kde-format
 msgid "right ."
 msgstr "दक्षिणः ।"
 
-#: kilestdactions.cpp:420
+#: kilestdactions.cpp:432
 #, kde-format
 msgid "Normal Binomial - \\binom{}{}"
 msgstr "सामान्य द्विपद - \\binom{}{}"
 
-#: kilestdactions.cpp:420
+#: kilestdactions.cpp:432
 #, kde-format
 msgid "Normal Binomial"
 msgstr "सामान्य द्विपद"
 
-#: kilestdactions.cpp:422
+#: kilestdactions.cpp:434
 #, kde-format
 msgid "Displaystyle Binomial - \\dbinom{}{}"
 msgstr "प्रदर्शनशैली द्विपद - \\dbinom{}{}"
 
-#: kilestdactions.cpp:422
+#: kilestdactions.cpp:434
 #, kde-format
 msgid "Displaystyle Binomial"
 msgstr "प्रदर्शनशैली द्विपद"
 
-#: kilestdactions.cpp:424
+#: kilestdactions.cpp:436
 #, kde-format
 msgid "Textstyle Binomial - \\tbinom{}{}"
 msgstr "पाठशैली द्विपद - \\tbinom{}{}"
 
-#: kilestdactions.cpp:424
+#: kilestdactions.cpp:436
 #, kde-format
 msgid "Textstyle Binomial"
 msgstr "पाठशैली द्विपदी"
 
-#: kilestdactions.cpp:426
+#: kilestdactions.cpp:438
 #, kde-format
 msgid "N-th Root - \\sqrt[]{}"
 msgstr "न-थ मूल - \\sqrt[]{}"
 
-#: kilestdactions.cpp:426
+#: kilestdactions.cpp:438
 #, kde-format
 msgid "N-th Root"
 msgstr "न-थ मूलम्"
 
-#: kilestdactions.cpp:428
+#: kilestdactions.cpp:440
 #, kde-format
 msgid "Left-Right () - \\left(..\\right)"
 msgstr "वाम-दक्षिण () - \\वाम(..\\दक्षिण)"
 
-#: kilestdactions.cpp:428
+#: kilestdactions.cpp:440
 #, kde-format
 msgid "Left-Right ()"
 msgstr "वाम-दक्षिण ()"
 
-#: kilestdactions.cpp:430
+#: kilestdactions.cpp:442
 #, kde-format
 msgid "Extendable Left Arrow - \\xleftarrow{}"
 msgstr "विस्तारणीयः वामबाणः - \\xleftarrow{}"
 
-#: kilestdactions.cpp:430
+#: kilestdactions.cpp:442
 #, kde-format
 msgid "Extendable Left Arrow"
 msgstr "विस्तारणीयः वामबाणः"
 
-#: kilestdactions.cpp:432
+#: kilestdactions.cpp:444
 #, kde-format
 msgid "Extendable Right Arrow - \\xrightarrow{}"
 msgstr "विस्तारयोग्य दक्षिण बाण - \\xrightarrow{}"
 
-#: kilestdactions.cpp:432
+#: kilestdactions.cpp:444
 #, kde-format
 msgid "Extendable Right Arrow"
 msgstr "विस्तारयोग्य दक्षिण बाण"
 
-#: kilestdactions.cpp:434
+#: kilestdactions.cpp:446
 #, kde-format
 msgid "Boxed Formula - \\boxed{}"
 msgstr "बक्सायुक्त सूत्र - \\boxed{}"
 
-#: kilestdactions.cpp:434
+#: kilestdactions.cpp:446
 #, kde-format
 msgid "Boxed Formula"
 msgstr "बक्सायुक्त सूत्र"
 
-#: kilestdactions.cpp:436
+#: kilestdactions.cpp:448
 #, kde-format
 msgid "bigl - \\bigl"
 msgstr "बिगल - \\बृहत्"
 
-#: kilestdactions.cpp:436
+#: kilestdactions.cpp:448
 #, kde-format
 msgid "bigl"
 msgstr "सहसा"
 
-#: kilestdactions.cpp:437
+#: kilestdactions.cpp:449
 #, kde-format
 msgid "Bigl - \\Bigl"
 msgstr "बिग्ल - \\बृहत्"
 
-#: kilestdactions.cpp:437
+#: kilestdactions.cpp:449
 #, kde-format
 msgid "Bigl"
 msgstr "विशालः"
 
-#: kilestdactions.cpp:438
+#: kilestdactions.cpp:450
 #, kde-format
 msgid "biggl - \\biggl"
 msgstr "बृहत् - \\बृहत्"
 
-#: kilestdactions.cpp:438
+#: kilestdactions.cpp:450
 #, kde-format
 msgid "biggl"
 msgstr "biggl"
 
-#: kilestdactions.cpp:439
+#: kilestdactions.cpp:451
 #, kde-format
 msgid "Biggl - \\Biggl"
 msgstr "बिग्ग्ल - \\बिग्ल्"
 
-#: kilestdactions.cpp:439
+#: kilestdactions.cpp:451
 #, kde-format
 msgid "Biggl"
 msgstr "बिग्ग्ल्"
 
-#: kilestdactions.cpp:441
+#: kilestdactions.cpp:453
 #, kde-format
 msgid "bigr - \\bigr"
 msgstr "बृहत् - \\बृहत्"
 
-#: kilestdactions.cpp:441
+#: kilestdactions.cpp:453
 #, kde-format
 msgid "bigr"
 msgstr "bigr"
 
-#: kilestdactions.cpp:442
+#: kilestdactions.cpp:454
 #, kde-format
 msgid "Bigr - \\Bigr"
 msgstr "बृहत् - \\बृहत्"
 
-#: kilestdactions.cpp:442
+#: kilestdactions.cpp:454
 #, kde-format
 msgid "Bigr"
 msgstr "बिगर्"
 
-#: kilestdactions.cpp:443
+#: kilestdactions.cpp:455
 #, kde-format
 msgid "biggr - \\biggr"
 msgstr "बृहत् - \\बृहत्"
 
-#: kilestdactions.cpp:443
+#: kilestdactions.cpp:455
 #, kde-format
 msgid "biggr"
 msgstr "biggr"
 
-#: kilestdactions.cpp:444
+#: kilestdactions.cpp:456
 #, kde-format
 msgid "Biggr - \\Biggr"
 msgstr "बिग्ग्र - \\बिग्गर"
 
-#: kilestdactions.cpp:444
+#: kilestdactions.cpp:456
 #, kde-format
 msgid "Biggr"
 msgstr "बिगग्र"
 
-#: kilestdactions.cpp:447
+#: kilestdactions.cpp:459
 #, kde-format
 msgid "Text in Mathmode - \\text{}"
 msgstr "गणितविधौ पाठः - \\text{}"
 
-#: kilestdactions.cpp:447
+#: kilestdactions.cpp:459
 #, kde-format
 msgid "Text in Mathmode"
 msgstr "गणितविधौ पाठः"
 
-#: kilestdactions.cpp:449
+#: kilestdactions.cpp:461
 #, kde-format
 msgid "Intertext - \\intertext{}"
 msgstr "अन्तरपाठ - \\अन्तरपाठ{}"
 
-#: kilestdactions.cpp:449
+#: kilestdactions.cpp:461
 #, kde-format
 msgid "Intertext"
 msgstr "अन्तरपाठ"
 
-#: kilestdactions.cpp:452
+#: kilestdactions.cpp:464
 #, kde-format
 msgid "Math - \\begin{math}"
 msgstr "गणित - \\begin{math}"
 
-#: kilestdactions.cpp:454
+#: kilestdactions.cpp:466
 #, kde-format
 msgid "Displaymath - \\begin{displaymath}"
 msgstr "Displaymath - \\begin{प्रदर्शनगणित}"
 
-#: kilestdactions.cpp:454
+#: kilestdactions.cpp:466
 #, kde-format
 msgid "Displaymath"
 msgstr "प्रदर्शनमथः"
 
-#: kilestdactions.cpp:456
+#: kilestdactions.cpp:468
 #, kde-format
 msgid "Equation (not numbered) - \\begin{equation*}"
 msgstr "समीकरण (न संख्याबद्ध) - \\begin{equation*}"
 
-#: kilestdactions.cpp:456
+#: kilestdactions.cpp:468
 #, kde-format
 msgid "Equation (not numbered)"
 msgstr "समीकरणम् (न संख्याकृतम्)"
 
-#: kilestdactions.cpp:459
+#: kilestdactions.cpp:471
 #, kde-format
 msgid "Multline - \\begin{multline}"
 msgstr "बहुपङ्क्ति - \\begin{multiline}"
 
-#: kilestdactions.cpp:459
+#: kilestdactions.cpp:471
 #, kde-format
 msgid "Multline"
 msgstr "बहुरेखा"
 
-#: kilestdactions.cpp:460
+#: kilestdactions.cpp:472
 #, kde-format
 msgid "Multline* - \\begin{multline*}"
 msgstr "बहुपङ्क्ति* - \\begin{बहुरेखा*}"
 
-#: kilestdactions.cpp:460
+#: kilestdactions.cpp:472
 #, kde-format
 msgid "Multline*"
 msgstr "बहुरेखा*"
 
-#: kilestdactions.cpp:462
+#: kilestdactions.cpp:474
 #, kde-format
 msgid "Split - \\begin{split}"
 msgstr "विभक्तः - \\begin{split}"
 
-#: kilestdactions.cpp:462
+#: kilestdactions.cpp:474
 #, kde-format
 msgid "Split"
 msgstr "भंज"
 
-#: kilestdactions.cpp:464
+#: kilestdactions.cpp:476
 #, kde-format
 msgid "Gather - \\begin{gather}"
 msgstr "सङ्ग्रहः - \\begin{gather}"
 
-#: kilestdactions.cpp:464
+#: kilestdactions.cpp:476
 #, kde-format
 msgid "Gather"
 msgstr "स्खति"
 
-#: kilestdactions.cpp:465
+#: kilestdactions.cpp:477
 #, kde-format
 msgid "Gather* - \\begin{gather*}"
 msgstr "सङ्ग्रह* - \\प्रारम्भ{सङ्ग्रह*}"
 
-#: kilestdactions.cpp:465
+#: kilestdactions.cpp:477
 #, kde-format
 msgid "Gather*"
 msgstr "स्खति*"
 
-#: kilestdactions.cpp:467
+#: kilestdactions.cpp:479
 #, kde-format
 msgid "Align - \\begin{align}"
 msgstr "संरेखित करें - \\begin{align}"
 
-#: kilestdactions.cpp:467
+#: kilestdactions.cpp:479
 #, kde-format
 msgid "Align"
 msgstr "संरेखणं कुर्वन्तु"
 
-#: kilestdactions.cpp:468
+#: kilestdactions.cpp:480
 #, kde-format
 msgid "Align* - \\begin{align*}"
 msgstr "Align* - \\begin{संरेखित*}"
 
-#: kilestdactions.cpp:468
+#: kilestdactions.cpp:480
 #, kde-format
 msgid "Align*"
 msgstr "संरेखणं* 1.1."
 
-#: kilestdactions.cpp:470
+#: kilestdactions.cpp:482
 #, kde-format
 msgid "Flalign - \\begin{flalign}"
 msgstr "Flalign - \\begin{flalign} इति ।"
 
-#: kilestdactions.cpp:470
+#: kilestdactions.cpp:482
 #, kde-format
 msgid "Flalign"
 msgstr "Flalign इति"
 
-#: kilestdactions.cpp:471
+#: kilestdactions.cpp:483
 #, kde-format
 msgid "Flalign* - \\begin{flalign*}"
 msgstr "Flalign* - \\प्रारम्भ{फ्लालिग्न*}"
 
-#: kilestdactions.cpp:471
+#: kilestdactions.cpp:483
 #, kde-format
 msgid "Flalign*"
 msgstr "फ्लैलिन्*"
 
-#: kilestdactions.cpp:473
+#: kilestdactions.cpp:485
 #, kde-format
 msgid "Alignat - \\begin{alignat}"
 msgstr "अलिग्नत् - \\begin{alignat}"
 
-#: kilestdactions.cpp:473
+#: kilestdactions.cpp:485
 #, kde-format
 msgid "Alignat"
 msgstr "अलिग्नाट्"
 
-#: kilestdactions.cpp:474
+#: kilestdactions.cpp:486
 #, kde-format
 msgid "Alignat* - \\begin{alignat*}"
 msgstr "अलिग्नत* - \\प्रारम्भ{अलिग्नत*}"
 
-#: kilestdactions.cpp:474
+#: kilestdactions.cpp:486
 #, kde-format
 msgid "Alignat*"
 msgstr "अलिग्नत*"
 
-#: kilestdactions.cpp:476
+#: kilestdactions.cpp:488
 #, kde-format
 msgid "Aligned - \\begin{aligned}"
 msgstr "संरेखितम् - \\begin{aligned}"
 
-#: kilestdactions.cpp:476
+#: kilestdactions.cpp:488
 #, kde-format
 msgid "Aligned"
 msgstr "संरेखितम्"
 
-#: kilestdactions.cpp:477
+#: kilestdactions.cpp:489
 #, kde-format
 msgid "Gathered - \\begin{gathered}"
 msgstr "सङ्गृहीत - \\begin{gathered}"
 
-#: kilestdactions.cpp:477
+#: kilestdactions.cpp:489
 #, kde-format
 msgid "Gathered"
 msgstr "समागतः"
 
-#: kilestdactions.cpp:478
+#: kilestdactions.cpp:490
 #, kde-format
 msgid "Alignedat - \\begin{alignedat}"
 msgstr "संरेखित करें - \\begin{align}"
 
-#: kilestdactions.cpp:478
+#: kilestdactions.cpp:490
 #, kde-format
 msgid "Alignedat"
 msgstr "संरेखणं कुर्वन्तु"
 
-#: kilestdactions.cpp:480
+#: kilestdactions.cpp:492
 #, kde-format
 msgid "Cases - \\begin{cases}"
 msgstr "प्रकरणाः - \\begin{cases}"
 
-#: kilestdactions.cpp:480
+#: kilestdactions.cpp:492
 #, kde-format
 msgid "Cases"
 msgstr "प्रकरणाः"
 
-#: kilestdactions.cpp:482
+#: kilestdactions.cpp:494
 #, kde-format
 msgid "matrix - \\begin{matrix}"
 msgstr "मैट्रिक्स - \\begin{matrix}"
 
-#: kilestdactions.cpp:482
+#: kilestdactions.cpp:494
 #, kde-format
 msgid "matrix"
 msgstr "आकृतिः"
 
-#: kilestdactions.cpp:483
+#: kilestdactions.cpp:495
 #, kde-format
 msgid "pmatrix - \\begin{pmatrix}"
 msgstr "pmatrix - \\प्रारम्भ{pmatrix}"
 
-#: kilestdactions.cpp:483
+#: kilestdactions.cpp:495
 #, kde-format
 msgid "pmatrix"
 msgstr "pmatrix इति"
 
-#: kilestdactions.cpp:484
+#: kilestdactions.cpp:496
 #, kde-format
 msgid "vmatrix - \\begin{vmatrix}"
 msgstr "vmatrix - \\प्रारम्भ{vmatrix}"
 
-#: kilestdactions.cpp:484
+#: kilestdactions.cpp:496
 #, kde-format
 msgid "vmatrix"
 msgstr "व्मातृक्"
 
-#: kilestdactions.cpp:485
+#: kilestdactions.cpp:497
 #, kde-format
 msgid "Vmatrix - \\begin{Vmatrix}"
 msgstr "व्माट्रिक्स - \\begin{Vmatrix}"
 
-#: kilestdactions.cpp:485
+#: kilestdactions.cpp:497
 #, kde-format
 msgid "Vmatrix"
 msgstr "व्मातृक्स"
 
-#: kilestdactions.cpp:486
+#: kilestdactions.cpp:498
 #, kde-format
 msgid "bmatrix - \\begin{bmatrix}"
 msgstr "bmatrix - \\प्रारम्भ{bmatrix}"
 
-#: kilestdactions.cpp:486
+#: kilestdactions.cpp:498
 #, kde-format
 msgid "bmatrix"
 msgstr "bmatrix इति"
 
-#: kilestdactions.cpp:487
+#: kilestdactions.cpp:499
 #, kde-format
 msgid "Bmatrix - \\begin{Bmatrix}"
 msgstr "Bmatrix - \\begin{Bmatrix}"
 
-#: kilestdactions.cpp:487
+#: kilestdactions.cpp:499
 #, kde-format
 msgid "Bmatrix"
 msgstr "बमात्रिक्"
 
-#: kilestdactions.cpp:490
+#: kilestdactions.cpp:502
 #, kde-format
 msgid "dmath - \\begin{dmath}"
 msgstr "dmath - \\प्रारम्भ{dmath}"
 
-#: kilestdactions.cpp:490
+#: kilestdactions.cpp:502
 #, kde-format
 msgid "dmath"
 msgstr "द्मथ्"
 
-#: kilestdactions.cpp:491
+#: kilestdactions.cpp:503
 #, kde-format
 msgid "dmath* - \\begin{dmath*}"
 msgstr "dmath* - \\प्रारम्भ{द्मथ*}"
 
-#: kilestdactions.cpp:491
+#: kilestdactions.cpp:503
 #, kde-format
 msgid "dmath*"
 msgstr "द्मथ*"
 
-#: kilestdactions.cpp:493
+#: kilestdactions.cpp:505
 #, kde-format
 msgid "dseries - \\begin{dseries}"
 msgstr "dseries - \\प्रारम्भ{dseries}"
 
-#: kilestdactions.cpp:493
+#: kilestdactions.cpp:505
 #, kde-format
 msgid "dseries"
 msgstr "dseries इति"
 
-#: kilestdactions.cpp:494
+#: kilestdactions.cpp:506
 #, kde-format
 msgid "dseries* - \\begin{dseries*}"
 msgstr "dseries* - \\प्रारम्भ{dseries*}"
 
-#: kilestdactions.cpp:494
+#: kilestdactions.cpp:506
 #, kde-format
 msgid "dseries*"
 msgstr "dseries*"
 
-#: kilestdactions.cpp:496
+#: kilestdactions.cpp:508
 #, kde-format
 msgid "dgroup - \\begin{dgroup}"
 msgstr "dgroup - \\प्रारम्भ{dgroup}"
 
-#: kilestdactions.cpp:496
+#: kilestdactions.cpp:508
 #, kde-format
 msgid "dgroup"
 msgstr "dgroup इति"
 
-#: kilestdactions.cpp:497
+#: kilestdactions.cpp:509
 #, kde-format
 msgid "dgroup* - \\begin{dgroup*}"
 msgstr "dgroup* - \\प्रारम्भ{dgroup*}"
 
-#: kilestdactions.cpp:497
+#: kilestdactions.cpp:509
 #, kde-format
 msgid "dgroup*"
 msgstr "dसमूह*"
@@ -10391,32 +10397,32 @@ msgstr "कोऽपि कारखानः न स्थापितः, क�
 msgid "Aborted"
 msgstr "गर्भपातः कृतः"
 
-#: kiletoolmanager.cpp:485
+#: kiletoolmanager.cpp:483
 #, kde-format
 msgid "Cannot find the tool \"%1\" in the configuration database."
 msgstr "विन्यासदत्तांशकोशे \"%1\" इति साधनं न प्राप्यते ।"
 
-#: kiletoolmanager.cpp:730
+#: kiletoolmanager.cpp:728
 #, kde-format
 msgid "&Stop"
 msgstr "&विरमतु"
 
-#: kiletoolmanager.cpp:739
+#: kiletoolmanager.cpp:737
 #, kde-format
 msgid "Bibliography Back End"
 msgstr "ग्रन्थसूची Back End"
 
-#: kiletoolmanager.cpp:740
+#: kiletoolmanager.cpp:738
 #, kde-format
 msgid "Auto-Detect"
 msgstr "स्वतः-परिचयम्"
 
-#: kiletoolmanager.cpp:741
+#: kiletoolmanager.cpp:739
 #, kde-format
 msgid "Auto-detect the bibliography back end from LaTeX output"
 msgstr "LaTeX आउटपुट् तः ग्रन्थसूची पृष्ठभागं स्वयमेव ज्ञापयन्तु"
 
-#: kiletoolmanager.cpp:746
+#: kiletoolmanager.cpp:744
 #, kde-format
 msgid "Reset Auto-Detected Back End"
 msgstr "स्वतः ज्ञापितं पृष्ठान्तं पुनः सेट् कुर्वन्तु"
@@ -10434,7 +10440,7 @@ msgid "Con&vert To"
 msgstr "Con&vert To"
 
 #. i18n: ectx: Menu (edit)
-#: kileui.rc:55 widgets/abbreviationview.cpp:120
+#: kileui.rc:55 widgets/abbreviationview.cpp:122
 #, kde-format
 msgid "&Edit"
 msgstr "&सम्पादन"
@@ -11325,33 +11331,33 @@ msgstr "'%1' इति सञ्चिका नास्ति ।"
 msgid "Input Dialog"
 msgstr "इनपुट संवाद"
 
-#: widgets/abbreviationview.cpp:38
+#: widgets/abbreviationview.cpp:40
 #, kde-format
 msgid "Short"
 msgstr "वामनः"
 
-#: widgets/abbreviationview.cpp:38
+#: widgets/abbreviationview.cpp:40
 #, kde-format
 msgid "Expanded Text"
 msgstr "विस्तारितः पाठः"
 
 #. i18n: ectx: property (text), widget (QPushButton, m_pshbAdd)
-#: widgets/abbreviationview.cpp:111 widgets/quicktoolconfigwidget.ui:103
+#: widgets/abbreviationview.cpp:113 widgets/quicktoolconfigwidget.ui:103
 #, kde-format
 msgid "&Add"
 msgstr "&संयोजयति"
 
-#: widgets/abbreviationview.cpp:124 widgets/structurewidget.cpp:781
+#: widgets/abbreviationview.cpp:126 widgets/structurewidget.cpp:781
 #, kde-format
 msgid "&Delete"
 msgstr "&लुप्"
 
-#: widgets/abbreviationview.cpp:171
+#: widgets/abbreviationview.cpp:173
 #, kde-format
 msgid "Delete the abbreviation '%1'?"
 msgstr "'%1' इति संक्षिप्तं विलोपयतु?"
 
-#: widgets/abbreviationview.cpp:174
+#: widgets/abbreviationview.cpp:176
 #, kde-format
 msgid "Delete Abbreviation"
 msgstr "संक्षेपं विलोपयतु"
@@ -11380,32 +11386,32 @@ msgstr "स्टार्टअप इत्यत्र splash screen दर�
 msgid "Show in external window"
 msgstr "बाह्यविण्डो मध्ये दर्शयतु"
 
-#: widgets/codecompletionconfigwidget.cpp:53
+#: widgets/codecompletionconfigwidget.cpp:55
 #, kde-format
 msgid "TeX/LaTeX"
 msgstr "TeX/LaTeX"
 
-#: widgets/codecompletionconfigwidget.cpp:54
+#: widgets/codecompletionconfigwidget.cpp:56
 #, kde-format
 msgid "Dictionary"
 msgstr "शब्दकोश"
 
-#: widgets/codecompletionconfigwidget.cpp:57
+#: widgets/codecompletionconfigwidget.cpp:59
 #, kde-format
 msgid "Try to place the cursor."
 msgstr "कर्सरं स्थापयितुं प्रयतध्वम्।"
 
-#: widgets/codecompletionconfigwidget.cpp:58
+#: widgets/codecompletionconfigwidget.cpp:60
 #, kde-format
 msgid "Insert bullets where the user must input data."
 msgstr "यत्र उपयोक्त्रेण दत्तांशं निवेशनीयं तत्र गोलिकाः निवेशयन्तु ।"
 
-#: widgets/codecompletionconfigwidget.cpp:59
+#: widgets/codecompletionconfigwidget.cpp:61
 #, kde-format
 msgid "Also close an environment when an opening command is inserted."
 msgstr "यदा उद्घाटन-आदेशः सम्मिलितः भवति तदा अपि वातावरणं पिधाय ।"
 
-#: widgets/codecompletionconfigwidget.cpp:60
+#: widgets/codecompletionconfigwidget.cpp:62
 #, kde-format
 msgid ""
 "Directional or popup-based completion of the TeX/LaTeX commands that are "
@@ -11414,7 +11420,7 @@ msgstr ""
 "चयनितसमाप्तिसञ्चिकासु समाविष्टानां TeX/LaTeX आदेशानां दिशात्मकं अथवा पॉपअप-आधारितं "
 "समाप्तिः ।"
 
-#: widgets/codecompletionconfigwidget.cpp:61
+#: widgets/codecompletionconfigwidget.cpp:63
 #, kde-format
 msgid ""
 "Automatically show a completion list of TeX/LaTeX commands when the word has "
@@ -11422,12 +11428,12 @@ msgid ""
 msgstr ""
 "यदा शब्दस्य एतादृशी दीर्घता भवति तदा स्वयमेव TeX/LaTeX आदेशानां समाप्तिसूचीं दर्शयन्तु ।"
 
-#: widgets/codecompletionconfigwidget.cpp:63
+#: widgets/codecompletionconfigwidget.cpp:65
 #, kde-format
 msgid "Show abbreviations of the selected completion files in the sidebar"
 msgstr "पार्श्वपट्टिकायां चयनितसमाप्तिसञ्चिकानां संक्षिप्तनामानि दर्शयतु"
 
-#: widgets/codecompletionconfigwidget.cpp:64
+#: widgets/codecompletionconfigwidget.cpp:66
 #, kde-format
 msgid ""
 "Directional or popup-based completion of abbreviations that are contained in "
@@ -11436,30 +11442,30 @@ msgstr ""
 "चयनितसमाप्तिसञ्चिकासु समाविष्टानां संक्षिप्तनामानां दिशात्मकं अथवा पॉपअप-आधारितं समाप्तिः "
 "।"
 
-#: widgets/codecompletionconfigwidget.cpp:65
+#: widgets/codecompletionconfigwidget.cpp:67
 #, kde-format
 msgid "Show LaTeX commands of the selected completion files in the sidebar"
 msgstr "पार्श्वपट्टिकायां चयनितसमाप्तिसञ्चिकानां LaTeX आदेशान् दर्शयतु"
 
 #. i18n: ectx: property (title), widget (QGroupBox, groupBox_2)
-#: widgets/codecompletionconfigwidget.cpp:95
-#: widgets/codecompletionconfigwidget.cpp:326
+#: widgets/codecompletionconfigwidget.cpp:97
+#: widgets/codecompletionconfigwidget.cpp:328
 #: widgets/codecompletionconfigwidget.ui:99
 #, kde-format
 msgid "Completion Files"
 msgstr "समाप्ति सञ्चिकाः"
 
-#: widgets/codecompletionconfigwidget.cpp:204
+#: widgets/codecompletionconfigwidget.cpp:206
 #, kde-format
 msgid "File not found"
 msgstr "सञ्चिका न प्राप्ता"
 
-#: widgets/codecompletionconfigwidget.cpp:274
+#: widgets/codecompletionconfigwidget.cpp:276
 #, kde-format
 msgid "Wordlist '%1' contains duplicate entries."
 msgstr "शब्दसूचिका '%1' इत्यत्र द्वितीयकप्रविष्टयः सन्ति ।"
 
-#: widgets/codecompletionconfigwidget.cpp:274
+#: widgets/codecompletionconfigwidget.cpp:276
 #, kde-format
 msgid "Completion"
 msgstr "समाप्ति"
@@ -11547,8 +11553,14 @@ msgstr "सिस्टम् चेकं कुर्वन्"
 msgid "Checking if your TeX system is installed correctly..."
 msgstr "भवतः TeX प्रणाली सम्यक् संस्थापितम् अस्ति वा इति जाँचयति..."
 
+#. i18n: ectx: property (format), widget (QProgressBar, m_progress)
+#: widgets/configcheckerwidget.ui:45
+#, no-c-format, kde-format
+msgid "%p%"
+msgstr ""
+
 #. i18n: ectx: property (title), widget (QGroupBox, m_grpResults)
-#: widgets/configcheckerwidget.ui:55
+#: widgets/configcheckerwidget.ui:58
 #, kde-format
 msgid "Results"
 msgstr "परिणामाः"
@@ -12486,59 +12498,59 @@ msgstr "&लिपिनां निष्पादनसमयं सीमि
 msgid "&Time limit (seconds):"
 msgstr "&समयसीमा (सेकेण्ड्):"
 
-#: widgets/scriptsmanagementwidget.cpp:76
+#: widgets/scriptsmanagementwidget.cpp:78
 #, kde-format
 msgid "Run Selected Script"
 msgstr "चयनितं स्क्रिप्ट् चालयन्तु"
 
-#: widgets/scriptsmanagementwidget.cpp:82
+#: widgets/scriptsmanagementwidget.cpp:84
 #, kde-format
 msgid "Create New Script"
 msgstr "नवीनं स्क्रिप्ट् रचयन्तु"
 
-#: widgets/scriptsmanagementwidget.cpp:88
+#: widgets/scriptsmanagementwidget.cpp:90
 #, kde-format
 msgid "Open Selected Script in Editor"
 msgstr "Editor मध्ये Selected Script उद्घाटयन्तु"
 
-#: widgets/scriptsmanagementwidget.cpp:94
+#: widgets/scriptsmanagementwidget.cpp:96
 #, kde-format
 msgid "Configure Key Sequence"
 msgstr "कील अनुक्रम विन्यस्तं कुर्वन्तु"
 
-#: widgets/scriptsmanagementwidget.cpp:100
+#: widgets/scriptsmanagementwidget.cpp:102
 #, kde-format
 msgid "Remove Key Sequence"
 msgstr "कील अनुक्रम निकालें"
 
-#: widgets/scriptsmanagementwidget.cpp:106
+#: widgets/scriptsmanagementwidget.cpp:108
 #, kde-format
 msgid "Refresh List"
 msgstr "ताजगी सूची"
 
-#: widgets/scriptsmanagementwidget.cpp:117
+#: widgets/scriptsmanagementwidget.cpp:119
 #, kde-format
 msgid "Script Name"
 msgstr "स्क्रिप्ट् नाम"
 
-#: widgets/scriptsmanagementwidget.cpp:118
+#: widgets/scriptsmanagementwidget.cpp:120
 #, kde-format
 msgid "Sequence"
 msgstr "श्रेणी"
 
-#: widgets/scriptsmanagementwidget.cpp:223
+#: widgets/scriptsmanagementwidget.cpp:225
 #, kde-format
 msgid "The sequence \"%1\" is already assigned to the action \"%2\""
 msgstr "\"%1\" इति क्रमः पूर्वमेव \"%2\" क्रियायाः नियुक्तः अस्ति ।"
 
-#: widgets/scriptsmanagementwidget.cpp:224
-#: widgets/scriptsmanagementwidget.cpp:228
-#: widgets/scriptsmanagementwidget.cpp:232
+#: widgets/scriptsmanagementwidget.cpp:226
+#: widgets/scriptsmanagementwidget.cpp:230
+#: widgets/scriptsmanagementwidget.cpp:234
 #, kde-format
 msgid "Sequence Already Assigned"
 msgstr "क्रमः पूर्वमेव नियुक्तः"
 
-#: widgets/scriptsmanagementwidget.cpp:227
+#: widgets/scriptsmanagementwidget.cpp:229
 #, kde-format
 msgid ""
 "The sequence \"%1\" is a subsequence of \"%2\", which is already assigned to "
@@ -12547,7 +12559,7 @@ msgstr ""
 "\"%1\" इति क्रमः \"%2\" इत्यस्य उपक्रमः अस्ति, यः पूर्वमेव \"%3\" क्रियायाः नियुक्तः "
 "अस्ति ।"
 
-#: widgets/scriptsmanagementwidget.cpp:231
+#: widgets/scriptsmanagementwidget.cpp:233
 #, kde-format
 msgid "The shorter sequence \"%1\" is already assigned to the action \"%2\""
 msgstr "लघुतरः क्रमः \"%1\" पूर्वमेव \"%2\" क्रियायाः कृते नियुक्तः अस्ति ।"
@@ -12957,32 +12969,32 @@ msgstr "यूनिकोड"
 msgid "Insert Unicode representation of the selected symbol (when available)"
 msgstr "चयनितचिह्नस्य यूनिकोड प्रतिनिधित्वं सम्मिलितं कुर्वन्तु (यदा उपलब्धं भवति)"
 
-#: widgets/toolconfigwidget.cpp:111
+#: widgets/toolconfigwidget.cpp:112
 #, kde-format
 msgid "Run Outside of Kile"
 msgstr "किले बहिः धावन्तु"
 
-#: widgets/toolconfigwidget.cpp:112
+#: widgets/toolconfigwidget.cpp:113
 #, kde-format
 msgid "Run in Konsole"
 msgstr "Konsole इत्यत्र चालयन्तु"
 
-#: widgets/toolconfigwidget.cpp:113
+#: widgets/toolconfigwidget.cpp:114
 #, kde-format
 msgid "Use Document Viewer"
 msgstr "Document Viewer इत्यस्य उपयोगं कुर्वन्तु"
 
-#: widgets/toolconfigwidget.cpp:114
+#: widgets/toolconfigwidget.cpp:115
 #, kde-format
 msgid "Run Sequence of Tools"
 msgstr "Tools इत्यस्य Sequence चालयन्तु"
 
-#: widgets/toolconfigwidget.cpp:161
+#: widgets/toolconfigwidget.cpp:162
 #, kde-format
 msgid "Use the \"Advanced\" tab to configure this tool."
 msgstr "एतत् साधनं विन्यस्तुं \"Advanced\" ट्याब् इत्यस्य उपयोगं कुर्वन्तु ।"
 
-#: widgets/toolconfigwidget.cpp:172
+#: widgets/toolconfigwidget.cpp:173
 #, kde-format
 msgid ""
 "Unknown tool type; your configuration data is malformed.\n"
@@ -12991,7 +13003,7 @@ msgstr ""
 "अज्ञातः साधनप्रकारः; भवतः विन्यासदत्तांशः विकृतः अस्ति ।\n"
 "सम्भवतः पूर्वनिर्धारितसेटिंग्स् पुनः स्थापयितुं साधु विचारः अस्ति ।"
 
-#: widgets/toolconfigwidget.cpp:225
+#: widgets/toolconfigwidget.cpp:227
 #, kde-format
 msgid ""
 "All your tool settings will be overwritten with the default settings.\n"
@@ -13000,37 +13012,37 @@ msgstr ""
 "भवतः सर्वाणि साधनसेटिंग्स् पूर्वनिर्धारितसेटिंग्स् इत्यनेन सह अधिलिखितानि भविष्यन्ति ।\n"
 "किं भवन्तः निश्चिन्ताः सन्ति यत् भवन्तः निरन्तरं कर्तुम् इच्छन्ति?"
 
-#: widgets/toolconfigwidget.cpp:350
+#: widgets/toolconfigwidget.cpp:353
 #, kde-format
 msgid "Choose a configuration for the tool %1"
 msgstr "%1 इति साधनस्य कृते विन्यासं चिनोतु"
 
-#: widgets/toolconfigwidget.cpp:420
+#: widgets/toolconfigwidget.cpp:423
 #, kde-format
 msgid "New Configuration"
 msgstr "नवीनं विन्यासः"
 
-#: widgets/toolconfigwidget.cpp:420
+#: widgets/toolconfigwidget.cpp:423
 #, kde-format
 msgid "Enter new configuration name:"
 msgstr "नूतनं विन्यासनाम प्रविष्टं कुर्वन्तु:"
 
-#: widgets/toolconfigwidget.cpp:447
+#: widgets/toolconfigwidget.cpp:450
 #, kde-format
 msgid "Are you sure you want to remove the tool %1?"
 msgstr "किं भवान् निश्चयेन %1 इति साधनं हर्तुं इच्छति?"
 
-#: widgets/toolconfigwidget.cpp:477
+#: widgets/toolconfigwidget.cpp:480
 #, kde-format
 msgid "Are you sure that you want to remove this configuration?"
 msgstr "किं भवान् निश्चिन्तः अस्ति यत् भवान् एतत् विन्यासं हर्तुं इच्छति?"
 
-#: widgets/toolconfigwidget.cpp:491
+#: widgets/toolconfigwidget.cpp:494
 #, kde-format
 msgid "You need at least one configuration for each tool."
 msgstr "प्रत्येकस्य साधनस्य कृते न्यूनातिन्यूनं एकं विन्यासं आवश्यकम् ।"
 
-#: widgets/toolconfigwidget.cpp:491
+#: widgets/toolconfigwidget.cpp:494
 #, kde-format
 msgid "Cannot Remove Configuration"
 msgstr "विन्यासं निष्कासयितुं न शक्नोति"

@@ -15,7 +15,6 @@
 #define PARSERTHREAD_H
 
 #include <QMutex>
-#include <QPair>
 #include <QThread>
 #include <QQueue>
 #include <QWaitCondition>
@@ -46,7 +45,7 @@ class ParserThread : public QThread
     Q_OBJECT
 
 public:
-    explicit ParserThread(KileInfo *info, QObject *parent = 0);
+    explicit ParserThread(KileInfo *info, QObject *parent = nullptr);
     virtual ~ParserThread();
 
     void stopParsing();
