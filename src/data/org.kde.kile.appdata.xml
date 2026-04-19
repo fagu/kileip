@@ -41,7 +41,6 @@
   <name xml:lang="ta">கைல்</name>
   <name xml:lang="tr">Kile</name>
   <name xml:lang="uk">Kile</name>
-  <name xml:lang="x-test">xxKilexx</name>
   <name xml:lang="zh-CN">Kile</name>
   <name xml:lang="zh-TW">Kile</name>
   <summary>TeX/LaTeX Editor</summary>
@@ -70,19 +69,20 @@
   <summary xml:lang="pl">Edytor TeX/LaTeX</summary>
   <summary xml:lang="pt">Editor de TeX/LaTeX</summary>
   <summary xml:lang="pt-BR">Editor TeX/LaTeX</summary>
+  <summary xml:lang="ru">Редактор TeX/LaTeX</summary>
   <summary xml:lang="sa">TeX/LaTeX सम्पादक</summary>
   <summary xml:lang="sk">TeX/LaTeX Editor</summary>
   <summary xml:lang="sl">Urejevalnik TeX/LaTeX</summary>
   <summary xml:lang="sv">Tex/Latex-editor</summary>
   <summary xml:lang="tr">TeX/LaTeX Düzenleyicisi</summary>
   <summary xml:lang="uk">Редактор TeX/LaTeX</summary>
-  <summary xml:lang="x-test">xxTeX/LaTeX Editorxx</summary>
   <summary xml:lang="zh-CN">TeX/LaTeX 编辑器</summary>
   <summary xml:lang="zh-TW">TeX/LaTeX 編輯器</summary>
   <description>
     <p>
       Kile is a user-friendly TeX/LaTeX editor by KDE. Kile gives you the ability to use all the functionality of LaTeX in a graphical interface and has interactive preview mechanisms to readily see the results of editing.
     </p>
+    <p xml:lang="ar">كايل هو محرر تخ/لاتخ سهل الاستخدام من كِيدي. يتيح لك كايل إمكانية استخدام جميع وظائف لاتخ في واجهة رسومية، ويحتوي على آليات معاينة تفاعلية لرؤية نتائج التحرير بسهولة.</p>
     <p xml:lang="ca">El Kile és un editor TeX/LaTeX fàcil d'emprar fet per la comunitat KDE. El Kile proporciona la possibilitat d'usar totes les funcionalitats del LaTeX en una interfície gràfica i té mecanismes de previsualització interactius per a veure immediatament els resultats de l'edició.</p>
     <p xml:lang="ca-valencia">Kile és un editor TeX/LaTeX fàcil d'emprar fet per la comunitat KDE. Kile proporciona la possibilitat d'utilitzar totes les característiques de LaTeX en una interfície gràfica i té mecanismes de previsualització interactius per a veure immediatament els resultats de l'edició.</p>
     <p xml:lang="de">Kile ist ein benutzerfreundlicher TeX/LaTeX-Editor von KDE. Kile gibt Ihnen die Möglichkeit, die gesamte Funktionalität von LaTeX in einer grafischen Oberfläche zu nutzen und verfügt über interaktive Vorschaumechanismen, um die Ergebnisse der Bearbeitung zu sehen.</p>
@@ -104,13 +104,13 @@
     <p xml:lang="pl">Kile jest przyjaznym użytkownikowi edytorem TeX/LaTeX dla KDE. Kile umożliwia wykorzystanie wszystkich możliwości LaTeX przy użyciu interfejsu graficznego i ma mechanizm interaktywnego podglądu, aby szybko podejrzeć wyniki edycji.</p>
     <p xml:lang="pt">O Kile é um editor amigável de TeX/LaTeX para o KDE. O Kile dá-lhe a capacidade de usar todas as funcionalidades do LaTeX numa interface gráfica e tem mecanismos de antevisão interactiva para ler de forma imediata os resultados da edição.</p>
     <p xml:lang="pt-BR">O Kile é um editor de TeX/LaTeX fácil de usar criado pela comunidade KDE. Ele permite usar toda a funcionalidade do LaTeX com uma interface gráfica, possuindo ainda pré-visualização interative para ver dinamicamente os resultados da sua edição.</p>
+    <p xml:lang="ru">Kile — удобный редактор TeX/LaTeX от KDE. Он предоставляет доступ ко всем возможностям LaTeX через графический интерфейс и включает интерактивные механизмы предпросмотра для быстрой оценки результатов редактирования.</p>
     <p xml:lang="sa">किले KDE द्वारा उपयोक्तृ-अनुकूलः TeX/LaTeX सम्पादकः अस्ति । किले भवन्तं LaTeX इत्यस्य सर्वाणि कार्यक्षमतां चित्रात्मके अन्तरफलके उपयोक्तुं क्षमताम् अयच्छति तथा च सम्पादनस्य परिणामान् सहजतया द्रष्टुं अन्तरक्रियाशीलपूर्वावलोकनतन्त्राणि सन्ति ।</p>
     <p xml:lang="sk">Kile je užívateľsky príjemný editor TeX/LaTeX od KDE. Kile vám dáva možnosť používať všetky funkcie LaTeXu v grafickom rozhraní a má interaktívne mechanizmy náhľadu, aby ste mohli okamžite vidieť výsledky úprav.</p>
     <p xml:lang="sl">Kile je uporabniku prijazen TeX/LaTeX urejevalnik na namizju KDE. Kile omogoča uporabo vseh funkcij LaTeX v grafičnem vmesniku in imainteraktivne predogledne mehanizmi za lažji ogled rezultatov urejanja.</p>
     <p xml:lang="sv">Kile är en användarvänlig Tex- och Latex-editor av KDE. Kile ger dig möjlighet att använda hela Latex funktionalitet i ett grafiskt gränssnitt, och har en interaktiv förhandsgranskningsmekanism för att enkelt kunna se redigeringsresultatet.</p>
     <p xml:lang="tr">Kile, KDE tarafından yapılan kullanıcı dostu bir TeX/LaTeX düzenleyicisidir. Kile, LaTeX’in tüm işlevselliğini grafik bir arabirimde kullanmanıza izin verir ve düzenlemenizin sonuçlarını anında görebilmeniz için etkileşimli önizleme mekanizmaları sunar.</p>
     <p xml:lang="uk">Kile — дружня до користувача програма для редагування коду TeX/LaTeX від KDE. Kile надає вам змогу скористатися усіма функціональними можливостями LaTeX за допомогою графічного інтерфейсу та має механізми інтерактивного попереднього перегляду для негайного отримання результатів редагування.</p>
-    <p xml:lang="x-test">xxKile is a user-friendly TeX/LaTeX editor by KDE. Kile gives you the ability to use all the functionality of LaTeX in a graphical interface and has interactive preview mechanisms to readily see the results of editing.xx</p>
     <p xml:lang="zh-CN">Kile 是一款 KDE 开发的 TeX/LaTeX 编辑器。Kile 能够让您在图形界面中使用 LaTeX 的所有功能，并且拥有交互式预览机制以便随时查看编辑结果。</p>
     <p xml:lang="zh-TW">Kile 是來自 KDE 的使用者友善 TeX/LaTeX 編輯器。Kile 讓您利用圖形介面使用 LaTeX 各種功能，並且提供互動式預覽讓您即時檢視編輯的結果。</p>
     <p>Features:</p>
@@ -149,7 +149,6 @@
     <p xml:lang="ta">அம்சங்கள்:</p>
     <p xml:lang="tr">Özellikler:</p>
     <p xml:lang="uk">Можливості:</p>
-    <p xml:lang="x-test">xxFeatures:xx</p>
     <p xml:lang="zh-CN">程序功能：</p>
     <p xml:lang="zh-TW">功能：</p>
     <ul>
@@ -178,13 +177,13 @@
       <li xml:lang="pl">Kompiluj, przekształcaj i oglądaj swoje dokumenty na kliknięcie</li>
       <li xml:lang="pt">Compilar, converter e ver o seu documento com um 'click'</li>
       <li xml:lang="pt-BR">Compile, converta e visualize seu documento com apenas um clique</li>
+      <li xml:lang="ru">Компиляция, преобразование и просмотр документа одним щелчком мыши;</li>
       <li xml:lang="sa">एकेन क्लिक् कृत्वा स्वस्य दस्तावेजं संकलितं, परिवर्तयन्तु, पश्यन्तु च</li>
       <li xml:lang="sk">Zostavte, skonvertujte a zobrazte dokument jedným kliknutím</li>
       <li xml:lang="sl">Prevod, pretvorba in ogled dokumenta z enim klikom</li>
       <li xml:lang="sv">Kompilera, konvertera och visa dokumentet med ett klick</li>
       <li xml:lang="tr">Tek tıklama ile belgenizi derleyin, dönüştürün ve görüntüleyin</li>
       <li xml:lang="uk">Збирання, перетворення та перегляд документів у одне клацання кнопкою миші.</li>
-      <li xml:lang="x-test">xxCompile, convert and view your document with one clickxx</li>
       <li xml:lang="zh-CN">一键对您的文档进行编译、转换和查看</li>
       <li xml:lang="zh-TW">按一下編譯、轉換並檢視您的文件</li>
       <li>Auto-completion of (La)TeX commands</li>
@@ -212,13 +211,13 @@
       <li xml:lang="pl">Samouzupełnianie poleceń (La)TeX</li>
       <li xml:lang="pt">Completação automática de comandos de (La)TeX</li>
       <li xml:lang="pt-BR">Função de auto-completar para comandos do (La)TeX</li>
+      <li xml:lang="ru">Автоматическое завершение команд (La)TeX;</li>
       <li xml:lang="sa">(La)TeX आदेशानां स्वतः समाप्तिः</li>
       <li xml:lang="sk">Automatické dokončenie príkazov (La)TeX</li>
       <li xml:lang="sl">Avtomatsko dokončevanje (La)TeX ukazov</li>
       <li xml:lang="sv">Automatisk komplettering av Tex- och Latex-kommandon</li>
       <li xml:lang="tr">(La)TeX komutlarının kendiliğinden tamamlanması</li>
       <li xml:lang="uk">Автодоповнення команд (La)TeX.</li>
-      <li xml:lang="x-test">xxAuto-completion of (La)TeX commandsxx</li>
       <li xml:lang="zh-CN">(La)TeX 命令自动补全</li>
       <li xml:lang="zh-TW">(La)TeX 命令的自動補完</li>
       <li>Templates and wizards make starting new documents very little work</li>
@@ -244,13 +243,13 @@
       <li xml:lang="pl">Szablony i pomocnicy ułatwiający tworzenie nowych dokumentów</li>
       <li xml:lang="pt">Os modelos e assistentes tornam a criação de documentos novos um esforço mínimo</li>
       <li xml:lang="pt-BR">Modelos e assistentes permitem criar novos documentos sem esforço</li>
+      <li xml:lang="ru">Шаблоны и мастера упрощают создание новых документов;</li>
       <li xml:lang="sa">टेम्पलेट्, विजार्ड् च नूतनानां दस्तावेजानां आरम्भं अत्यल्पं कार्यं करोति</li>
       <li xml:lang="sk">Šablóny a sprievodcovia robia spúšťanie nových dokumentov veľmi jednoduché</li>
       <li xml:lang="sl">Predloge in čarovniki omogočajo začetek pisanja novih dokumentov zelo malo dela</li>
       <li xml:lang="sv">Mallar och guider gör att mycket lite arbete behövs för att påbörja nya dokument</li>
       <li xml:lang="tr">Şablonlar ve sihirbazlar yeni belgelere başlamayı çok kolaylaştırır</li>
       <li xml:lang="uk">Шаблони і допоміжні засоби для створення документів з мінімальними зусиллями.</li>
-      <li xml:lang="x-test">xxTemplates and wizards make starting new documents very little workxx</li>
       <li xml:lang="zh-CN">模板和向导让创建新文档变得简单高效</li>
       <li xml:lang="zh-TW">利用範本與精靈讓開始撰寫新文件變得十分簡單</li>
       <li>Easy insertion of many standard tags and symbols and the option to define (an arbitrary number of) user defined tags</li>
@@ -276,17 +275,18 @@
       <li xml:lang="pl">Łatwe wstawianie wielu standardowych znaczników i symboli oraz opcja do definiowania (dowolnej liczby) znaczników użytkownika</li>
       <li xml:lang="pt">Inserção simples de muitas marcas-padrão e símbolos, assim como a opção para definir (um número arbitrário de) marcas definidas pelo utilizador</li>
       <li xml:lang="pt-BR">Inserção fácil de várias tags e símbolos comuns, assim como a opção de definir (uma quantidade arbitrária de) tags feitas pelo usuário</li>
+      <li xml:lang="ru">Простая вставка многих стандартных меток и символов, а также возможность определения (произвольного количества) пользовательских меток;</li>
       <li xml:lang="sa">अनेकमानकटैग्स् चिह्नानि च सुलभं सम्मिलनं तथा च उपयोक्तृनिर्धारितटैग्स् (मनमाना संख्या) परिभाषितुं विकल्पः</li>
       <li xml:lang="sk">Jednoduché vkladanie mnohých štandardných značiek a symbolov a možnosť definovať (ľubovoľný počet) užívateľom definovaných značiek</li>
       <li xml:lang="sl">Enostavno vstavljanje številnih standardnih oznak in simbolov ter možnost določitve (poljubno število) uporabniško definiranih oznak</li>
       <li xml:lang="sv">Enkelt att infoga många standardtaggar och symboler, och möjlighet att definiera (ett godtyckligt antal) användardefinerade taggar</li>
       <li xml:lang="tr">Pek çok standart etiketin ve sembolün kolayca eklenmesi ve kullanıcı tanımlı etiketleri (isteğe bağlı sayıda) tanımlama seçeneği</li>
       <li xml:lang="uk">Просте вставлення багатьох стандартних команд і символів, можливість додаткового визначення користувачем довільної кількості команд.</li>
-      <li xml:lang="x-test">xxEasy insertion of many standard tags and symbols and the option to define (an arbitrary number of) user defined tagsxx</li>
       <li xml:lang="zh-CN">简单方便地插入多种标准标签和符号，还对任意数量的用户自定义标签进行定义</li>
       <li xml:lang="zh-TW">輕易插入許多標準標籤與符號，並且提供定義不限數量使用者定義標籤的選項</li>
       <li>Inverse and forward search: click in the DVI viewer and jump to the corresponding LaTeX line in the editor, or jump from the editor
           to the corresponding page in the viewer</li>
+      <li xml:lang="ar">البحث العكسي والأمامي: انقر في عارض DVI وانتقل إلى سطر لاتخ المقابل في المحرر، أو انتقل من المحرر إلى الصفحة المقابلة في العارض.</li>
       <li xml:lang="ca">Cerca directa i inversa: cliqueu en el visualitzador de DVI i salteu a la línia LaTeX corresponent de l'editor, o salteu des de l'editor a la pàgina corresponent en el visualitzador</li>
       <li xml:lang="ca-valencia">Busca directa i inversa: cliqueu damunt del visor de DVI i salteu fins a la línia LaTeX corresponent de l'editor, o salteu des de l'editor fins a la pàgina corresponent en el visor</li>
       <li xml:lang="de">Rückwärts- und Vorwärtssuche: Klicken Sie in den DVI-Betrachter und springen Sie zu der entsprechenden LaTeX-Zeile im Editor, oder springen Sie vom Editor zu der entsprechenden Seite im Betrachter</li>
@@ -308,17 +308,18 @@
       <li xml:lang="pl">Wyszukiwanie odwrotne i wprzód: kliknij w przeglądarce DVI i przejdź do odpowiadającego wiersza LaTeX w edytorze lub przejdź z edytora do odpowiadającej strony w przeglądarce</li>
       <li xml:lang="pt">Pesquisa inversa e directa: carregue no visualizador de DVI e vá para a linha de LaTeX correspondente no editor, ou salte do editor para a página correspondente no visualizador</li>
       <li xml:lang="pt-BR">Pesquisa inversa e direta: clique no visualizador de DVI e vá para a linha de LaTeX correspondente no editor, ou salte do editor para a página correspondente no visualizador</li>
+      <li xml:lang="ru">Обратный и прямой поиск: щелчком по документу в просмотрщике DVI осуществляется переход к соответствующей строке LaTeX в редакторе; щелчком по строке в редакторе — переход к соответствующей странице в просмотрщике.</li>
       <li xml:lang="sa">उलटा अग्रे च अन्वेषणम् : DVI दर्शके क्लिक् कृत्वा सम्पादके तत्सम्बद्धे LaTeX रेखायां कूदन्तु, अथवा सम्पादकात् दर्शके तत्सम्बद्धपृष्ठं प्रति कूदन्तु</li>
       <li xml:lang="sk">Inverzné a predbežné vyhľadávanie: kliknite v prehliadači DVI a prejdite na zodpovedajúcu linku LaTeX v editore alebo prejdite z editora na zodpovedajúcu stránku v prehliadači.</li>
       <li xml:lang="sl">Iskanje nazaj in naprej: kliknite v pregledovalnik DVI in skok v urejevalnik na ustrezno vrstico v LaTeXu ali skok iz urejevalnika v ustrezno stran v pregledovalniku DVI</li>
       <li xml:lang="sv">Invers och framåtsökning: Klicka i DVI-visningen och gå till motsvarande Latex-rad i editorn, eller gå från editorn till motsvarande sida i visningen</li>
       <li xml:lang="tr">Tersine ve ileri arama: DVI görüntüleyiciyi tıklayın ve düzenleyicideki ilgili LaTeX satırına atlayın veya düzenleyiciden görüntüleyicideki ilgili sayfaya atlayın</li>
       <li xml:lang="uk">Зворотний і прямий пошук: клацання на тексті у програмі для перегляду DVI призведе до переходу до відповідного рядка коду LaTeX у редакторі, а з редактора можна перейти до відповідного місця у програмі для перегляду документів.</li>
-      <li xml:lang="x-test">xxInverse and forward search: click in the DVI viewer and jump to the corresponding LaTeX line in the editor, or jump from the editor to the corresponding page in the viewerxx</li>
       <li xml:lang="zh-CN">反向和正向搜索：点击 DVI 查看器即可在编辑器中跳转到对应的 LaTex 代码行，或者点击编辑器代码行跳转到查看器中对应的页面</li>
       <li xml:lang="zh-TW">反向與順向搜尋：點擊 DVI 檢視器並在編輯器中跳到對應的 LaTeX 行號，或是從編輯器讓檢視器跳到對應的頁面</li>
       <li>Finding chapter or sections is very easy, Kile constructs a list of all the chapter etc. in your document. You can use the list to
           jump to the corresponding section</li>
+      <li xml:lang="ar">من السهل جدًا العثور على الفصول أو الأقسام، حيث يقوم كايل بإنشاء قائمة بجميع الفصول وما إلى ذلك في المستند الخاص بك. يمكنك استخدام القائمة للانتقال إلى القسم المقابل.</li>
       <li xml:lang="ca">La cerca de capítols o seccions és molt senzilla, El Kile construeix una llista de tots els capítols, etc. en el document. Podeu usar la llista per a saltar a la secció corresponent</li>
       <li xml:lang="ca-valencia">La busca de capítols o seccions és molt senzilla, Kile construïx una llista de tots els capítols, etc. en el document. Podeu utilitzar la llista per a saltar fins a la secció corresponent</li>
       <li xml:lang="de">Das Auffinden von Kapiteln oder Abschnitten ist sehr einfach, Kile erstellt eine Liste mit allen Kapitel usw. in Ihrem Dokument. Sie können die Liste benutzen, um zu dem entsprechenden Abschnitt zu gehen</li>
@@ -340,13 +341,13 @@
       <li xml:lang="pl">Znajdowanie rozdziałów lub sekcji jest bardzo proste. Kile tworzy listę wszystkich rozdziałów itp. w twoim dokumencie. Możesz uzyć tej listy do przeskakiwania do danej sekcji.</li>
       <li xml:lang="pt">A pesquisa de capítulos ou secções é muito simples - o Kile constrói uma lista com todos os capítulos, etc. no seu documento. Poderá usar a lista para ir para a secção correspondente</li>
       <li xml:lang="pt-BR">Achar o capítulo ou seção correta é muito fácil, o Kile constrói uma lista de todos os capítulos e afins do seu documento, permitindo pular para a seção correspondente rapidamente</li>
+      <li xml:lang="ru">Поиск глав и разделов очень прост: Kile создаёт список всех глав и разделов в документе; используйте этот список для перехода к нужному разделу.</li>
       <li xml:lang="sa">अध्यायः अथवा खण्डाः अन्वेष्टुं अतीव सुलभं भवति, किले भवतः दस्तावेजे सर्वेषां अध्यायानां इत्यादीनां सूचीं निर्माति । भवन्तः सूचीं तत्सम्बद्धं विभागं प्रति कूर्दितुं उपयोक्तुं शक्नुवन्ति</li>
       <li xml:lang="sk">Nájdenie kapitoly alebo odsekov je veľmi jednoduché, Kile zostaví zoznam všetkých kapitol atď. v dokumente. Pomocou tohto zoznamu môžete prejsť na príslušnú časť</li>
       <li xml:lang="sl">Iskanje poglavja ali poglavij je zelo enostavno, Kile sestavi seznam vseh poglavij itd. v vašem dokumentu. Seznam lahko uporabite za skok naustrezen razdelek</li>
       <li xml:lang="sv">Det är mycket enkelt att hitta kapitel eller avsnitt. Kile skapar en lista av alla kapitel, etc., i dokumentet. Listan kan användas för att gå till motsvarande avsnitt</li>
       <li xml:lang="tr">Fasıl veya bölümleri bulmak çok kolay, Kile belgenizdeki tüm bölümlerin vb. bir listesini oluşturur. İlgili bölüme atlamak için listeyi kullanabilirsiniz</li>
       <li xml:lang="uk">Знайти потрібну главу або розділ дуже просто: Kile будує список усіх розділів у документі. Ви можете скористатися цим списком для переходу до відповідного розділу.</li>
-      <li xml:lang="x-test">xxFinding chapter or sections is very easy, Kile constructs a list of all the chapter etc. in your document. You can use the list to jump to the corresponding sectionxx</li>
       <li xml:lang="zh-CN">查找章节非常便利，Kile 会构建文档所有章节的列表，您可以使用该列表跳转到对应的章节</li>
       <li xml:lang="zh-TW">尋找章節與段落十分簡單：Kile 會建立您的文件中所有章節等等的清單。您可以利用這個清單跳到相對應的區塊</li>
       <li>Collect documents that belong together into a project</li>
@@ -373,16 +374,17 @@
       <li xml:lang="pl">Zbieranie dokumentów należących razem do projektu</li>
       <li xml:lang="pt">Colecção de documentos que pertencem em conjunto a um projecto</li>
       <li xml:lang="pt-BR">Reúna documentos que pertencem a um mesmo projeto</li>
+      <li xml:lang="ru">Объединение документов в проекты;</li>
       <li xml:lang="sa">ये दस्तावेजाः एकत्र परियोजनायां सन्ति तेषां संग्रहणं कुर्वन्तु</li>
       <li xml:lang="sk">Zbierajte dokumenty, ktoré spolu patria do projektu</li>
       <li xml:lang="sl">Zbere dokumente, ki spadajo skupaj v projekt</li>
       <li xml:lang="sv">Samla dokument som hör ihop i ett projekt</li>
       <li xml:lang="tr">Birlikte bir projeye ait olan belgeleri toplayın</li>
       <li xml:lang="uk">Збирання документів у проєкти.</li>
-      <li xml:lang="x-test">xxCollect documents that belong together into a projectxx</li>
       <li xml:lang="zh-CN">将相互关联的文档集合在同一工程之下进行管理</li>
       <li xml:lang="zh-TW">將應該一起的文件收集成為專案</li>
       <li>Easy insertion of citations and references when using projects</li>
+      <li xml:lang="ar">سهولة إدراج الاقتباسات والمراجع عند استخدام المشاريع</li>
       <li xml:lang="ca">Inserció fàcil de cites i referències en usar projectes</li>
       <li xml:lang="ca-valencia">Inserció fàcil de cites i referències en utilitzar projectes</li>
       <li xml:lang="de">Einfaches Einfügen von Zitaten und Referenzen bei der Verwendung von Projekten</li>
@@ -404,13 +406,13 @@
       <li xml:lang="pl">Łatwe wstawianie cytowań i odwołań przy użyciu projektów</li>
       <li xml:lang="pt">Inserção simpless de citações e referências ao usar os projectos</li>
       <li xml:lang="pt-BR">Inserção fácil de citações e referências ao usar projetos</li>
+      <li xml:lang="ru">Упрощённое добавление цитат и ссылок при работе с проектами;</li>
       <li xml:lang="sa">परियोजनानां उपयोगं कुर्वन् उद्धरणानाम् सन्दर्भाणां च सुलभं सम्मिलनम्</li>
       <li xml:lang="sk">Ľahké vkladanie citácií a referencií pri použití projektov</li>
       <li xml:lang="sl">Enostavno vstavljanje citatov in referenc pri uporabi projektov</li>
       <li xml:lang="sv">Enkelt att infoga hänvisningar och referenser vid användning av projekt</li>
       <li xml:lang="tr">Projeleri kullanırken alıntıların ve başvuruların kolayca ekleyin</li>
       <li xml:lang="uk">Просте вставлення посилань у межах проєктів.</li>
-      <li xml:lang="x-test">xxEasy insertion of citations and references when using projectsxx</li>
       <li xml:lang="zh-CN">使用工程时可以轻松插入引用和参考文献</li>
       <li xml:lang="zh-TW">使用專案時輕鬆插入引用與參照文獻</li>
       <li>Flexible and smart build system to compile your LaTeX documents</li>
@@ -436,13 +438,13 @@
       <li xml:lang="pl">Eleastyczny i mądry system budowania do kompilowania twoich dokumentów LaTeX</li>
       <li xml:lang="pt">Sistema flexível e inteligente de compilação dos seus documentos em LaTeX</li>
       <li xml:lang="pt-BR">Sistema de depuração flexível e inteligente para compilar seus documentos do LaTeX</li>
+      <li xml:lang="ru">Гибкая и интеллектуальная система сборки для компиляции документов LaTeX;</li>
       <li xml:lang="sa">भवतः LaTeX दस्तावेजानां संकलनार्थं लचीलाः स्मार्टः च निर्माणप्रणाली</li>
       <li xml:lang="sk">Flexibilný a inteligentný systém zostavovania na zostavenie vašich dokumentov LaTeX</li>
       <li xml:lang="sl">Fleksibilen in pameten sistem izdelave vaših dokumentov LaTeX</li>
       <li xml:lang="sv">Flexibelt och smart byggsystem för att kompilera Latex-dokument</li>
       <li xml:lang="tr">LaTeX belgelerinizi derlemek için esnek ve akıllı bir yapı sistemi</li>
       <li xml:lang="uk">Гнучка та інтелектуальна система збирання для обробки ваших документів LaTeX.</li>
-      <li xml:lang="x-test">xxFlexible and smart build system to compile your LaTeX documentsxx</li>
       <li xml:lang="zh-CN">灵活且智能的构建系统，方便您对 LaTex 文档进行编译</li>
       <li xml:lang="zh-TW">利用靈活且聰明的編譯系統來編譯您的 LaTeX 文件</li>
       <li>QuickPreview: preview a selected part of your document</li>
@@ -468,13 +470,13 @@
       <li xml:lang="pl">SzybkiPodgląd: podgląd wybranej części dokumentu</li>
       <li xml:lang="pt">Antevisão Rápida: antevisão de uma parte seleccionada do seu documento</li>
       <li xml:lang="pt-BR">Visualização rápida: pré-visualize uma parte específica do seu documento</li>
+      <li xml:lang="ru">Быстрая предварительная проверка: выводить выбранную часть документа.</li>
       <li xml:lang="sa">QuickPreview: स्वस्य दस्तावेजस्य चयनितभागस्य पूर्वावलोकनं कुर्वन्तु</li>
       <li xml:lang="sk">QuickPreview: ukážka vybranej časti dokumentu</li>
       <li xml:lang="sl">QuickPreview: predogled izbranega dela dokumenta</li>
       <li xml:lang="sv">Snabbgranskning: Förhandsgranska en markerad del av dokumentet</li>
       <li xml:lang="tr">QuickPreview: Belgenizin seçili bir bölümünü önizleyin</li>
       <li xml:lang="uk">Швидкий перегляд: можливість швидко переглянути частину вашого документа.</li>
-      <li xml:lang="x-test">xxQuickPreview: preview a selected part of your documentxx</li>
       <li xml:lang="zh-CN">快速预览：预览文档中选中的部分</li>
       <li xml:lang="zh-TW">快速預覽：預覽您文件中選取的部分</li>
       <li>Easy access to various help sources</li>
@@ -500,6 +502,7 @@
       <li xml:lang="pl">Łatwy dostęp do źródeł pomocy</li>
       <li xml:lang="pt">Acesso simples a diversas fontes de ajuda</li>
       <li xml:lang="pt-BR">Acesso fácil a várias fontes de ajuda</li>
+      <li xml:lang="ru">Доступ к различным источникам справки;</li>
       <li xml:lang="sa">विभिन्नसहाय्यस्रोतानां सुलभप्रवेशः</li>
       <li xml:lang="sk">Ľahký prístup k rôznym zdrojom pomoci</li>
       <li xml:lang="sl">Enostaven dostop do različnih virov pomoči</li>
@@ -507,7 +510,6 @@
       <li xml:lang="ta">பல மூலங்களிலிருந்து உதவிக்கையேடுகளை எளிதில் காட்டுக்கூடியது</li>
       <li xml:lang="tr">Çeşitli yardım kaynaklarına kolay erişim</li>
       <li xml:lang="uk">Простий доступ до різноманітних довідкових джерел.</li>
-      <li xml:lang="x-test">xxEasy access to various help sourcesxx</li>
       <li xml:lang="zh-CN">轻松访问各种帮助资源</li>
       <li xml:lang="zh-TW">輕鬆存取各個說明來源</li>
       <li>Advanced editing commands</li>
@@ -533,6 +535,7 @@
       <li xml:lang="pl">Rozszerzone polecenia edytowania</li>
       <li xml:lang="pt">Comandos de edição avançados</li>
       <li xml:lang="pt-BR">Comandos de edição avançados</li>
+      <li xml:lang="ru">Команды расширенного редактирования;</li>
       <li xml:lang="sa">उन्नत सम्पादन आदेश</li>
       <li xml:lang="sk">Rozšírené editovacie príkazy</li>
       <li xml:lang="sl">Napredni ukazi za urejanje</li>
@@ -540,7 +543,6 @@
       <li xml:lang="ta">மேம்பட்ட திருத்தல் கட்டளைகள்</li>
       <li xml:lang="tr">İleri düzey düzenleme komutları</li>
       <li xml:lang="uk">Розширені команди редагування.</li>
-      <li xml:lang="x-test">xxAdvanced editing commandsxx</li>
       <li xml:lang="zh-CN">高级编辑命令</li>
       <li xml:lang="zh-TW">進階的編輯命令</li>
     </ul>
@@ -548,6 +550,7 @@
   <screenshots>
     <screenshot type="default">
       <caption>Document editing in Kile</caption>
+      <caption xml:lang="ar">تحرير المستندات في كايل</caption>
       <caption xml:lang="ca">Edició d'un document al Kile</caption>
       <caption xml:lang="ca-valencia">Editeu un document a Kile</caption>
       <caption xml:lang="cs">Vytváření dokumentu v Kile</caption>
@@ -571,6 +574,7 @@
       <caption xml:lang="pl">Edytowanie dokumentów w Kile</caption>
       <caption xml:lang="pt">Edição de documentos no Kile</caption>
       <caption xml:lang="pt-BR">Edição de documentos no Kile</caption>
+      <caption xml:lang="ru">Редактирование документа в Kile</caption>
       <caption xml:lang="sa">किले मध्ये दस्तावेजसम्पादनम्</caption>
       <caption xml:lang="sk">Úpravy dokumentov v Kile</caption>
       <caption xml:lang="sl">Urejanje dokumentov v Kile</caption>
@@ -578,7 +582,6 @@
       <caption xml:lang="ta">கைலில் ஆவணங்களைத் திருத்துவது</caption>
       <caption xml:lang="tr">Kile’de belge düzenleme</caption>
       <caption xml:lang="uk">Редагування документа у Kile</caption>
-      <caption xml:lang="x-test">xxDocument editing in Kilexx</caption>
       <caption xml:lang="zh-CN">Kile 文档编辑</caption>
       <caption xml:lang="zh-TW">在 Kile 中編輯文件</caption>
       <image>https://cdn.kde.org/screenshots/kile/kile.png</image>

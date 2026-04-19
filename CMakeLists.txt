@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(kile VERSION 2.9.95)
 
+set(QT_REQUIRED_VERSION "6.4")
 find_package(ECM 6.0.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
@@ -16,6 +17,7 @@ include(ECMInstallIcons)
 include(ECMSetupVersion)
 include(ECMMarkNonGuiExecutable)
 include(ECMGenerateHeaders)
+include(ECMQtDeclareLoggingCategory)
 
 include(GenerateExportHeader)
 include(CMakePackageConfigHelpers)
@@ -30,7 +32,6 @@ ecm_setup_version(${PROJECT_VERSION}
     VARIABLE_PREFIX KILE
     VERSION_HEADER ${CMAKE_CURRENT_BINARY_DIR}/src/cmake-kile-version.h
 )
-remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 kde_enable_exceptions()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake/modules)

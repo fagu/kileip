@@ -1,7 +1,7 @@
 /*****************************************************************************
 *   Copyright (C) 2006 by Mathias Soeken (msoeken@informatik.uni-bremen.de)  *
-*                        (orginal version of this preview)                   *
-*             (C) 2011-2019 by Michel Ludwig (michel.ludwig@kdemail.net)          *
+*                        (original version of this preview)                  *
+*             (C) 2011-2019 by Michel Ludwig (michel.ludwig@kdemail.net)     *
 ******************************************************************************/
 
 // dani/2006:
@@ -151,25 +151,25 @@ void PreviewWidget::showActivePreview(const QString &text,const QString &textfil
     // set parameter for these tools
     QString tasklist, tool, toolcfg, extension;
     if(conversiontype == pwConvert) {
-        m_conversionTool = "convert";
-        tasklist = "PreviewPDFLaTeX,,,,,png";
-        tool = "Convert";
-        toolcfg = "pdf2png";
-        extension = "pdf";
+        m_conversionTool = QStringLiteral("convert");
+        tasklist = QStringLiteral("PreviewPDFLaTeX,,,,,png");
+        tool = QStringLiteral("Convert");
+        toolcfg = QStringLiteral("pdf2png");
+        extension = QStringLiteral("pdf");
     }
     else if(conversiontype == pwDvipsConvert) {
-        m_conversionTool = "dvips/convert";
-        tasklist = "PreviewLaTeX,DVItoPS,dvi2eps,,,png";
-        tool = "Convert";
-        toolcfg = "eps2png";
-        extension = "eps";
+        m_conversionTool = QStringLiteral("dvips/convert");
+        tasklist = QStringLiteral("PreviewLaTeX,DVItoPS,dvi2eps,,,png");
+        tool = QStringLiteral("Convert");
+        toolcfg = QStringLiteral("eps2png");
+        extension = QStringLiteral("eps");
     }
     else {
-        m_conversionTool = "dvipng";
-        tasklist = "PreviewLaTeX,,,,,png";
-        tool = "DVItoPNG";
+        m_conversionTool = QStringLiteral("dvipng");
+        tasklist = QStringLiteral("PreviewLaTeX,,,,,png");
+        tool = QStringLiteral("DVItoPNG");
         toolcfg.clear();
-        extension = "dvi";
+        extension = QStringLiteral("dvi");
     }
 
     if(!m_info->quickPreview()->run(text, textfilename, startrow, tasklist)) {
@@ -184,7 +184,7 @@ void PreviewWidget::showActivePreview(const QString &text,const QString &textfil
     pngConverter->setSource(m_info->quickPreview()->getPreviewFile(extension));
 
     // First, we have to disconnect the old done() signal, because this is
-    // passed immediately to the toolmanager, whichs destroys the tool. This
+    // passed immediately to the toolmanager, which destroys the tool. This
     // means, that all connections, which are done later, will never been called.
     disconnect(pngConverter, SIGNAL(done(KileTool::Base*,int,bool)), m_info->toolManager(), SLOT(done(KileTool::Base*,int)));
 
@@ -224,7 +224,7 @@ void PreviewWidget::clear()
 void PreviewWidget::drawImage()
 {
     KILE_DEBUG_MAIN << "\tconversion tool '" << m_conversionTool << "' done, processing file (by dani)";
-    m_imageDisplayWidget->setImageFile(m_info->quickPreview()->getPreviewFile ("png"));
+    m_imageDisplayWidget->setImageFile(m_info->quickPreview()->getPreviewFile (QStringLiteral("png")));
 }
 
 void PreviewWidget::toolDestroyed()
