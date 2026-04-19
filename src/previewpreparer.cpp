@@ -24,20 +24,20 @@ std::pair<State, ParsedLine> parse(State state, int linenr, const QString& line)
     ParsedLine res;
     
     static std::set<QString> math_environment_names = {
-        "equation",
-        "equation*",
-        "align",
-        "align*",
-        "alignat",
-        "alignat*",
-        "multline",
-        "multline*",
-        "eqnarray",
-        "eqnarray*",
-        "gather",
-        "gather*",
-        "asy",
-        "tikzpicture",
+        QStringLiteral("equation"),
+        QStringLiteral("equation*"),
+        QStringLiteral("align"),
+        QStringLiteral("align*"),
+        QStringLiteral("alignat"),
+        QStringLiteral("alignat*"),
+        QStringLiteral("multline"),
+        QStringLiteral("multline*"),
+        QStringLiteral("eqnarray"),
+        QStringLiteral("eqnarray*"),
+        QStringLiteral("gather"),
+        QStringLiteral("gather*"),
+        QStringLiteral("asy"),
+        QStringLiteral("tikzpicture"),
     };
 
     if (onlySpaces(line)) {
@@ -45,58 +45,58 @@ std::pair<State, ParsedLine> parse(State state, int linenr, const QString& line)
     } else {
         for (int i = 0; i < line.size(); ) {
             QChar c = line[i];
-            if (c == "$") { // Inline math
+            if (c == QLatin1Char('$')) { // Inline math
                 int start = -1;
                 for (int e = (int)state.environments().size()-1; e >= 0; e--) {
-                    if (state.environments()[e] == "$") {
+                    if (state.environments()[e] == QLatin1Char('$')) {
                         start = e;
                         break;
                     }
                 }
                 if (start == -1) { // Start a new inline math environment
-                    state.start_math("$", KTextEditor::Cursor(linenr, i));
+                    state.start_math(QStringLiteral("$"), KTextEditor::Cursor(linenr, i));
                 } else { // End inline math environment
                     auto r = state.finish_math(start, KTextEditor::Cursor(linenr, i + 1));
                     if (r)
                         res.mathenvs.emplace_back(r.value());
                 }
                 i += 1;
-            } else if (c == "\\") {
-                if (startsWithAt(line, "[", i + 1)) { // \[
-                    state.start_math("[", KTextEditor::Cursor(linenr, i));
+            } else if (c == QLatin1Char('\\')) {
+                if (startsWithAt(line, QStringLiteral("["), i + 1)) { // \[
+                    state.start_math(QStringLiteral("["), KTextEditor::Cursor(linenr, i));
                     i += 2;
-                } else if (startsWithAt(line, "]", i + 1)) { // \]
-                    auto r = state.finish_math("[", KTextEditor::Cursor(linenr, i + 2));
+                } else if (startsWithAt(line, QStringLiteral("]"), i + 1)) { // \]
+                    auto r = state.finish_math(QStringLiteral("["), KTextEditor::Cursor(linenr, i + 2));
                     if (r)
                         res.mathenvs.emplace_back(r.value());
                     i += 2;
-                } else if (startsWithAt(line, "(", i + 1)) { // \(
-                    state.start_math("(", KTextEditor::Cursor(linenr, i));
+                } else if (startsWithAt(line, QStringLiteral("("), i + 1)) { // \(
+                    state.start_math(QStringLiteral("("), KTextEditor::Cursor(linenr, i));
                     i += 2;
-                } else if (startsWithAt(line, ")", i + 1)) { // \)
-                    auto r = state.finish_math("(", KTextEditor::Cursor(linenr, i + 2));
+                } else if (startsWithAt(line, QStringLiteral(")"), i + 1)) { // \)
+                    auto r = state.finish_math(QStringLiteral("("), KTextEditor::Cursor(linenr, i + 2));
                     if (r)
                         res.mathenvs.emplace_back(r.value());
                     i += 2;
-                } else if (startsWithAt(line, "begin", i + 1)) { // \begin
+                } else if (startsWithAt(line, QStringLiteral("begin"), i + 1)) { // \begin
                     int j = i + 6;
                     while(j < line.size() && line[j].isSpace())
                         j++;
-                    if (j < line.size() && line[j] == "{") {
+                    if (j < line.size() && line[j] == QLatin1Char('{')) {
                         j++;
                         int k = j;
-                        while(k < line.size() && line[k] != "}")
+                        while(k < line.size() && line[k] != QLatin1Char('}'))
                             k++;
                         if (k < line.size()) {
                             QString en = line.mid(j, k-j);
-                            if (en == "document") { // \begin{document}
+                            if (en == QStringLiteral("document")) { // \begin{document}
                                 if (!state.in_document()) {
                                     state.enter_document();
                                     res.begin_document = KTextEditor::Cursor(linenr, i);
                                 }
                             }
                             if (math_environment_names.count(en)) { // \begin{equation}
-                                if (startsWithAt(line, "{"+en+"}", i + 6)) { // TODO make this efficient
+                                if (startsWithAt(line, QStringLiteral("{")+en+QStringLiteral("}"), i + 6)) { // TODO make this efficient
                                     state.start_math(en, KTextEditor::Cursor(linenr, i));
                                 }
                             }
@@ -105,14 +105,14 @@ std::pair<State, ParsedLine> parse(State state, int linenr, const QString& line)
                         j = k;
                     }
                     i = j;
-                } else if (startsWithAt(line, "end", i + 1)) { // \end
+                } else if (startsWithAt(line, QStringLiteral("end"), i + 1)) { // \end
                     int j = i + 4;
                     while(j < line.size() && line[j].isSpace())
                         j++;
-                    if (j < line.size() && line[j] == "{") {
+                    if (j < line.size() && line[j] == QLatin1Char('{')) {
                         j++;
                         int k = j;
-                        while(k < line.size() && line[k] != "}")
+                        while(k < line.size() && line[k] != QLatin1Char('}'))
                             k++;
                         if (k < line.size()) {
                             QString en = line.mid(j, k-j);
@@ -129,7 +129,7 @@ std::pair<State, ParsedLine> parse(State state, int linenr, const QString& line)
                 } else {
                     i += 2;
                 }
-            } else if (c == '%') { // Ignore rest of line
+            } else if (c == QLatin1Char('%')) { // Ignore rest of line
                 break;
             } else {
                 i += 1;

@@ -927,13 +927,6 @@ void Kile::setupActions()
     createAction(i18n("Focus Konsole View"), "focus_konsole", QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_K), this, &Kile::focusKonsole);
     createAction(i18n("Focus Editor View"), "focus_editor", QKeySequence(Qt::CTRL | Qt::ALT | Qt::Key_F), this, &Kile::focusEditor);
 
-    InlinePreviewAction = new KToggleAction(i18n("Inline Preview"), actionCollection());
-    actionCollection()->addAction("toggle_inline_preview", InlinePreviewAction);
-    actionCollection()->setDefaultShortcut(InlinePreviewAction, QKeySequence("CTRL+Alt+I"));
-    connect(InlinePreviewAction, SIGNAL(toggled(bool)), viewManager(), SLOT(toggleInlinePreview(bool)));
-    InlinePreviewAction->setChecked(true);
-
-
     createAction(i18nc("@action: Starts the completion of the current LaTeX command", "Complete (La)TeX Command"), QStringLiteral("edit_complete_word"), QStringLiteral("complete1"),
                  QKeySequence(Qt::SHIFT | Qt::CTRL | Qt::Key_Space), codeCompletionManager(), [this]() { codeCompletionManager()->startLaTeXCompletion(); });
     createAction(i18nc("@action: Starts the input (and completion) of a LaTeX environment", "Complete LaTeX Environment"), QStringLiteral("edit_complete_env"), QStringLiteral("complete2"),
@@ -1990,7 +1983,6 @@ void Kile::initMenu()
             // edit
             << QStringLiteral("RefreshStructure")
             // view
-            << "toggle_inline_preview"
             << QStringLiteral("gotoPrevDocument") << QStringLiteral("gotoNextDocument")
             // build
             << QStringLiteral("quickpreview_selection") << QStringLiteral("quickpreview_environment")

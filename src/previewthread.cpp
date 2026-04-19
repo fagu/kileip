@@ -32,7 +32,7 @@
 const int keep_folders = 0;
 
 PreviewThread::PreviewThread(KileDocument::LaTeXInfo* info, QObject* parent)
-: QThread(parent), m_info(info), m_dir(QDir(QDir::tempPath()).filePath("kile-inlinepreview")) {
+: QThread(parent), m_info(info), m_dir(QDir(QDir::tempPath()).filePath(QStringLiteral("kile-inlinepreview"))) {
     QScreen* screen = QGuiApplication::primaryScreen(); // FIXME There's no guarantee that the kile window is on the primary screen.
     m_dpix = screen->logicalDotsPerInchX();
     m_dpiy = screen->logicalDotsPerInchY();
@@ -173,9 +173,12 @@ void PreviewThread::binaryCreatePreviews(const QString &preamble, const std::vec
     QElapsedTimer tim;
     tim.start();
     // Create LaTeX preview file
-    QString latex_filename = folder.filePath("inpreview.tex");
+    QString latex_filename = folder.filePath(QStringLiteral("inpreview.tex"));
     QFile latex_file(latex_filename);
-    latex_file.open(QIODevice::WriteOnly);
+    if (!latex_file.open(QIODevice::WriteOnly)) {
+        qDebug() << "Could not open file" << latex_filename;
+        return;
+    }
     {
         QTextStream fout(&latex_file);
         fout << preamble;
@@ -199,11 +202,11 @@ void PreviewThread::binaryCreatePreviews(const QString &preamble, const std::vec
     QProcess proc;
     proc.setWorkingDirectory(folder.path());
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    env.insert("TEXINPUTS", ".:"+filedir.absolutePath()+":");
+    env.insert(QStringLiteral("TEXINPUTS"), QStringLiteral(".:")+filedir.absolutePath()+QStringLiteral(":"));
     proc.setProcessEnvironment(env);
     {
         QMutexLocker proc_lock(&m_queue_mutex);
-        proc.startCommand("pdflatex -interaction=batchmode inpreview.tex");
+        proc.startCommand(QStringLiteral("pdflatex -interaction=batchmode inpreview.tex"));
         m_process = &proc;
     }
     proc.waitForFinished(15000);
@@ -218,7 +221,7 @@ void PreviewThread::binaryCreatePreviews(const QString &preamble, const std::vec
     } else if (proc.exitStatus() != QProcess::NormalExit || proc.exitCode()) {
         success = false;
     } else {
-        if (!load_pages_from_pdf(folder.filePath("inpreview.pdf"), end-start+1, imgs))
+        if (!load_pages_from_pdf(folder.filePath(QStringLiteral("inpreview.pdf")), end-start+1, imgs))
             success = false;
     }
     

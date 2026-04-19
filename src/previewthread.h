@@ -53,7 +53,7 @@ class PreviewThread : public QThread {
 Q_OBJECT
 
 public:
-    PreviewThread(KileDocument::LaTeXInfo *info, QObject *parent = 0);
+    PreviewThread(KileDocument::LaTeXInfo *info, QObject *parent = nullptr);
     // Kill currently running latex process and stop the thread.
     ~PreviewThread();
     

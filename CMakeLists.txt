@@ -79,8 +79,6 @@ set_package_properties("Poppler" PROPERTIES
 if(TARGET Poppler::Qt6)
 	set(HAVE_POPPLER TRUE)
 endif()
-find_package(Poppler REQUIRED Qt5)
-include_directories(${Poppler_INCLUDE_DIRS})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/src/config.h)
 
